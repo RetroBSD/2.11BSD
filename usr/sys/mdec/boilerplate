@@ -1,0 +1,59 @@
+	mov	$bootnm, r1
+	mov	$2,r0			/ ROOTINO
+	jsr	pc,iget
+	clr	r2			/ offset
+again:
+	jsr	pc,readdir
+	beq	restart			/ error - restart
+	mov	4(r0),r4		/ dp->d_namlen
+	cmp	r4,$bootlen		/ if (len == dp->d_namlen)
+	bne	again			/    nope, go try next entry
+	mov	r0,r3
+	add	$6,r3			/ r3 = dp->d_name
+	mov	r1,r5			/ r5 = filename
+9:
+	cmpb	(r3)+,(r5)+
+	bne	again			/ no match - go read next entry
+	sob	r4,9b
+	mov	(r0),r0			/ r0 = dp->d_ino
+	jsr	pc,iget			/ fetch boot's inode
+	br	loadfile		/ 'boot'- go read it
+
+/ get the inode specified in r0
+iget:
+	add	$INOFF,r0
+	mov	r0,r5
+	ash	$PBSHFT,r0
+	bic	$!7777,r0
+	mov	r0,dno
+	clr	r0
+	jsr	pc,rblk
+	bic	$!17,r5
+	mov	$INOSIZ,r0
+	mul	r0,r5
+	add	$buf,r5
+	mov	$inod,r4
+1:
+	movb	(r5)+,(r4)+
+	sob	r0,1b
+	rts	pc
+
+readdir:
+	bit	$BSIZE-1,r2
+	bne	1f
+	jsr	pc,rmblk		/ read mapped block (bno)
+		br err			/ end of file branch
+	clr	r2			/ start at beginning of buf
+1:
+	mov	$buf,r0
+	add	r2,r0			/ dp = buf+offset
+	add	buf+2(r2),r2		/ dp += dp->d_reclen
+	tst	(r0)			/ dp->d_ino == 0?
+	beq	readdir			/ yes - go look at next
+	rts	pc			/ return with r0 = &dp->d_ino
+err:
+	clr	r0			/ return with
+	rts	pc			/ dp = NULL
+
+loadfile:
+	clr	bno			/ start at block 0 of inode in 'inod'

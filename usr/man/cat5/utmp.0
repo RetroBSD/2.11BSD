@@ -1,0 +1,132 @@
+
+
+
+UTMP(5)             UNIX Programmer's Manual		  UTMP(5)
+
+
+
+NAME
+     utmp, wtmp - login records
+
+SYNOPSIS
+     #include <utmp.h>
+
+DESCRIPTION
+     The _u_t_m_p file records information about who is currently
+     using the system.	The file is a sequence of entries with
+     the following structure declared in the include file:
+
+	  /*
+	   * Copyright (c) 1988 The Regents of the University of California.
+	   * All rights reserved.
+	   *
+	   * Redistribution and use in source and binary forms are permitted
+	   * provided that the above copyright notice and this paragraph are
+	   * duplicated in all such forms and that any documentation,
+	   * advertising materials, and other materials related to such
+	   * distribution and use acknowledge that the software was developed
+	   * by the University of California, Berkeley.  The name of the
+	   * University may not be used to endorse or promote products derived
+	   * from this software without specific prior written permission.
+	   * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+	   * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+	   * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+	   *
+	   *   @(#)utmp.h     5.6.1 (2.11BSD) 1996/11/27
+	   */
+
+	  #define   _PATH_UTMP	   "/var/run/utmp"
+	  #define   _PATH_WTMP	   "/usr/adm/wtmp"
+
+	  #define   UT_NAMESIZE    15
+	  #define   UT_LINESIZE    8
+	  #define   UT_HOSTSIZE    16
+	  struct utmp {
+	       char ut_line[UT_LINESIZE];
+	       char ut_name[UT_NAMESIZE];
+	       char ut_host[UT_HOSTSIZE];
+	       long ut_time;
+	  };
+
+     This structure gives the name of the special file associated
+     with the user's terminal, the user's login name, and the
+     time of the login in the form of _t_i_m_e(3C).
+
+     The _w_t_m_p file records all logins and logouts.  A null user
+     name indicates a logout on the associated terminal.  Furth-
+     ermore, the terminal name `~' indicates that the system was
+     rebooted at the indicated time; the adjacent pair of entries
+     with terminal names `|' and `{' indicate the system-
+
+
+
+Printed 11/26/99	November 27, 1996			1
+
+
+
+
+
+
+UTMP(5)             UNIX Programmer's Manual		  UTMP(5)
+
+
+
+     maintained time just before and just after a _d_a_t_e command
+     has changed the system's idea of the time.
+
+     _W_t_m_p is maintained by _l_o_g_i_n(1) and _i_n_i_t(8).  Neither of
+     these programs creates the file, so if it is removed
+     record-keeping is turned off.  It is summarized by _a_c(8).
+
+FILES
+     /var/run/utmp
+     /usr/adm/wtmp
+
+SEE ALSO
+     login(1), init(8), who(1), ac(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			2
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+SYSCALL(2)	    UNIX Programmer's Manual	       SYSCALL(2)
+
+
+
+NAME
+     syscall - indirect system call
+
+SYNOPSIS
+     #include <syscall.h>
+
+     syscall(number, arg, ...)	(VAX-11)
+
+DESCRIPTION
+     _S_y_s_c_a_l_l performs the system call whose assembly language
+     interface has the specified _n_u_m_b_e_r, register arguments _r_0
+     and _r_1 and further arguments _a_r_g.	Symbolic constants for
+     system calls can be found in the header file <_s_y_s_c_a_l_l._h>.
+
+     The r0 value of the system call is returned.
+
+DIAGNOSTICS
+     When the C-bit is set, _s_y_s_c_a_l_l returns -1 and sets the
+     external variable _e_r_r_n_o (see _i_n_t_r_o(2)).
+
+BUGS
+     There is no way to simulate system calls such as _p_i_p_e(2),
+     which return values in register r1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 16, 1986                         1
+
+
+

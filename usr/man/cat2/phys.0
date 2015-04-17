@@ -1,0 +1,66 @@
+
+
+
+PHYS(2)             UNIX Programmer's Manual		  PHYS(2)
+
+
+
+NAME
+     phys - allow a process to access physical addresses (2BSD)
+
+SYNOPSIS
+     phys(segreg, size, physaddr)
+     unsigned int segreg, size, physaddr;
+
+DESCRIPTION
+     The argument _s_e_g_r_e_g specifies a process virtual (data-space)
+     address range of 8K bytes starting at virtual address
+     _s_e_g_r_e_gx8K bytes.  This address range is mapped into physical
+     address _p_h_y_s_a_d_d_rx64 bytes.  Only the first _s_i_z_ex64 bytes of
+     this mapping is addressable.  If _s_i_z_e is zero, any previous
+     mapping of this virtual address range is nullified.  For
+     example, the call
+
+	  phys(7, 1, 0177775);
+
+     will map virtual addresses 0160000-0160077 into physical
+     addresses 017777500-017777577.  In particular, virtual
+     address 0160060 is the PDP-11 console located at physical
+     address 017777560.
+
+     This call may only be executed by the super-user.
+
+ERRORS
+     [EPERM]	    The process's effective user ID is not the
+		    super-user.
+
+     [EINVAL]	    _S_e_g_r_e_g is less than 0 or greater than 7.
+
+     [EINVAL]	    _S_i_z_e is less than 0 or greater than 128.
+
+SEE ALSO
+     PDP-11 segmentation hardware
+
+BUGS
+     On systems with ENABLE/34(tm) memory mapping boards, _p_h_y_s
+     cannot be used to map in the I/O page.
+
+     This system call is very dangerous.  It is not considered a
+     permanent part of the system.
+
+     _P_h_y_s is unique to the PDP-11 and 2BSD; its use is
+     discouraged.
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 22, 1987			1
+
+
+

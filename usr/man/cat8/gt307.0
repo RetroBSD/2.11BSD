@@ -1,0 +1,66 @@
+
+
+
+GT307(8)	    UNIX Programmer's Manual		 GT307(8)
+
+
+
+NAME
+     gt307 - read and set GT307 clock board
+
+SYNOPSIS
+     gt307 [ -d n ] [ -l ] [ yymmddhhmm.ss ]
+
+DESCRIPTION
+     The gt307 is used to read and/or set a Computer Products Inc
+     GT307 clock calendar board.  If the date argument is not
+     given the board is read but not written.
+
+     The options are:
+
+     -d n		 sets Daylight Savings Time (DST) on if n
+			 is 1, off if n if 0.
+
+     -l                  switches output between long and short
+			 formats.  The short format is suitable
+			 for input to the _d_a_t_e(8) command.
+
+     gt307 is a user mode program only (not a standalone/bootable
+     program like toyset ).  The kernel does not know how to read
+     a GT307 clock.  Thus the recommended use of gt307 is to set
+     the system time from within the _r_c(8) file:
+
+	       date `/sbin/gt307 -l`
+
+FILES
+     None.
+
+SEE ALSO
+     date(8), phys(2), rc(8)
+
+BUGS
+     gt307 uses the phys(2) syscall to access the I/O page and
+     thus can only be run by the superuser. Making this program
+     setuid (so that users can read the GT307 board) could be a
+     large threat to system integrity in the event of bugs in the
+     program.  It is NOT recommended that gt307 be made setuid.
+
+HISTORY
+     The gt307 command first appeared in 2.11BSD.   It was con-
+     tributed by Robin Birch
+     (robin@falstaf.demon.co.uk).
+
+     The Makefile, manpage and integration into 2.11BSD were done
+     by Steven Schultz (sms@moe.2bsd.com).
+
+
+
+
+
+
+
+
+Printed 11/24/99	  July 21, 1999                         1
+
+
+

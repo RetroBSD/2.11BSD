@@ -1,0 +1,340 @@
+.\" Copyright (c) 1987, 1988, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" This code is derived from software contributed to Berkeley by
+.\" Symmetric Computer Systems.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)disklabel.8	8.2.1 (2.11BSD) 1995/04/21
+.\"
+.TH DISKLABEL 8 "April 21, 1995"
+.UC 2
+.SH NAME
+disklabel \- read and write disk pack label
+.SH SYNOPSIS
+.B disklabel \-r
+.IR disk
+.br
+.B disklabel \-w
+[
+.B \-r
+]
+.IR disk 
+.IR disktype
+[
+.IR packid
+]
+.br
+.B disklabel \-e
+[
+.B \-r
+]
+.IR disk
+.br
+.B disklabel \-R
+[
+.B \-r
+]
+.IR disk
+.IR protofile
+.br
+.B disklabel
+[
+.B \-NW
+]
+.IR disk
+.sp
+.B disklabel \-B
+[
+.B \-b
+.IR boot
+]
+.IR disk
+[
+.IR disktype
+]
+.br
+.B disklabel \-w \-B
+[
+.B \-b
+.IR boot
+]
+.IR disk
+.IR disktype
+[
+.IR packid
+]
+.br
+.B disklabel \-R \-B
+[
+.B \-b
+.IR boot
+]
+.IR disk
+.IR protofile
+[
+.IR disktype
+]
+.SH DESCRIPTION
+.B Disklabel
+can be used to install, examine or modify the label on a disk drive or pack.
+When writing the label, it can be used
+to change the drive identification,
+the disk partitions on the drive,
+or to replace a damaged label.
+On some systems,
+.B disklabel
+can be used to install bootstrap code as well.
+There are several forms of the command that read (display), install or edit
+the label on a disk.
+Each form has an additional option,
+\fB\-r\fP,
+which causes the label to be read from or written to the disk directly,
+rather than going through the system's in-core copy of the label.
+This option may allow a label to be installed on a disk
+without kernel support for a label, such as when labels are first installed
+on a system; it must be used when first installing a label on a disk.
+The specific effect of
+.B \-r
+is described under each command.
+The read and install forms also support the
+.B \-B
+option to install bootstrap code.
+These variants are described later.
+.PP
+The first form of the command (read) is used to examine the label on the named
+disk drive (e.g. ra0 or /dev/rra0a).
+It will display all of the parameters associated with the drive
+and its partition layout.
+Unless the
+.B \-r
+flag is given,
+the kernel's in-core copy of the label is displayed;
+if the disk has no label, or the partition types on the disk are incorrect,
+the kernel may have constructed or modified the label.
+If the
+.B \-r
+flag is given, the label from the raw disk will be displayed rather
+than the in-core label.
+.PP
+The second form of the command, with the
+.B \-w
+flag, is used to write a standard label on the designated drive.
+The required arguments to
+.B disklabel
+are the drive to be labelled (e.g. sd0), and
+the drive type as described in the
+.IR disktab (5)
+file.
+The drive parameters and partitions are taken from that file.
+If different disks of the same physical type are to have different
+partitions, it will be necessary to have separate disktab entries
+describing each, or to edit the label after installation as described below.
+The optional argument is a pack identification string,
+up to 16 characters long.
+The pack id must be quoted if it contains blanks.
+If the
+.B \-r
+flag is given, the disk sectors containing the label and bootstrap
+will be written directly.
+A side-effect of this is that any existing bootstrap code will be overwritten
+and the disk rendered unbootable.
+If
+.B \-r
+is not specified,
+the existing label will be updated via the in-core copy and any bootstrap
+code will be unaffected.
+If the disk does not already have a label, the
+.B \-r
+flag must be used.
+In either case, the kernel's in-core label is replaced.
+.PP
+An existing disk label may be edited by using the
+.B \-e
+flag.
+The label is read from the in-core kernel copy,
+or directly from the disk if the
+.B \-r
+flag is also given.
+The label is formatted and then supplied to an editor for changes.
+If no editor is specified in an
+.B EDITOR
+environment variable,
+.IR vi (1)
+is used.
+When the editor terminates, the formatted label is reread
+and used to rewrite the disk label.
+Existing bootstrap code is unchanged regardless of whether
+.B \-r
+was specified.
+.PP
+With the
+.B \-R
+flag,
+.B disklabel
+is capable of restoring a disk label that was formatted
+in a prior operation and saved in an ascii file.
+The prototype file used to create the label should be in the same format
+as that produced when reading or editing a label.
+Comments are delimited by
+.IR \&#
+and newline.
+As with
+.B \-w ,
+any existing bootstrap code will be clobbered if
+.B \-r
+is specified and will be unaffected otherwise.
+.PP
+The
+.B \-NW
+flags for
+.B disklabel
+explicitly disallow and
+allow, respectively, writing of the pack label area on the selected disk.
+.PP
+The final three forms of
+.B disklabel
+are used to install bootstrap code on machines where the bootstrap is part
+of the label.
+The bootstrap code is comprised of one or two boot programs depending on
+the machine.
+The
+.B \-B
+option is used to denote that bootstrap code is to be installed.
+The
+.B \-r
+flag is implied by
+.B \-B
+and never needs to be specified.
+The name of the boot program(s) to be installed can be selected in a
+variety of ways.
+First, the names can be specified explicitly via the
+.B \-b
+flag.
+If the name is not explicitly given, standard boot blocks will be used.
+The boot programs are located in
+.IR /mdec .
+The names of the program is taken from the ``b0'' parameter
+of the
+.IR disktab (5)
+entry for the disk if
+.I disktype
+was given and its disktab entry exists and includes that parameter.
+Otherwise, the boot program name is derived from the name of the disk.
+These name is of the form
+\fIbasename\fPuboot
+;
+for example,
+.I /usr/mdec/rauboot
+if the disk device is
+.IR ra0 .
+.PP
+The first of the three boot-installation forms is used to install
+bootstrap code without changing the existing label.
+It is essentially a read command with respect to the disk label
+itself and all options are related to the specification of the boot
+program as described previously.
+The final two forms are analogous to the basic write and restore versions
+except that they will install bootstrap code in addition to a new label.
+.SH FILES
+/etc/disktab
+.br
+/mdec/\fIxx\fPuboot
+.SH EXAMPLES
+.in +0.5i
+disklabel sd0
+.br
+.in -0.5i
+.PP
+Display the in-core label for ra0 as obtained via
+.IR /dev/rra0a .
+.PP
+.in +0.5i
+disklabel \-w \-r /dev/rra0a ra81x foo
+.br
+.in -0.5i
+.PP
+Create a label for sd0 based on information for ``ra81x'' found in
+.IR /etc/disktab .
+Any existing bootstrap code will be clobbered.
+.PP
+.in +0.5i
+disklabel -e -r ra0
+.in -0.5i
+.PP
+Read the on-disk label for ra0, edit it and reinstall in-core as well
+as on-disk.
+Existing bootstrap code is unaffected.
+.PP
+.in +0.5i
+disklabel -R ra0 mylabel
+.br
+.in -0.5i
+.PP
+Restore the on-disk and in-core label for sd0 from information in
+.IR mylabel .
+Existing bootstrap code is unaffected.
+.PP
+.in +0.5i
+disklabel -B ra0
+.br
+.in -0.5i
+.PP
+Install a new bootstrap on ra0.
+The boot code comes from
+.IR /mdec/rauboot .
+On-disk and in-core labels are unchanged.
+.PP
+.in +0.5i
+disklabel -w -B /dev/rra0a -b newboot ra81x
+.br
+.in -0.5i
+.PP
+Install a new label and bootstrap.
+The label is derived from disktab information for ``ra81x'' and
+installed both in-core and on-disk.
+The bootstrap code comes from the file
+.IR /mdec/newboot .
+.SH SEE ALSO
+disktab(5), disklabel(5)
+.SH DIAGNOSTICS
+The kernel device drivers will not allow the size of a disk partition
+to be decreased or the offset of a partition to be changed while it is open.
+Some device drivers create a label containing only a single large partition
+if a disk is unlabeled; thus, the label must be written to the ``a''
+partition of the disk while it is open.
+This sometimes requires the desired label to be set in two steps,
+the first one creating at least one other partition,
+and the second setting the label on the new partition
+while shrinking the ``a'' partition.
+.SH BUGS
+When a disk name is given without a full pathname,
+the constructed device name uses the ``a'' partition on the tahoe and pdp\-11
+the ``c'' partition on all others.

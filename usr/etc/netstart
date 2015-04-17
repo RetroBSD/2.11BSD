@@ -1,0 +1,46 @@
+#!/bin/sh -
+
+#	@(#)netstart	5.2.1 (2.11BSD) 1996/11/16
+
+INET=`testnet`
+if [ $INET = YES ]; then
+	echo Assuming NETWORKING system ...		>/dev/console 2>&1
+else
+	echo Assuming non-networking system ...		>/dev/console 2>&1
+fi
+export INET
+
+# DON'T EVEN THINK ABOUT RUNNING ROUTED ON A PDP-11!!!  Just set routedflags
+# to "NO" and set up a default gateway below.
+#
+routedflags=NO
+rwhod=YES
+named=NO
+
+# myname is my symbolic name
+# my-netmask is specified in /etc/networks
+# my-default-address should be set to some machine where you
+#	want to send all your packets, by default.
+#
+
+hostname=localhost.2bsd.com
+netmask=255.255.255.0
+broadcast=127.255.255.255
+default=127.0.0.1
+
+hostname $hostname					>/dev/console 2>&1
+hostid $hostname					>/dev/console 2>&1
+
+if [ $INET = YES ]; then
+	# ifconfig imp0 inet netmask $netmask $hostname broadcast $broadcast up -trailers >/dev/console 2>&1
+	# ifconfig en0 inet netmask $netmask $hostname broadcast $broadcast up -trailers >/dev/console 2>&1
+	# ifconfig ec0 inet netmask $netmask $hostname broadcast $broadcast up -trailers arp >/dev/console 2>&1
+	# ifconfig il0 inet netmask $netmask $hostname broadcast $broadcast up -trailers >/dev/console 2>&1
+	# ifconfig qe0 inet netmask $netmask $hostname broadcast $broadcast up -trailers >/dev/console 2>&1
+	# ifconfig sl0 inet 192.254.254.2 192.254.254.1 -arp -trailers >/dev/console 2>&1
+	# slattach /dev/ttyS6 9600
+	ifconfig lo0 inet localhost up -trailers	>/dev/console 2>&1
+
+	route add $hostname localhost 0		>/dev/console 2>&1
+	route add default $default 1		>/dev/console 2>&1
+fi

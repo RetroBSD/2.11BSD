@@ -1,0 +1,71 @@
+Application	Version
+-----------	-------
+Makefile	4.3  (small mods for load type (separate I&D or pure))
+ar11.c		UNIMPLEMENTED (should be ported from 4.3)
+at/		4.3
+basename.c	4.3
+bc.y		4.3
+cal.c		4.3
+calendar/	4.3
+cb.c		4.3
+checkeq.c	4.3
+col.c		4.3
+comm.c		4.3
+dc/		4.3
+deroff.c	4.3
+diction/	4.3  (small mods for 8 char name conflicts)
+diff3/		4.3  (small mods for 8 char name conflicts)
+efl/		4.3
+egrep.y		4.3
+eqn/		4.3
+f77/		2.10
+fgrep.c		4.3
+file.c		2.10 (4.3 should be ported; actually, 4.3 should be fixed)
+find/		4.3  (small mods for 8 char name conflicts)
+graph/		4.3
+install.c	4.4
+iostat.c	4.3
+join.c		4.3
+learn/		4.3
+lex/		4.3
+lint/		2.10 (4.3 should be ported, but it's got serious space probs.)
+look.c		4.3
+lorder.sh	4.3
+m4/		4.3
+mesg.c		4.3
+mkdep.sh	4.4
+neqn/		4.3
+nohup.sh	4.3
+plot/		4.3
+prof/		4.3  (with mods for 2.10 profiling)
+ptx.c		4.3
+ranlib.c	2.10 (getting 4.3's would entail lots of changes...)
+ratfor/		4.3
+refer/		4.3  (small mods for 8 char name conflicts)
+rev.c		4.3
+roff		4.3+
+sleep.c		4.3
+sort.c		4.3
+spell/		4.3  (mods to spell.h for NONSEPARATE machines)
+spline.c	4.3
+split.c		4.3
+struct/		4.3
+sum.c		4.3
+tabs.c		4.3
+tbl/		4.3  (mods to t..c to reduce table sizes)
+tc.c		4.3
+tip/		4.3
+tk.c		4.3
+touch.c		4.3
+tr.c		4.3
+tsort.c		4.3
+tty.c		4.3
+uniq.c		4.3
+units.c		4.3
+units.lib	4.3
+uucp/		4.3
+yacc/		4.3  (minor mods, undef'd WORD32, def'd MEDIUM, not HUGE)
+
+The directorie PORT is special.  It contains source code from the 4.3
+distribution that should probably be ported to 2.10 as soon as someone
+has the time and inclination to do so.

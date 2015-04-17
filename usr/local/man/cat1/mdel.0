@@ -1,0 +1,66 @@
+
+
+
+MDEL(1)             UNIX Programmer's Manual              MDEL(1)
+
+
+
+NAME
+     mdel - delete an MSDOS file
+
+SYNOPSIS
+     mdel [ -v ] msdosfile [ msdosfiles...  ]
+
+DESCRIPTION
+     _M_d_e_l deletes a file on an MSDOS filesystem.
+
+     _M_d_e_l will allow the following command line option:
+
+     v    Verbose mode.  Echo the filenames as they are pro-
+          cessed.
+
+     _M_d_e_l will ask for verification prior to removing a read-only
+     file.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the names to be enclosed in quotes to protect
+     them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1)
+
+BUGS
+     Allows multiple arguments, which does not follow the MSDOS
+     convention.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

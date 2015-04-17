@@ -1,0 +1,143 @@
+#
+# Copyright (c) 1988 Regents of the University of California.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms are permitted
+# provided that this notice is preserved and that due credit is given
+# to the University of California at Berkeley. The name of the University
+# may not be used to endorse or promote products derived from this
+# software without specific prior written permission. This software
+# is provided ``as is'' without express or implied warranty.
+#
+#	2.13 (2.11BSD) 1999/9/24
+#
+#########################################################
+# Non-network, but separate I/D kernel			#
+#########################################################
+
+H=	../h
+I=	/usr/include
+M=	../machine
+S=	../sys
+U=	../pdpuba
+MB=	../pdpmba
+
+DEFS=	-DKERNEL ${OPTS} -I. -I${H}
+CFLAGS=	-O ${DEFS}
+
+CPP=	/lib/cpp -P ${DEFS}
+AS=	/bin/as -V
+ED=	/bin/ed
+SED=	/bin/sed
+
+SUB=	sys pdp pdpuba pdpmba
+
+# GENERAL RULES:
+# scb.o MUST be loaded first, param.o MUST be loaded last,
+# boot.o must be loaded in the base well above 0 data.
+# Don't forget the "-i" flag for split I/D, use "-n" otherwise.
+#
+# CONF	Non-network assembly binaries.  scb.o must be first!
+#		boot.o should be close to the end.
+
+CONF=	scb.o \
+	mch_backup.o mch_click.o mch_copy.o mch_csv.o \
+	mch_dump.o mch_dzpdma.o mch_profile.o mch_start.o \
+	mch_trap.o mch_vars.o mch_xxx.o conf.o ioconf.o boot.o
+
+BASE=	br.o dh.o dhu.o dhv.o dkbad.o dr.o dz.o init_sysent.o kern_clock.o \
+	kern_descrip.o kern_mman.o kern_proc.o kern_sig.o kern_subr.o \
+	kern_prot2.o kern_synch.o lp.o machdep.o ra.o ram.o si.o \
+	subr_rmap.o subr_xxx.o sys_inode.o trap.o tty.o \
+	tty_conf.o tty_subr.o tty_tb.o tty_tty.o ufs_alloc.o ufs_bio.o \
+	ufs_bmap.o ufs_dsort.o ufs_fio.o ufs_inode.o ufs_namei.o \
+	xp.o
+OV1=	sys_generic.o ufs_syscalls.o vfs_vnops.o
+OV2=	kern_acct.o kern_exec.o kern_exit.o kern_fork.o kern_resource.o
+OV3=	clock.o cons.o kern_time.o \
+	machdep2.o quota_sys.o subr_prf.o sys_process.o \
+	syscalls.o ufs_mount.o
+OV4=	hk.o init_main.o kern_prot.o tty_pty.o quota_kern.o quota_subr.o \
+	quota_ufs.o vm_swp.o vm_swap.o vm_proc.o
+OV5=	ht.o tm.o ts.o
+OV6=	tmscp.o tmscpdump.o mem.o
+OV7=	rl.o mch_fpsim.o ingreslock.o ufs_disksubr.o
+OV8=	rx.o kern_sysctl.o vm_sched.o vm_text.o
+OV9=	kern_pdp.o kern_xxx.o ufs_syscalls2.o ufs_subr.o rk.o sys_pipe.o \
+	kern_sig2.o toy.o subr_log.o
+
+KERNOBJ=${CONF} ${BASE} ${OV1} ${OV2} ${OV3} ${OV4} ${OV5} \
+	${OV6} ${OV7} ${OV8} ${OV9} ${OV10} ${OV11} ${OV12} \
+	${OV13} ${OV14} ${OV15} \
+	vers.o param.o
+
+# param.o must be last!
+LD_KOBJ=${CONF} ${BASE} \
+	-Z ${OV1} -Z ${OV2} -Z ${OV3} -Z ${OV4} -Z ${OV5} -Z ${OV6} \
+	-Z ${OV7} -Z ${OV8} -Z ${OV9} -Z ${OV10} -Z ${OV11} -Z ${OV12} \
+	-Z ${OV13} -Z ${OV14} -Z ${OV15} -Y \
+	vers.o -lkern param.o
+
+all: unix
+
+unix: ${SUB} ${KERNOBJ} checksys
+	ld -X -i -o unix ${LD_KOBJ}
+	size unix
+	@echo Compacting symbol table
+	-symcompact unix
+	@echo Compacting strings table
+	-strcompact unix
+	@echo rearranging symbols
+	-symorder ../pdp/symbols.sort unix
+	./checksys unix
+
+vers.o: FRC
+	sh ../conf/newvers.sh
+	${CC} -c vers.c
+
+boot.o: boot.s
+	${CPP} boot.s | ${AS} -o boot.o
+
+param.o:
+	${CC} -S ${CFLAGS} param.c
+	${ED} - param.s < ../conf/:comm-to-bss
+	${AS} -u -o param.o param.s
+	rm -f param.s
+
+ioconf.o: ioconf.c
+	${CC} -c ${CFLAGS} ioconf.c
+
+sys pdp pdpuba pdpmba:
+	make -f Make.$@ I=${I} H=${H} M=${M} AS="${AS}" CPP="${CPP}" \
+	    CFLAGS="${CFLAGS}" SED="${SED}"
+
+checksys: ../conf/checksys.c
+	${CC} ${CFLAGS} -o $@ ../conf/checksys.c
+
+clean:
+	rm -f unix core mklog *.o assym.h genassym checksys
+
+install:
+	install -c -o root -g kmem -m 744 unix ${DESTDIR}/unix
+
+depend: FRC
+	for i in ${SUB}; do \
+		make -f Make.$$i CFLAGS="${CFLAGS}" depend; done
+	mkdep ${CFLAGS} param.c ioconf.c ../conf/checksys.c
+
+TAGSFILE= ${S}/tags
+TLIST=	${H} ${I} ${N1} ${N2} ${N3} ${N4} ${N5} ${N6} ${M} ${S} ${U} ${MB} ${SS}
+
+tags: FRC
+	rm -f ${TAGSFILE}
+	for i in ${TLIST}; do \
+		(cd ${S}; /usr/ucb/ctags -a -t $$i/*.[ch]); done
+	/usr/bin/egrep "^ASENTRY|^ENTRY" ${M}/*.s | \
+	    /bin/sed 's;\([^:]*\):\([^(]*\)(\([^)]*\));\3	\1	/^\2(\3)$$/;' \
+	    >> ${TAGSFILE}
+	/usr/bin/sort -o ${TAGSFILE} ${TAGSFILE}
+
+FRC:
+
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

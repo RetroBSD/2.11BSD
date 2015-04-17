@@ -1,0 +1,132 @@
+
+
+
+DE(4)		    UNIX Programmer's Manual		    DE(4)
+
+
+
+NAME
+     de - DEC DEUNA 10 Mb/s Ethernet interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NDE  _d_e__c_o_n_t_r_o_l_l_e_r_s # DEUNA
+
+DESCRIPTION
+     The _d_e interface provides access to a 10 Mb/s Ethernet net-
+     work through a Digital Equipment UNIBUS Network Adapter
+     (DEUNA).
+
+     Each of the host's network addresses is specified at boot
+     time with an SIOCSIFADDR ioctl.  The _d_e interface employs
+     the address resolution protocol described in _a_r_p(4P) to
+     dynamically map between Internet and Ethernet addresses on
+     the local network.
+
+     The interface normally tries to use a ``trailer'' encapsula-
+     tion to minimize copying data on input and output.  The use
+     of trailers is negotiated with ARP.  This negotiation may be
+     disabled, on a per-interface basis, by setting the
+     IFF_NOTRAILERS flag with an SIOCSIFFLAGS ioctl.
+
+DIAGNOSTICS
+     de%d: hardware address %s.  This is a normal autoconfigura-
+     tion message noting the 6 byte physical ethernet address of
+     the adapter.
+
+     de%d: oerror, flags=%b tdrerr=%b (len=%d).  The hardware
+     indicated an error in transmitting a packet to the cable.
+     The status and error flags are reported.
+
+     de%d: ierror, flags=%b lenerr=%b (len=%d).  The hardware
+     indicated an error in reading a packet from the cable.  The
+     status and error flags are reported.
+
+     de%d: can't handle af%d.  The interface was handed a message
+     with addresses formatted in an unsuitable address family;
+     the packet was dropped.
+
+     de%d: buffer unavailable.	The interface received more pack-
+     ets than it had buffers allocated to receive them.
+
+     de%d: address change failed, csr0=%b csr1=%b.  The interface
+     was unable to reprogram its physical ethernet address.  This
+     may happen with very early models of the interface.  This
+     facility is used only when the controller is not the first
+     network interface configured for XNS.
+
+     The following messages indicate a probable hardware error
+     performing the indicated operation during autoconfiguration
+
+
+
+Printed 11/26/99	 August 20, 1987			1
+
+
+
+
+
+
+DE(4)		    UNIX Programmer's Manual		    DE(4)
+
+
+
+     or initialization.  The two control and status registers
+     should indicate the nature of the failure.  See the hardware
+     manual for details.
+
+     de%d: reset failed, csr0=%b csr1=%b.
+
+     de%d: ppcb failed, csr0=%b csr1=%b.
+
+     de%d: read addr failed, csr0=%b csr1=%b.
+
+     de%d: wtring failed, csr0=%b csr1=%b.
+
+     de%d: wtmode failed, csr0=%b csr1=%b.
+
+SEE ALSO
+     intro(4N), inet(4F), arp(4P)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 20, 1987			2
+
+
+

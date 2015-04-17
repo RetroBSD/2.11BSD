@@ -1,0 +1,287 @@
+'br $Header: afio.1,v 1.20 87/03/18 06:10:34 mdb Exp $
+.TH AFIO 1
+.SH NAME
+afio \- manipulate archives and files
+.SH SYNOPSIS
+.B "afio \-o"
+[
+.I options
+] archive
+.br
+.B "afio \-t"
+[
+.I options
+] archive
+.br
+.B "afio \-i"
+[
+.I options
+] archive
+.br
+.B "afio \-p"
+[
+.I options
+] directory [ ... ]
+.SH DESCRIPTION
+.I Afio
+manipulates groups of files, copying them within the (collective)
+filesystem or between the filesystem and an
+.I afio
+archive. Note that
+.I afio
+archives are portable, as they contain only ASCII-formatted
+header information. They are also compatible with ASCII
+.IR cpio (1)
+archives (ala
+.IR "cpio \-c" ).
+.PP
+With
+.BR \-o ,
+reads pathnames from the standard input
+and writes an
+.IR archive .
+.PP
+With
+.BR \-t ,
+reads an
+.I archive
+and writes a table-of-contents to the standard output.
+.PP
+With
+.BR \-i ,
+installs the contents of an
+.I archive
+relative to the working directory.
+.PP
+With
+.BR \-p ,
+reads pathnames from the standard input
+and copies the files to each
+.IR directory .
+.PP
+Creates missing directories as necessary, with permissions
+to match their parents.
+.PP
+Generates sparse filesystem blocks (with
+.IR lseek (2))
+when possible.
+.PP
+Supports multi-volume archives during interactive operation
+(i.e., when
+.I /dev/tty
+is accessible and
+.I SIGINT
+is not being ignored).
+.PP
+Options:
+.TP 13
+.BI \-b "\ size"
+Read or write
+.IR size -character
+archive blocks.
+Suffices of
+.BR b ,
+.B k
+and
+.B m
+denote multiples of
+.IR 512 ,
+.I 1024
+and
+.IR 1048576 ,
+respectively.
+Defaults to
+.I 5120
+for compatibility with
+.IR cpio (1).
+.TP
+.BI \-c "\ count"
+Buffer
+.I count
+archive blocks between I/O operations. A large
+.I count
+is recommended with streaming magnetic tape drives.
+.TP
+.B \-d
+Don't create missing directories.
+.TP
+.BI \-e "\ bound"
+Pad the archive to a multiple of
+.I bound
+characters.
+Recognizes the same suffices as
+.BR \-s .
+Defaults to
+.I 1x\^
+(the
+.B \-b
+block size)
+for compatibility with
+.IR cpio (1).
+.TP
+.B \-f
+Spawn a child process to actually write to the archive; provides
+a clumsy form of double-buffering.
+Requires
+.B \-s
+for multi-volume archive support.
+.TP
+.B \-g
+Change to input file directories. Avoids quadratic filesystem
+behavior with long similar pathnames. Requires all absolute
+pathnames, including those for the
+.B \-o
+.I archive
+and the
+.B \-p
+.IR directories .
+.TP
+.B \-h
+Follow symbolic links, treating them as ordinary files and directories.
+.TP
+.B \-j
+Don't generate sparse filesystem blocks.
+.TP
+.B \-k
+Skip corrupt data at the
+.I beginning
+of an archive (rather
+than complaining about unrecognizable input).
+.TP
+.B \-l
+With
+.BR \-o ,
+write file contents with each hard link.
+.sp
+With
+.BR \-t ,
+report hard links.
+.sp
+With
+.BR \-p ,
+attempt to link files rather than copying them.
+.TP
+.B \-m
+Mark output files with a common current timestamp
+(rather than with input file modification times).
+.TP
+.B \-n
+Protect newer existing files (comparing file modification times).
+.TP
+.BI \-s "\ limit"
+Restrict each portion of a multi-volume archive to
+.I limit
+characters.
+Recognizes the same suffices as
+.BR \-b .
+Also, the suffix
+.B x
+denotes a multiple of the
+.B \-b
+block size (and must follow any
+.B \-b
+specification).
+Useful with finite-length devices which do not return short
+counts at end of media (sigh); output to magnetic tape typically
+falls into this category.
+.TP
+.B \-u
+Report files with unseen links.
+.TP
+.B \-v
+Verbose. Report pathnames as they are processed. With
+.BR \-t ,
+gives an
+.I "ls \-l"
+style report (including link information).
+.TP
+.B \-x
+Retain file ownership and setuid/setgid permissions.
+This is the default for the super-user; he may use
+.B \-X
+to override it.
+.TP
+.BI \-y "\ prefix"
+Restrict archive processing to names beginning with
+.IR prefix .
+Specify once for each prefix to be recognized.
+Use
+.B \-Y
+to supply prefixes which are
+.I not
+to be processed.
+.TP
+.B \-z
+Print execution statistics. This is meant for human consumption;
+use by other programs is officially discouraged.
+.PP
+Special-case archive names:
+.RS 3
+.TP 3
+.B o
+Specify
+.I \-
+to read or write the standard input or output, respectively.
+This disables multi-volume archive handling.
+.TP
+.B o
+Prefix a command string to be executed with an exclamation mark
+.RI ( ! ).
+The command is executed once for each archive volume,
+with its standard input or output piped to
+.IR afio .
+It is expected to produce a zero exit code when all is well.
+.TP
+.B o
+Use
+.I system:file
+to access an archive in
+.I file
+on
+.IR system .
+This is really just a special case of pipelining.
+It requires a 4.2BSD-style remote shell
+.RI ( rsh (1C))
+and a remote copy of
+.IR afio .
+.TP
+.B o
+Anything else specifies a local file or device.
+An output file will be created if it does not already exist.
+.RE
+.PP
+Recognizes obsolete binary
+.IR cpio (1)
+archives (including those from machines with reversed byte order),
+but cannot write them.
+.PP
+Recovers from archive corruption by searching for a valid magic
+number. This is rather simplistic, but, much like a disassembler,
+almost always works.
+.PP
+Optimizes pathnames with respect to the current and parent
+directories. For example, 
+.I ./src/sh/../misc/afio.c
+becomes
+.IR src/misc/afio.c .
+.SH BUGS
+There are too many options.
+.PP
+Restricts pathnames to 1023 characters and 255 meaningful elements.
+.PP
+There is no sequence information within multi-volume archives.
+Input sequence errors generally masquerade as data corruption.
+A solution would probably be mutually exclusive with
+.IR cpio (1)
+compatibility.
+.PP
+Degenerate uses of symbolic links are mangled by pathname optimization.
+For example, assuming that "usr.src" is a symbolic link to "/usr/src",
+the pathname "usr.src/../bin/cu" is mis-optimized into "bin/cu" (rather
+than "/usr/bin/cu").
+.SH "SEE ALSO"
+cpio(1), find(1), tar(1), tp(1).
+.SH AUTHOR
+Mark Brukhartz
+.br
+.I "..!ihnp4!laidbak!mdb"

@@ -1,0 +1,66 @@
+
+
+
+MMD(1)              UNIX Programmer's Manual               MMD(1)
+
+
+
+NAME
+     mmd - make an MSDOS subdirectory
+
+SYNOPSIS
+     mmd [ -v ] msdosdirectory [ msdosdirectories... ]
+
+DESCRIPTION
+     _M_m_d makes a new directory on an MSDOS filesystem.
+
+     _M_m_d will allow the following command line option:
+
+     v    Verbose mode.  Display the new directory name if the
+          name supplied is invalid.
+
+     Reasonable care is taken to create a valid MSDOS directory
+     name.  If an invalid name is specified, _m_m_d will change the
+     name (and display the new name if the verbose mode is set).
+
+     An error occurs if the directory already exists.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the directory name to be enclosed in quotes to
+     protect it from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1), mrd(1)
+
+BUGS
+     Allows multiple arguments, which does not follow the MSDOS
+     convention.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

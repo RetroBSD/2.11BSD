@@ -1,0 +1,292 @@
+.TH M11 1
+.UC
+.SH NAME
+m11 \- Macro-11 assembler for UNIX
+.SH SYNOPSIS
+.B m11
+[
+option1
+option2
+\&...
+]
+file1
+file2
+\&...
+filen
+.SH DESCRIPTION
+.I M11
+assembles the concatenation of the specified files (\fIfile1\fP, etc.)
+and terminates when an ``.end'' statement is encountered.  The
+resulting object file is usually named  \fIfilen.obj\fP (see
+below).  If a file argument, \fIfilei\fP does
+not contain a ``.'' in its name, the file \fIfilei.m11\fP
+will be sought before \fIfilei\fP itself.
+.sp 2
+Options, if desired, may appear anywhere in the command,
+and are chosen from the following list.
+All options are interpreted before any files are read.
+.sp
+.TP
+.B \-\^ls
+Produce an assembly listing and place in
+.IR filen .lst
+.TP
+.B \-\^lt
+Produce an assembly listing on the standard output.
+.TP
+.B \-\^fl
+If coupled with the
+.I \-ls
+or
+.I \-lt
+directives, makes the listing have a shortened format.
+It is shorthand for
+.IR \-nl:seq:loc:bin:bex:me:meb:ttm:toc:sym .
+.TP
+.B \-\^uc
+Simulate an initial
+.I ".dsabl lc"
+directive.
+Force all characters in macro definitions to be upper case.
+This flag makes lower-case handling in 
+.I m11
+compatable with the DEC Macro-11 assemblers.
+.TP
+.B \-\^um
+Force all characters in macro definitions to be upper case.
+This flag makes lower-case handling in
+this release of
+.I m11
+compatable with previous versions of
+.IR m11 .
+.TP
+.B \-\^de
+Make all option choices needed to make assembly mimic DEC
+Macro-11.  Implies
+.I "(inter alia)"
+the 
+.I \-uc
+flag.
+This includes the Johns Hopkins
+.I asm
+assembler.
+.TP
+.B \-\^ha
+Make all option choices needed to make assembly mimic earlier
+(Harvard) releases of m11.
+This implies the
+.I \-um
+flag.
+Default .psect and .csect attributes are set up in the funny Harvard way.
+.TP
+.B \-\^mx
+Produce a listing of the source program as it appears
+.I after
+macro expansion.
+Macro calls, conditional directives and so on appear in the listing as comments.
+Listing appears on standard output. 
+No machine code is generated or listed.
+This option is meant to correspond to the \-E or \-P
+options of the C compiler
+.I cc(1).
+.TP
+.B \-\^my
+Like
+.IR \-mx ,
+except that macro calls and conditional directives do
+not show up in the listing.
+.TP
+.B \-\^10
+Generate an error whenever op codes not in the 
+PDP-11 ``standard instruction set''
+are encountered.
+Programmers writing for a PDP 11/10 can catch instructions illegal for
+that machine by using this argument.
+.TP
+.B \-\^dp:args
+The default attributes for a
+.I .psect
+or unnamed
+.I .csect
+are redefined, using  the colon-separated list
+.I args
+of valid .psect attributes.
+.TP
+.B \-\^da:args
+The default attributes for an
+.I .asect
+are redefined.
+.TP
+.B \-\^dp:c
+The default attributes for a named
+.I .csect
+are redefined.
+.TP
+.B \-\^li:arglist
+Simulate an initial
+.I ".list arglist"
+directive.
+All
+.I .list
+and
+.I .nlist
+directives in the program text which attempt to change the settings established
+with the
+.I \-li
+flag will be ignored.
+.TP
+.B \-\^nl:arglist
+Like
+.I \-li:arglist,
+but for the
+.I .nlist
+directive.
+.TP
+.B \-\^en:arglist
+Similarly, for the
+.I .enabl
+directive.
+.TP
+.B \-\^ds:arglist
+Similarly, but for the
+.I .dsabl
+directive.
+.TP
+.B \-\^cr:arglist
+Produces a cross-reference listing.
+If the
+.I \-ls
+option is also included, the cross-reference listing will follow the
+assembly listing in
+.IR filen .lst.
+References which are tagged with the symbol # are definitions.
+References tagged with * are destuctive references: the value of the
+symbol or variable in question is changed.
+.I Arglist
+consists of colon-separated keywords from the following set.
+The keywords may be prefix abbreviated:
+.RS
+.TP
+sym
+All user-defined symbols are indexed.
+.TP
+mac
+All macro names are indexed. 
+.TP
+per
+All uses of permanent symbols \- op codes, directives, etc \-
+are indexed.
+.TP
+pse
+All psect names are indexed.
+For compatability with the RT-11 
+.I CREF
+program, the argument
+.I cse
+is synonymous with
+.I pse.
+.TP
+err
+All errors are indexed.
+.TP
+reg
+All register uses are indexed.
+.PP
+If no
+.I arglist
+is specified the default
+.I "sym:mac:err"
+is used.
+In the listing page and line numbers for uses of symbols
+are followed by a # sign if the symbol is defined and by a * sign
+if the symbol is modified.
+.RE
+.TP
+.B \-\^lp
+Same as \-ls, but also spools
+.IR filen .lst
+for printing upon completion.
+.TP
+.B \-\^no
+No object file is produced.  This is useful for
+syntax checking or list producing.
+.TP
+.B \-\^xs:n
+Allots nK words of extra space for
+symbol table and macro storage.
+NOTE:
+This option is currently inoperative:
+.I m11
+automatically allots core for its tables as needed.
+.TP
+.B \-\^xx
+Debug flag: generate all kinds of wierd hack flack.
+.TP
+.B \-\^ns
+No symbol table is included in the object file
+(thus ddt knows of no symbols from this assembly).
+.TP
+.B \-\^sx
+Make the symbol table contain ``local symbols'' as well as
+ordinary symbols.
+.TP
+.B \-\^u
+Treat form feed characters as spaces.  This will make
+.IR m11 's
+idea of line numbers coincide with the UNIX text editors.
+Macro-11 statements containing imbedded form feed characters will
+be parsed differently when the 
+.I \-u
+flag is in effect.
+.TP
+.B \-\^na:file	
+Override the convention of using last name
+as file name.
+Instead, use names
+.I file.obj
+and
+.I file.lst
+for object and listing files.
+.SH NOTES
+This implementation of Macro-11 is a distant hand-me down from
+an old DEC Macro-11 modified at Harvard University in the early
+1970's.
+It is grubby with smudges by Brent Byer, F. J. Howard,
+Bob Bowering, and Jim Reeds.
+It does not implement keyword arguments such as are described in
+section 7.3.6 of the DEC manual.
+The .enabl abs option does not work.
+Listing control is by default .list ttm.
+Unlike earlier editions of m11 at UCB and at Harvard, it does
+treat immediate constants of floating point operations correctly:
+see the last paragraph of section 6.4.2 on the middle of page 6-27 of
+the DEC manual.
+M11 has several directives not described in the DEC manual.
+See the
+.I "New UCB M11 Manual."
+The default attributes for
+.I .psects
+are different from those described in the DEC manual, but may be changed
+by the
+.I \-dp
+flag.
+The 
+.I ".enabl glb"
+feature is implemented:
+undefined symbols are taken as undefined global externals.
+.SH FILES
+.ta 2i
+/usr/share/misc/sysmac.sml	system macro library (for .mcall directive)
+.br
+filen.xrf	intermediate cross-reference temporary file
+.br
+lpr(1)	spooler
+.br
+/usr/ucb/macxrf	cross-reference post-processor
+.SH SEE ALSO
+.I "PDP-11 MACRO-11 Language Reference Manual",
+Digital Equipment Corp. Order No. AA-5075A-TC,
+August 1977.
+.br
+.I "New UCB M11 Manual",
+notional document by Jim Reeds.

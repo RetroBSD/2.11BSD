@@ -1,0 +1,66 @@
+
+
+
+RCSFREEZE(1L)	    UNIX Programmer's Manual	    RCSFREEZE(1L)
+
+
+
+NAME
+     rcsfreeze - freeze a configuration of sources checked in
+     under RCS
+
+SYNOPSIS
+     rcsfreeze [symbolic revision name]
+
+DESCRIPTION
+     The _r_c_s_f_r_e_e_z_e command has the purpose of assigning a sym-
+     bolic revision number to a set of RCS files, which form a
+     valid configuration.
+
+     The idea is to run _r_c_s_f_r_e_e_z_e each time a new version is
+     checked in. A unique symbolic revision number (C__n_u_m_b_e_r,
+     where _n_u_m_b_e_r is increased each time rcsfreeze is run) is
+     then assigned to the most recent revision of each RCS file
+     of the main trunk.
+
+     If the command is invoked with an argument, then this argu-
+     ment is used as the symbolic name to freeze a configuration.
+     The unique identifier is still generated and is listed in
+     the log file but it will not appear as part of the symbolic
+     revision name in the actual RCS files.
+
+     A log message is requested from the user which is saved for
+     future references.
+
+     The shell script works only on all RCS files at one time.
+     It is important that all changed files are checked in (there
+     are no precautions against any error in this respect). Run
+     _r_c_s_c_l_e_a_n(1L) first and see whether any sources remain in the
+     current directory.
+
+FILES
+     [RCS/]rcsfreeze.version  for the version number
+
+     [RCS/]rscfreeze.log      for the log messages, most recent
+			      log message first.
+
+AUTHOR
+     Stephan v. Bechtolsheim
+
+SEE ALSO
+     rcs(1L), rlog(1L), rcsclean(1L)
+
+BUGS
+     The program does not check whether there are any sources
+     checked out and modified.
+
+
+
+
+
+
+
+Printed 11/24/99						1
+
+
+

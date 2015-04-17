@@ -1,0 +1,224 @@
+From swan!bbn.com!nic!bunny!husc6!rutgers!tut.cis.ohio-state.edu!ucbvax!CSL.SRI.COM!risks Thu Jul  5 10:07:45 EDT 1990
+Article 85 of comp.risks:
+Path: swan!bbn.com!nic!bunny!husc6!rutgers!tut.cis.ohio-state.edu!ucbvax!CSL.SRI.COM!risks
+>From: risks@CSL.SRI.COM (RISKS Forum)
+Newsgroups: comp.risks
+Subject: RISKS DIGEST 10.14
+Message-ID: <CMM.0.88.646701765.risks@hercules.csl.sri.com>
+Date: 29 Jun 90 23:22:45 GMT
+Sender: daemon@ucbvax.BERKELEY.EDU
+Reply-To: risks@csl.sri.com
+Organization: The Internet
+Lines: 208
+Approved: risks@csl.sri.com
+
+RISKS-LIST: RISKS-FORUM Digest  Friday 29 June 1990   Volume 10 : Issue 14
+
+        FORUM ON RISKS TO THE PUBLIC IN COMPUTERS AND RELATED SYSTEMS 
+   ACM Committee on Computers and Public Policy, Peter G. Neumann, moderator
+
+Contents:
+  RISKS WILL BE ON VACATION (RISKS Forum)
+  Hubble (Dimitri Mihalas via Mark Bartelt)
+  Re: "Unbreakable Math Code Finally Broken" (Richard A. Schumacher)
+  More on the Risks of searching the Lexis fulltext database (Peter D. Junger)
+  Re: info on carpal tunnel syndrome (Terry Kane)
+
+The RISKS Forum is moderated.  Contributions should be relevant, sound, in good
+taste, objective, coherent, concise, and nonrepetitious.  Diversity is welcome.
+CONTRIBUTIONS to RISKS@CSL.SRI.COM, with relevant, substantive "Subject:" line
+(otherwise they may be ignored).  REQUESTS to RISKS-Request@CSL.SRI.COM.
+TO FTP VOL i ISSUE j:  ftp CRVAX.sri.com<CR>login anonymous<CR>AnyNonNullPW<CR>
+cd sys$user2:[risks]<CR>GET RISKS-i.j <CR>; j is TWO digits.  Vol summaries in 
+risks-i.00 (j=0); "dir risks-*.*<CR>" gives directory listing of back issues.
+ALL CONTRIBUTIONS ARE CONSIDERED AS PERSONAL COMMENTS; USUAL DISCLAIMERS APPLY.
+
+----------------------------------------------------------------------
+
+Date: Fri, 29 Jun 1990 13:34:45 PDT
+>From: RISKS Forum <risks@csl.sri.com>
+Subject: RISKS WILL BE ON VACATION
+
+for the next three weeks.  There might be an issue or two, but don't bet on it.
+Keep sending in the good stuff in any case.  Thanks.  The Management
+
+------------------------------
+
+Date: Fri, 29 Jun 90 13:20:14 EDT
+>From: Mark Bartelt <sysmark@orca.cita.utoronto.ca>
+Subject: Hubble
+
+[This is a message from Dimitri Mihalas (dmihalas@altair.astro.uiuc.edu).
+Mark Bartelt, Canadian Institute of Theoretical Astrophysics]
+
+in case you have not heard: from a reliable inside source i found out that the
+problem with ST is that the SOFTWARE driving the polisher was defective. the
+corrections for spherical aberration were put in with the wrong sign.
+consequently the mirror is not corrected for sph. abb., but has an added dose
+of it.
+ 
+the error was not detected during testing because no test with collimated
+light was ever done. (editorial remark: unthinkable!) apparently this was
+a $30M economy measure in the face of the Challenger accident. likewise
+none of the optics were ever tested in vacuum. the primary was and is
+"perfect" relative to the specified curve; but alas the specification
+was wrong. sigh.
+ 
+from my amateur astronomer days (does that include 1990?) i recall that
+spherical aberration is EASY to detect with the foucault test, which is
+done with a pinhole, not collimated light. it is hard to believe that
+ANYONE could have made such a blunder..
+ 
+the only reason that people know this much is that the same software
+was used for AXAF. the errors there were so huge as to be immediately
+noticeable, and when the software was corrected, the mirror was "perfect".
+i don't know whether the information from axaf was available prior to
+the launch of ST, but it seems that it had to be. in which case one
+wonders why PE didn't issue a "hold everything!".
+ 
+the future: no chance of bringing the whole telescope down for a refit.
+best plan is to design compensating optics into the lightpath for future 
+instruments: relatively easy to do. but that will still take 3-5 years.
+ 
+i suppose it's "win a few, lose a few..." but i personally think that
+nasa, the government, and the people should stick it into PE and TURN
+it hard until they agree to refund the cost of the mistake and of the repairs.
+i'm sick of seeing defense and defense-related contractors get away
+with bloody murder and just get fatter and fatter on the profits.
+ 
+back to theory
+dimitri
+
+------------------------------
+
+Date: 28 Jun 90 18:02:18 GMT
+>From: schumach@convex.UUCP (Richard A. Schumacher)
+Subject: Re: "Unbreakable Math Code Finally Broken"
+References: <CMM.0.88.646532535.risks@hercules.csl.sri.com>
+
+Y. Radai <RADAI1@HBUNOS.BITNET> writes:
+>  So the statements that an impenetrable code has been broken and that
+>organizations need to change their cryptographic systems because of this
+>achievement seem a wee bit exaggerated.
+
+On the other hand, the NPR report mentioned that the Bank of England
+was planning to use a 150 digit number as a key in a new transaction
+processing system, but changed it to something "much larger" when
+they learned of the 9th Fermat prime factoring.
+
+------------------------------
+
+Date: 29 Jun 90 16:25:00 EST
+>From: junger@cwru.cwru.edu
+Subject: More on the Risks of searching the Lexis fulltext database
+
+        A while back I sent to RISKS an (itself rather buggy) description of a
+bug that turned up in the Lexis/Nexis database when I was doing date delimited
+searches in the library containing the fulltext opinions of the United States
+Supreme Court.  A representative of Mead Data Central--the owner of the
+Nexis/Lexis service--has since contacted me to explain the nature of the bug
+and to assure me that it will be corrected on June 30.
+
+        In the first place, it appears that the bug is _not_ in the
+basic software that searches through the database for cases decided on,
+after, or before a specified date.  Secondly, it is clear that the bug
+did _not_ cause me to miss any cases that I should have located, it just
+turned up some additonal cases that were not decided within the period
+that I was searching.  That is the good news.
+
+        The bad news is that the problem relates to the way that the
+Lexis/Nexis system parses dates in the database and that the proposed
+fix will work only until the year 2000, at which time a new variant of
+the bug should cause real havoc.
+
+        Here is a corrected version of the type of search that exposed
+the bug:
+
+        Entitlement and date(aft 12/31/39 and bef 1/1/50)
+
+That search, when conducted in the Supreme Court file, should find all
+opinions, and only those opinions, decided by the United States Supreme
+Court during the decade of the 1940's that contained the word
+`entitlement'.  (Lexis warned me that it assumed that I meant after
+12/31/1939 and before 1/1/1950.)  As it happens, there are no cases that meet
+those criteria.  But Lexis reported that it had found a dozen or so
+cases--cases that did contain the word `entitlement' but that were
+decided in the 1960's, 70's, and 80's.
+
+        It seems that a couple of months ago Mead Data Central decided
+to include the argued-date as well as the decided-date within the date
+field, and it is this enhancement that caused the bug.  The fix that
+will be implimented this Saturday is to once again exclude the
+argued-date from the date field.
+
+        Since cases are not always decided in the same year that they
+are argued, including the argued-date in the date field will, of course,
+cause some cases to be reported as occurring in two different decades,
+which would be a nuisance.  But that is only a miniscule part of the
+bug.  The real problem occurs because some cases are argued on more than
+one date, so that the argued-date field would appear in the database as,
+say:  "argued June 22-23, 1980" and the decided date field as: "July 3,
+1980)."  At first glance that would not seem to cause any problem.  And
+it wouldn't, except for the fact that the Lexis system parses the date
+fields in the same way that it parses user input, and thus concludes
+that "June 22-23" means "June 22-1923".  Thus our hypothetical case
+would have a date of July 3, 1980 (which is after December 31, 1939) and
+would also have a date of June 22, 1923 (which is before January 1,
+1950).  If that case--decided, you will recall, in 1980--contains the
+word `entitlement' it will turn up in my search for cases in the decade
+of the 1940's, and in my searches in the 1950's, and in the 1960's, etc.
+
+        I can understand why the system parses user input so as to
+interpret 1/1/50 as 1/1/1950--but I never dreamed that a system would
+parse its own data.  According to the people at Mead Data Central,
+however, their system parses the data fields in exactly the same way
+that it parses user input.  It seems that the Lexis/Nexis database
+contains texts--especially news reports--with dates in the form
+"nn/nn/nn". Today those dates are parsed as "nn/nn/19nn", but what is
+going to happen in the year 2000?
+
+        It would seem that ambiguous data in the data base will be much
+harder to find and fix than a software bug.
+
+Peter D. Junger, CWRU Law School
+
+------------------------------
+
+Date: 29 Jun 90 19:36:47 GMT
+>From: tok@stiatl.UUCP (Terry Kane)
+Subject: Re: info on carpal tunnel syndrome (CTS)
+
+I am a long time sufferer of CTS.  The first symptoms I recall were during
+high school, nearly twenty years ago, but it was not properly diagnosed
+until I was in excruciating pain, dropping things, not sleeping because
+my hand was burning at night and more, all about four years ago.
+
+Tests said that I had "a very mild case"!?  That reassuring info did not
+make my hand better.  I used splints, Motrin, ice until I finally insisted
+on the carpal tunnel relief operation.  That was two years ago, this month,
+but I still have recurrences - especially when I meet the same RISK which
+pushed my CTS over the edge: using a MOUSE.
+
+The typical mouse promotes all the bad habits that can result in CTS symptoms.
+One typically rests the heel of the palm on the mouse, and press the chord
+keys - frequently with constant pressure (on Apple's mice, the required
+pressure is substantial for me, and their new mouse reqlly aggravates the
+problem with its stylized, aerodynamic "look").  I cannot use a mouse to this
+day without suffering a "mouse hangover".
+
+Track balls are better for me, but I still would rather avoid them.
+
+I am really looking forward to _getting_my_hands_on_ ;-) a touch screen.
+I've seen some very nice ones with quite satisfactory resolution!
+
+And please - If you think that you might have CTS - don't waste time.
+			See Your M.D.
+
+Terry Kane, Sales Technologies, Inc, Atlanta, GA  (404) 841-4000
+
+------------------------------
+
+End of RISKS-FORUM Digest 10.14
+************************
+
+

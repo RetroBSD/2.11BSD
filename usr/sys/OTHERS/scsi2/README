@@ -1,0 +1,21 @@
+xe.c	a working driver for the DTC-11 Q-bus/SCSI interface card that
+	drives a Xebec 1410 card.  It supports different drive sizes on
+	a single Xebec card and (partially) partial-block transfers.
+	See the code for details on how to set up the parameters for
+	your drive.
+
+xereg.h	this is /usr/include/sys/xereg.h.  Register definitions for the
+	xe driver
+
+xeuboot.s	a boot block for use with the DTC-11 -- Xebec S1410 pair.
+	It too is device dependent and needs to be modified to suit your
+	drive
+
+xestand.c	a standalone version of the driver.  It, as well, is
+	device dependent and must be edited to fit your drives.
+
+		Keith Packard
+		5440 SE 41st
+		Portland, OR 97202
+		...!tektronix!azure!keithp
+		...!tektronix!reed!motel6!keith

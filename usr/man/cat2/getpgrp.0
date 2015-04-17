@@ -1,0 +1,66 @@
+
+
+
+GETPGRP(2)	    UNIX Programmer's Manual	       GETPGRP(2)
+
+
+
+NAME
+     getpgrp - get process group
+
+SYNOPSIS
+     pgrp = getpgrp(pid)
+     int pgrp;
+     int pid;
+
+DESCRIPTION
+     The process group of the specified process is returned by
+     _g_e_t_p_g_r_p. If _p_i_d is zero, then the call applies to the
+     current process.
+
+     Process groups are used for distribution of signals, and by
+     terminals to arbitrate requests for their input: processes
+     that have the same process group as the terminal are fore-
+     ground and may read, while others will block with a signal
+     if they attempt to read.
+
+     This call is thus used by programs such as _c_s_h(1) to create
+     process groups in implementing job control.  The TIOCGPGRP
+     and TIOCSPGRP calls described in _t_t_y(4) are used to get/set
+     the process group of the control terminal.
+
+SEE ALSO
+     setpgrp(2), getuid(2), tty(4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 26, 1985			1
+
+
+

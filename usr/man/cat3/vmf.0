@@ -1,0 +1,264 @@
+
+
+
+VMF(3)              UNIX Programmer's Manual               VMF(3)
+
+
+
+NAME
+     vminit, vmopen, vmclose, vmmapseg, vmmodify, vmlock, vmun-
+     lock, vmclrseg, vmflush, - disk based virtual memory rou-
+     tines
+
+SYNOPSIS
+     #include <vmf.h>
+
+     struct vspace {
+          int     v_fd;           /* file for swapping */
+          off_t   v_foffset;      /* offset for computing file addresses */
+          int     v_maxsegno;     /* number of segments in this space */
+          };
+
+     struct    vseg {                    /* structure of a segment in memory */
+          struct    dlink     s_link;        /* for linking into lru list */
+          int  s_segno;            /* segment number */
+          struct    vspace    *s_vspace;      /* which virtual space */
+          int  s_lock_count;
+          int     s_flags;
+          union
+               {
+               int  _winfo[WORDSPERSEG];     /* the actual segment */
+               char _cinfo[BYTESPERSEG];
+               } v_un;
+          };
+     #define   s_winfo   v_un._winfo
+     #define   s_cinfo   v_un._cinfo
+
+     int  vminit(nseg);
+          int nseg;
+
+     int  vmopen(space, filename);
+          struct vspace *space;
+          char *filename;
+
+     struct    vseg *vmmapseg(space, segno);
+          struct    vspace    *space;
+          int  segno;
+
+     void vmlock(seg);
+          struct    vseg *seg;
+
+     void vmunlock(seg);
+          struct    vseg *seg;
+
+     void vmclrseg(seg);
+          struct    vseg *seg;
+
+     void vmmodify(seg);
+
+
+
+
+
+Printed 11/24/99       September 24, 1993                       1
+
+
+
+
+
+
+VMF(3)              UNIX Programmer's Manual               VMF(3)
+
+
+
+     void vmflush();
+
+     void vmclose(space);
+          struct    vspace *space;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99       September 24, 1993                       2
+
+
+
+
+
+
+VMF(3)              UNIX Programmer's Manual               VMF(3)
+
+
+
+DESCRIPTION
+     This library provides a standard set of routines for manag-
+     ing large virtual memory spaces.  It supports creation of
+     multiple concurrent virtual spaces, mapping of virtual pages
+     into real memory, a lock/unlock mechanism, and a capability
+     to clear specified virtual pages.
+
+     _v_m_i_n_i_t - This routine initializes the virtual memory system
+     by setting up the pool of in-memory segment buffers.  The
+     argument to this function is the number of memory segments
+     to allocate (typically 4 to 8 but can be higher as long as
+     memory can be malloc'd).  It must be called before any other
+     "libvmf" routine is called.
+
+     _v_m_o_p_e_n - For each virtual space that a program uses, the
+     program must allocate an instance of the space structure
+     ('struct vspace'). This routine is used to initialize a vir-
+     tual space structure using the specified address of a space
+     structure and the name of the file that will serve as swap
+     file for the space.  If the second argument is NULL an
+     invisible temporary file is used rather than a named (per-
+     manent) file.
+
+     _v_m_c_l_o_s_e - This routine is used to close the UNIX file
+     descriptor associated with the swap file for a virtual
+     space.  Any modified in-memory segments belonging to the
+     specified address space are flushed to the paging file.
+
+     _v_m_m_a_p_s_e_g - This routine is the primary interface to the vir-
+     tual memory mechanism.  It is executed with a specified vir-
+     tual space address and a segment number (between 0 and 511),
+     and returns a pointer to an in-memory page containing the
+     specified segment.
+
+     _v_m_m_o_d_i_f_y - Whenever a program modifies the data of a seg-
+     ment, it is the program's responsibility to inform the vir-
+     tual memory system of the modification.  This function is
+     also available as a macro (VMMODIFY) for use in-line.
+
+     _v_m_l_o_c_k - This routine increments the lock count of the
+     specified segment buffer.  A buffer with a nonzero lock
+     count is _l_o_c_k_e_d and cannot be swapped out.
+
+     _v_m_u_n_l_o_c_k - This routine decrements the lock count of the
+     specified buffer.  It is a serious error to decrement the
+     count below zero (lock underflow).
+
+     _v_m_c_l_r_s_e_g - This routine clears the user data area (page) of
+     the specified segment buffer.  _v_m_f_l_u_s_h - This routine simply
+     swaps out all segments that are marked as modified.
+
+
+
+
+
+Printed 11/24/99       September 24, 1993                       3
+
+
+
+
+
+
+VMF(3)              UNIX Programmer's Manual               VMF(3)
+
+
+
+BUGS
+     Not as transparent (or as fast) as a larger hardware address
+     space.
+
+     There is no automatic segment crossing capability, the
+     application must check if a _v_i_r_t_u_a_l _a_d_d_r_e_s_s crosses
+     page/segment boundaries and perform a _v_m_m_a_p_s_e_g call.
+
+SEE ALSO
+     There is a nroff document (using the -ms macros) in the
+     _l_i_b_v_m_f source directory which goes into more details about
+     the vm functions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99       September 24, 1993                       4
+
+
+

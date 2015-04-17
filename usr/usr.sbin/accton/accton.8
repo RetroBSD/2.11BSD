@@ -1,0 +1,65 @@
+.\"
+.\"	@(#) 2.11BSD accton.8 1.0 1999/2/19
+.\"
+.TH ACCTON 8 "February 19, 1999"
+.UC 4
+.SH NAME
+accton \- enable/disable system accounting
+.SH SYNOPSIS
+.B accton
+[\fB\-f file\fP]
+[\fB\-r resum\fP]
+[\fB\-s suspend\fP]
+[\fB\-t freq\fP]
+[\fBfilename\fP]
+.SH DESCRIPTION
+With no argument,
+.B accton
+will disable system accounting.  If the \fB\-f\fP option is
+given or the last argument is an existing pathname
+accounting is enabled and for every process which terminates
+under normal conditions an accounting record is sent to the accounting 
+daemon.
+.PP
+.B accton
+is a frontend to  the accounting daemon:
+.BR acctd (8).
+Accounting is turned off by sending a SIGTERM to the running accounting daemon.
+Changes in configuration (free space thresholds, etc) are made by writing
+/etc/acctd.cf and issuing a SIGHUP to the accounting daemon.  If the daemon
+is not running it is started.
+.PP
+The options are:
+.TP 10
+\-f file
+Specifies the name of an existing file to which accounting records
+are to be appended.  If this option and a trailing filename (the
+historical form of use) is given then the last filename given is  used.
+.TP 10
+\-r resum
+Percentage of diskspace that must be free in order for accounting to
+be resumed.  The default is 4%.
+.TP 10
+\-s susp
+If the percentage of free diskspace falls below \fBsusp\fP accounting
+is suspended.  The default is 2%.
+.TP 10
+\-t freq
+How often (in seconds) to check the free diskpace.  Default is 30.
+.SH FILES
+.TP 20
+/usr/libexec/acctd
+The accounting daemon that reads /dev/acct
+.TP 20
+/etc/acctd.cf
+The configuration file.  Must be owned by root and writeable only by root.
+This file, while simple text, is not meant for human editing since the
+parse is simpleminded and the daemon is paranoid.
+.SH SEE ALSO
+acct(5),
+acctd(8),
+sa(8)
+.SH HISTORY
+A
+.B accton
+command appeared in Version 7 AT&T UNIX.

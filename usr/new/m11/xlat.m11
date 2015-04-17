@@ -1,0 +1,1059 @@
+	.title	xlat
+
+	.ident	/09may4/
+
+	.mcall	(at)always,ch.mne,st.flg,ct.mne
+	always
+	ch.mne
+	st.flg
+	ct.mne
+
+	.mcall	(at)xmit
+	.mcall	(at)genswt,error,genedt
+	.mcall	(at)search,scan,scanw,zap
+	.mcall	(at)bisbic
+	.mcall	(at)sdebug,ndebug
+
+	.globl	secini,	stmnt
+	.globl	edmask,	seted,	setmax,	propc
+
+	.globl	cndwrd,	lsybas,	lsbset,	lc.cnd,	opclas
+	.globl	exmflg,	err.u
+
+	.globl	codrol,	secrol,	psarol,	edtrol
+	.globl	symrol,	pstrol
+
+	.globl	dflcnd,	dflgev,	dflgbm,	dflgdg
+	.globl	wrdsym
+
+	.globl	crfdef,	crfref
+
+	.globl	clcfgs,	clcloc,	clcmax
+	.globl	clcnam,	clcsec,	cpopj,	cradix,	cvtnum
+	.globl	edmask,	endvec,	errbts,	expflg
+	.globl	flags,	getchr,	getnb,	getsym,	insert
+	.globl	lsrch,	mode,	psdflt
+	.globl	r50dot
+	.globl	sector,	setnb,	setpf0,	setpf1
+	.globl	setsec,	setsym,	setxpr,	stcode
+	.globl	symbol,	symbeg,	tstarg,	value
+
+	.globl	abstrm,	abstst
+	.globl	expr,	exprg,	relexp
+	.globl	reltst,	setdsp,	setimm
+	.globl	tstr50,	mulr50
+	.globl	mactst
+	.globl	setcli
+
+	.globl	absexp,	chrpnt
+	.globl	savreg,	xmit0
+	.globl	gsarg,	gsargf,	argcnt
+
+	.globl	aexp,	asgmtf,	cndmex,	cttbl
+	.globl	endflg
+	.globl	lblend,	lcflag
+	.sbttl	statement processor
+
+	xitsec			;start in default sector
+
+stmnt:
+	mov	cndwrd,r0	;in conditional?
+	bis	cndmex,r0	;  or mexit?
+	bne	40$		;  yes, branch if suppressed
+	call	getsym
+	beq	20$
+	cmp	r5,#ch.col	; ":"
+	beq	label
+	cmp	r5,#ch.equ	; "="
+	bne	1$		;  no
+	jmp	asgmt		;yes, process it
+
+1$:	.if ndf	xmacro
+	call	mactst		;test for a macro
+	 bne	42$		;  yes, already processed
+	.endc
+
+	search	pstrol
+	beq	30$
+	call	crfref
+10$:	jmp	propc		;process op code
+20$:
+	.if ndf	xedlsb
+	mov	#10.,r2		;not symbol, perhaps local symbol?
+	mov	chrpnt,symbeg	;in case of re-scan
+	call	cvtnum
+	beq	30$		;  no
+	cmp	r5,#ch.dol	;number, terminated by "$"?
+	bne	30$		;  no
+	call	getnb
+	cmp	r5,#ch.col
+	bne	30$
+	.if ndf	rsx11d
+	mov	clcloc,r0
+	sub	lsybas,r0	;compute local offset
+	bit	#177400,r0	;in range
+	beq	21$		;  yes
+	error	70,a,<local offset out of range>	;no, error
+	.endc
+21$:	call	lsrch		;yes, do a local symbol search
+	br	labelf		;exit through label processor
+	.endc
+
+30$:	call	setsym		;reset char pointer and flags
+	tstb	cttbl(r5)
+	ble	42$		;null if end of line
+	mov	#wrdsym,r1	;neither, fudge ".word" directive
+	mov	#symbol,r2
+	xmit	4
+	br	10$
+
+40$:	call	setcli		;unsat conditional, test directive
+	bmi	41$		;  branch if eof
+	bit	#dflcnd,r0	;conditional?
+	bne	10$		;  yes, process it
+	bis	#lc.cnd,lcflag	;mark as unsat conditional
+41$:	clr	r5
+42$:	return			;ignore line
+setcli:
+1$:	call	getsym		;try for symbol
+	.if ndf	xedlsb
+	bne	3$		;branch if found
+	bitb	#ct.num,cttbl(r5)	;perhaps a local?
+	beq	5$		;  no
+2$:	call	getchr		;perhaps, test next
+	bitb	#ct.alp!ct.num,cttbl(r5)	;alpha/numeric?
+	bne	2$		;  yes, try again
+	call	setnb		;no, bypass any blanks
+	.iff
+	beq	5$		;  exit if no symbol
+	.endc
+3$:	cmp	r5,#ch.equ	;assignment (=)?
+	beq	5$		;  yes, ignore this line
+	cmp	r5,#ch.col	;label (:)?
+	bne	4$		;  no
+	call	getnb		;yes, bypass colon
+	br	1$		;  and continue
+
+4$:	search	pstrol		;try for op-code
+	mov	mode,r0		;mode to r0
+	bpl	6$		;branch if directive
+5$:	clr	r0		;false
+6$:	return
+
+label:				;label processor
+	.enabl	lsb
+	cmp	symbol,r50dot	;period?
+	beq	4$		;  yes, error
+	.if ndf	xedlsb
+	call	lsbset		;flag start of new local symbol block
+	.endc
+	search	symrol		;no, search the symbol table
+	call	crfdef
+labelf:	call	setxpr		;set expression registers
+	bit	#dfgflg,(r3)	; <<< REEDS has it been marked 'x'
+	beq	33$		; <<< no, thats OK
+	bic	#dfgflg!glbflg,(r3); <<<yes: it was 'x' mode
+				; <<< clear 'gx': we are really defining it now
+33$:	clr	dfgtmp		; <<< seems like a good idea.
+	call	getnb		;bypass colon
+	.if 	ne,mk.symbol
+	cmp	r5,#ch.col
+	bne	10$
+	mov	#glbflg,dfgtmp
+	call	getnb
+10$:	cmp	r5,#ch.mul
+	bne	32$
+	bis	#200,dfgtmp
+	call	getnb
+32$:	.endc
+	bit	#defflg,(r3)	;already defined?
+	bne	1$		;  yes
+	mov	clcfgs,r0	;no, get current location characteristics
+	bic	#377-<relflg>,r0	;clear all but relocation flag
+	bis	#defflg!lblflg,r0	;flag as label
+	.if	ne,mk.symbol
+	bis	dfgtmp,r0
+	.endc
+	bis	r0,(r3)		;set mode
+	mov	clcloc,(r4)	;  and current location
+	br	3$		;insert
+
+1$:	bit	#lblflg,(r3)	;defined, as label?
+	beq	2$		;  no, invalid
+	cmp	clcloc,(r4)	;has anybody moved?
+	bne	2$		;  yes
+	cmpb	clcsec,(r2)	;same sector?
+	beq	3$		;  yes, ok
+2$:	error 32,p,<phase error in label definition>;no, flag error
+	bis	#mdfflg,(r3)	;flag as multiply defined
+3$:	call	insert		;insert/update
+	call	setpf0		;be sure to print location field
+	br	5$
+
+4$:	error	33,q,<illegal label>
+5$:	mov	chrpnt,lblend	;mark end of label
+	.if	ne,mk.symbol
+	clr	dfgtmp
+	entsec	impure
+dfgtmp:	.blkw
+	xitsec
+	.endc
+	jmp	stmnt		;try for more
+	.dsabl	lsb
+
+	.sbttl	assignment processor
+
+asgmt:
+	call	getnb		;bypass "="
+	.if	ne,mk.symbol
+	cmp	r5,#ch.equ
+	bne	10$
+	mov	#glbflg,dfgtmp
+	call	getnb
+10$:	cmp	r5,#ch.mul
+	bne	32$
+	bis	#200,dfgtmp
+	call	getnb
+32$:	.iftf
+	mov	#symbol+4,r1	;set mix-master register
+	mov	-(r1),-(sp)	;stack symbol
+	mov	-(r1),-(sp)
+	call	relexp		;get non-external expression
+	mov	(sp)+,(r1)+	;restore symbol
+	mov	(sp)+,(r1)+
+	bit	#err.u,errbts	;any undefined's?
+	bne	asgmtx		;  yes, don't define
+asgmtf:	call	setpf1		;set listing field
+	call	setxpr		;set expression registers
+	bit	#err.a,errbts
+	bne	asgmtx
+	bis	#defflg,(r3)	;flag as defined
+	mov	(r3),-(sp)	;no, stack value
+	mov	(r4),-(sp)
+	search	symrol		;search symbol table
+	mov	(sp)+,(r4)	;restore value
+	bic	#^c<glbflg>,(r3)
+	bis	(sp)+,(r3)
+	cmp	(r1),r50dot	;messing with the pc?
+	beq	1$		;  yes
+	.ift
+	bis	dfgtmp,(r3)	;i hope
+	.iftf
+	call	insert		;insert new value
+	br	asgmtx
+
+1$:	cmpb	(r2),clcsec	;same sector?
+	bne	2$		;  no, error
+	mov	(r4),clcloc	;yes, set new location
+	br	asgmtx
+
+2$:	error	34,m,<label multiply defined>
+asgmtx:	call	crfdef
+	.ift
+	clr	dfgtmp
+	.endc
+	return
+
+	.sbttl	op code processor
+	error	35,z,<op code not in standard set>
+propc:				;process op code
+	mov	#mode,r4	;point to mode
+	mov	(r4),r1		;leave result in r1
+	mov	r1,opclas	;flag op class
+	clr	(r4)+		;set to zero, point to value
+	mov	#clcloc,r2	;point r2 to location counter
+	bit	#100000+dflgev,r1	;op code or even directive?
+	beq	1$		;  no
+	bit	#1,(r2)		;yes, currently even?
+	beq	1$		;  yes
+	inc	(r2)		;no, make it even
+	error	36,b,<odd addressing error> ;  and flag error
+1$:	tst	r1		;op-code?
+	bmi	10$		;  yes
+	mov	(r4),-(sp)	;no, directive.
+	clr	(r4)		;clear value
+	clr	r3		;start with r3=0
+	call	@(sp)+		;call the handler
+	bit	#dflgdg,opclas	;data generating directive?
+	jeq	prop23		;  no
+	tstb	<^pl rolsiz>+codrol+1	;yes, any generated?
+	jne	prop23		;  yes, all set
+	clr	mode		;no, store a zero byte/word
+	clr	value
+	jmp	stcode
+
+10$:	call	stcode		;stuff basic value
+	.globl	pdp10,fltg1w	; defined in exec.m11 and in fltg.m11
+	bit	pdp10,r1	; <<< REEDS june 81
+	beq	100$		; <<<
+	error	35,z,<op code not in standard set> ; <<<
+100$:				; <<<
+	swab	r1
+	bic	#177600,r1	;clear high order bits
+	asl	r1
+	asl	r1		;four bytes per table entry
+	clr	-(sp)		;set a stopper
+	mov	opjtbl+2(r1),-(sp)	;stack second arg
+	mov	opjtbl(r1),r1	;set the first argument
+12$:	mov	r1,-(sp)	;save a copy of the arg
+	call	tstarg		;comma test
+	clr	r0		;function register
+	bic	#000001,r1	;clear shift bit
+	call	(r1)		;call proper routine
+	aslb	opclas		;move cref destruction into place
+	asrb	opclas		;restore rest of flags
+	ror	(sp)+		;shift required?
+	bcc	13$		;  no
+	swab	r0		;yes, shift left siz
+	asr	r0
+	asr	r0
+13$:	mov	<^pl rolbas>+codrol,r1
+	bis	r0,6(r1)	;set expression bits
+	mov	(sp)+,r1	;get next arg from stack
+	bne	12$		;branch if not terminator
+
+	.if ndf	xzerr
+	mov	<^pl rolbas>+codrol,r1
+	mov	6(r1),r0	;set for "z" error tests
+	mov	r0,r1
+	bic	#000007,r1
+	cmp	#000120,r1	;  jmp (r)+
+	beq	22$
+	bic	#000700,r1
+	cmp	#004020,r1	;  jsr  x,(r1)+
+	beq	22$
+	mov	r0,r1
+	bit	#007000,r1	;first arg type 0?
+	jne	prop23		;  no, ok
+	bic	#100777,r1
+	jeq	prop23
+	cmp	#070000,r1	;double address type?
+	jeq	prop23		;  no
+	mov	r0,r1
+	bic	#170017,r1
+	cmp	#000760,r1	;  mov pc,[@]x(r)
+	beq	22$
+	bic	#177717,r1
+	cmp	#000020,r1	;  (r)+
+	beq	21$
+	cmp	#000040,r1	;  -(r)
+	jne	prop23
+21$:	mov	r0,r1
+	rol	r1
+	rol	r1
+	swab	r1
+	sub	r0,r1
+	bit	#000007,r1	;  r1=r2
+	jne	prop23
+22$:	error	37,z,<unpredictable instruction>
+prop23:
+	.endc
+
+	return
+	.macro	genopj	number,subr1,subr2	;op code jump table
+	.globl	opcl'number
+opcl'number=	<.-opjtbl>/4
+	.iif nb <subr1>,	.word	subr1
+	.iif  b <subr1>,	.word	cpopj
+	.iif nb <subr2>,	.word	subr2
+	.iif  b <subr2>,	.word	cpopj
+	.endm
+
+	.data
+opjtbl:				;op code jump table
+	genopj	00
+	genopj	01,	aexp
+	genopj	02,	aexp+1,		aexp
+	genopj	03,	regexp
+	genopj	04,	brop
+	genopj	05,	regexp+1,	aexp
+	genopj	06,	trapop
+
+	.if ndf	x45!x40
+	genopj	07,	aexp,		regexp+1
+	genopj	08,	regexp+1,	sobop
+	genopj	09,	aexp,		regexp+1
+	.endc
+	.if ndf x45
+	genopj	10,	markop
+	genopj	11,	aexp,		drgexp+1
+	genopj	12,	drgexp+1,	aexp
+	genopj	13,	splop
+	genopj	14,	aexp,		drgexp+1
+	.endc
+
+
+	entsec	implin
+opclas:	.blkw			;op code class
+	xitsec
+regexp:				;register expression
+	call	absexp		;evaluate absolute
+	bit	#177770,r0	;any overflow?
+	beq	reg1		;  no
+	error	38,r,<no such register number>	;yes, flag error
+	bic	#177770,r0	;clear overflow
+reg1:	return
+
+brop:				;branch displacement type
+	call	relexp
+	cmpb	sector,clcsec
+	bne	5$
+	sub	clcloc,r0
+	asr	r0
+	bcs	2$
+	dec	r0
+	movb	r0,r3		;extend sign
+	cmp	r0,r3		;proper?
+	beq	3$		;  yes
+2$:	error	81,a,<too far to branch>
+4$:	mov	#000377,r0
+3$:	bic	#177400,r0	;clear possible high bits
+	return
+5$:	error	80,a,<branch out of current psect>
+	br 4$
+
+trapop:				;trap type
+	call	setxpr		;set expression registers
+	mov	(r4),-(sp)	;save the value
+	call	exprg		;call external expression
+	bit	#relflg!glbflg,(r3)	;absolute?
+	bne	1$		;  no
+	mov	(r4),r0		;value to merge
+	bit	#^c377,r0	;any high order bits?
+	bne	1$		;  yes, fall through
+	tst	(sp)+		;no, prune
+	return
+
+1$:	zap	codrol		;clear code roll
+	bis	#dflgbm,opclas	;flag as byte mode
+	call	setimm		;set immediate mode
+	call	stcode		;store address
+	mov	#100000,(r3)	;set for absolute byte
+	swab	(sp)
+	mov	(sp)+,(r4)	;set origional value
+	call	stcode
+	clr	r0
+	return
+	.if ndf	x45
+
+drgexp:				;double register expression
+	call	regexp		;evaluate normal
+	mov	#177774,r3	;test for overflow
+	br	maskr3
+
+splop:				;spl type
+	call	absexp
+	mov	#177770,r3	;only three bits allowed
+	br	maskr3
+
+	.endc
+	.if ndf x45!x40
+
+sobop:				;sob operator
+	call	brop		;free-load off branch operator
+	movb	r0,r0		;extend sign
+	neg	r0		;positive for backwards
+	br	maskb6		;mask to six bits
+
+markop:				;mark operator
+	call	absexp		;evaluate absolute
+maskb6:	mov	#177700,r3	;set to mask high order
+maskr3:	bit	r3,r0		;overflow?
+	beq	mark1		;  no
+	error	39,t,<low order byte only>	;yes, flag truncation error
+	bic	r3,r0		;clear excess
+mark1:	return
+
+	.endc
+;	address mode flags
+
+am.def	=	10		;deferred mode
+am.inc	=	20		;auto-increment mode
+am.dec	=	40		;auto-decrement mode
+am.ndx	=	60		;index mode
+am.pc	=	07		;pc mode addressing
+am.imm	=	am.inc+am.pc	;immediate mode
+am.rel	=	am.ndx+am.pc	;relative mode
+
+aexp:	call	savreg		;address expression evaluation
+	call	setxpr		;  and set "expression" type
+	inc	expflg
+	clr	-(sp)		;accumulate on top of stack
+2$:	mov	chrpnt,symbeg	;save in event of rescan
+	cmp	r5,#ch.ind	;indirect?
+	bne	6$		;  no
+	call	getnb		;yes, bypass it
+	tst	(sp)		;"@", second time around?
+	beq	4$		;  no
+	error	40,q,<questionable expression syntax>
+4$:	bis	#am.def,(sp)	;set it
+	br	2$
+
+6$:	cmp	r5,#ch.hsh	;literal (#)
+	bne	10$		;  no
+	call	getnb
+	.globl	veritas
+	mov	opclas,-(sp)	; <<< REEDS june 81: fixed harvard fp bug
+	swab	(sp)		; <<< addf #10.3,r0 means: add 10.3 to fr0
+	bic	#^c77,(sp)	; <<<
+	cmp	#11.,(sp)+ 	; <<< is this an FP instrction? 
+	bne	7$		; <<<
+	tst	veritas		; see if user WANTS harvard fp bug
+	bne	7$		; Yes: treat it as octal
+	call	fltg1w		; <<< No, treat it as FP
+	bne	9$		; <<< 
+7$:				; <<<
+	call	aexpxp		;evaluate expression
+9$:	bis	#am.imm,(sp)	;set bits
+	br	aexp32		;use common exit
+
+10$:	cmp	r5,#ch.sub	;auto-decrement (-)
+	bne	12$
+	call	getnb
+	cmp	r5,#ch.lp	;followed by "("?
+	bne	aexp20		;  not a chance
+	call	aexplp		;process parens
+	bis	#am.dec,(sp)
+	br	aexp36
+
+12$:	cmp	r5,#ch.lp	; "("
+	bne	aexp22
+	call	aexplp		;evaluate register
+	cmp	r5,#ch.add	;auto-increment (+)?
+	bne	14$		;  no
+	call	getnb		;yes, polish it off
+	bis	#am.inc,(sp)	;set bits
+	br	aexp36
+
+14$:	bit	#am.def,(sp)	;indirect seen?
+	bne	16$		;  yes
+	bis	#am.def,(sp)	;no, set bit
+	br	aexp36
+
+16$:	clr	(r3)		;mode
+	clr	(r4)		;  and value
+	br	aexp30
+aexp20:	call	setsym		;auto-dec failure, point to -
+aexp22:	call	aexpxp		;get an expression
+	cmp	r5,#ch.lp	;indexed?
+	beq	24$		;  yes
+	bit	#regflg,(r3)	;flags
+	bne	aexp36
+	.if ndf	xedpic!xedama
+	tst	(sp)
+	bne	23$
+	.if ndf	xedpic
+	bit	#ed.pic,edmask
+	bne	1$
+	bit	#glbflg,(r3)
+	bne	2$
+	cmpb	(r2),clcsec
+	beq	23$
+	br	2$
+1$:
+	.endc
+	.if ndf	xedama
+	bit	#ed.ama,edmask	;absolute mode requested?
+	bne	23$		;  no
+	.endc
+2$:	bis	#am.imm!am.def,(sp)	;ok, set abs mode
+	br	aexp32
+	.endc
+
+23$:	bis	#am.rel,(sp)	;no
+	call	setdsp		;set displacement
+	br	aexp34
+
+24$:	bit	#regflg,(r3)	;flags
+	beq	26$
+	error	41,r,<illegal use of register>
+	bic	#regflg,(r3)	;flags
+26$:	mov	(r1)+,-(sp)	;stack current value
+	mov	(r1)+,-(sp)
+	mov	(r1)+,-(sp)
+	mov	(r1)+,-(sp)
+	call	aexplp		;process index
+	mov	(sp)+,-(r1)	;restore
+	mov	(sp)+,-(r1)
+	mov	(sp)+,-(r1)
+	mov	(sp)+,-(r1)
+aexp30:	bis	r0,(sp)
+	bis	#am.ndx,(sp)
+aexp32:	call	setimm
+aexp34:	call	stcode
+	clr	r0
+aexp36:	bis	(sp)+,r0
+	return
+aexplp:				;aexp paren processor
+	call	getnb		;bypass paren
+	call	regexp		;get a register expression
+	cmp	r5,#ch.rp	;happy ending ")"?
+	bne	1$		;  no
+	jmp	getnb		;yes, bypass and exit
+
+1$:	error	42,q,<missign right ')'>	;no
+	return
+
+	.if ndf	xedama
+	genedt	ama		;absolute mode addressing
+	.endc
+	.if ndf	xedpic
+	genedt	pic		;pic mode
+	.endc
+
+aexpxp:	call	exprg		;evaluate potential external
+	bne	aex1		;  branch if non-null
+	error	43,a,<missing expression>	;null, error
+aex1:	mov	value,r0	;set value
+	return
+	.sbttl	directives
+
+
+	.if ndf	xrel
+
+	.globl	globl
+globl:				;global handler
+globl1:	call	gsarg		;get a symbol
+	beq	globl3		;  end
+	search	symrol		;no, search user symbol table
+	bit	#regflg,flags	;register?
+	bne	2$		;  yes, error
+	.iif df rsx11d,	bic	#dfgflg,flags
+	bis	#glbflg,flags	;no, flag as globl
+	call	insert		;update/insert
+	call	crfdef
+	br	globl1
+
+2$:	error	44,r,<illegal register usage>
+	br	globl1
+
+globl3:	return
+	.endc
+
+
+	.globl	end
+
+end:				;temp end directive
+	call	expr		;evaluate the expression
+	bne	1$		;  branch if non-null
+	inc	(r4)		;null, make it a one
+1$:	call	reltst		;no globals allowed
+	inc	endflg
+	call	setsec
+	call	setpf1		;list field 1
+	mov	#symbol,r1
+	mov	#endvec,r2
+	xmit	4		;move to end vector
+	return
+
+
+	entsec	impure
+endvec:	.blkw	4		;end vector storage
+
+	xitsec
+	.if ndf	xrel
+
+	.globl	asect,	csect
+
+asect:
+	call	setmax		;clean up current sector
+asectf:
+	mov	r50abs,symbol	;set ". abs."
+	mov	r50abs+2,symbol+2
+	mov	asdflt,r3
+	br	csectf		;use common exit
+
+csect:
+	call	setmax		;clean up current sector
+	mov	psdflt,r3	; unnamed .csect = unnamed .psect
+	call	tstarg		;get argument (or null)
+	beq	1$
+	mov	csdflt,r3	; well, its got a name so it really is a csect
+1$:	call	getsym
+csectf:	scan	secrol		;scan for match
+	bne	psectf		; branch if match
+	movb	r3,mode
+	movb	<^pl rolsiz>+1+secrol,sector
+	br	psectf
+	.globl	psect
+
+psect:
+	call	setmax
+	call	tstarg
+	beq	10$
+	tst	veritas
+	beq	10$
+	mov	csdflt,silly 		; user wants funny Harvard modes for
+					; 	named .psects
+	br	11$
+10$:	mov	psdflt,silly 		; no -ha flag or blank .psect
+11$:	inc	argcnt
+	call	getsym
+	scan	secrol
+	bne	1$
+	movb	silly,mode
+	movb	<^pl rolsiz>+1+secrol,sector
+1$:	mov	#clcnam,r3
+	.rept	5
+	mov	-(r3),-(sp)
+	.endr
+2$:	call	tstarg
+	beq	3$
+	call	getsym
+	scanw	psarol
+	beq	psecta
+	mov	#symbol+2,r0
+	bisb	(r0),4(sp)
+	bicb	1(r0),4(sp)
+	br	2$
+3$:
+	mov	(sp)+,(r3)+
+	mov	(sp)+,(r3)+
+	scan	secrol
+	mov	(sp)+,(r3)+
+	mov	(sp)+,(r3)+
+	mov	(sp)+,(r3)+
+psectf:	call	insert
+	call	crfref
+	mov	#symbol,r1
+	mov	#clcnam,r2
+	.globl	xmit5
+	xmit	5
+	jmp	lsbset
+psecta:	add	#12,sp			; compensate for the big push
+	error	45,a,<illegal .psect attribute>
+psect9:	return
+
+.bss
+silly:	.blkw	1
+
+.data
+
+	.macro	genpsa	mne,set,reset
+	.rad50	/mne/
+	.byte	set,reset
+	.endm
+
+	entsec	psasec
+	genpsa	rel,	relflg,
+	genpsa	abs,	,	relflg
+	genpsa	gbl,	glbflg,
+	genpsa	lcl,	,	glbflg
+	genpsa	ovr,	ovrflg,
+	genpsa	con,	,	ovrflg
+	genpsa	low,	,		; these do nothing.  they
+	genpsa	hgh,	,		; exist for backwards compat.
+.if gt ft.unx
+	genpsa	shr,	shrflg,	bssflg
+	genpsa	prv,	,	shrflg!bssflg
+	genpsa	bss,	bssflg,	shrflg!insflg
+	genpsa	ins,	insflg,	bssflg
+	genpsa	dat,	,	insflg!bssflg
+	genpsa	b,	bssflg,	shrflg!insflg
+	genpsa	i,	insflg,	bssflg
+	genpsa	d,	,	insflg!bssflg
+	genpsa	ro,	shrflg,	bssflg
+	genpsa	rw,	,	shrflg!bssflg
+.endc
+
+	xitsec
+
+.data
+psdflt:	.word pattrs		; the default values are defined in at.sml
+asdflt::	.word aattrs
+csdflt::	.word cattrs
+	xitsec
+
+	xitsec
+
+	.endc	;xrel
+absset:
+	tst	exmflg
+	beq	secini
+	tstb	clcsec
+	bmi	psect9
+secini:
+	call	asectf		;move onto roll
+	clr	symbol		;ditto for blank csect
+	clr	symbol+2
+	mov	psdflt,r3
+	bit	#ed.abs,edmask	;abs mode?
+	beq	1$
+	jmp	csectf		; not abs mode.
+1$:
+	return
+
+	genedt	abs,absset
+
+
+
+	.data
+
+r50abs:	.rad50	/. abs./
+
+	xitsec
+	.if ndf	xrel
+
+setmax:				;set max and enter onto roll
+	call	savreg		;play it safe
+	mov	#clcnam,r1
+	mov	#symbol,r2
+	xmit	2		;move name to symbol
+	scan	secrol		;scan sector roll
+	xmit	3		;set remainder of entries
+	jmp	insert		;update roll and exit
+
+	.endc
+	.globl	blkw,	blkb,	even,	odd,	radix,	eot
+
+
+blkw:	inc	r3		;flag word type
+blkb:	call	expr		;evaluate the expression
+	bne	1$		;branch if non-null
+	inc	(r4)		;null, make it one
+1$:	call	abstst		;must be absolute
+2$:	add	r0,(r2)		;update pc
+	asr	r3		;word?
+	bcs	2$		;  yes, double value
+	return
+
+even:	inc	(r2)		;increment the pc
+	bic	#1,(r2)		;clear if no carry
+	return
+
+odd:	bis	#1,(r2)		;set low order pc byte
+eot:	return
+
+radix:	mov	cradix,r2	;save in case of failure
+	mov	#10.,cradix
+	call	absexp
+	cmp	r0,#2.
+	blt	1$
+	cmp	r0,#10.
+	ble	rad2$
+1$:	error	46,a,<illegal radix>
+	mov	r2,r0
+rad2$:	mov	r0,cradix
+	jmp	setpf1
+
+	entsec	imppas		;impure area
+cradix:	.blkw			;current radix
+
+	xitsec			;back to normal
+
+
+	.sbttl		data-generating directives
+
+	.globl	byte,	word
+
+
+word:	inc	r3		;"word" directive, set to 2
+byte:
+	inc	r3		;"byte" directive, set to 1
+	mov	(r2),-(sp)	;stack current pc
+1$:	call	tstarg		;test for argument
+	bne	3$		;  good arg
+	cmp	(r2),(sp)	;end, any processed?
+	bne	2$		;  yes, exit
+3$:	call	exprg		;process general expression
+	call	setimm		;convert to object format
+	call	stcode		;put on code roll
+	add	r3,(r2)		;update pc
+	br	1$		;test for more
+
+2$:	mov	(sp)+,(r2)	;restore initial pc
+	return
+	.globl	rad50,	ascii,	asciz
+
+
+asciz:	inc	r3		;  ".asciz", set to  1
+ascii:	inc	r3		;  ".ascii", set to  0
+rad50:
+	dec	r3		;  ".rad50", set to -1
+	call	23$		;init regs
+1$:	mov	r5,r2		;set terminator
+	beq	8$		;error if eol
+2$:	cmp	r5,#ch.lab	; "<", expression?
+	beq	10$		;  yes
+3$:	call	getchr		;no, get next char
+	mov	r5,r0		;set in work register
+	beq	8$		;error if eol
+	cmp	r5,r2		;terminator?
+	beq	5$		;  yes
+	tst	r3		;no
+	bmi	9$		;branch if rad50
+	.if ndf	xedlc
+	mov	chrpnt,r0	;fake for ovlay pic
+	movb	(r0),r0		;fetch possible lower case
+	bic	#177600,r0	;clear possible sign bit
+	.endc
+	br	4$
+
+9$:	call	tstr50		;test radix 50
+4$:	call	20$		;process the item
+	br	3$		;back for another
+
+5$:	call	getnb		;bypass terminator
+6$:	tstb	cttbl(r5)	;eol or comment?
+	bgt	1$		;  no
+	br	7$
+
+8$:	error	47,a,<premature end of line> ;error, flag and exit
+7$:	clr	r0		;yes, prepare to clean up
+	tst	r3		;test mode
+	beq	24$		;normal exit if .ascii
+	bpl	20$		;one zero byte if .asciz
+	tst	r1		;.rad50, anything in progress?
+	beq	24$
+	call	20$		;yes, process
+	br	6$		;loop until word completed
+
+10$:	mov	(r4),-(sp)	;"<expression>", save partial
+	call	abstrm		;absolute term, setting r0
+	mov	(sp)+,(r4)	;restore partial
+	call	20$		;process byte
+	br	6$		;test for end
+20$:	tst	r3		;rad50?
+	bpl	22$		;  no
+	cmp	r0,#50		;yes, within range?
+	blo	21$		;  yes
+	error	48,t,<illegal rad50 character> ;no, error
+21$:	mov	r0,-(sp)	;save current char
+	mov	(r4),r0		;get partial
+	call	mulr50		;multiply
+	add	(sp)+,r0	;add in current
+	mov	r0,(r4)		;save
+	inc	r1		;bump count
+	cmp	r1,#3		;word complete?
+	bne	24$		;  no
+22$:	mov	r0,(r4)		;stuff in value
+	call	setimm		;convert to obj mode
+	call	stcode		;stow it
+23$:	clr	r1		;clear loop count
+	clr	(r4)		;  and value
+24$:	return
+	.sbttl	enabl/dsabl functions
+
+
+
+	.globl	enabl,	dsabl,	bisbic
+
+dsabl:	com	r3		;r3=-1
+enabl:				;r3=0
+1$:	call	gsarg		;get a symbolic argument
+	beq	endabl		;end if null
+	scanw	edtrol		;search the table
+	beq	7$		;  not there, error
+	mov	symbol+4,r2	;get proper bit
+	tst	exmflg		;called from command string?
+	beq	3$		;  no
+	bisbic	eddflt		; yes.  set default bits
+	bis	r2,edmcsi	;  and set disable bits
+	br	4$		;  and bypass test
+
+3$:	bic	edmcsi,r2	;over-ridden from csi?
+4$:	bisbic	edmask		;set appropriate bits
+	mov	symbol+2,-(sp)	;make it pic
+	tst	r3		;set flags
+	call	@(sp)+		;call routine
+	br	1$
+
+7$:	error	49,a,<illegal .enabl/.dsabl argument>
+endabl:	return
+
+bisbic:				; address of arg on stack
+				; if r3 < 0, set bits of r2 into arg
+				; else clear them
+				; this meshes with .list & .enabl:
+				; .list	r3 = 1
+				; .nlist r3 = -1
+				; .enabl r3 = 0
+				; .dsabl r3 = -1
+	tst	r3
+	blt	1$
+	bic	r2,@2(sp)
+	br	2$
+1$:	bis	r2,@2(sp)
+2$:	rts	pc
+	entsec	impure
+edmask:	.blkw			;contains set flags
+edmcsi:	.blkw			;bits for csi override
+	xitsec
+
+	entsec 	mixed
+
+eddflt::.word	^c<ed.pnc+ed.reg+ed.lc+ed.gbl>	;default values for edmask
+						; bit 1 ==> .dsabl
+						; bit 0 ==> .enabl
+					;^c<ed.pnc+ed.lc> = non rsx11d choice
+	xitsec
+seted:
+	mov	eddflt,edmask
+	;clr	edmcsi  experiment
+	return
+
+
+	genswt	en,enabl	;generate /en
+	genswt	ds,dsabl	;  and /ds switch table entries
+
+tmpcnt=	1
+	.irp	x,<abs,ama,cdr,fpt,gbl,lc ,lsb,pic,pnc,reg,crf>
+	.globl	ed.'x
+ed.'x	=	tmpcnt
+tmpcnt=tmpcnt+tmpcnt
+	.endm
+gsarg:				;get a symbolic argument
+	.enabl	lsb
+	call	tstarg		;test general
+	beq	gsa.2$		;  exit null
+gsargf:	call	getsym		;arg, try for symbol
+	bne	5$		;  error if not symbol
+	error	59,a,<unknown symbol>
+	br	gsa.2$
+5$:	cmp	r0,r50dot	;  "."?
+	bne	3$		;  no, ok
+1$:	error	50,a,<illegal use of '.'>
+gsa.2$:	clr	symbol
+	clr	symbol+2
+	clr	r0		;treat all errors as null
+3$:	return
+	.dsabl	lsb
+
+
+tstarg:				;test argument
+1$:	movb	cttbl(r5),r0	;get characteristics
+	ble	12$		;through if eol or semi-colon
+	tst	argcnt		;first argument?
+	beq	11$		;  yes, good as is
+	bit	#ct.com,r0	;no, comma?
+	bne	10$		;  yes, bypass it
+	tst	expflg		;no, was one required?
+	beq	2$		;  no
+	error	51,a,<comma required>
+2$:	cmp	chrpnt,argpnt	;did anybody use anything?
+	bne	11$		;  yes, ok
+3$:	call	getchr		;no, bypass to avoid loops
+	bitb	#ct.pc+ct.sp+ct.tab-ct.com-ct.smc,cttbl(r5)
+	bne	3$		;  yes, bypass
+	call	setnb		;no, set to non-blank
+	error	52,a,<separator required>
+	br	1$		;now try again
+
+10$:	call	getnb		;bypass comma
+11$:	inc	argcnt		;increment argument count
+12$:	clr	expflg
+	mov	chrpnt,argpnt	;save pointer
+	bic	#177600,r0	;set flags
+	return
+
+
+	entsec	implin		;clear each line
+argcnt:	.blkw			;argument count
+argpnt:	.blkw			;start of last argument
+expflg:	.blkw			;set when comma required
+
+	.data
+r50dot:	.rad50	/.     /
+
+	xitsec
+	.end

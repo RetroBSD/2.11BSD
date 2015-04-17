@@ -1,0 +1,958 @@
+	.title	lout
+
+
+	.ident	/10may4/
+
+	.mcall	(at)always,ch.mne,st.flg,ct.mne
+	.mcall	(at)bisbic
+	always
+	ch.mne
+	st.flg
+	ct.mne
+
+	.mcall	(at)xmit,param,putlp
+	.macro	putlin	addr	;use listing flags
+	.if dif	<addr><r0>
+	mov	addr,r0
+	.endc
+	call	putlin
+	.endm
+	.mcall	(at)genswt,error
+	.mcall	(at)zwrite
+	.mcall	(at)genedt,setnz
+	.mcall	(at)scanw,next,zap
+	.mcall	(at)sdebug,ndebug
+
+
+	param	lpp,	60.		;
+	param	ttllen,	32.
+	param	stllen,	64.
+
+	.globl	codrol,	errrol,	lcdrol,	symrol,	secrol
+	.globl	lcbegl,	linend,	lcendl
+	.globl	linbuf,	cdrsav,	endp2l
+
+	.globl	linnum,	seqend,	pagnum,	pagext
+	.globl	ffcnt,	lppcnt
+	.globl	dflgbm,	opclas
+
+
+	.globl	edmask,	ed.cdr, ed.lc
+
+
+srclen	=	204		;*********************
+octlen	=	 60		;*********************
+
+mx.on	=lc.md!lc.mc!lc.ld!lc.toc!lc.sym!lc.cnd!lc.bin!lc.loc!lc.seq
+
+
+
+	.globl	lc.cnd
+	.globl	exmflg
+	.globl	lstchn,	cmochn,	lstflg,	putoc
+	.globl	mx.flg,	my.flg
+	.globl	crfref
+
+	.globl	clcfgs,	clcloc,	clcmax
+	.globl	clcnam,	clcsec,	cpopj
+	.globl	errbts
+	.globl	flags,	getchr,	getnb,	getsym
+	.globl	mode
+	.globl	rolndx,	rolupd
+	.globl	sector,	setpf0,	setpf1
+	.globl	setsym
+	.globl	symbol,	tstarg,	value
+
+	.globl	expr,	pcroll,	prgttl
+	.globl	setwrd,	setbyt,	tstr50,	mulr50
+	.globl	r50unp
+
+	.globl	setchr
+
+;globals defined in assembler
+
+	.globl	setlc
+
+	.globl	chrpnt,	getr50,	pass
+	.globl	putkb,	putkbl,	putlp
+
+	.globl	dnc,	movbyt,	savreg,	xmit0
+	.globl	linbuf,	errcnt
+
+;globals defined in mcexec
+
+	.globl	dattim
+	.globl	hdrttl
+	.globl	io.eof,	io.tty,	io.err
+
+	.globl	ioftbl,	cnttbl,	buftbl
+
+
+
+	.globl	argcnt,	cttbl
+	.globl	endlin
+	.globl	getlin,	lblend,	lcendl,	lcflag
+	.globl	lcmask,	lc.mc,	lc.md,	lc.me
+	.globl	lst.kb, lst.lp, lstdev
+	xitsec			;start in default sector
+
+endlin:				;end of line processor
+	call	savreg
+	clr	rolupd		;set to fetch from code roll
+	tstb	cttbl(r5)	;eol or semi-colon?
+	ble	lout1		;  yes
+	error	19,q,<random junk at end of statement ignored>
+
+lout1:	.if ndf	xedcdr
+	movb	cdrsav,linbuf+72.	;replace borrowed char
+	.endc
+	mov	pass,-(sp)	;pass 1?
+	beq	9$		;  yes
+	call	mx.mx		; <<< REEDS june 81
+	mov	lstdev,(sp)	;init listing flag
+	
+	tst	errbts		;any errors?
+	bne	7$		;  yes, go directly, do not collect, etc.
+	tstb	(sp)		;any listing device?
+	beq	9$		;  no
+	bit	#lc.ld,lcflag	;listing directive?
+	bne	5$		;  yes
+	tst	mx.flg		; <<< REEDS june 81
+	bne	80$		; <<< REEDS june 81: in mx mode we ignore .list
+	tst	lclvl		;test over-under ride
+	blt	5$		;if <0, list only if errors
+	bgt	8$		;if >0, list unconditionally
+80$:	bit	#lc.com,lcmask	;comment suppression?
+	beq	2$		;  no
+	mov	chrpnt,lcendl	;yes, assume we're sitting at comment
+2$:	bit	#lc.src,lcmask	;line suppression?
+	beq	3$		;  no
+	mov	#linbuf,lcendl	;yes, point to start of buffer
+3$:
+	.if ndf	xmacro
+	tstb	<^pl rolsiz>+codrol+1	;anything in code roll?
+	beq	4$		;  no
+	bit	#lc.meb,lcmask	;macro binary expansion?
+	bne	4$		;  no
+	bic	#lc.me,lcflag	;yes, ignore me flag
+	.endc
+4$:	bit	lcmask,lcflag	;anything suppressed?
+	beq	9$		;  no, use current flags
+5$:	clr	(sp)		;yes, clear listing mode
+	br	9$
+7$:	swab	(sp)		;error, set to error flags
+8$:	mov	#linbuf,lcbegl	;list entire line
+	mov	#linend,lcendl
+9$:	call	pcroll		;process entry on code roll
+endl10:	movb	(sp),lstreq	;anything requested?
+	beq	endl20		;  no
+	clrb	@lcendl		;set asciz terminator
+	mov	#octbuf,r2
+11$:	mov	#space*400+space,(r2)+	;blank fill
+	cmp	#linbuf,r2	;test for end (beginning of line buffer)
+	bne	11$
+
+endl50:	mov	#octbuf,r2	;point to start of buffer
+	call	tsterr		;set error flags
+	mov	#linnum,r0
+	mov	(r0)+,r1
+	cmp	r1,(r0)
+	beq	2$
+	mov	r1,(r0)
+	bit	#lc.seq,lcmask
+	bne	2$
+	mov	r2,r4
+	call	dnc
+	mov	#octbuf+7,r0
+1$:	movb	-(r2),-(r0)
+	movb	#space,(r2)
+	cmp	r2,r4
+	bhi	1$
+	mov	#octbuf+7,r2
+2$:	movb	#tab,(r2)+
+21$:	mov	#pf0,r1
+	bit	#lc.loc,lcmask
+	bne	4$
+	tst	(r1)
+	beq	3$
+	call	setwrd
+3$:	movb	#tab,(r2)+
+4$:	clr	(r1)
+	mov	#pf1,r1
+	bit	#lc.bin,lcmask
+	bne	endl19
+	mov	#1,r4
+	bit	#lc.ttm,lcmask
+	beq	41$
+	cmpb	(r4)+,(r4)+		; cheap increment by 2
+41$:	tst	(r1)
+	beq	6$
+5$:	call	setwdb
+6$:	movb	#tab,(r2)+
+	clr	(r1)
+	dec	r4
+	beq	endl19
+	tst	rolupd
+	beq	6$
+	call	pcroll
+	br	5$
+endl19:	mov	lcbegl,r1	;point to start of listing line
+	call	movbyt		;move over
+	putlin	#octbuf		; test for header and list
+	call	err.pr
+endl20:
+	clrb	@lcbegl		;don't dupe line
+	tst	rolupd		;finished?
+	beq	endl30		;  yes, don't loop
+	call	pcroll
+	beq	endl30		;exit if empty
+	bit	#lc.bex!lc.bin,lcmask	;binary extension suppressed?
+	beq	endl10		;  no
+	br	endl20		;yes, don't list
+
+endl30:	tst	(sp)+		;prune listing flag
+	zap	codrol		;clear the code roll
+	mov	clcloc,r0
+	cmp	r0,clcmax	;new high for sector?
+	blos	31$		;  no
+	mov	r0,clcmax	;yes, set it
+31$:	return
+
+setwdb:				;list word or byte
+	tst	(r1)		;anything for second field?
+	beq	9$		;  no
+	mov	#setwrd,-(sp)	;assume word
+	bit	#dflgbm,opclas	;true?
+	beq	1$		;  yes
+	mov	#setbyt,(sp)	;no, byte
+1$:	call	@(sp)+		;call routine
+	bit	#77*400,(r1)	;test for linker modification
+	beq	9$
+	
+	bit	#5100,(r1)	;if one of these isnt set I dont know
+	bne	12$		;what is going on, so lets mark it ?
+	movb	#'?,(r2)
+	br	9$
+12$:
+	movb	#ch.xcl,(r2)	; ' marks psect relocation
+	bit	#4000,(r1)
+	bne	10$
+	movb	#'",(r2) 	;  " location counter relocation
+10$:
+	bit	#glbflg,(r1)
+	beq	2$
+	movb	#'G,(r2)
+	tst	symbol		; harvard m11 uses global syms with funny
+	bne	2$		; names for complex relocation
+	movb	#'C,(r2)
+2$:	tstb	(r2)+
+9$:	return
+
+tsterr:				;test and process errors
+	mov	errbts,r0	;any errors?
+	beq	9$		;  no
+	bic	#err.,r0	;yes, ".print"?
+	beq	4$		;  yes
+	inc	errcnt		;bump error count
+	call	err.sh
+4$:	mov	#errmne-1,r1
+1$:	tstb	(r1)+		;move char pntr and clear carry
+	ror	errbts		;rotate error bits
+	bcc	2$
+	movb	(r1),(r2)+
+	.if ndf	xcref
+	movb	(r1),r0		;fetch character
+	call	tstr50		;convert to rad50
+	call	mulr50		;left justify
+	call	mulr50
+	mov	r0,symbol	;store
+	clr	symbol+2
+	mov	#errrol,rolndx	;prepare to cref
+	call	crfref		;do so
+	.endc
+	br	1$
+
+2$:	bne	1$
+9$:	return
+
+
+.globl	fileln
+.globl	putli2
+err.sh::
+	call	savreg
+	tst	lstflg
+	bne	9$
+
+; printf("%s: line %d: %s\n", infile, fileln, errmess)
+
+	mov	#err.bx,r2
+	tstb	err.by
+	beq	1$
+	mov	#err.by,r1
+	call	movbyt
+	mov	#err.s1,r1
+	call	movbyt
+	mov	fileln,r1
+	call	dnc
+	tst	err.xx
+	beq	2$
+	mov	#err.s2,r1
+	call	movbyt
+1$:	mov	err.xx,r1
+	call	movbyt
+	clr	err.xx
+2$:
+	clrb	(r2)
+	mov	#err.bx,r2
+	mov	#lst.kb,r4
+	call	putli2
+9$:
+	return
+
+.data
+err.s1:	.asciz /: line /
+.even
+err.s2:	.asciz	/: /
+
+.bss
+err.bx:	.blkw	60
+err.by::	.blkw	60
+
+	entsec	impure
+errcnt:	.blkw			;error counter
+	entsec	implin
+errbts:	.blkw			;error flags
+err.xx::	.blkw		;error message
+	xitsec
+	.if ndf	xedcdr
+	genedt	cdr
+	entsec	impure
+cdrsav:	.blkw			;saved char from card format
+	.endc
+	entsec	impure
+octbuf:
+octerp:	.blkb	0
+octseq:	.blkb	2
+octpf0:	.blkb	7
+octpf1:	.blkb	octlen-<.-octbuf>
+linbuf:	.blkw	srclen/2
+linend:	.blkw	1
+
+.data
+tmpcnt	=	1
+errmne:	.irpc	char,< abeilmnopqrtuz>
+	.ascii	/char/
+	.globl	err.'char
+err.'char=	tmpcnt
+tmpcnt	=	tmpcnt+tmpcnt
+	.endm
+
+	xitsec
+	.globl	title,	sbttl
+
+title:
+	call	getsym		;get a symbol
+	bne	title1		;  error if null
+	error	20,a,<missing title>
+	return
+
+title1:	mov	r0,prgttl	;move into storage
+	mov	symbol+2,prgttl+2
+	call	setsym		;point to start of title
+	mov	#ttlbuf,r2	;point to buffer
+	movb	#ff,(r2)+	;store page eject
+	clr	r3		;clear position conter
+2$:	.if ndf xedlc		;>>>gh 7/20/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	6$		;  no, leave as upper case	
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+6$:	.endc
+	movb	r5,(r2)		;plunk the next char in the buffer
+	beq	5$		;branch if end
+	cmp	r5,#tab		;a tab?
+	bne	3$		;  no
+	bis	#7,r3		;yes, compensate
+3$:	inc	r3		;update position counter
+	cmp	r3,#ttllen	;within bounds?
+	bhis	4$		;  no
+	tstb	(r2)+		;yes, move pointer
+4$:	call	getchr		;get the next character
+	bne	2$		;loop if not end
+5$:	movb	#tab,(r2)+	;set separator
+	.globl	vernam
+	mov	vernam,r1
+	call	movbyt		;set version number, etc.
+	mov	#dattim,r1
+	call	movbyt		;date and time
+	mov	r2,ttlbrk	;remember break point
+	clrb	(r2)
+	return
+
+	.data
+defttl::	.asciz	/.main./	;default title
+
+	entsec	impure
+ttlbrk:	.blkw			;break location
+ttlbuf:	.blkb	ttllen-1!7+1+1	;modulo tab + ff
+	.blkb	20.		;intro msg
+	.iif ndf xtime,	.blkb	20.	;time & date
+	.blkb	20.		;page number
+	.even
+	xitsec
+
+
+
+sbttl:				;sub-title directive
+	mov	#stlbuf,r2	;point to sub-title buffer
+	tst	pass		;pass one?
+	beq	2$		;  yes
+1$:	.if ndf xedlc		;>>>gh 7/20/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	4$		;  no, leave as upper case
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+4$:	.endc
+	movb	r5,(r2)+	;move character in
+	beq	13$		;  branch if end
+	call	getchr		;get the next character
+	cmp	r2,#stlbuf+stllen-1	;test for end
+	blo	1$
+	tstb	-(r2)		;polish off line
+	br	1$
+
+2$:	bit	#lc.toc,lcmask
+	bne	13$
+	tstb	lstdev		;any listing device?
+	beq	13$		;  no, exit
+	tst	mx.flg		; <<< REEDS june 81
+	bne	13$		; <<<
+	mov	#toctxt,r1
+	call	movbyt		;set table of contents
+	call	setsym		;point to ".sbttl"
+3$:	call	getr50		;get radix-50 char
+	bgt	3$		;stop at first terminator
+	mov	chrpnt,r2	;set pointer
+	.if ndf	xlcseq
+	mov	linnum,r0
+	call	10$
+	movb	#ch.sub,-(r2)
+	.iff
+	movb	#tab,-(r2)
+	.endc
+	mov	pagnum,r0
+	call	10$
+	movb	#space,-(r2)
+	
+	tst	lstflg
+	beq	15$
+	bisb	lstdev,lstreq
+15$:	putlin	r2 		;output
+	return
+
+10$:	mov	#4,r4		; << REEDS. changed to 4 digit field from 3
+11$:	movb	#space,-(r2)
+	mov	r0,r1
+	beq	12$
+	clr	r0
+	div	#^d10,r0
+	add	#dig.0,r1
+	movb	r1,(r2)
+12$:	sob	r4,11$
+13$:	return
+
+.data
+toctxt:	.asciz	/table of contents/
+
+	entsec	imppas
+stlbuf:	.blkw	<stllen+2>/2	;sub-title buffer
+
+	xitsec
+	.globl	print,	error
+
+
+	.enabl	lsb
+
+print:
+	error	0,<>,<user generated error>	; null error (dont count)
+	br	error1
+
+error:	error	53,p,<user generated error>		
+error1:	call	setpf0		;print location field
+	call	expr		;evaluate expression
+	beq	2$		;branch if null
+	call	setpf1		;non-null, list value
+2$:	return
+
+	.dsabl	lsb
+
+
+	.globl	rem
+
+rem:				; ".rem" directive
+	mov	r5,r3		;set terminating character
+	bne	rem1		;branch if non-null
+	error	22,a,<missing delimiting character>
+				;error, no delimiting character
+	return
+
+rem1:	call	getchr		;get the next character
+2$:	tst	r5		;end of line?
+	bne	3$		;  no
+	call	endlin		;yes, polish off line
+	call	getlin		;get next line
+	beq	2$		;loop if no eof
+	return			;eof, exit
+
+3$:	cmp	r5,r3		;is this the terminator?
+	bne	rem1		;  no
+	jmp	getnb		;yes, bypass and exit
+
+	.sbttl	listing control
+
+	.globl	nlist,	list
+
+nlist:	com	r3		;make r3 -1
+list:
+	asl	r3		;make r3 0/-2
+	inc	r3		;now 1/-1
+1$:	call	tstarg		;test for another argument
+	bne	2$		;  valid
+	tst	argcnt		;null, first?
+	bne	list7		;  no, we're through
+	inc	argcnt		;yes, mark it
+2$:	call	getsym		;try for a symbol
+	scanw	lcdrol		;look it up in the table
+	beq	6$		;  error if not found
+	clr	r2
+	sec
+3$:	rol	r2
+	sob	r0,3$
+	tst	exmflg		;called from command string?
+	beq	11$		;  no
+	bis	r2,lcmcsi	;yes, set disable bits
+	bisbic	lcdeft		;change the default values
+	br	12$		;  and skip test
+
+11$:	bit	r2,lcmcsi	;this flag off limits?
+	bne	5$		;  yes
+12$:	bic	r2,lcmask
+	bit	r2,#lc.		;null?
+	beq	4$		;  no
+	call	pagex		;set listing control
+	add	r3,lclvl	;yes, update level count
+	beq	5$		;don't set flag if back to zero
+4$:	tst	r3
+	bpl	5$		;.list, branch
+	bis	r2,lcmask
+5$:	br	1$		;try for more
+
+6$:	error	23,a,<unknown .list/.nlist argument>
+list7: 	return
+
+	genswt	li,list		;generate /li
+	genswt	nl,nlist	;  and /nl switch entries
+
+	.globl	page
+page:	inc	ffcnt		;simulate ff after this line
+pagex:	bis	#lc.ld,lcflag	;flag as listing directive
+	return
+
+	.macro	genlct	mne,init	;generate listing control table
+lc.'mne=	1
+	.rept	<.-lctbas>/2
+lc.'mne=	lc.'mne+lc.'mne
+	.endm
+	.rad50	/mne/
+	.if nb	<init>
+	lcinit=	lcinit+lc.'mne
+	.endc
+	.endm
+
+lcinit=	0
+
+	entsec	lctsec
+lctbas	=	.
+	genlct	seq
+	genlct	loc
+	genlct	bin
+	genlct	src
+	genlct	com
+	genlct	bex
+	genlct	md
+	genlct	mc
+	genlct	me ,1
+	genlct	meb,1
+	genlct	cnd
+	genlct	ld ,1
+	genlct	ttm,1
+	genlct	toc
+	genlct	sym
+	genlct	<   >		;null
+
+	xitsec
+
+	genswt	fl,profl
+flsbts=	lc.seq!lc.loc!lc.bin!lc.bex!lc.me!lc.meb!lc.toc!lc.sym
+profl:
+	mov	#flsbts,lcmcsi
+	mov	#flsbts,lcmask
+	return
+
+.globl	eddflt,ucflag
+uc.set::
+	bis	#ed.lc,eddflt
+um.set::
+	inc	ucflag
+	return
+
+.data
+.even
+ucflag::	.word		; if set, dont do case trnslation in macros
+	entsec	dpure
+lcdeft:	.word	lcinit		; default value for lcmask
+	xitsec
+	entsec	impure
+lcmask:	.blkw			;mask bits
+lclvl:	.blkw			;level count
+lcmcsi:	.blkw			;command string storage
+
+	entsec	implin
+lcflag:	.blkw			;flag bits
+lcbegl:	.blkw			;pointer to start of line
+lcendl:	.blkw			;pointer to end of line
+lblend:	.blkw			;end of label (for parsing)
+
+	xitsec
+
+setlc:
+	mov	lcdeft,lcmask		;default flags
+	clr	lclvl
+	clr	lcmcsi
+	return
+
+	.sbttl	listing stuff
+
+setpf0:				;set print field zero
+	sdebug	<setpf0>
+	mov	clcfgs,pf0	;set current location flags
+	bisb	#100,pf0+1	;assume word
+	mov	clcloc,pf0+2	;set location
+	return
+
+setpf1:				;set print field one
+	mov	mode,pf1	;set mode of current value
+	bisb	#100,pf1+1	;assume word
+	mov	value,pf1+2
+	return
+
+	entsec	implin
+pf0:	.blkw	2
+pf1:	.blkw	2
+	xitsec
+endp2l:				;end pass2 listing
+	call	err.pr		; flush out last error message
+	mov	#symtxt,r1
+	mov	#stlbuf,r2
+	call	movbyt		;set "symbol table" sub-title
+	tstb	lstdev		;any listing output?
+	beq	endp2d		;  no
+	bit	#lc.sym,lcmask	;symbol table suppression?
+	bne	endp2d		;  yes
+	inc	ffcnt		;force new page
+	clr	lppcnt		;force new page
+	inc	pagnum
+	mov	#-1,pagext
+	clr	rolupd		;set for symbol table scan
+2$:	mov	#linbuf,r2	;point to storage
+3$:	next	symrol		;get the next symbol
+	beq	endp2a		;  no more
+	bit	#regflg,mode	;register?
+	bne	3$		;  yes, don't list
+	call	r50unp		;unpack the symbol
+	mov	#endp2t,r3
+	call	endp2p
+	mov	#mode,r1	;point to mode bits
+	bit	#defflg,(r1)	;defined?
+	beq	4$		;  no
+	call	setwrd
+	br	6$
+
+4$:	mov	#stars,r1
+	call	movbyt		;undefined, substitute ******
+6$:	call	endp2p
+	.iif df	rsx11d,	call	endp2x
+	mov	#sector,r1
+	cmpb	#1,(r1)
+	bge	10$
+	cmpb	-(r1),-(r1)
+	call	setbyt
+10$:	movb	#tab,(r2)+	;separator
+	cmp	r2,#linbuf+50.	;enough for one line?
+	blo	3$		;  no
+	call	endp2b		;output line
+	br	2$		;next line
+
+
+endp2a:				;	print .psect list
+	
+	.if ndf	xrel
+	clr	rolupd		;set for sector scan
+21$:	call	endp2b		;output line
+	next	secrol		;get the next entry
+	beq	endp2d		;  exit if end of roll
+	movb	#'<,(r2)+
+	call	r50unp		;print the name,
+	movb	#'>,(r2)+
+	movb	#tab,(r2)+
+	mov	#value,r1
+	call	setwrd		;  the value,
+	movb	#tab,(r2)+
+	mov	#sector-2,r1
+	call	setbyt		;  and the entry number
+	movb	#tab,(r2)+
+	mov	#flags-2,r1
+	call	setbyt		;  and the attributes
+	br	21$
+	.endc
+
+endp2b:	clrb	(r2)
+	mov	lstdev,lstreq	; we want output
+	putlin	#linbuf
+	mov	#linbuf,r2	;reset to start of buffer
+endp2d:	return
+
+endp2p:	call	endp2x
+endp2x:	mov	(r3)+,r0
+	bit	(r3)+,mode
+	bne	32$
+	swab	r0
+32$:	movb	r0,(r2)+
+	return
+
+	entsec	dpure
+endp2t:
+	.ascii	/ =/
+	.word	lblflg
+	.ascii	/% /
+	.word	regflg
+	.ascii	/r /
+	.word	relflg
+	.ascii	/g /
+	.word	glbflg
+	.if df	rsx11d
+	.ascii	/x /
+	.word	dfgflg
+	.endc
+
+.data
+stars:	.asciz	/******/
+symtxt:	.asciz	/symbol table/
+	xitsec
+lst.kb=	1			;teletype listing
+lst.lp=	2			;lpt listing
+
+
+	xitsec
+
+;
+; These routines are high level.  They make output go to
+; more than one device, they add page headers.  The dogsbody
+; low guy is 'putli2', who in turn calls on 'o.kblp', which
+; interfaces with the file buffering guys directly.
+;
+
+putkb:	mov	#lst.kb,lstreq	;set request
+	br	putlix
+
+putkbl:	mov	#lst.kb,lstreq	;set for tty
+putlp:	tst	lstflg		;doing a listing?
+	beq	putlix		;no
+	bisb	lstdev,lstreq	;lpt
+;
+; output a line plain & simple
+;
+putlix:
+	call	savreg
+	mov	r0,r2
+	movb	lstreq,r4
+	call	putli2
+	return
+
+putlin:				;output a line with page heading if needed
+	call	savreg		;stack registers
+	mov	r0,r2		;arg to r2
+	movb	lstreq,r4	;get request
+	clr	lstreq		;clear it
+	tst	r4
+	beq	9$		;just exit if empty
+	bgt	2$		;omit header if not listing
+	dec	lppcnt		;yes, decrement count
+	bgt	2$		;skip if not time
+	call	putpag
+2$:
+	call	err.pr
+	call	putli2		;print out the line
+9$:	return
+
+
+putli2:	
+	movb	(r2)+,r1	;get a char.
+	beq	21$		;end on null
+	call	o.kblp		;transmit appropriately
+	br	putli2		;till null
+21$:	
+	movb	#lf,r1		; used to be cr/lf
+	call	o.kblp
+	bit	#lst.kb,r4	;if sending to cmochn,
+	beq	9$		;no
+	zwrite	cmo		;yes, send it now
+9$:	return
+
+o.kblp:	bic	#177600,r1	;just 7 bits, please.
+	bit	#lst.kb,r4	;cmo on?
+	beq	1$		;no
+	mov	#cmochn,r0	;yes
+	call	putoc
+1$:	bit	#lst.lp,r4	;lst on?
+	beq	2$		;no
+	mov	#lstchn,r0	;yes
+	call	putoc
+2$:	return
+; put out a page heading
+putpag:
+	;mov	#lpp,lppcnt	;reset count
+	mov	#lpp-4,lppcnt	;reset count, compensate for bug introduced
+				;by rearranging pagination logic
+	mov	r2,-(sp)	;stack current pointer
+	mov	ttlbrk,r2	;end of pre-set title
+	tst	pass
+	beq	11$
+	mov	#pagmne,r1
+	call	movbyt		;move "page" into position
+	mov	pagnum,r1
+	call	dnc		;convert to decimal
+	inc	pagext
+	beq	11$
+	movb	#'-,(r2)+
+	mov	pagext,r1
+	inc	r1
+	call	dnc
+11$:	clrb	(r2)
+	tst	mx.flg		; <<< REEDS june 81
+	bne	100$
+	putlp	#ttlbuf		;print title
+	putlp	#stlbuf		;  sub-title,
+100$:
+	putlp	#crlf		;  and a blank line
+	mov	(sp)+,r2
+	return
+	entsec	impure
+lstreq:	.blkw			;list request flags
+lstdev:	.blkb	2		;error(lh), listing(rh)
+
+.data
+pagmne:	.ascii	/ page /
+crlf:	.asciz	//
+	xitsec
+
+
+
+.macro	putl	x		; printf("%s\n", mx.lin)
+	mov	x,mx.tmp
+	call	putl
+	.endm
+putl:
+	.irpc	xx,<012345>
+	mov	r'xx,-(sp)
+	.endm
+	mov	mx.tmp,r2
+	mov	#lst.lp,r4
+	call	putli2
+	.irpc	xx,<543210>
+	mov	(sp)+,r'xx
+	.endm
+	return
+
+putsc:
+	call savreg
+	mov	mdepth,r4
+1$:
+	movb	#';,r1			
+	call	mx.put
+	dec	r4
+	bpl	1$
+	movb	#tab,r1
+	call	mx.put
+	return
+mx.put:
+	call savreg
+	mov	#lst.lp,r4
+	bic	#177600,r1
+	mov	#lstchn,r0
+	call	putoc
+	return
+mx.mx:
+	call savreg
+	tst	mx.flg
+	beq	1$
+	mov	#mx.on,lcmask
+	tst	errbts
+	beq	3$
+	putl	#mxstar
+	call	err.pr
+3$:
+	tst	mx.2			; is it a .narg, etc. directive?
+	beq	2$
+	clr	mx.2
+	tst	my.flg
+	bne	20$
+	call	putsc			;	;.narg frodo
+	putl	#linbuf
+20$:
+	putl	#mx.gen			;	; generates:
+	putl	#mx.pxx			;		frodo  = 5280
+	br	1$
+2$:
+	tst	my.flg			; is it otherwise suppressed & are
+	bne	1$			; we listing such?
+	bit	lcmask,lcflag	; anything supppressed?
+	beq	1$
+	call	putsc
+	putl	#linbuf
+1$:
+	return
+
+err.pr:
+	call	savreg
+	mov	r0,-(sp)
+	mov	r5,-(sp)
+	tst	err.xx
+	beq	1$
+	mov	#lst.kb,r4
+	tst	lstflg
+	beq	2$
+	mov	#lst.lp,r4
+2$:
+	mov	err.xx,r2
+	call	putli2
+	clr	err.xx
+1$:
+	mov	(sp)+,r5
+	mov	(sp)+,r0
+	return
+
+	.bss
+mdepth::	.blkw	1
+	xitsec
+	entsec	mixed
+mx.gen::	.asciz	/;*** generates:/
+mxstar::	.asciz	/*** error ***/
+mx.pxx:		.ascii	<tab>
+mx.sym::	.ascii	/symbol	=	/
+mx.num::	.ascii	/65000/
+	.even
+mx.2::		.blkw
+mx.tmp:		.blkw			;	space for putl(arg)
+
+	.end

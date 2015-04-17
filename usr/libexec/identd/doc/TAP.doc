@@ -1,0 +1,334 @@
+TAP-std working group                                       D. Bernstein
+RFC NNNN                                                              IR
+                                       June 1991, revised 17 August 1992
+
+			          TAP
+
+
+Status of this Memo
+
+   This memo provides information for the Internet community. It does
+   not specify an Internet standard. Distribution of this memo is
+   unlimited.
+
+
+1. Introduction
+
+   It is common for Internet hosts to associate relatively long-lived
+   information to each TCP connection, often (but not always) including
+   a ``username'' or ``owner name'' or some other information about the
+   entity using the connection. TAP announces the information associated
+   with a particular TCP connection to the host on the other end of the
+   connection. TAP may be used on any host which associates relatively
+   long-lived information to each connection.
+
+
+2. Overview
+
+   This is a connection-based application which runs over TCP. The TAP
+   server listens for TCP connections on port 113 (decimal). After a
+   connection is established, the server reads one line of data which
+   specifies the connection of interest. If that connection exists and
+   is associated with system-dependent information, the server sends
+   the information. Otherwise it sends an error line. After sending the
+   information or error line, the server closes its connection. After
+   reading the information or error line, the client closes the
+   connection.
+
+   The server will give information about TCP connections between the
+   server's host and host H only to host H itself. The two hosts (i.e.,
+   IP addresses) involved are not transmitted explicitly by the
+   protocol; they are implicit in the connection made to the server.
+
+
+3. Request format
+
+   The server accepts simple text query requests of the form
+
+      <localport> , <foreignport>
+
+
+
+TAP-std working group                                           [Page 1]
+
+RFC NNNN                         TAP                         August 1992
+
+
+   where <localport> is the TCP port on the server's host and
+   <foreignport> is the TCP port on the client's host. All numbers are
+   expressed in decimal without a sign, and all text is ASCII. If the
+   request is not in this format, the server may immediately drop the
+   connection.
+
+   For example, say rose is connected to the standard TELNET port on
+   host tulip, through TCP ports 6191 on rose and 23 on tulip. (Note
+   that rose and tulip are simply names used in this document to
+   identify two IP-connected machines. They are not fully qualified
+   domain names.) tulip connects to the TAP server at port 113 on rose.
+   It sends this line:
+
+      6191 , 23
+
+   Here 6191 is the TCP port on the TAP server's host (rose) and 23 is
+   the TCP port on the TAP client's host (tulip). This uniquely
+   specifies the given TELNET connection.
+
+   The precise format of the request line is as follows: <localport>,
+   followed by any amount of whitespace, followed by a comma and any
+   amount of whitespace, followed by <foreignport>, followed by carriage
+   return and line feed. Whitespace means space or tab; "any amount"
+   means zero or more, though a client should not print excessively many
+   spaces. The server should read until the line feed and respond
+   immediately. The client should not send anything after the line feed,
+   though future revisions of this specification may permit additional
+   data. The client should not add initial zeros to its decimal numbers,
+   but the server must accept such numbers. Future revisions of this
+   standard may assign additional meaning to decimals with a leading 0.
+
+
+4. Response format
+
+   The server sends a response line in one of these two formats:
+
+      <localport> , <foreignport> : USERID : <systemtype> : <conn-info>
+   or
+      <localport> , <foreignport> : ERROR : <errortype>
+
+   Here <localport> and <foreignport> are the same numbers as in the
+   query. (If the client uses initial zeros, the server may do so as
+   well, but otherwise it should not use initial zeros.) <systemtype> is
+   an operating system name for the server's host as described in
+   Assigned Numbers, RFC 1060 or its successors. <conn-info> is
+   system-dependent information associated to the connection.
+   <errortype> is text describing an error as outlined below.
+
+
+
+
+TAP-std working group                                           [Page 2]
+
+RFC NNNN                         TAP                         August 1992
+
+
+   <systemtype> may also be OTHER to specify any other operating system
+   not yet listed in Assigned Numbers. Even if the server's system is
+   listed in Assigned Numbers, the server may use OTHER for any reason,
+   including operating system type privacy. Future revisions of this
+   document may permit further values of <systemtype>.
+
+   <conn-info> is in some format defined by the system. This document
+   does not define the format or meaning of <conn-info>. Often
+   <conn-info> is in the same format as a system-dependent mailbox name,
+   which is typically in the same format as a system-dependent username,
+   but these equivalences are not required. <conn-info> could be
+   encrypted with a secret key; it could carry something other than
+   information about the entity using the connection. For the purposes
+   of this protocol, <conn-info> is an uninterpreted octet string. See
+   section 5 for further details.
+
+   For example, some possible responses to the 6191 , 23 query might be
+   the following:
+
+      6191 , 23 : USERID : UNIX : joe
+      6191 , 23 : USERID : MULTICS : StJohns.DODCSC.a
+      6191 , 23 : USERID : OTHER : StJohns.DODCSC.a
+      6191 , 23 : USERID : TAC : MCSJ-MITMUL
+      6191 , 23 : USERID : UNIX : a6X#-Yp,3147,2910
+      6191,23     :USERID:OTHER:wewishyouamerrychristmasandahappynewyear
+      6191 , 23 : ERROR : NO-USER
+
+   An ERROR line means that the server could not determine the
+   information associated to the TCP connection. <errortype> tells why.
+   <errortype> may be any of the following:
+
+      INVALID-PORT
+
+	 <localport> or <foreignport> was improperly specified---out of
+	 the range 0 to 65535, for example---or the request was
+	 otherwise non-standard. In this case the server may drop the
+	 connection without replying.
+
+      NO-USER
+
+         The connection specified by the port pair is not currently in
+         use.
+
+      HIDDEN-USER
+
+	 The connection is in use, but the information associated to it
+	 is explicitly hidden.
+
+
+
+
+TAP-std working group                                           [Page 3]
+
+RFC NNNN                         TAP                         August 1992
+
+
+      UNKNOWN-ERROR
+
+         Cannot determine the information associated to the connection,
+	 for an unknown reason. The server may give this <errortype> in
+	 any case and for any reason, including privacy, whether or not
+	 another <errortype> applies.
+
+   Future revisions of this document may allow other <errortype> values.
+   The server may also report an <errortype> beginning with the letter
+   X; all such <errortype>s are reserved for experimental or
+   non-standard use.
+
+   The precise format of the response line is as follows: <localport>,
+   followed by any amount of whitespace, followed by a comma and any
+   amount of whitespace, followed by <foreignport>, followed by any
+   amount of whitespace, followed by a colon and any amount of
+   whitespace. In the USERID case, it is then followed by USERID and any
+   amount of whitespace, a colon and any amount of whitespace,
+   <systemtype> and any amount of whitespace, a colon and any amount of
+   whitespace, one or more characters giving <conn-info>, and finally
+   carriage return and line feed. In the ERROR case, it is followed by
+   ERROR and any amount of whitespace, a colon and any amount of
+   whitespace, one or more characters giving <errortype>, and finally
+   carriage return and line feed.
+
+   Note that this format is ambiguous if <systemtype> contains colons or
+   whitespace. Assigned Numbers does not currently list any <systemtype>
+   with colons or whitespace, but if it ever does, the TAP server must
+   use OTHER for the <systemtype> on such a machine. The server should
+   also not use a <systemtype> containing carriage return or line feed.
+
+   Similarly, if <conn-info> or <errortype> begins with whitespace or
+   contains carriage return-line feed, the response line format is
+   ambiguous. The server must never use <errortype> containing
+   whitespace, carriage return, or line feed, and future revisions of
+   this RFC will never provide for such an <errortype>. The server
+   cannot send <conn-info> beginning with whitespace or containing
+   carriage return-line feed; it should not send <conn-info> containing
+   whitespace, carriage return, or line feed. ERROR : UNKNOWN-ERROR is
+   preferable.
+
+   Finally, <systemtype>, <conn-info>, and <errortype> cannot be empty
+   strings, and cannot contain ASCII NUL (character 0).
+   
+
+
+
+
+
+
+
+TAP-std working group                                           [Page 4]
+
+RFC NNNN                         TAP                         August 1992
+
+
+   Later revisions of this protocol specification may further restrict
+   the octets which may be transmitted. In light of this, servers
+   should, if possible, limit <conn-info> to at most ASCII codes 33
+   through 126. Clients should, however, be prepared to handle all
+   octets.
+
+   Note that there is no limit on line lengths: in particular, on the
+   length of <conn-info>. The client may drop the connection at any
+   time to avoid overflow. The server should, if possible, place the
+   most useful information within the first 512 characters of
+   <conn-info>.
+
+
+5. Applications and security
+
+   A TAP server may place any information it wants into its responses to
+   a TAP query. This protocol does not assign any meaning to <conn-info>
+   beyond its intrinsic existence as an octet string. So, in most cases,
+   a TAP client will simply record the bytes of <conn-info> in some
+   manner for possible interpretation later by the server host. This is
+   primarily useful as a form of remote auditing: if the client host
+   judges that the TCP connection represents an accidental or malicious
+   malfunction on the part of the server host, then <conn-info> may
+   permit the server host's owner to track down the exact source of the
+   malfunction. So the information returned by TAP in this case is of
+   primary benefit to the host generating that information.
+
+   The TAP client can do nothing more than this unless it has an
+   external reason to assign meaning to <conn-info> received from that
+   particular host. Beware that assigning <conn-info> an unjustified
+   meaning will in general lead to security holes. Do not use TAP for
+   access control without documenting the external knowledge you have
+   which ensures that your use of <conn-info> for access control is
+   justified. An attacker could subvert the security of a server host or
+   of TCP/IP; and any host could send any information it wants along a
+   TAP connection. Two dangers of weak methods of access control are
+   that they may permit access which should be denied, and that they may
+   deny access which should be permitted.
+
+
+6. Notes
+
+   This section is not part of the TAP description proper. It provides
+   historical information and pointers to further information.
+
+
+
+
+
+
+
+TAP-std working group                                           [Page 5]
+
+RFC NNNN                         TAP                         August 1992
+
+
+   TAP is derived from the protocol defined in RFC 931 by Mike StJohns.
+   It was first implemented by this author in early 1990, then again in
+   February 1991, and distributed via the USENET network under the name
+   authd. Later in 1991 two more independent interoperable
+   implementations were distributed through the Internet. In 1992
+   another independent interoperable implementation was distributed.
+   TAP, as defined in this document, is the same as the authd protocol,
+   which has not changed since its first implementation in early 1990.
+
+   This document is a cooperative effort of the TAP-std working group.
+   TAP-std is an ad-hoc group with the following charter: ``This group
+   is chartered to document the TAP protocol as used on TCP port 113
+   around the Internet. Its first goal is to publish as quickly as
+   possible an accurate, well-understood, complete TAP specification
+   which reflects the consensus of the community. Afterwards it will
+   keep track of TAP usage and produce further documents as necessary.
+   This group will not publish as a standard any TAP variation which has
+   not been tested on the Internet, though it will make all reasonable
+   allowances for future extensions.''
+
+   At the time of publication of this document, you can join the
+   tap-std mailing list by sending a subscription request to
+   tap-std-request@kramden.acf.nyu.edu, or by connecting to TCP port
+   39311 on 128.122.142.2 and typing your username. There is also a
+   mailing list for people who want to use TAP to solve problems. To
+   join, send mail to rfc931-users-request@kramden.acf.nyu.edu.
+
+   The author would like to thank Chris Davis, Peter Eriksson, and Dave
+   Borman for their helpful suggestions used in creating the TAP-std
+   base document. Thanks go to all the participants in the TAP-std
+   working group for their suggestions, comments, and criticism.
+
+
+Security Considerations
+
+   Security issues are discussed in section 5.
+
+
+Author's Address
+
+   Daniel J. Bernstein
+   5 Brewster Lane
+   Bellport, NY 11713
+
+   Email:  brnstnd@nyu.edu
+
+
+
+
+
+
+TAP-std working group                                           [Page 6]
+
+

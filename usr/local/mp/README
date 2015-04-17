@@ -1,0 +1,348 @@
+
+@(#)README 1.7 92/02/17
+
+README for mp, the PostScript pretty printer.
+
+Version 2.5.6 February 1992.
+
+Permission is given to distribute these sources, as long as the
+copyright messages are not removed, and no monies are exchanged.
+
+--------------------------------------------------------------------------
+CONTENTS:
+
+1. What is mp?
+2. Getting started.
+3. How mp works.
+4. Trouble shooting hints.
+5. Acknowledgements.
+--------------------------------------------------------------------------
+
+
+1. What is mp?
+--------------
+
+The mp program will pretty print various files for you. It can be used
+in conjunction with a mail reading utility for producing a pretty print
+of your mail items. It can be used with a news reading tool to pretty
+print news articles. Digests can also be printed, and this version can
+pretty print ordinary ASCII files as well. Support for personal organiser
+printing was added into the last released version.
+
+This version introduces a landscape mode for mp, to allow you to print
+two "pages" per page. This should all help us save some trees.
+
+It uses a PostScript prologue file which normally resides in
+/usr/local/lib, but this can be overwritten by use of the -p option.
+
+See the manual pages for more details on these various options.
+
+----------
+
+The latest version of mp is available via anonymous ftp from two sites:
+
+iesd.auc.dk [Denmark] (130.225.48.4) in the PostScript directory.
+
+  Thanks to Lars P. Fischer <fischer@iesd.auc.dk> for providing this service.
+
+ftp.adelaide.edu.au [Australia] (129.127.40.3) in the pub/sun/richb directory.
+
+  Thanks to Mark Prior <mrp@itd.adelaide.edu.au> for providing this service.
+
+Pick the site nearest to you, and please try to restrict your connections
+to outside 9:00am - 5:00pm local time during weekdays.
+
+----------
+
+There is a mailing list for people interested in mp. It is:
+
+  mp@Aus.Sun.COM
+
+To get added to the list, send a request to:
+
+  mp-request@Aus.Sun.COM
+
+Early patches are sent to the mailing list, plus active discussion on
+ideas for enhancements to mp.
+
+
+2. Getting started.
+-------------------
+
+Initially there is no Makefile file present in the mp source directory.
+You will need to copy Makefile.dist to Makefile, then adjust accordingly.
+
+The Makefile compilation details are setup to default to compiling on a Sun4
+running SunOS v4.1. Note that there are various compilation definitions that
+might need uncommenting if you are trying to compile and run it on other
+machines or operating systems.
+
+These are:
+
+GECOSFIELDS - Number of "words" extracted from the user's gecos field.
+GECOSLENGTH - Maximum number of characters extracted from the gecos field.
+NOSTRCHR    - uncomment if you don't have the strchr() function.
+PROLOGUE    - Location of the mp prologue file (default: /usr/local/lib)
+SYSV        - uncomment if you are running Unix System V.
+
+See the Makefile for a detailed description of each of these definitions.
+
+Once you are happy with these settings, then you should do a "make", which
+will compile the mp program.
+
+It is possible to change the number of lines printed per page, by
+adjusting the %%PageLength value in the initial portion of each of the
+PostScript prologue files. For example, with the default prologue file
+mp.pro.ps, A4 size paper users might find a page length of 70 more useful,
+and 86 seems a good value for LineLength in landscape mode.
+
+Before you install the mp files in the appropriate places, you should
+consider whether you want the installation to install the newsp, filep ...
+shell scripts. If this is not the case, then you will need to comment out
+this section of the Makefile. Look for the comment beginning "NOTE:".
+Alternatively you might only wish a subset to be installed, in which case
+you should adjust the MAILPNAMES definition in the Makefile accordingly.
+
+You now need to do an installation that is appropriate for your site. There
+are two types of installation:
+
+  1) If you are using US Letter size paper you should do a "make install".
+  2) If you are using A4 size paper,  then you should do a "make install-a4".
+
+This installation will put the files in their default locations. You will
+probably have to be super-user when you do the "make install".
+
+
+3. How mp works.
+----------------
+
+When mp processes a file, it first reads the designated prologue and
+extracts data from the following lines:
+
+   %%PageLength nn    - the number of lines per page
+   %%LineLength nn    - the number of chars on a line
+   %%NumCols nn       - the number of columns per page
+
+Then it reads the input files and reshapes them into PostScript using the
+following structuring conventions:
+
+      %%Page: ? 1
+      (1) newpage     <- physical page #1
+      ...data...
+      (1) 1 endcol    <- logical page #1, 1st col on this page
+      ...data...
+      (2) 2 endcol    <- logical page #2, 2nd col on this page
+      ...data...
+      (3) 3 endcol    <- logical page #3, 3rd col on this page
+      (1) endpage     <- physical page #1
+      %%Page: ? 2
+      (2) newpage     <- physical page #2
+      ...data...
+      (4) 1 endcol    <- logical page #4, 1st col on this page
+      ...data...
+      (5) 2 endcol    <- logical page #5, 2nd col on this page
+      (3) endpage     <- physical page #2
+      endfile         <- end of first or only input file
+      %%Page....      <
+      ....            <- 2nd input file, if any
+      endfile         <
+      ...             <- more, if any
+      %%Trailer
+      %%Pages: nn
+      %%EOF
+
+Prologue files need to supply the above procedures, which may be empty.
+
+The following prologues are supplied with mp:
+
+      mp.pro.ps               standard prologue
+      mp.pro.alt.ps           alternative prologue, page nos. bottom right
+      mp.pro.altl.ps          alternative landscape mode prologue file.
+      mp.pro.l.ps             standard prologue, landscape, 2 columns
+      mp.pro.ff.ps            Filofax prologue
+      mp.pro.fp.ps            Franklin Planner prologue
+      mp.pro.tm.ps            Time Manager prologue
+      mp.pro.ts.ps            Time/System International prologue.
+
+
+4. Trouble shooting hints.
+--------------------------
+
+* From Mark Valentine <mark@spider.co.uk>
+  Possible problems with mailp. On some hybrid systems (such as MIPS' RISC/os),
+  testing for the existence of /usr/spool/lp isn't sufficient to determine the
+  spooler to use. On our systems, for example, the directory exists, but we use
+  only the Berkeley spooler (it's a site-specific decision which one you use).
+
+* From Dan Jacobson <Dan_Jacobson@ATT.COM>
+  PRINT_CMD, which is used to specify the Unix command to use to print the
+  mp output, is hardwired into mailp.
+
+* From John Macdonald <mauxci!eci386!jmm@apple.com>
+  setscreen tells the printer how to generate greyscales. Depending upon
+  the screen angle and the dot density (45 and 106 above) you get differing
+  patterns for the "grey" (a mixture of black and white portions that gives
+  the impression of grey).
+
+  There are various tradeoffs in these choices (hence the red-books
+  recommendation). Small dot density gives grainier greys where the fact that
+  it is built up from dots is quite evident. High dot densities allow for
+  fewer levels of grey.
+
+  The default for LaserWriters provides 33 grey levels with somewhat visible
+  dots.
+
+  The 106 45 setting provides only 9 grey levels, but much a smoother
+  appearance.
+
+  The default is more valuable if you are doing special effects like gradual
+  changes in darkness and image reproduction.
+ 
+  The alternate is more valuable if you use only a small number of distinct
+  grey levels.
+ 
+  If you have a postscript printer that is more than 300 dots per inch,
+  it is quite possible that the manufacturer chosen default has a better
+  appearance than the 106 45 explicit setting, since the number of spots
+  per inch that are possible with such printer is much higher than with
+  a 300 dpi printer. It is also possible that there is a similar sort
+  of trade-off in their choice between levels and graininess, but it will
+  be at a much finer level - magnifying glasses might be necessary to
+  determine the best one.
+
+  For further details, see Byte, July 1990, Don Lancaster "PostScript
+  Insider Secrets"
+
+* From Bertrand Decouty <Bertrand.Decouty@irisa.fr>
+  As with patch #5 to v2.5, mailp (and friends) are now installed using
+  symbolic links, as opposed to hard links. This is a potential problem to
+  UNIX systems which don't have symbolic links.
+
+* From Bjorn P. Brox <brox@dms.corena.no>
+  The /backspace definition in the PostScript prologue files won't work on
+  all PostScript variants using Type1 fonts. The problem is that the
+  backspacefont proc is using a feature in real PostScript: A CharStrings
+  entry does not have to be a Type1 encrypted charstring, but can also be
+  a function. If this is a problem, then replace:
+
+    /backspace { -600 0 setcharwidth pop } bind def
+
+  with
+
+    /backspace <6f0878dde70d23b542> def
+
+
+5. Acknowledgements.
+--------------------
+
+The original version of mp was written by Steve Holden in the ICON language,
+when Steve worked for Sun Microsystems UK. I converted it to the C language
+and added a few features.
+
+Special thanks go to:
+
+Bruno Pillard of Chorus Systemes, France added support for MH mail and news
+article printing, plus a shell script (mailp) which tidies up the user
+interface to mp.
+
+Dave Glowacki of Public Works Computer Services, St Paul, MN. added the
+ability to print digests and tidied up some of the other options.
+
+Rick Rodgers, UCSF School of Pharmacy, San Francicso revised the initial
+version of the mp manual page.
+
+Doug Buchanan added support for printing in filofax and Time Manager format.
+
+Jerermy Webber of the Computer Science Department at the University of
+Adelaide rewrote the message parsing and option code and made substantial
+improvements to the programs user friendliness and robustness.
+
+Sam Manogharan added support for printing multiple files specified on the
+command line, and subject line filename print for ordinary files.
+
+Michael Tuchiarone added in the landscape mode.
+
+Johan Vromans revised and tidied up the PostScript structuring and the way
+the prologue files were handled.
+
+John Macdonald who supplied two PostScript prologue files which generate
+much prettier output.
+
+To Bertrand DeCouty, who supplied support in the PostScript prologue files
+for the ISO8859 character set.
+
+Glenn Reid from Adobe Systems wrote the backspacefont.ps code used in the
+prologue files.
+
+Also thanks to the following for various bug reports, fixes and suggestions
+for improvement:
+
+  Jimmy Aitken,
+  Frederick Avolio,
+  Bruce G Barnett,
+  Craig Bishop,
+  James F. Blake,
+  David Boone,
+  Brachet,
+  Bjorn P. Brox,
+  Mike Bundschuh,
+  Maureen Chew,
+  Lupe Christoph,
+  Steve Cliffe,
+  Peter Collinson,
+  Roger De Salis,
+  L. Jill Debord,
+  Bertrand Decouty,
+  Paul Eggert,
+  Ran Ever-Hadani,
+  David Fiedler,
+  Lars P. Fischer,
+  Donn Fisher,
+  Stephen Frede,
+  Rick Gunderson,
+  Andy Hall,
+  Paul Higgins,
+  Bill Houle,
+  Ian Hoyle,
+  Felix Ingrand,
+  Scott A. Jordahl,
+  Mike Khaw,
+  Rainer Klute,
+  Meinhard Kniffki,
+  Brian Kohn,
+  Hugues Leroy,
+  Glenn M. Lewis,
+  Dennis Linse,
+  John Little,
+  John Macdonald,
+  Pierre Mareschal,
+  Fulvio Marino,
+  Sjoerd Mullender,
+  Geoff Mulligan,
+  Andy Norman,
+  Francois Ougier,
+  Bruno Pillard,
+  Mark Prior,
+  Roger Riggs,
+  Jim Sanchez,
+  David W. Sanderson,
+  Bill Shannon,
+  Amos Shapir,
+  David W. Smith,
+  Vic Tolomei,
+  Sato Toshihiko,
+  Larry Tsui,
+  Walter Underwood,
+  Mark Valentine,
+  Larry W. Virden,
+  Johan Vromans,
+  Andreas Wettengel,
+  Pauline van Winsen,
+  Ian Young,
+
+----------------------------------------------------------------------------
+
+Suggestions for further improvement would be most welcome, plus bug reports
+and comments.
+
+Rich Burridge.        PHONE: +61 2 413 2666         MAIL: richb@Aus.Sun.COM

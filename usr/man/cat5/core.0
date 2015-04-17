@@ -1,0 +1,66 @@
+
+
+
+CORE(5)             UNIX Programmer's Manual		  CORE(5)
+
+
+
+NAME
+     core - format of memory image file
+
+SYNOPSIS
+     #include <sys/param.h>
+
+DESCRIPTION
+     The UNIX System writes out a memory image of a terminated
+     process when any of various errors occur.	See _s_i_g_v_e_c(2) for
+     the list of reasons; the most common are memory violations,
+     illegal instructions, bus errors, and user-generated quit
+     signals.  The memory image is called `core' and is written
+     in the process's working directory (provided it can be; nor-
+     mal access controls apply).
+
+     The core file consists of the _u. area, whose size (in 64
+     byte `clicks') is defined by the USIZE manifest in the
+     <_s_y_s/_p_a_r_a_m._h> file.  The _u. area starts with a _u_s_e_r struc-
+     ture as given in <_s_y_s/_u_s_e_r._h>.  The rest of the _u. area con-
+     sists of the kernel stack for the terminated process which
+     includes (among other things) the processor registers at the
+     time of the fault; see the system listings for the format of
+     this area.  The remainder of the core file consists first of
+     the data pages and then the stack pages of the process
+     image.  The amount of data space image in the core file is
+     given (in clicks) by the variable _u__d_s_i_z_e in the _u. area.
+     If the text segment was not write-only and and shared it is
+     included as the first _e_t_e_x_t bytes of the data image where
+     _e_t_e_x_t is taken from the symbol table of the object file
+     which generated the memory image.	The amount of stack image
+     in the core file is given (in clicks) by the variable
+     _u__s_s_i_z_e in the _u. area.
+
+     In general the debugger _a_d_b(1) is sufficient to deal with
+     core images.
+
+SEE ALSO
+     adb(1), sigvec(2), stack(5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 26, 1987			1
+
+
+

@@ -1,0 +1,594 @@
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+NAME
+     adb - debugger (2BSD)
+
+SYNOPSIS
+     adb [-w] [ -k ] [ -Idir ] [ objfil [ corfil ] ]
+
+DESCRIPTION
+     _A_d_b is a general purpose debugging program.  It may be used
+     to examine files and to provide a controlled environment for
+     the execution of UNIX programs.
+
+     _O_b_j_f_i_l is normally an executable program file, preferably
+     containing a symbol table; if not then the symbolic features
+     of _a_d_b cannot be used although the file can still be exam-
+     ined.  The default for _o_b_j_f_i_l is a.out. _C_o_r_f_i_l is assumed to
+     be a core image file produced after executing _o_b_j_f_i_l; the
+     default for _c_o_r_f_i_l is core.
+
+     Requests to _a_d_b are read from the standard input and
+     responses are to the standard output.  If the -w flag is
+     present then both _o_b_j_f_i_l and _c_o_r_f_i_l are created if necessary
+     and opened for reading and writing so that files can be
+     modified using _a_d_b.
+
+     The -k option makes _a_d_b do UNIX kernel memory mapping; it
+     should be used when _c_o_r_e is a UNIX crash dump or /_d_e_v/_m_e_m.
+
+     The -I option specifies a directory where files to be read
+     with $< or $<< (see below) will be sought; the default is
+     /_u_s_r/_s_h_a_r_e/_a_d_b.
+
+     _A_d_b ignores QUIT; INTERRUPT causes return to the next _a_d_b
+     command.
+
+     In general requests to _a_d_b are of the form
+
+		[_a_d_d_r_e_s_s]  [, _c_o_u_n_t] [_c_o_m_m_a_n_d] [;]
+
+     If _a_d_d_r_e_s_s is present then _d_o_t is set to _a_d_d_r_e_s_s.	Initially
+     _d_o_t is set to 0.  For most commands _c_o_u_n_t specifies how many
+     times the command will be executed.  The default _c_o_u_n_t is 1.
+     _A_d_d_r_e_s_s and _c_o_u_n_t are expressions.
+
+     The interpretation of an address depends on the context it
+     is used in.  If a subprocess is being debugged then
+     addresses are interpreted in the usual way in the address
+     space of the subprocess.  For further details of address
+     mapping see ADDRESSES.
+
+EXPRESSIONS
+     .	    The value of _d_o_t.
+
+
+
+
+Printed 11/26/99	October 21, 1996			1
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+     +	    The value of _d_o_t incremented by the current incre-
+	    ment.
+
+     ^	    The value of _d_o_t decremented by the current incre-
+	    ment.
+
+     "	    The last _a_d_d_r_e_s_s typed.
+
+     _i_n_t_e_g_e_r
+	    An octal number if _i_n_t_e_g_e_r begins with a 0; a hexade-
+	    cimal number if preceded by #; otherwise a decimal
+	    number.  This default interpretation of integers may
+	    be changed via the $o and $d commands.
+
+     _i_n_t_e_g_e_r._f_r_a_c_t_i_o_n
+	    A 32 bit floating point number.
+
+     '_c_c_c_c' The ASCII value of up to 4 characters.  \ may be used
+	    to escape a '.
+
+     < _n_a_m_e The value of _n_a_m_e, which is either a variable name or
+	    a register name.  _A_d_b maintains a number of variables
+	    (see VARIABLES) named by single letters or digits.
+	    If _n_a_m_e is a register name then the value of the
+	    register is obtained from the system header in _c_o_r_-
+	    _f_i_l.  The register names are those printed by the $r
+	    command.
+
+     _s_y_m_b_o_l A _s_y_m_b_o_l is a sequence of upper or lower case
+	    letters, underscores or digits, not starting with a
+	    digit.  The backslash character \ may be used to
+	    escape other characters.  The value of the _s_y_m_b_o_l is
+	    taken from the symbol table in _o_b_j_f_i_l.  An initial _
+	    or ~ will be prepended to _s_y_m_b_o_l if needed.  If the
+	    symbol is a text symbol and _o_b_j_f_i_l is an overlay
+	    type, the default is ~_s_y_m_b_o_l, which is the subroutine
+	    itself, not the entry interface in the base segment.
+
+     _ _s_y_m_b_o_l
+	    In C, the `true name' of an external symbol begins
+	    with _.  It may be necessary to utter this name to
+	    distinguish it from internal or hidden variables of a
+	    program.  For a subroutine in an overlay, ~_s_y_m_b_o_l is
+	    the actual subroutine, and __s_y_m_b_o_l is the entry point
+	    in the base segment (the "thunk").	Note that to
+	    explicitly specify the local name, the ~ must be pre-
+	    ceeded by a backslash, since ~ is the bitwise comple-
+	    ment operator: _\~_s_y_m_b_o_l must be typed.
+
+     _r_o_u_t_i_n_e._n_a_m_e
+	    The address of the variable _n_a_m_e in the specified C
+	    routine.  Both _r_o_u_t_i_n_e and _n_a_m_e are _s_y_m_b_o_l_s.  If _n_a_m_e
+
+
+
+Printed 11/26/99	October 21, 1996			2
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	    is omitted the value is the address of the most
+	    recently activated C stack frame corresponding to
+	    _r_o_u_t_i_n_e.
+
+     (_e_x_p)  The value of the expression _e_x_p.
+
+     Monadic operators
+
+     *_e_x_p   The contents of the location addressed by _e_x_p in _c_o_r_-
+	    _f_i_l.
+
+     @_e_x_p   The contents of the location addressed by _e_x_p in
+	    _o_b_j_f_i_l.
+
+     -_e_x_p   Integer negation.
+
+     ~_e_x_p   Bitwise complement.
+
+     Dyadic operators are left associative and are less binding
+     than monadic operators.
+
+     _e_1+_e_2  Integer addition.
+
+     _e_1-_e_2  Integer subtraction.
+
+     _e_1*_e_2  Integer multiplication.
+
+     _e_1%_e_2  Integer division.
+
+     _e_1&_e_2  Bitwise conjunction.
+
+     _e_1|_e_2  Bitwise disjunction.
+
+     _e_1#_e_2  _E_1 rounded up to the next multiple of _e_2.
+
+COMMANDS
+     Most commands consist of a verb followed by a modifier or
+     list of modifiers.  The following verbs are available.  (The
+     commands `?' and `/' may be followed by `*'; see ADDRESSES
+     for further details.)
+
+     ?_f   Locations starting at _a_d_d_r_e_s_s in _o_b_j_f_i_l are printed
+	  according to the format _f.  _d_o_t is incremented by the
+	  sum of the increments for each format letter (q.v.).
+
+     /_f   Locations starting at _a_d_d_r_e_s_s in _c_o_r_f_i_l are printed
+	  according to the format _f and _d_o_t is incremented as for
+	  `?'.
+
+     =_f   The value of _a_d_d_r_e_s_s itself is printed in the styles
+	  indicated by the format _f.  (For i format `?' is
+	  printed for the parts of the instruction that reference
+
+
+
+Printed 11/26/99	October 21, 1996			3
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	  subsequent words.)
+
+     A _f_o_r_m_a_t consists of one or more characters that specify a
+     style of printing.  Each format character may be preceded by
+     a decimal integer that is a repeat count for the format
+     character.  While stepping through a format _d_o_t is incre-
+     mented temporarily by the amount given for each format
+     letter.  If no format is given then the last format is used.
+     The format letters available are as follows.
+
+	  o 2  Print 2 bytes in octal.	All octal numbers output
+	       by _a_d_b are preceded by 0.
+	  O 4  Print 4 bytes in octal.
+	  q 2  Print in signed octal.
+	  Q 4  Print long signed octal.
+	  d 2  Print in decimal.
+	  D 4  Print long decimal.
+	  x 2  Print 2 bytes in hexadecimal.
+	  X 4  Print 4 bytes in hexadecimal.
+	  u 2  Print as an unsigned decimal number.
+	  U 4  Print long unsigned decimal.
+	  f 4  Print the 32 bit value as a floating point number.
+	  F 8  Print double floating point.
+	  b 1  Print the addressed byte in octal.
+	  c 1  Print the addressed character.
+	  C 1  Print the addressed character using the following
+	       escape convention.  the standard escape convention
+	       where control characters are printed as ^X and the
+	       delete character is printed as ^?.
+	  s _n  Print the addressed characters until a zero char-
+	       acter is reached.
+	  S _n  Print a string using the ^_X escape convention (see
+	       C above).  _n is the length of the string including
+	       its zero terminator.
+	  Y 4  Print 4 bytes in date format (see _c_t_i_m_e(3)).
+	  i n  Print as machine instructions.  _n is the number of
+	       bytes occupied by the instruction.  This style of
+	       printing causes variables 1 and 2 to be set to the
+	       offset parts of the source and destination respec-
+	       tively.
+	  a 0  Print the value of _d_o_t in symbolic form.  Symbols
+	       are checked to ensure that they have an appropri-
+	       ate type as indicated below.
+
+	    /  local or global data symbol
+	    ?  local or global text symbol
+	    =  local or global absolute symbol
+
+	  p 2  Print the addressed value in symbolic form using
+	       the same rules for symbol lookup as a.
+	  t 0  When preceded by an integer tabs to the next
+	       appropriate tab stop.  For example, 8t moves to
+
+
+
+Printed 11/26/99	October 21, 1996			4
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	       the next 8-space tab stop.
+	  r 0  Print a space.
+	  n 0  Print a newline.
+	  "..." 0
+	       Print the enclosed string.
+	  ^    _D_o_t is decremented by the current increment.
+	       Nothing is printed.
+	  +    _D_o_t is incremented by 1.  Nothing is printed.
+	  -    _D_o_t is decremented by 1.  Nothing is printed.
+
+     newline
+	  If the previous command temporarily incremented _d_o_t,
+	  make the increment permanent.  Repeat the previous com-
+	  mand with a _c_o_u_n_t of 1.
+
+     [?/]l _v_a_l_u_e _m_a_s_k
+	  Words starting at _d_o_t are masked with _m_a_s_k and compared
+	  with _v_a_l_u_e until a match is found.  If L is used then
+	  the match is for 4 bytes at a time instead of 2.  If no
+	  match is found then _d_o_t is unchanged; otherwise _d_o_t is
+	  set to the matched location.	If _m_a_s_k is omitted then
+	  -1 is used.
+
+     [?/]w _v_a_l_u_e ...
+	  Write the 2-byte _v_a_l_u_e into the addressed location.  If
+	  the command is W, write 4 bytes.  Odd addresses are not
+	  allowed when writing to the subprocess address space.
+
+     [?/]m _b_1 _e_1 _f_1[?/]
+	  New values for (_b_1, _e_1, _f_1) are recorded.  If less than
+	  three expressions are given then the remaining map
+	  parameters are left unchanged.  If the `?' or `/' is
+	  followed by `*' then the last segment (_b_2,_e_2,_f_2) of the
+	  mapping is changed.  If the list is terminated by `?'
+	  or `/' then the file (_o_b_j_f_i_l or _c_o_r_f_i_l respectively) is
+	  used for subsequent requests.  (So that, for example,
+	  `/m?' will cause `/' to refer to _o_b_j_f_i_l.)
+
+     >_n_a_m_e
+	  _D_o_t is assigned to the variable or register named.
+
+     !	  A shell (/bin/sh) is called to read the rest of the
+	  line following `!'.
+
+     $_m_o_d_i_f_i_e_r
+	  Miscellaneous commands.  The available _m_o_d_i_f_i_e_r_s are:
+
+	  <_f   Read commands from the file _f.  If this command is
+	       executed in a file, further commands in the file
+	       are not seen.  If _f is omitted, the current input
+	       stream is terminated.  If a _c_o_u_n_t is given, and is
+	       zero, the command will be ignored.  The value of
+
+
+
+Printed 11/26/99	October 21, 1996			5
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	       the count will be placed in variable _9 before the
+	       first command in _f is executed.
+	  <<_f  Similar to < except it can be used in a file of
+	       commands without causing the file to be closed.
+	       Variable _9 is saved during the execution of this
+	       command, and restored when it completes.  There is
+	       a (small) finite limit to the number of << files
+	       that can be open at once.
+	  >_f   Append output to the file _f, which is created if
+	       it does not exist.  If _f is omitted, output is
+	       returned to the terminal.
+	  ?    Print process id, the signal which caused stoppage
+	       or termination, as well as the registers as $r.
+	       This is the default if _m_o_d_i_f_i_e_r is omitted.
+	  r    Print the general registers and the instruction
+	       addressed by pc.  _D_o_t is set to pc.
+	  f    Print the floating registers in single or double
+	       length.	If the floating point status of ps is set
+	       to double (0200 bit) then double length is used
+	       anyway.
+	  b    Print all breakpoints and their associated counts
+	       and commands.
+	  a    ALGOL 68 stack backtrace.  If _a_d_d_r_e_s_s is given
+	       then it is taken to be the address of the current
+	       frame (instead of r4).  If _c_o_u_n_t is given then
+	       only the first _c_o_u_n_t frames are printed.
+	  c    C stack backtrace.  If _a_d_d_r_e_s_s is given then it is
+	       taken as the address of the current frame instead
+	       of the contents of the frame-pointer register.  If
+	       C is used then the names and (16 bit) values of
+	       all automatic and static variables are printed for
+	       each active function.  If _c_o_u_n_t is given then only
+	       the first _c_o_u_n_t frames are printed.
+	  e    The names and values of external variables are
+	       printed.
+	  w    Set the page width for output to _a_d_d_r_e_s_s (default
+	       80).
+	  s    Set the limit for symbol matches to _a_d_d_r_e_s_s
+	       (default 255).
+	  o    All integers input are regarded as octal.
+	  d    Reset integer input as described in EXPRESSIONS.
+	  q    Exit from _a_d_b.
+	  v    Print all non zero variables in octal.
+	  m    Print the address map.
+
+     :_m_o_d_i_f_i_e_r
+	  Manage a subprocess.	Available modifiers are:
+
+	  b_c   Set breakpoint at _a_d_d_r_e_s_s.  If _o_b_j_f_i_l is overlaid
+	       and _a_d_d_r_e_s_s is in the overlay region, the break-
+	       point is set in the overlay of the symbol men-
+	       tioned if _a_d_d_r_e_s_s was given symbolically,
+
+
+
+Printed 11/26/99	October 21, 1996			6
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	       otherwise it is set in the current overlay (that
+	       in variable c).	The breakpoint is executed
+	       _c_o_u_n_t-1 times before causing a stop.  Each time
+	       the breakpoint is encountered the command _c is
+	       executed.  If this command is omitted or sets _d_o_t
+	       to zero then the breakpoint causes a stop.
+
+	  d    Delete breakpoint at _a_d_d_r_e_s_s.
+
+	  r    Run _o_b_j_f_i_l as a subprocess.  If _a_d_d_r_e_s_s is given
+	       explicitly then the program is entered at this
+	       point; otherwise the program is entered at its
+	       standard entry point.  _c_o_u_n_t specifies how many
+	       breakpoints are to be ignored before stopping.
+	       Arguments to the subprocess may be supplied on the
+	       same line as the command.  An argument starting
+	       with < or > causes the standard input or output to
+	       be established for the command.
+
+	  c_s   The subprocess is continued with signal _s, see
+	       _s_i_g_v_e_c(2).  If _a_d_d_r_e_s_s is given then the subpro-
+	       cess is continued at this address.  If no signal
+	       is specified then the signal that caused the sub-
+	       process to stop is sent.  Breakpoint skipping is
+	       the same as for r.
+
+	  s_s   As for c except that the subprocess is single
+	       stepped _c_o_u_n_t times.  If there is no current sub-
+	       process then _o_b_j_f_i_l is run as a subprocess as for
+	       r.  In this case no signal can be sent; the
+	       remainder of the line is treated as arguments to
+	       the subprocess.
+
+	  k    The current subprocess, if any, is terminated.
+
+VARIABLES
+     _A_d_b provides a number of variables.  Named variables are set
+     initially by _a_d_b but are not used subsequently (except for
+     c).  Numbered variables are reserved for communication as
+     follows.
+
+     0	  The last value printed.
+     1	  The last offset part of an instruction source.
+     2	  The previous value of variable 1.
+     9	  The count on the last $< or $<< command.
+
+     On entry the following are set from the system header in the
+     _c_o_r_f_i_l.  If _c_o_r_f_i_l does not appear to be a core file then
+     these values are set from _o_b_j_f_i_l.
+
+     b	  The base address of the data segment.
+     c	  The current overlay.	This is set from _c_o_r_f_i_l, and in
+
+
+
+Printed 11/26/99	October 21, 1996			7
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+	  turn sets the overlay map.  This variable and the map
+	  may be changed by referring to other overlays symboli-
+	  cally (e.g. by examining text in subroutines in other
+	  overlays), using the $r command (which resets c from
+	  the core file), or explicitly (with the command >c).
+     d	  The data segment size.
+     e	  The entry point.
+     m	  The `magic' number (0405, 0407, 0410, 0411, 0430 or
+	  0431).  The object is overlaid if m is 0430 or 0431.
+     o	  The sum of the overlay segment sizes (if overlaid).
+     s	  The stack segment size.
+     t	  The text segment size.
+
+ADDRESSES
+     The address in a file associated with a written address is
+     determined by a mapping associated with that file.  Each
+     mapping is represented by two or three triples (_b_1, _e_1, _f_1),
+     (_b_o, _e_o, _f_o) for overlaid object files, and (_b_2, _e_2, _f_2) and
+     the _f_i_l_e _a_d_d_r_e_s_s corresponding to a written _a_d_d_r_e_s_s is cal-
+     culated as follows.
+
+	_b_1<__a_d_d_r_e_s_s<_e_1 => _f_i_l_e _a_d_d_r_e_s_s=_a_d_d_r_e_s_s+_f_1-_b_1, otherwise,
+
+     if overlaid,
+	_b_o<__a_d_d_r_e_s_s<_e_o => _f_i_l_e _a_d_d_r_e_s_s=_a_d_d_r_e_s_s+_f_o-_b_o, otherwise,
+
+	_b_2<__a_d_d_r_e_s_s<_e_2 => _f_i_l_e _a_d_d_r_e_s_s=_a_d_d_r_e_s_s+_f_2-_b_2,
+
+     otherwise, the requested _a_d_d_r_e_s_s is not legal.  In some
+     cases (e.g. for programs with separated I and D space) the
+     two segments for a file may overlap.  If a ? or / is fol-
+     lowed by an * then only the last triple is used.
+
+     The initial setting of both mappings is suitable for normal
+     a.out and core files.  If the object file is not of the kind
+     expected then, for both files, _b_1 is set to 0, _e_1 is set to
+     the maximum file size and _f_1 is set to 0; in this way the
+     whole file can be examined with no address translation.
+
+     So that _a_d_b may be used on large files all appropriate
+     values are kept as signed 32 bit integers.
+
+FILES
+     a.out
+     core
+
+SEE ALSO
+     cc(1), ptrace(2), a.out(5), core(5)
+     _A_D_B - _A _T_u_t_o_r_i_a_l, S. R. Bourne
+
+DIAGNOSTICS
+     `Adb' when there is no current command or format.	Comments
+
+
+
+Printed 11/26/99	October 21, 1996			8
+
+
+
+
+
+
+ADB(1)		    UNIX Programmer's Manual		   ADB(1)
+
+
+
+     about inaccessible files, syntax errors, abnormal termina-
+     tion of commands, etc.  Exit status is 0, unless last com-
+     mand failed or returned nonzero status.
+
+BUGS
+     When single stepping, system calls do not count as an exe-
+     cuted instruction.
+     Local variables whose names are the same as an external
+     variable may foul up the accessing of the external.
+     Local variables cannot be accessed in routines that are in
+     overlays.
+     Since no shell is invoked to interpret the arguments of the
+     :r command, the customary wild-card and variable expansions
+     cannot occur.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	October 21, 1996			9
+
+
+

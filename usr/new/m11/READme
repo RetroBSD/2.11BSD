@@ -1,0 +1,38 @@
+This is the Jim Reeds version of the Harvard m11.
+
+Here is code for 2 programs:
+
+	m11	the assembler itself		many .m11 source files
+						and the include file 'at.sml'
+	macxrf	crossreference generator	macxrf.c
+
+There are two documentation files:
+
+	m11.1		nroff -man'able version of a manual page
+	Document	nroff -ms'able version of a DRAFT of a windy document
+
+To install:
+
+	You must put macxrf into /usr/ucb/macxrf.  This path name is
+buried in the m11 source file exec.m11 if you want to change it.  The assembler
+itself can live anywhere.  /usr/new/m11 and /usr/ucb/m11 are two
+likely places to put it.
+
+	You might need a copy of the Jim Reeds souped up l11 to link this
+program.  Source is in ../l11.  The changes involved with l11 are minor.
+
+	Hints about using m11:  This version works differently from older
+versions.  Many of the defaults are changed.  The most suprising is that
+undefined sysmbols are automatically treated as external.  This is the
+default .enabl gbl attribute.  Users can either do .dsabl gbl or use one of the
+retrofit flags.  Here are the two retrofit flags:
+
+	m11 -de args
+	m11 -ha args
+
+-de stands for DEC, -ha stands for Harvard.  Code written for DEC macro-11
+should probably be assembled with the -de flag for DEC-like treatment of
+case conversion, etc.  This includes the Johns Hopkins basic+ interpreter.
+Code written for earlier versions of the Harvard Unixification of macro-11
+should be assembled with the -ha flag.  This includes Harvard's absurd .psect
+default attributes.  Use it when recreating Harvard lisp.

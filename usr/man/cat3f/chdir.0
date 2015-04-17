@@ -1,0 +1,66 @@
+
+
+
+CHDIR(3F)	    UNIX Programmer's Manual		CHDIR(3F)
+
+
+
+NAME
+     chdir - change default directory
+
+SYNOPSIS
+     integer function chdir (dirname)
+     character*(*) dirname
+
+DESCRIPTION
+     The default directory for creating and locating files will
+     be changed to _d_i_r_n_a_m_e. Zero is returned if successful; an
+     error code otherwise.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     chdir(2), cd(1), perror(3F)
+
+BUGS
+     Pathnames can be no longer than MAXPATHLEN as defined in
+     <_s_y_s/_p_a_r_a_m._h>.
+
+     Use of this function may cause inquire by unit to fail.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

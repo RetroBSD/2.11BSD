@@ -1,0 +1,198 @@
+
+
+
+GETPWENT(3)	    UNIX Programmer's Manual	      GETPWENT(3)
+
+
+
+NAME
+     getpwent, getpwnam, getpwuid, setpassent, setpwfile,
+     setpwent, endpwent - get password file entries
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <pwd.h>
+
+     struct passwd *getpwent()
+
+     struct passwd *getpwnam(login)
+     char *login;
+
+     struct passwd *getpwuid(uid)
+     uid_t uid;
+
+     int setpassent(stayopen)
+     int stayopen;
+
+     void setpwfile(file)
+     char *file;
+
+     int setpwent()
+
+     void endpwent()
+
+DESCRIPTION
+     _G_e_t_p_w_e_n_t, _g_e_t_p_w_u_i_d, and _g_e_t_p_w_n_a_m each return a pointer to a
+     structure containing the broken-out fields of a line in the
+     password file.  This structure is defined by the include
+     file <pwd.h>, and contains the following fields:
+
+	  struct passwd {
+	       char *pw_name;		/* user name */
+	       char *pw_passwd;         /* encrypted password */
+	       uid_t	 pw_uid;	/* user uid */
+	       gid_t	 pw_gid;	/* user gid */
+	       time_t	 pw_change;	/* password change time */
+	       char *pw_class;		/* user access class */
+	       char *pw_gecos;		/* Honeywell login info */
+	       char *pw_dir;		/* home directory */
+	       char *pw_shell;		/* default shell */
+	       time_t	 pw_expire;	/* account expiration */
+	  };
+
+     These fields are more completely described in _p_a_s_s_w_d(5).
+
+     _G_e_t_p_w_n_a_m and _g_e_t_p_w_u_i_d search the password database for a
+     matching user name or user uid, respectively, returning the
+     first one encountered.  Identical user names or user uids
+     may result in undefined behavior.
+
+
+
+
+Printed 11/26/99	February 23, 1989			1
+
+
+
+
+
+
+GETPWENT(3)	    UNIX Programmer's Manual	      GETPWENT(3)
+
+
+
+     _G_e_t_p_w_e_n_t sequentially reads the password database and is
+     intended for programs that wish to step through the complete
+     list of users.
+
+     All three routines will open the password file for reading,
+     if necessary.
+
+     _S_e_t_p_w_f_i_l_e changes the default password file to _f_i_l_e, thus
+     allowing the use of alternate password files.
+
+     _S_e_t_p_a_s_s_e_n_t opens the file or rewinds it if it is already
+     open.  If _s_t_a_y_o_p_e_n is non-zero, file descriptors are left
+     open, significantly speeding up subsequent calls.	This
+     functionality is unnecessary for _g_e_t_p_w_e_n_t as it doesn't
+     close its file descriptors by default.  It should also be
+     noted that it is dangerous for long-running programs to use
+     this functionality as the password file may be updated by
+     _c_h_p_a_s_s(1), _p_a_s_s_w_d(1), or _v_i_p_w(8).
+
+     _S_e_t_p_w_e_n_t is identical to _s_e_t_p_a_s_s_e_n_t with an argument of
+     zero.
+
+     _E_n_d_p_w_e_n_t closes any open files.
+
+     These routines have been written to ``shadow'' the password
+     file, e.g.  allow only certain programs to have access to
+     the encrypted password.  This is done by using the
+     _m_k_p_a_s_s_w_d(8) program, which creates _n_d_b_m(3) databases that
+     correspond to the password file, with the single exception
+     that, rather than storing the encrypted password in the
+     database, it stores the offset in the password file where
+     the encrypted password may be found.  _G_e_t_p_w_e_n_t, _g_e_t_p_w_n_a_m,
+     and _g_e_t_p_w_u_i_d will use the _n_d_b_m files in preference to the
+     ``real'' password files, only reading the password file
+     itself, to obtain the encrypted password, if the process is
+     running with an effective user id equivalent to super-user.
+     If the password file itself is protected, and the _n_d_b_m files
+     are not, this makes the password available only to programs
+     running with super-user privileges.
+
+FILES
+     /etc/passwd
+
+SEE ALSO
+     getlogin(3), getgrent(3), ndbm(3), passwd(5)
+
+DIAGNOSTICS
+     The routines _g_e_t_p_w_e_n_t, _g_e_t_p_w_n_a_m, and _g_e_t_p_w_u_i_d, return a null
+     pointer on EOF or error.  _S_e_t_p_a_s_s_e_n_t and _s_e_t_p_w_e_n_t return 0
+     on failure and 1 on success.  _E_n_d_p_w_e_n_t and _s_e_t_p_w_f_i_l_e have no
+     return value.
+
+
+
+
+Printed 11/26/99	February 23, 1989			2
+
+
+
+
+
+
+GETPWENT(3)	    UNIX Programmer's Manual	      GETPWENT(3)
+
+
+
+BUGS
+     All information is contained in a static buffer which is
+     overwritten by each new call.  It must be copied elsewhere
+     to be retained.
+
+     Intermixing calls to _g_e_t_p_w_e_n_t with calls to _g_e_t_p_w_n_a_m or
+     _g_e_t_p_w_u_i_d, or intermixing calls to _g_e_t_p_w_n_a_m and _g_e_t_p_w_u_i_d,
+     after using _s_e_t_p_a_s_s_e_n_t to require that file descriptors be
+     left open, may result in undefined behavior.
+
+     The routines _g_e_t_p_w_e_n_t, _e_n_d_p_w_e_n_t, _s_e_t_p_a_s_s_e_n_t, and _s_e_t_p_w_e_n_t
+     are fairly useless in a networked environment and should be
+     avoided, if possible.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 23, 1989			3
+
+
+

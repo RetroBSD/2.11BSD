@@ -1,0 +1,39 @@
+#
+# General dialer definitions used below
+#
+dial9600|9600 Baud Hayes attributes:\
+	:br#9600:at=hayes:du:
+dial1200|1200 Baud DN11 attributes:\
+	:dv=/dev/ttyi8:br#1200:cu=/dev/dn1:at=dn11:du:
+dial300|300 Ventel attributes:\
+	:dv=/dev/cul0:br#300:cu=/dev/cul0:at=ventel:du:
+#
+# UNIX system definitions
+#
+UNIX-1200|1200 Baud dial-out to another UNIX system:\
+	:el=^U^C^R^O^D^S^Q@:ie=#%$:oe=^D:tc=dial1200:
+UNIX-300|300 Baud dial-out to another UNIX system:\
+	:el=^U^C^R^O^D^S^Q@:ie=#%$:oe=^D:tc=dial300:
+tip0|tip1200:tc=UNIX-1200:
+tip300:tc=UNIX-300:
+cu0|cu300:tc=UNIX-300:
+cu1200:tc=UNIX-1200:
+dialer:dv=/dev/cul0:br#1200:
+wlbr:dv=/dev/ttyS7:cu=/dev/ttyS7:pn=@:tc=dial9600:
+
+#--------------------------------------------------------------------
+#The attributes are:
+#
+#dv	device to use for the tty
+#el	EOL marks (default is NULL)
+#du	make a call flag (dial up)
+#pn	phone numbers (@ =>'s search phones file; possibly taken from
+#			      PHONES environment variable)
+#at	ACU type
+#ie	input EOF marks	(default is NULL)
+#oe	output EOF string (default is NULL)
+#cu	call unit (default is dv)
+#br	baud rate (defaults to 300)
+#fs	frame size (default is BUFSIZ) -- used in buffering writes
+#	  on receive operations
+#tc	to continue a capability

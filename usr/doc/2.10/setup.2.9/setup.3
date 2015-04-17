@@ -1,0 +1,492 @@
+.nr H1 3
+.nr H2 0
+.ds RH "Device and file system configuration
+.bp
+.LG
+.B
+.ce
+3. DEVICE AND FILE SYSTEM CONFIGURATION
+.sp 2
+.R
+.NL
+.PP
+This section will describe ways in which the file systems
+can be set up for the disks available.
+It will then describe the files and directories that will be set up
+for the local configuration.  These are the \fI/dev\fP directory,
+with special files for each peripheral device,
+and the tables in \fI/etc\fP that contain configuration-dependent data.
+Some of these files should be edited after reading this section,
+and others can wait until later if you choose.
+The disk configuration should be chosen before the rest of the distribution
+tape is read onto disk to minimize the work of reconfiguration.
+.NH 2
+Disk configuration
+.PP
+This section describes how to lay out file systems to make use
+of the available space and to balance disk load for better system
+performance.
+The steps described in this section (3.1) are optional.
+.NH 3
+Disk naming and divisions
+.PP
+Each large physical disk drive can be divided into up to 8 partitions;
+UNIX typically
+uses only 3 to 5 partitions.  For instance, on an RM03
+the first partition, rm0a,
+is used for a root file system, a backup thereof, or a small file system like
+/tmp;
+the second partition,
+rm0b, is used for swapping or a small file system; and
+the third partition, rm0c,
+holds a user file system.
+Many disks can be divided in different ways;
+for example, the third section (\fBc\fP) of the RM03
+could instead be divided into two file systems,
+using the rm0d
+and rm0e
+partitions instead, perhaps holding /usr and the user's files.
+The disk partition tables are specified in the \fIioconf.c\fP file
+for each system, and may be changed if necessary.
+The last partition (\fBh\fP) always describes the entire disk, and
+can be used for disk-to-disk copies.
+.PP
+\fBWarning:\fP  for disks on which DEC standard 144 bad sector forwarding
+is supported, the last track and up to 126 preceeding sectors
+contain replacement sectors and bad sector lists.
+Disk-to-disk copies should be careful to avoid overwriting this information.
+See \fIbad144\fP\|(8).
+Bad sector forwarding is optional in the \fBhk\fP, \fBhp\fP, \fBrm\fP,
+and \fBxp\fP drivers.  It has been only lightly tested in the latter
+three cases.
+.NH 3
+Space available
+.PP
+The space available on a disk varies per device.  The amount of space
+available on the common disk partitions for /usr
+is listed in the following table.
+Not shown in the table are the partitions of each drive devoted
+to the root file system and the swapping area.
+.DS
+.TS
+center;
+l l n.
+Type	Name	Size
+_
+RK06	hk?d	9.2 Mb
+RK07	hk?c	22.4 Mb
+RM02, RM03	rm?c	60.2 Mb
+RM02, RM03	rm?d	30.9 Mb
+RP03	rp?c	33.3 Mb
+RP04, RP05, RP06	hp?c	74.9 Mb
+RP06	hp?d	158.9 Mb
+RM05	xp?c	115.4 Mb
+RM05	xp?e	80.9 Mb
+.TE
+.DE
+.PP
+Each disk also has a swapping area and a root file system.
+.\"CHECK
+The distributed system binaries and sources occupy about 38 megabytes.
+.PP
+The sizes and offsets of all of the disk partitions are in the
+manual pages for the disks; see section 4 of the Berkeley PDP-11
+\s-2UNIX\s0
+Programmer's manual.
+Be aware that the disks have their sizes
+measured in ``sectors'' of 512 bytes each, while the UNIX file
+system blocks are 1024 bytes each.  Thus if a disk partition has
+10000 sectors (disk blocks), it will have only 5000 UNIX file system
+blocks, and you \fBmust\fP divide by 2 to use 5000 when
+specifying the size to the \fImkfs\fP command.
+The sizes and offsets in the kernel (ioconf.c) and the manual pages
+are in 512-byte blocks.
+If bad sector forwarding is supported for your disk, be sure to leave
+sufficient room to contain the bad sector information when making
+new file systems.
+.NH 3
+Layout considerations
+.PP
+There are several considerations in deciding how to adjust the arrangement
+of things on your disks:
+the most important is making sure there is adequate space
+for what is required;
+secondarily, throughput should be maximized.
+Swapping space is an important parameter.
+Since running out of swap space often causes the system to
+panic, it must be large enough that this does not happen.
+.PP
+Many common system programs (the C compiler, the editor, the assembler etc.)
+create intermediate files in the /tmp directory,
+so the file system where this is stored also should be made
+large enough to accommodate
+most high-water marks; if you have several disks, it makes
+sense to mount this in a ``root'' or ``swap'' (i.e. first or
+second partition) file system on another disk.
+On RK06 and RK07 systems, where there is little space in the
+hk?c or hk?d file systems to store the system source,
+it is normal to mount /tmp on /dev/hk1a.
+.PP
+The efficiency with which UNIX is able to use the CPU
+is often strongly affected by the configuration of disks.
+For general time-sharing applications,
+the best strategy is to try to split the most actively-used sections
+among several disk arms.
+There are at least five components of the disk load that you can
+divide between the available disks:
+.DS
+1. The root file system.
+2. The swap area.
+3. The /tmp file system.
+4. The /usr file system.
+5. The user files.
+.DE
+Here are several possibilities for utilizing 2, 3 and 4 disks:
+.TS
+center box;
+l | c s s
+l | cw(5) | cw(5) | cw(5).
+	disks
+	_	_	_
+what	2	3	4
+_
+root	1	1	1
+tmp	1	3	4
+usr	1	2	2
+swapping	2	3	4
+users	2	1+3	1+3
+archive	x	x	4
+.TE
+.PP
+The most important consideration is to
+even out the disk load as much as possible, and to do this by
+decoupling file systems (on separate arms) between which heavy copying occurs.
+Note that a long term average balanced load is not important; it is
+much more important to have instantaneously balanced
+load when the system is busy.
+When placing several busy file systems on the same disk,
+it is helpful to group them together to minimize arm movement,
+with less active file systems off to the side.
+.PP
+Intelligent experimentation with a few file system arrangements can
+pay off in much improved performance.  It is particularly easy to
+move the root, the
+/tmp
+file system and the swapping areas.  Note, though, that the disks
+containing the root and swapping area can never be removed while UNIX is
+running.  Place the
+user files and the
+/usr
+directory as space needs dictate and experiment
+with the other, more easily moved file systems.
+.PP
+As an example, consider a system with RM03s.  On the first RM03, \fBrm0\fP,
+we will put the root file system in \fBrm0a\fP, and the \fB/usr\fP
+file system in \fBrm0c\fP, which has enough space to hold it and then some.
+If we had only one RM03, we would put user files
+in the \fBrm0c\fP partition with the system source and binaries,
+or split them between \fBrm0d\fP and \fBrm0e\fP.
+The /tmp directory will be part of the root file system,
+as no file system will be mounted on /tmp.
+.PP
+If we had a second RM03, we would create a file system in \fBrm1c\fP
+and put user files there, calling the file system /mnt.
+We would keep a backup copy of the root
+file system in the \fBrm1a\fP disk partition, a file system
+for /tmp on \fBrm0b\fP, and swap on \fBrm1b\fP.
+.NH 3
+Implementing a layout
+.PP
+Once a disk layout has been chosen,
+the appropriate special files for the disk partitions must be created
+(see Setting up the /dev directory, below).
+Empty file systems will then be created in the appropriate partitions
+with 
+.IR mkfs (8),
+and the files belonging in the file system can then be restored from tape.
+The section on setting up the /usr file system contains detailed information
+on this process.
+The swap device is specified when the kernel is configured,
+which is also discussed later.  At that time, you may also
+want to consider whether to use the root device or another
+file system (e.g. /tmp) for the pipe device (the pipe device
+is a file system where the kernel keeps temporary files
+related to pipe I/O; it should be \fImount\fP\^ed before any
+I/O through pipes is attempted).
+.NH 2
+Setting up the /dev directory
+.PP
+Devices are accessed through special
+files in the file system, made by the
+.IR mknod (8)
+program and normally kept in the /dev directory.
+Devices to be supported by UNIX are implemented in the kernel
+by drivers; the proper driver is selected by the major device number
+and type specified to
+.IR mknod .
+All devices
+supported by the distribution system already have nodes in /dev.
+They were created by the /dev/MAKE shell script.
+It is easiest to rebuild this directory from the beginning
+with the correct devices for your configuration.
+First, determine the UNIX names of the devices on your system
+(e.g. \fIdh\fP, \fIlp\fP, \fIxp\fP).
+Some will be the same as the names of devices on the generic
+system.  Others need not be.  See section 4 of the UNIX Programmer's
+Manual.
+Next create a new directory
+/newdev, copy /dev/MAKE into it, edit MAKE
+to provide an entry for local needs, replacing the case LOCAL,
+and run it to generate the desired devices in the /newdev directory.
+The LOCAL entry can be used for any unusual devices, and to rename
+standard devices as desired.
+It should also move the node for the disk partition being used
+as the swap area to \fIswap\fP (or, if swap is after a file system
+as on RK05 or RL disks, link the other node to \fIswap\fP).
+Different devices are specified to MAKE in various ways.
+Terminal multiplexors (DZ and DH) are specified by boards,
+and 8 or 16 nodes will be made, as appropriate.
+Disks are made by partition, for example xp0c,
+so that you may make the nodes corresponding to the file systems
+that you intend to use.
+Note that \fIhp\fP, \fIrm\fP and \fIxp\fP are actually synonyms,
+but you should use the name corresponding to the driver you plan
+to use.
+The kernel configuration section (section 5.4.1) has more information.
+For tape drives, there are different invocations for different types of
+controllers, although the nodes produced will have the same names.
+The different types are \fIht\fP, \fItm\fP and \fIts\fP, as above,
+and also \fIut\fP, which is used for the Emulex TC-11 and other
+TM-11 emulations that are also capable of selecting 1600 or 800 bpi
+under software control.
+Making \fIht0\fP or \fIut0\fP will result in nodes \fImt0\fP and \fImt1\fP
+(800 and 1600 bpi, respectively) and parallel nodes for other options;
+\fIht1\fP uses the names \fImt2\fP and \fImt3\fP.
+See
+.IR ht (4)
+and
+.IR tm (4).
+In contrast, the MAKE script makes only one set of nodes for
+\fItm\fP or \fIts\fP, without changing the unit number specified.
+Different sites use different naming conventions for tapes;
+you could use the LOCAL entry in MAKE to move the tape files
+to your favorite names.
+.PP
+As an example, if your machine had a single DZ-11, two
+DH-11s, an RP03 disk, two RP06 disks, and a TM03 tape formatter you would do:
+.DS
+\fB#\fP cd /
+\fB#\fP mkdir newdev
+\fB#\fP cp /dev/MAKE /newdev/MAKE
+\fB#\fP cd newdev
+\fB#\fP ./MAKE dz0 dh1 ht0 std LOCAL
+\fB#\fP ./MAKE rp0a rp0b rp0c hp0a hp0b hp0c hp1a hp1b hp1d hp1e
+.DE
+Note the ``std'' argument here that causes standard devices
+such as \fIconsole\fP, the console terminal, to be created.
+.PP
+You can then do
+.DS
+\fB#\fP cd /
+\fB#\fP mv dev genericdev ; mv newdev dev
+\fB#\fP sync
+.DE
+to install the new device directory.
+Once you are confident that the new directory is set up properly,
+you can remove /genericdev.
+.NH 2
+Editing system-dependent configuration files
+.PP
+There are a number of small files in /\fIetc\fP that are used
+by various programs to determine things about the local configuration.
+At this point, several of these should be edited to describe the
+local configuration.  You may have old versions of some of them
+which you may want to use, or you may edit the files that are provided
+as examples.  Some of this may be done later at your convenience,
+but is presented here for organization.
+Both \fB/etc/dtab\fP and \fB/etc/fstab\fP should be edited now.
+.NH 3
+/etc/dtab
+.PP
+This file contains the list of devices which will be checked at boot time by
+.IR autoconfig (8).
+The devices that are listed are tested to see whether
+they exist and have the correct register addresses and interrupt vectors.
+If they do, and the kernel has a corresponding driver routine,
+\fIautoconfig\fP notifies the driver that the device exists at that address.
+In this way, the addresses and vectors of most devices do not
+need to be compiled into the operating system.
+The exception is that disks must be preconfigured if they
+are to be used as root file systems.
+.PP
+This file should be edited to include all of the devices on
+the system with the exception of the clock and console device.
+Other device entries can be deleted or commented out with a '#'
+at the beginning of the line.
+The format of the entries is defined in
+.IR dtab (5).
+.IR Autoconfig (8)
+describes the autoconfiguration process.
+One word of caution:  if a device fails to interrupt as expected,
+and if its unit number is specified (not a '?' wildcard),
+\fIautoconfig\fP will notify the driver that the device is
+\fBnot\fP present, and preconfigured devices (like root disks)
+could be disconnected.  Thus, it is probably best to use a '?'
+instead of a unit number for your root disks until you
+are confident that the probe always finds that disk,
+especially if your disk controller is an emulation of another disk type.
+Disks that are not used as boot devices for UNIX
+can be properly listed with unit numbers.
+.NH 3
+/etc/fstab
+.PP
+This file contains the list of file systems normally mounted on the system.
+Its format is defined in
+.IR fstab (5).
+Programs like
+.IR df (1)
+and
+.IR fsck (8)
+use this list to control their actions.
+Each disk partition that has been assigned a function should be listed
+here.
+See the manual pages for specifics on how to configure this file.
+.NH 3
+/etc/ident
+.PP
+The banner printed by
+.IR getty (8)
+is read from /etc/ident.
+Edit this file to the banner you wish to use.
+It may contain special characters to clear terminal screens, etc.,
+but note that the same file is used for all terminals.
+.NH 3
+/etc/motd
+.PP
+The contents of /etc/motd, the ``message of the day,''
+is displayed at the terminal when a user is logged in by
+.IR login (1).
+.NH 3
+/etc/passwd, /etc/group
+.PP
+These files obviously need local modifications.
+See the section on adding new users.
+Entries for pseudo-users (user IDs that are not used for logins)
+have password fields containing ``***'', since encrypted passwords
+never not contain asterisks.
+.NH 3
+/etc/rc
+.PP
+As the system begins multiuser operations, it
+executes the commands in /etc/rc (see
+.IR init (8)).
+Most of the commands in this file are standard and should not
+be changed, including the section for checking file systems
+after a reboot.  These commands will be ignored if autoreboot
+is not enabled.
+You should edit /etc/rc to set your machine's name.
+Look for the line
+.DS
+	/etc/hostname hostnameunknown
+.DE
+and change \fIhostnameunknown\fP to the name of your machine.
+This name will be used by
+.IR Mail (1)
+and
+.IR uucp (1)
+(among others) and should correspond to the name by which your machine is
+known to external networks (if any).
+At this time you may wish to add additional commands to this file
+if you need to start additional daemons, remove old lock files,
+or perform any other cleanup as the system comes up.
+.NH 3
+Configuring terminals
+.PP
+If UNIX is to support simultaneous
+access from more than just the console terminal,
+the file /etc/ttys (\fIttys\fP\|(5)) has to be edited.
+.PP
+Terminals connected via DZ interfaces are conventionally named \fBtty\fP\fIdd\fP
+where \fIdd\fP is a decimal number, the ``minor device'' number.
+The lines on dz0 are named /dev/tty00, /dev/tty01, ... /dev/tty07.
+Lines on DH interfaces are conventionally named \fBttyh\fP\fIx\fP, where \fIx\fP
+is a hexadecimal digit.  If more than one DH interface is present
+in a configuration, successive terminals would be named
+\fBttyi\fP\fIx\fP, \fBttyj\fP\fIx\fP, etc.
+.PP
+To add a new terminal be sure the device is configured into the system,
+that the special file for the device has been made by /dev/MAKE,
+and the special file exists. Then set
+the first character of the appropriate line of /etc/ttys to 1
+(or add a new line).
+The first character may also be 3 if the line is also to be used
+in maintenance mode (see \fIinit\fP\|(8)).
+.PP
+The second character of each line in the /etc/ttys file lists
+the speed and initial parameter settings for the terminal.
+The most common choices, from
+.IR getty (8),
+are:
+.DS
+0	300-1200-150-110
+3	1200-300
+4	300 (e.g. console)
+5	300-1200
+6	1200
+7	2400
+8	4800
+9	9600
+B	autobaud
+.DE
+Here the first speed is the speed a terminal starts at, and
+``break'' switches speeds.
+Thus a newly added terminal /dev/tty00 could be added as
+.DS
+19tty00
+.DE
+if it was wired to run at 9600 baud.
+The ``B'' indicates that \fIgetty\fP should attempt to
+guess a line's speed when the user types a carriage return or control-C.
+Note that this requires kernel support.  See section 5.3.6 below.
+.PP
+Dialup terminals should be wired so that the carrier is asserted only when the
+phone line is dialed up.
+For non-dialup terminals from which modem control
+is not available, you must either wire back the signals so that
+the carrier always appears to be present, or (for lines on a DH-11 or DZ-11)
+add 0200 to the minor device number to indicate that carrier is to be ignored.  See
+.IR dh (4)
+and
+.IR dz (4)
+for details.
+.PP
+You should also edit the file
+/etc/ttytype
+placing the type of each terminal there (see \fIttytype\fP\|(5)).
+.PP
+When the system starts running multi-user, all terminals that are listed
+in /etc/ttys having a 1 or 3 as the first character of
+their line are enabled.  If, during normal operations, it is desired
+to disable a terminal line, the super-user can edit the file /etc/ttys,
+change the first character of the corresponding line to 0 and
+then send a hangup signal to the \fIinit\fP process, by typing (see
+.IR kill (1))
+.DS
+\fB#\fP kill \-1 1
+   or
+\fB#\fP kill \-HUP 1
+.DE
+Terminals can similarly be enabled by changing the first character of a line
+from a 0 to a 1 and sending a hangup to \fIinit\fP.
+.PP
+Note that if a special file is inaccessible when \fIinit\fP tries
+to create a process for it, init will print a message on the console
+and try to reopen the terminal every minute, reprinting the warning
+message every 10 minutes.
+.PP
+Finally note that you should change the names of any dialup
+terminals to ttyd?
+where ? is in [0-9a-f] since some programs use this property of the
+names to decide whether a terminal is a dialup.
+Shell commands to do this should be put in the /dev/MAKE
+script under case LOCAL.

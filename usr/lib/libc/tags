@@ -1,0 +1,500 @@
+abort	/usr/src/lib/libc/gen/abort.c	/^abort()$/
+defined	/usr/src/lib/libc/gen/abort.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+alarm	/usr/src/lib/libc/gen/alarm.c	/^alarm(secs)$/
+defined	/usr/src/lib/libc/gen/alarm.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+atoi	/usr/src/lib/libc/gen/atoi.c	/^atoi(p)$/
+defined	/usr/src/lib/libc/gen/atoi.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+atol	/usr/src/lib/libc/gen/atol.c	/^atol(p)$/
+defined	/usr/src/lib/libc/gen/atol.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+calloc	/usr/src/lib/libc/gen/calloc.c	/^calloc(num, size)$/
+cfree	/usr/src/lib/libc/gen/calloc.c	/^cfree(p, num, size)$/
+defined	/usr/src/lib/libc/gen/calloc.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+closedir	/usr/src/lib/libc/gen/closedir.c	/^closedir(dirp)$/
+defined	/usr/src/lib/libc/gen/closedir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+crypt	/usr/src/lib/libc/gen/crypt.c	/^crypt(pw,salt)$/
+defined	/usr/src/lib/libc/gen/crypt.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+encrypt	/usr/src/lib/libc/gen/crypt.c	/^encrypt(block, edflag)$/
+setkey	/usr/src/lib/libc/gen/crypt.c	/^setkey(key)$/
+asctime	/usr/src/lib/libc/gen/ctime.c	/^asctime(timeptr)$/
+ctime	/usr/src/lib/libc/gen/ctime.c	/^ctime(t)$/
+defined	/usr/src/lib/libc/gen/ctime.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+detzcode	/usr/src/lib/libc/gen/ctime.c	/^detzcode(codep)$/
+gmtime	/usr/src/lib/libc/gen/ctime.c	/^gmtime(clock)$/
+localtime	/usr/src/lib/libc/gen/ctime.c	/^localtime(timep)$/
+offtime	/usr/src/lib/libc/gen/ctime.c	/^offtime(clock, offset)$/
+tzload	/usr/src/lib/libc/gen/ctime.c	/^tzload(name)$/
+tzset	/usr/src/lib/libc/gen/ctime.c	/^tzset()$/
+tzsetgmt	/usr/src/lib/libc/gen/ctime.c	/^tzsetgmt()$/
+tzsetkernel	/usr/src/lib/libc/gen/ctime.c	/^tzsetkernel()$/
+defined	/usr/src/lib/libc/gen/ctype_.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/gen/errlst.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/gen/execvp.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+execat	/usr/src/lib/libc/gen/execvp.c	/^execat(s1, s2, si)$/
+execlp	/usr/src/lib/libc/gen/execvp.c	/^execlp(name, argv)$/
+execvp	/usr/src/lib/libc/gen/execvp.c	/^execvp(name, argv)$/
+_cleanup	/usr/src/lib/libc/gen/fakcu.c	/^_cleanup()$/
+defined	/usr/src/lib/libc/gen/fakcu.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/gen/fstab.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endfsent	/usr/src/lib/libc/gen/fstab.c	/^endfsent()$/
+fsdigit	/usr/src/lib/libc/gen/fstab.c	/^fsdigit(backp, string, end)$/
+fsskip	/usr/src/lib/libc/gen/fstab.c	/^fsskip(p)$/
+fstabscan	/usr/src/lib/libc/gen/fstab.c	/^fstabscan(fs)$/
+getfsent	/usr/src/lib/libc/gen/fstab.c	/^getfsent()$/
+getfsfile	/usr/src/lib/libc/gen/fstab.c	/^getfsfile(name)$/
+getfsspec	/usr/src/lib/libc/gen/fstab.c	/^getfsspec(name)$/
+getfstype	/usr/src/lib/libc/gen/fstab.c	/^getfstype(type)$/
+setfsent	/usr/src/lib/libc/gen/fstab.c	/^setfsent()$/
+defined	/usr/src/lib/libc/gen/gcvt.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+gcvt	/usr/src/lib/libc/gen/gcvt.c	/^gcvt(number, ndigit, buf)$/
+_findenv	/usr/src/lib/libc/gen/getenv.c	/^_findenv(name,offset)$/
+defined	/usr/src/lib/libc/gen/getenv.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getenv	/usr/src/lib/libc/gen/getenv.c	/^getenv(name)$/
+defined	/usr/src/lib/libc/gen/getgrent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endgrent	/usr/src/lib/libc/gen/getgrent.c	/^endgrent()$/
+getgrent	/usr/src/lib/libc/gen/getgrent.c	/^getgrent()$/
+grskip	/usr/src/lib/libc/gen/getgrent.c	/^grskip(p,c)$/
+setgrent	/usr/src/lib/libc/gen/getgrent.c	/^setgrent()$/
+defined	/usr/src/lib/libc/gen/getgrgid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getgrgid	/usr/src/lib/libc/gen/getgrgid.c	/^getgrgid(gid)$/
+defined	/usr/src/lib/libc/gen/getgrnam.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getgrnam	/usr/src/lib/libc/gen/getgrnam.c	/^getgrnam(name)$/
+defined	/usr/src/lib/libc/gen/getlogin.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getlogin	/usr/src/lib/libc/gen/getlogin.c	/^getlogin()$/
+defined	/usr/src/lib/libc/gen/getpass.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getpass	/usr/src/lib/libc/gen/getpass.c	/^getpass(prompt)$/
+defined	/usr/src/lib/libc/gen/getpwent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endpwent	/usr/src/lib/libc/gen/getpwent.c	/^endpwent()$/
+fetch_pw	/usr/src/lib/libc/gen/getpwent.c	/^fetch_pw(key)$/
+getpw	/usr/src/lib/libc/gen/getpwent.c	/^getpw()$/
+getpwent	/usr/src/lib/libc/gen/getpwent.c	/^getpwent()$/
+getpwnam	/usr/src/lib/libc/gen/getpwent.c	/^getpwnam(nam)$/
+getpwuid	/usr/src/lib/libc/gen/getpwent.c	/^getpwuid(uid)$/
+scanpw	/usr/src/lib/libc/gen/getpwent.c	/^scanpw()$/
+setpassent	/usr/src/lib/libc/gen/getpwent.c	/^setpassent(stayopen)$/
+setpwent	/usr/src/lib/libc/gen/getpwent.c	/^setpwent()$/
+setpwfile	/usr/src/lib/libc/gen/getpwent.c	/^setpwfile(file)$/
+start_pw	/usr/src/lib/libc/gen/getpwent.c	/^start_pw()$/
+defined	/usr/src/lib/libc/gen/getttyent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endttyent	/usr/src/lib/libc/gen/getttyent.c	/^endttyent()$/
+getttyent	/usr/src/lib/libc/gen/getttyent.c	/^getttyent()$/
+setttyent	/usr/src/lib/libc/gen/getttyent.c	/^setttyent()$/
+skip	/usr/src/lib/libc/gen/getttyent.c	/^skip(p)$/
+value	/usr/src/lib/libc/gen/getttyent.c	/^value(p)$/
+defined	/usr/src/lib/libc/gen/getttynam.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getttynam	/usr/src/lib/libc/gen/getttynam.c	/^getttynam(tty)$/
+defined	/usr/src/lib/libc/gen/getusershell.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endusershell	/usr/src/lib/libc/gen/getusershell.c	/^endusershell()$/
+getusershell	/usr/src/lib/libc/gen/getusershell.c	/^getusershell()$/
+initshells	/usr/src/lib/libc/gen/getusershell.c	/^initshells()$/
+setusershell	/usr/src/lib/libc/gen/getusershell.c	/^setusershell()$/
+GETWDERR	/usr/src/lib/libc/gen/getwd.c	/^#define GETWDERR(s)	strcpy(pathname, (s));$/
+defined	/usr/src/lib/libc/gen/getwd.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getwd	/usr/src/lib/libc/gen/getwd.c	/^getwd(pathname)$/
+prepend	/usr/src/lib/libc/gen/getwd.c	/^prepend(dirname, pathname)$/
+defined	/usr/src/lib/libc/gen/initgroups.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+initgroups	/usr/src/lib/libc/gen/initgroups.c	/^initgroups(uname, agroup)$/
+defined	/usr/src/lib/libc/gen/isatty.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+isatty	/usr/src/lib/libc/gen/isatty.c	/^isatty(f)$/
+ASSERT	/usr/src/lib/libc/gen/malloc.c	/^#	define ASSERT(p) if(!(p))botch("p");else$/
+allock	/usr/src/lib/libc/gen/malloc.c	/^allock()$/
+botch	/usr/src/lib/libc/gen/malloc.c	/^	botch(s)$/
+clearbusy	/usr/src/lib/libc/gen/malloc.c	/^#define	clearbusy(p)	(union store *)((INT)(p)&~BUS/
+free	/usr/src/lib/libc/gen/malloc.c	/^free(ap)$/
+malloc	/usr/src/lib/libc/gen/malloc.c	/^malloc(nbytes)$/
+realloc	/usr/src/lib/libc/gen/malloc.c	/^realloc(p, nbytes)$/
+setbusy	/usr/src/lib/libc/gen/malloc.c	/^#define	setbusy(p)	(union store *)((INT)(p)|BUSY)$/
+testbusy	/usr/src/lib/libc/gen/malloc.c	/^#define	testbusy(p)	((INT)(p)&BUSY)$/
+_gettemp	/usr/src/lib/libc/gen/mktemp.c	/^_gettemp(as, doopen)$/
+defined	/usr/src/lib/libc/gen/mktemp.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+mkstemp	/usr/src/lib/libc/gen/mktemp.c	/^mkstemp(as)$/
+mktemp	/usr/src/lib/libc/gen/mktemp.c	/^mktemp(as)$/
+additem	/usr/src/lib/libc/gen/ndbm.c	/^additem(buf, item, item1)$/
+chkblk	/usr/src/lib/libc/gen/ndbm.c	/^chkblk(buf)$/
+dbm_access	/usr/src/lib/libc/gen/ndbm.c	/^dbm_access(db, hash)$/
+dbm_close	/usr/src/lib/libc/gen/ndbm.c	/^dbm_close(db)$/
+dbm_delete	/usr/src/lib/libc/gen/ndbm.c	/^dbm_delete(db, key)$/
+dbm_fetch	/usr/src/lib/libc/gen/ndbm.c	/^dbm_fetch(db, key)$/
+dbm_firstkey	/usr/src/lib/libc/gen/ndbm.c	/^dbm_firstkey(db)$/
+dbm_forder	/usr/src/lib/libc/gen/ndbm.c	/^dbm_forder(db, key)$/
+dbm_nextkey	/usr/src/lib/libc/gen/ndbm.c	/^dbm_nextkey(db)$/
+dbm_open	/usr/src/lib/libc/gen/ndbm.c	/^dbm_open(file, flags, mode)$/
+dbm_store	/usr/src/lib/libc/gen/ndbm.c	/^dbm_store(db, key, dat, replace)$/
+dcalchash	/usr/src/lib/libc/gen/ndbm.c	/^dcalchash(item)$/
+defined	/usr/src/lib/libc/gen/ndbm.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+delitem	/usr/src/lib/libc/gen/ndbm.c	/^delitem(buf, n)$/
+finddatum	/usr/src/lib/libc/gen/ndbm.c	/^finddatum(buf, item)$/
+getbit	/usr/src/lib/libc/gen/ndbm.c	/^getbit(db)$/
+hashinc	/usr/src/lib/libc/gen/ndbm.c	/^hashinc(db, hash)$/
+makdatum	/usr/src/lib/libc/gen/ndbm.c	/^makdatum(buf, n)$/
+setbit	/usr/src/lib/libc/gen/ndbm.c	/^setbit(db)$/
+defined	/usr/src/lib/libc/gen/nlist.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+nlist	/usr/src/lib/libc/gen/nlist.c	/^nlist(name, list)$/
+defined	/usr/src/lib/libc/gen/opendir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+opendir	/usr/src/lib/libc/gen/opendir.c	/^opendir(name)$/
+defined	/usr/src/lib/libc/gen/perror.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+perror	/usr/src/lib/libc/gen/perror.c	/^perror(s)$/
+strerror	/usr/src/lib/libc/gen/perror.c	/^strerror(errnum)$/
+defined	/usr/src/lib/libc/gen/popen.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+pclose	/usr/src/lib/libc/gen/popen.c	/^pclose(ptr)$/
+popen	/usr/src/lib/libc/gen/popen.c	/^popen(cmd,mode)$/
+tst	/usr/src/lib/libc/gen/popen.c	/^#define	tst(a,b)	(*mode == 'r'? (b) : (a))$/
+defined	/usr/src/lib/libc/gen/psignal.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+psignal	/usr/src/lib/libc/gen/psignal.c	/^psignal(sig, s)$/
+defined	/usr/src/lib/libc/gen/qsort.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+qsort	/usr/src/lib/libc/gen/qsort.c	/^qsort(base, n, size, compar)$/
+qst	/usr/src/lib/libc/gen/qsort.c	/^qst(base, max)$/
+defined	/usr/src/lib/libc/gen/random.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+initstate	/usr/src/lib/libc/gen/random.c	/^initstate( seed, arg_state, n )$/
+random	/usr/src/lib/libc/gen/random.c	/^random()$/
+setstate	/usr/src/lib/libc/gen/random.c	/^setstate( arg_state )$/
+srandom	/usr/src/lib/libc/gen/random.c	/^srandom( x )$/
+defined	/usr/src/lib/libc/gen/readdir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+readdir	/usr/src/lib/libc/gen/readdir.c	/^readdir(dirp)$/
+advance	/usr/src/lib/libc/gen/regex.c	/^advance(lp, ep)$/
+backref	/usr/src/lib/libc/gen/regex.c	/^backref(i, lp)$/
+cclass	/usr/src/lib/libc/gen/regex.c	/^cclass(set, c, af)$/
+defined	/usr/src/lib/libc/gen/regex.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+re_comp	/usr/src/lib/libc/gen/regex.c	/^re_comp(sp)$/
+re_exec	/usr/src/lib/libc/gen/regex.c	/^re_exec(p1)$/
+alphasort	/usr/src/lib/libc/gen/scandir.c	/^alphasort(d1, d2)$/
+defined	/usr/src/lib/libc/gen/scandir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+scandir	/usr/src/lib/libc/gen/scandir.c	/^scandir(dirname, namelist, select, dcomp)$/
+defined	/usr/src/lib/libc/gen/seekdir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+seekdir	/usr/src/lib/libc/gen/seekdir.c	/^seekdir(dirp, loc)$/
+defined	/usr/src/lib/libc/gen/setgid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setgid	/usr/src/lib/libc/gen/setgid.c	/^setgid(gid)$/
+defined	/usr/src/lib/libc/gen/setegid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setegid	/usr/src/lib/libc/gen/setegid.c	/^setegid(egid)$/
+defined	/usr/src/lib/libc/gen/setrgid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setrgid	/usr/src/lib/libc/gen/setrgid.c	/^setrgid(rgid)$/
+defined	/usr/src/lib/libc/gen/setuid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setuid	/usr/src/lib/libc/gen/setuid.c	/^setuid(uid)$/
+defined	/usr/src/lib/libc/gen/setenv.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setenv	/usr/src/lib/libc/gen/setenv.c	/^setenv(name,value,rewrite)$/
+unsetenv	/usr/src/lib/libc/gen/setenv.c	/^unsetenv(name)$/
+defined	/usr/src/lib/libc/gen/seteuid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+seteuid	/usr/src/lib/libc/gen/seteuid.c	/^seteuid(euid)$/
+defined	/usr/src/lib/libc/gen/setruid.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setruid	/usr/src/lib/libc/gen/setruid.c	/^setruid(ruid)$/
+defined	/usr/src/lib/libc/gen/siglist.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/gen/signal.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+signal	/usr/src/lib/libc/gen/signal.c	/^signal(s, a))()$/
+defined	/usr/src/lib/libc/gen/siginterrupt.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+siginterrupt	/usr/src/lib/libc/gen/siginterrupt.c	/^siginterrupt(sig, flag)$/
+defined	/usr/src/lib/libc/gen/sleep.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setvec	/usr/src/lib/libc/gen/sleep.c	/^#define	setvec(vec, a) \\$/
+sleep	/usr/src/lib/libc/gen/sleep.c	/^sleep(n)$/
+sleepx	/usr/src/lib/libc/gen/sleep.c	/^sleepx()$/
+defined	/usr/src/lib/libc/gen/strcasecmp.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strcasecmp	/usr/src/lib/libc/gen/strcasecmp.c	/^strcasecmp(s1, s2)$/
+strncasecmp	/usr/src/lib/libc/gen/strcasecmp.c	/^strncasecmp(s1, s2, n)$/
+defined	/usr/src/lib/libc/gen/swab.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+swab	/usr/src/lib/libc/gen/swab.c	/^swab(from, to, n)$/
+PRIFAC	/usr/src/lib/libc/gen/syslog.c	/^#define PRIFAC(p)	(((p) & LOG_FACMASK) >> 3)$/
+PRIMASK	/usr/src/lib/libc/gen/syslog.c	/^#define PRIMASK(p)	(1 << ((p) & LOG_PRIMASK))$/
+closelog	/usr/src/lib/libc/gen/syslog.c	/^closelog()$/
+defined	/usr/src/lib/libc/gen/syslog.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+openlog	/usr/src/lib/libc/gen/syslog.c	/^openlog(ident, logstat, logfac)$/
+setlogmask	/usr/src/lib/libc/gen/syslog.c	/^setlogmask(pmask)$/
+syslog	/usr/src/lib/libc/gen/syslog.c	/^syslog(pri, fmt, p0, p1, p2, p3, p4)$/
+defined	/usr/src/lib/libc/gen/system.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+system	/usr/src/lib/libc/gen/system.c	/^system(s)$/
+defined	/usr/src/lib/libc/gen/telldir.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+telldir	/usr/src/lib/libc/gen/telldir.c	/^telldir(dirp)$/
+defined	/usr/src/lib/libc/gen/time.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+time	/usr/src/lib/libc/gen/time.c	/^time(t)$/
+defined	/usr/src/lib/libc/gen/timezone.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+timezone	/usr/src/lib/libc/gen/timezone.c	/^timezone(zone, dst)$/
+tztab	/usr/src/lib/libc/gen/timezone.c	/^tztab(zone,dst)$/
+defined	/usr/src/lib/libc/gen/ttyname.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ttyname	/usr/src/lib/libc/gen/ttyname.c	/^ttyname(f)$/
+defined	/usr/src/lib/libc/gen/ttyslot.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ttyslot	/usr/src/lib/libc/gen/ttyslot.c	/^ttyslot()$/
+defined	/usr/src/lib/libc/gen/ualarm.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ualarm	/usr/src/lib/libc/gen/ualarm.c	/^ualarm(usecs, reload)$/
+defined	/usr/src/lib/libc/gen/usleep.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setvec	/usr/src/lib/libc/gen/usleep.c	/^#define	setvec(vec, a) \\$/
+sleepx	/usr/src/lib/libc/gen/usleep.c	/^sleepx()$/
+usleep	/usr/src/lib/libc/gen/usleep.c	/^usleep(n)$/
+defined	/usr/src/lib/libc/gen/valloc.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+valloc	/usr/src/lib/libc/gen/valloc.c	/^valloc(i)$/
+defined	/usr/src/lib/libc/gen/strdup.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strdup	/usr/src/lib/libc/gen/strdup.c	/^strdup(str)$/
+defined	/usr/src/lib/libc/gen/strsep.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strsep	/usr/src/lib/libc/gen/strsep.c	/^strsep(s, delim)$/
+defined	/usr/src/lib/libc/inet/inet_addr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_addr	/usr/src/lib/libc/inet/inet_addr.c	/^inet_addr(cp)$/
+defined	/usr/src/lib/libc/inet/inet_network.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_network	/usr/src/lib/libc/inet/inet_network.c	/^inet_network(cp)$/
+defined	/usr/src/lib/libc/inet/inet_netof.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_netof	/usr/src/lib/libc/inet/inet_netof.c	/^inet_netof(in)$/
+defined	/usr/src/lib/libc/inet/inet_ntoa.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_ntoa	/usr/src/lib/libc/inet/inet_ntoa.c	/^inet_ntoa(in)$/
+defined	/usr/src/lib/libc/inet/inet_lnaof.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_lnaof	/usr/src/lib/libc/inet/inet_lnaof.c	/^inet_lnaof(in)$/
+defined	/usr/src/lib/libc/inet/inet_maddr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+inet_makeaddr	/usr/src/lib/libc/inet/inet_maddr.c	/^inet_makeaddr(net, host)$/
+defined	/usr/src/lib/libc/net/getnbyaddr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getnetbyaddr	/usr/src/lib/libc/net/getnbyaddr.c	/^getnetbyaddr(net, type)$/
+defined	/usr/src/lib/libc/net/getnbyname.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getnetbyname	/usr/src/lib/libc/net/getnbyname.c	/^getnetbyname(name)$/
+any	/usr/src/lib/libc/net/getnent.c	/^any(cp, match)$/
+defined	/usr/src/lib/libc/net/getnent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endnetent	/usr/src/lib/libc/net/getnent.c	/^endnetent()$/
+getnetent	/usr/src/lib/libc/net/getnent.c	/^getnetent()$/
+setnetent	/usr/src/lib/libc/net/getnent.c	/^setnetent(f)$/
+any	/usr/src/lib/libc/net/getpent.c	/^any(cp, match)$/
+defined	/usr/src/lib/libc/net/getpent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endprotoent	/usr/src/lib/libc/net/getpent.c	/^endprotoent()$/
+getprotoent	/usr/src/lib/libc/net/getpent.c	/^getprotoent()$/
+setprotoent	/usr/src/lib/libc/net/getpent.c	/^setprotoent(f)$/
+defined	/usr/src/lib/libc/net/getpname.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getprotobyname	/usr/src/lib/libc/net/getpname.c	/^getprotobyname(name)$/
+defined	/usr/src/lib/libc/net/getproto.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getprotobynumber	/usr/src/lib/libc/net/getproto.c	/^getprotobynumber(proto)$/
+defined	/usr/src/lib/libc/net/getsbyname.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getservbyname	/usr/src/lib/libc/net/getsbyname.c	/^getservbyname(name, proto)$/
+defined	/usr/src/lib/libc/net/getsbyport.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getservbyport	/usr/src/lib/libc/net/getsbyport.c	/^getservbyport(port, proto)$/
+any	/usr/src/lib/libc/net/getsent.c	/^any(cp, match)$/
+defined	/usr/src/lib/libc/net/getsent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endservent	/usr/src/lib/libc/net/getsent.c	/^endservent()$/
+getservent	/usr/src/lib/libc/net/getsent.c	/^getservent()$/
+setservent	/usr/src/lib/libc/net/getsent.c	/^setservent(f)$/
+defined	/usr/src/lib/libc/net/herror.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+herror	/usr/src/lib/libc/net/herror.c	/^herror(s)$/
+_checkhost	/usr/src/lib/libc/net/rcmd.c	/^_checkhost(rhost, lhost, len)$/
+_validuser	/usr/src/lib/libc/net/rcmd.c	/^_validuser(hostf, rhost, luser, ruser, baselen)$/
+defined	/usr/src/lib/libc/net/rcmd.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+rcmd	/usr/src/lib/libc/net/rcmd.c	/^rcmd(ahost, rport, locuser, remuser, cmd, fd2p)$/
+rresvport	/usr/src/lib/libc/net/rcmd.c	/^rresvport(alport)$/
+ruserok	/usr/src/lib/libc/net/rcmd.c	/^ruserok(rhost, superuser, ruser, luser)$/
+_getlong	/usr/src/lib/libc/net/res_comp.c	/^_getlong(msgp)$/
+_getshort	/usr/src/lib/libc/net/res_comp.c	/^_getshort(msgp)$/
+defined	/usr/src/lib/libc/net/res_comp.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+dn_comp	/usr/src/lib/libc/net/res_comp.c	/^dn_comp(exp_dn, comp_dn, length, dnptrs, lastdnptr/
+dn_expand	/usr/src/lib/libc/net/res_comp.c	/^dn_expand(msg, eomorig, comp_dn, exp_dn, length)$/
+dn_find	/usr/src/lib/libc/net/res_comp.c	/^dn_find(exp_dn, msg, dnptrs, lastdnptr)$/
+dn_skipname	/usr/src/lib/libc/net/res_comp.c	/^dn_skipname(comp_dn, eom)$/
+putlong	/usr/src/lib/libc/net/res_comp.c	/^putlong(l, msgp)$/
+putshort	/usr/src/lib/libc/net/res_comp.c	/^putshort(s, msgp)$/
+defined	/usr/src/lib/libc/net/res_debug.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fp_query	/usr/src/lib/libc/net/res_debug.c	/^fp_query(msg,file)$/
+p_cdname	/usr/src/lib/libc/net/res_debug.c	/^p_cdname(cp, msg, file)$/
+p_class	/usr/src/lib/libc/net/res_debug.c	/^p_class(class)$/
+p_query	/usr/src/lib/libc/net/res_debug.c	/^p_query(msg)$/
+p_rr	/usr/src/lib/libc/net/res_debug.c	/^p_rr(cp, msg, file)$/
+p_type	/usr/src/lib/libc/net/res_debug.c	/^p_type(type)$/
+defined	/usr/src/lib/libc/net/res_init.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+res_init	/usr/src/lib/libc/net/res_init.c	/^res_init()$/
+defined	/usr/src/lib/libc/net/res_mkquery.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+res_mkquery	/usr/src/lib/libc/net/res_mkquery.c	/^res_mkquery(op, dname, class, type, data, datalen,/
+defined	/usr/src/lib/libc/net/res_query.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+hostalias	/usr/src/lib/libc/net/res_query.c	/^hostalias(name)$/
+res_query	/usr/src/lib/libc/net/res_query.c	/^res_query(name, class, type, answer, anslen)$/
+res_querydomain	/usr/src/lib/libc/net/res_query.c	/^res_querydomain(name, domain, class, type, answer,/
+res_search	/usr/src/lib/libc/net/res_query.c	/^res_search(name, class, type, answer, anslen)$/
+FD_CLR	/usr/src/lib/libc/net/res_send.c	/^#define	FD_CLR(n, p)	((p)->fds_bits[(n)\/NFDBITS] &/
+FD_ISSET	/usr/src/lib/libc/net/res_send.c	/^#define	FD_ISSET(n, p)	((p)->fds_bits[(n)\/NFDBITS]/
+FD_SET	/usr/src/lib/libc/net/res_send.c	/^#define	FD_SET(n, p)	((p)->fds_bits[(n)\/NFDBITS] |/
+FD_ZERO	/usr/src/lib/libc/net/res_send.c	/^#define FD_ZERO(p)	bzero((char *)(p), sizeof(*(p))/
+_res_close	/usr/src/lib/libc/net/res_send.c	/^_res_close()$/
+defined	/usr/src/lib/libc/net/res_send.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+res_send	/usr/src/lib/libc/net/res_send.c	/^res_send(buf, buflen, answer, anslen)$/
+defined	/usr/src/lib/libc/net/rexec.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+rexec	/usr/src/lib/libc/net/rexec.c	/^rexec(ahost, rport, name, pass, cmd, fd2p)$/
+blkencrypt	/usr/src/lib/libc/net/ruserpass.c	/^blkencrypt(block, edflag)$/
+deblkclr	/usr/src/lib/libc/net/ruserpass.c	/^char *deblkclr(blk)$/
+deblknot	/usr/src/lib/libc/net/ruserpass.c	/^char *deblknot(blk)$/
+defined	/usr/src/lib/libc/net/ruserpass.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+enblkclr	/usr/src/lib/libc/net/ruserpass.c	/^enblkclr(blk,str)		\/* ignores top bit of chars in /
+enblknot	/usr/src/lib/libc/net/ruserpass.c	/^enblknot(blk,crp)$/
+getutmp	/usr/src/lib/libc/net/ruserpass.c	/^struct utmp *getutmp(sttyname)$/
+mkenvkey	/usr/src/lib/libc/net/ruserpass.c	/^char *mkenvkey(mch)$/
+mkpwclear	/usr/src/lib/libc/net/ruserpass.c	/^mkpwclear(sencpasswd,mch,spasswd)$/
+mkpwunclear	/usr/src/lib/libc/net/ruserpass.c	/^mkpwunclear(spasswd,mch,sencpasswd)$/
+nbs8decrypt	/usr/src/lib/libc/net/ruserpass.c	/^char *nbs8decrypt(crp,key)$/
+nbs8encrypt	/usr/src/lib/libc/net/ruserpass.c	/^char *nbs8encrypt(str,key)$/
+nbsdecrypt	/usr/src/lib/libc/net/ruserpass.c	/^char *nbsdecrypt(cpt,key,result)$/
+nbsencrypt	/usr/src/lib/libc/net/ruserpass.c	/^char *nbsencrypt(str,key,result)$/
+nbssetkey	/usr/src/lib/libc/net/ruserpass.c	/^nbssetkey(key)$/
+renv	/usr/src/lib/libc/net/ruserpass.c	/^renv(host, aname, apass)$/
+renvlook	/usr/src/lib/libc/net/ruserpass.c	/^renvlook(host)$/
+rnetrc	/usr/src/lib/libc/net/ruserpass.c	/^rnetrc(host, aname, apass)$/
+ruserpass	/usr/src/lib/libc/net/ruserpass.c	/^ruserpass(host, aname, apass)$/
+sreverse	/usr/src/lib/libc/net/ruserpass.c	/^sreverse(sto, sfrom)$/
+token	/usr/src/lib/libc/net/ruserpass.c	/^token()$/
+Field	/usr/src/lib/libc/ns/ns_addr.c	/^Field(buf, out, len)$/
+cvtbase	/usr/src/lib/libc/ns/ns_addr.c	/^cvtbase(oldbase,newbase,input,inlen,result,reslen)/
+defined	/usr/src/lib/libc/ns/ns_addr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ns_addr	/usr/src/lib/libc/ns/ns_addr.c	/^struct ns_addr $/
+defined	/usr/src/lib/libc/ns/ns_ntoa.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ns_ntoa	/usr/src/lib/libc/ns/ns_ntoa.c	/^ns_ntoa(addr)$/
+spectHex	/usr/src/lib/libc/ns/ns_ntoa.c	/^spectHex(p0)$/
+clearerr	/usr/src/lib/libc/stdio/clrerr.c	/^clearerr(iop)$/
+defined	/usr/src/lib/libc/stdio/clrerr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+_doscan	/usr/src/lib/libc/stdio/doscan.c	/^_doscan(iop, fmt, argp)$/
+_getccl	/usr/src/lib/libc/stdio/doscan.c	/^_getccl(s)$/
+_innum	/usr/src/lib/libc/stdio/doscan.c	/^_innum(ptr, type, len, size, iop, eofptr)$/
+_instr	/usr/src/lib/libc/stdio/doscan.c	/^_instr(ptr, type, len, iop, eofptr)$/
+defined	/usr/src/lib/libc/stdio/doscan.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/stdio/exit.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+exit	/usr/src/lib/libc/stdio/exit.c	/^exit(code)$/
+defined	/usr/src/lib/libc/stdio/fdopen.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fdopen	/usr/src/lib/libc/stdio/fdopen.c	/^fdopen(fd, mode)$/
+_filbuf	/usr/src/lib/libc/stdio/filbuf.c	/^_filbuf(iop)$/
+defined	/usr/src/lib/libc/stdio/filbuf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+_cleanup	/usr/src/lib/libc/stdio/findiop.c	/^_cleanup()$/
+_f_morefiles	/usr/src/lib/libc/stdio/findiop.c	/^_f_morefiles()$/
+_findiop	/usr/src/lib/libc/stdio/findiop.c	/^_findiop()$/
+_fwalk	/usr/src/lib/libc/stdio/findiop.c	/^_fwalk(function)$/
+active	/usr/src/lib/libc/stdio/findiop.c	/^#define active(iop)	((iop)->_flag & (_IOREAD|_IOWR/
+defined	/usr/src/lib/libc/stdio/findiop.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+f_prealloc	/usr/src/lib/libc/stdio/findiop.c	/^f_prealloc()$/
+_flsbuf	/usr/src/lib/libc/stdio/flsbuf.c	/^_flsbuf(c, iop)$/
+defined	/usr/src/lib/libc/stdio/flsbuf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fclose	/usr/src/lib/libc/stdio/flsbuf.c	/^fclose(iop)$/
+fflush	/usr/src/lib/libc/stdio/flsbuf.c	/^fflush(iop)$/
+defined	/usr/src/lib/libc/stdio/fopen.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fopen	/usr/src/lib/libc/stdio/fopen.c	/^fopen(file, mode)$/
+defined	/usr/src/lib/libc/stdio/fprintf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fprintf	/usr/src/lib/libc/stdio/fprintf.c	/^fprintf(iop, fmt, args)$/
+defined	/usr/src/lib/libc/stdio/fread.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fread	/usr/src/lib/libc/stdio/fread.c	/^fread(ptr, size, count, iop)$/
+defined	/usr/src/lib/libc/stdio/freopen.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+freopen	/usr/src/lib/libc/stdio/freopen.c	/^freopen(file, mode, iop)$/
+defined	/usr/src/lib/libc/stdio/fseek.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fseek	/usr/src/lib/libc/stdio/fseek.c	/^fseek(iop, offset, ptrname)$/
+defined	/usr/src/lib/libc/stdio/ftell.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ftell	/usr/src/lib/libc/stdio/ftell.c	/^long ftell(iop)$/
+defined	/usr/src/lib/libc/stdio/fwrite.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fwrite	/usr/src/lib/libc/stdio/fwrite.c	/^fwrite(ptr, size, count, iop)$/
+defined	/usr/src/lib/libc/stdio/getchar.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getchar	/usr/src/lib/libc/stdio/getchar.c	/^getchar()$/
+defined	/usr/src/lib/libc/stdio/getw.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getlw	/usr/src/lib/libc/stdio/getw.c	/^getlw(iop)$/
+getw	/usr/src/lib/libc/stdio/getw.c	/^getw(iop)$/
+defined	/usr/src/lib/libc/stdio/printf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+printf	/usr/src/lib/libc/stdio/printf.c	/^printf(fmt, args)$/
+defined	/usr/src/lib/libc/stdio/putchar.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+putchar	/usr/src/lib/libc/stdio/putchar.c	/^putchar(c)$/
+defined	/usr/src/lib/libc/stdio/putw.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+putlw	/usr/src/lib/libc/stdio/putw.c	/^putlw(w, iop)$/
+putw	/usr/src/lib/libc/stdio/putw.c	/^putw(w, iop)$/
+defined	/usr/src/lib/libc/stdio/rew.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+rewind	/usr/src/lib/libc/stdio/rew.c	/^rewind(iop)$/
+defined	/usr/src/lib/libc/stdio/scanf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fscanf	/usr/src/lib/libc/stdio/scanf.c	/^fscanf(iop, fmt, args)$/
+scanf	/usr/src/lib/libc/stdio/scanf.c	/^scanf(fmt, args)$/
+sscanf	/usr/src/lib/libc/stdio/scanf.c	/^sscanf(str, fmt, args)$/
+defined	/usr/src/lib/libc/stdio/setbuf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setbuf	/usr/src/lib/libc/stdio/setbuf.c	/^setbuf(iop, buf)$/
+defined	/usr/src/lib/libc/stdio/setbuffer.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+setbuffer	/usr/src/lib/libc/stdio/setbuffer.c	/^setbuffer(iop, buf, size)$/
+setlinebuf	/usr/src/lib/libc/stdio/setbuffer.c	/^setlinebuf(iop)$/
+defined	/usr/src/lib/libc/stdio/sibuf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/stdio/sobuf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/stdio/sprintf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+sprintf	/usr/src/lib/libc/stdio/sprintf.c	/^char *sprintf(str, fmt, args)$/
+_strout	/usr/src/lib/libc/stdio/strout.c	/^_strout(count, string, adjust, file, fillch)$/
+defined	/usr/src/lib/libc/stdio/strout.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+defined	/usr/src/lib/libc/stdio/ungetc.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ungetc	/usr/src/lib/libc/stdio/ungetc.c	/^ungetc(c, iop)$/
+defined	/usr/src/lib/libc/stdio/vfprintf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+vfprintf	/usr/src/lib/libc/stdio/vfprintf.c	/^vfprintf(iop, fmt, ap)$/
+defined	/usr/src/lib/libc/stdio/vprintf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+vprintf	/usr/src/lib/libc/stdio/vprintf.c	/^vprintf(fmt, ap)$/
+defined	/usr/src/lib/libc/stdio/vsprintf.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+vsprintf	/usr/src/lib/libc/stdio/vsprintf.c	/^vsprintf(str, fmt, ap)$/
+defined	/usr/src/lib/libc/stdio/puts.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+puts	/usr/src/lib/libc/stdio/puts.c	/^puts(s)$/
+defined	/usr/src/lib/libc/stdio/fputs.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fputs	/usr/src/lib/libc/stdio/fputs.c	/^fputs(s, iop)$/
+atof	/usr/src/lib/libc/pdp/gen/atof.c	/^atof(p)$/
+defined	/usr/src/lib/libc/pdp/gen/atof.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ddecode	/usr/src/lib/libc/pdp/gen/disktab.c	/^ddecode(str, area)$/
+defined	/usr/src/lib/libc/pdp/gen/disktab.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+dgetent	/usr/src/lib/libc/pdp/gen/disktab.c	/^dgetent(bp, name)$/
+dgetflag	/usr/src/lib/libc/pdp/gen/disktab.c	/^dgetflag(id)$/
+dgetnum	/usr/src/lib/libc/pdp/gen/disktab.c	/^dgetnum(id)$/
+dgetstr	/usr/src/lib/libc/pdp/gen/disktab.c	/^dgetstr(id, area)$/
+dnamatch	/usr/src/lib/libc/pdp/gen/disktab.c	/^dnamatch(np)$/
+dskip	/usr/src/lib/libc/pdp/gen/disktab.c	/^dskip(bp)$/
+getdiskbyname	/usr/src/lib/libc/pdp/gen/disktab.c	/^getdiskbyname(name)$/
+cvt	/usr/src/lib/libc/pdp/gen/ecvt.c	/^cvt(arg, ndigits, decpt, sign, eflag)$/
+defined	/usr/src/lib/libc/pdp/gen/ecvt.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ecvt	/usr/src/lib/libc/pdp/gen/ecvt.c	/^ecvt(arg, ndigits, decpt, sign)$/
+fcvt	/usr/src/lib/libc/pdp/gen/ecvt.c	/^fcvt(arg, ndigits, decpt, sign)$/
+defined	/usr/src/lib/libc/compat-4.1/ftime.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+ftime	/usr/src/lib/libc/compat-4.1/ftime.c	/^ftime(tp)$/
+defined	/usr/src/lib/libc/compat-4.1/gtty.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+gtty	/usr/src/lib/libc/compat-4.1/gtty.c	/^gtty(fd, ap)$/
+defined	/usr/src/lib/libc/compat-4.1/nice.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+nice	/usr/src/lib/libc/compat-4.1/nice.c	/^nice(incr)$/
+defined	/usr/src/lib/libc/compat-4.1/pause.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+pause	/usr/src/lib/libc/compat-4.1/pause.c	/^pause()$/
+defined	/usr/src/lib/libc/compat-4.1/rand.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+rand	/usr/src/lib/libc/compat-4.1/rand.c	/^rand()$/
+srand	/usr/src/lib/libc/compat-4.1/rand.c	/^srand(x)$/
+defined	/usr/src/lib/libc/compat-4.1/stty.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+stty	/usr/src/lib/libc/compat-4.1/stty.c	/^stty(fd, ap)$/
+defined	/usr/src/lib/libc/compat-4.1/tell.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+tell	/usr/src/lib/libc/compat-4.1/tell.c	/^long tell(f)$/
+defined	/usr/src/lib/libc/compat-4.1/times.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+scale60	/usr/src/lib/libc/compat-4.1/times.c	/^scale60(tvp)$/
+times	/usr/src/lib/libc/compat-4.1/times.c	/^times(tmsp)$/
+defined	/usr/src/lib/libc/compat-4.1/utime.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+utime	/usr/src/lib/libc/compat-4.1/utime.c	/^utime(name, otv)$/
+defined	/usr/src/lib/libc/compat-4.1/vlimit.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+vlimit	/usr/src/lib/libc/compat-4.1/vlimit.c	/^vlimit(limit, value)$/
+defined	/usr/src/lib/libc/compat-4.1/vtimes.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getvtimes	/usr/src/lib/libc/compat-4.1/vtimes.c	/^getvtimes(aru, avt)$/
+scale60	/usr/src/lib/libc/compat-4.1/vtimes.c	/^scale60(tvp)$/
+vtimes	/usr/src/lib/libc/compat-4.1/vtimes.c	/^vtimes(par, chi)$/
+defined	/usr/src/lib/libc/compat-sys5/getopt.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+getopt	/usr/src/lib/libc/compat-sys5/getopt.c	/^getopt(nargc,nargv,ostr)$/
+tell	/usr/src/lib/libc/compat-sys5/getopt.c	/^#define tell(s)	if (opterr) {fputs(*nargv,stderr);/
+defined	/usr/src/lib/libc/compat-sys5/memccpy.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+memccpy	/usr/src/lib/libc/compat-sys5/memccpy.c	/^memccpy(t, f, c, n)$/
+defined	/usr/src/lib/libc/compat-sys5/memchr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+memchr	/usr/src/lib/libc/compat-sys5/memchr.c	/^memchr(s, c, n)$/
+defined	/usr/src/lib/libc/compat-sys5/memcmp.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+memcmp	/usr/src/lib/libc/compat-sys5/memcmp.c	/^memcmp(s1, s2, n)$/
+defined	/usr/src/lib/libc/compat-sys5/memcpy.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+memcpy	/usr/src/lib/libc/compat-sys5/memcpy.c	/^memcpy(t, f, n)$/
+defined	/usr/src/lib/libc/compat-sys5/memset.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+memset	/usr/src/lib/libc/compat-sys5/memset.c	/^memset(s, c, n)$/
+defined	/usr/src/lib/libc/compat-sys5/strcatn.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strcatn	/usr/src/lib/libc/compat-sys5/strcatn.c	/^strcatn(s1, s2, n)$/
+defined	/usr/src/lib/libc/compat-sys5/strchr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strchr	/usr/src/lib/libc/compat-sys5/strchr.c	/^strchr(sp, c)$/
+defined	/usr/src/lib/libc/compat-sys5/strcmpn.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strcmpn	/usr/src/lib/libc/compat-sys5/strcmpn.c	/^strcmpn(s1, s2, n)$/
+defined	/usr/src/lib/libc/compat-sys5/strcpyn.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strcpyn	/usr/src/lib/libc/compat-sys5/strcpyn.c	/^strcpyn(s1, s2, n)$/
+defined	/usr/src/lib/libc/compat-sys5/strcspn.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strcspn	/usr/src/lib/libc/compat-sys5/strcspn.c	/^strcspn(s, set)$/
+defined	/usr/src/lib/libc/compat-sys5/strpbrk.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strpbrk	/usr/src/lib/libc/compat-sys5/strpbrk.c	/^strpbrk(s, brk)$/
+defined	/usr/src/lib/libc/compat-sys5/strrchr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strrchr	/usr/src/lib/libc/compat-sys5/strrchr.c	/^strrchr(sp, c)$/
+defined	/usr/src/lib/libc/compat-sys5/strspn.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strspn	/usr/src/lib/libc/compat-sys5/strspn.c	/^strspn(s, set)$/
+defined	/usr/src/lib/libc/compat-sys5/strtok.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strtok	/usr/src/lib/libc/compat-sys5/strtok.c	/^strtok(s, delim)$/
+defined	/usr/src/lib/libc/compat-sys5/strtol.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+strtol	/usr/src/lib/libc/compat-sys5/strtol.c	/^strtol(ascii, endp, base)$/
+defined	/usr/src/lib/libc/compat-sys5/tmpnam.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+tempnam	/usr/src/lib/libc/compat-sys5/tmpnam.c	/^tempnam(dir, pfx)$/
+tmpfile	/usr/src/lib/libc/compat-sys5/tmpnam.c	/^tmpfile()$/
+tmpnam	/usr/src/lib/libc/compat-sys5/tmpnam.c	/^tmpnam(s)$/
+defined	/usr/src/lib/libc/net/hosttable/gethnamadr.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+fetchhost	/usr/src/lib/libc/net/hosttable/gethnamadr.c	/^fetchhost(key)$/
+gethostbyaddr	/usr/src/lib/libc/net/hosttable/gethnamadr.c	/^gethostbyaddr(addr, length, type)$/
+gethostbyname	/usr/src/lib/libc/net/hosttable/gethnamadr.c	/^gethostbyname(nam)$/
+any	/usr/src/lib/libc/net/hosttable/gethostent.c	/^any(cp, match)$/
+defined	/usr/src/lib/libc/net/hosttable/gethostent.c	/^#if defined(LIBC_SCCS) && !defined(lint)$/
+endhostent	/usr/src/lib/libc/net/hosttable/gethostent.c	/^endhostent()$/
+gethostent	/usr/src/lib/libc/net/hosttable/gethostent.c	/^gethostent()$/
+sethostent	/usr/src/lib/libc/net/hosttable/gethostent.c	/^sethostent(f)$/
+sethostfile	/usr/src/lib/libc/net/hosttable/gethostent.c	/^sethostfile(file)$/

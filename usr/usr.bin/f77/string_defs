@@ -1,0 +1,16 @@
+/*
+ *	Definitions to allow removal of strings
+ *
+ *	Steve Sizemore 4-21-81
+ *
+ */
+#define	WARN1	0
+#define	WARN	1
+#define	ERR2	2
+#define	ERR1	3
+#define	ERR	4
+#define	FATAL1	5
+#define	FATAL	6
+#define	YYERR	7
+#define	EXECERR	8
+#define	DCLERR	9

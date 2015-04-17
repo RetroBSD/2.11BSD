@@ -1,0 +1,66 @@
+
+
+
+PUTC(3S)	    UNIX Programmer's Manual		 PUTC(3S)
+
+
+
+NAME
+     putc, putchar, fputc, putw - put character or word on a
+     stream
+
+SYNOPSIS
+     #include <stdio.h>
+
+     int putc(c, stream)
+     char c;
+     FILE *stream;
+
+     int putchar(c)
+
+     int fputc(c, stream)
+     FILE *stream;
+
+     int putw(w, stream)
+     FILE *stream;
+
+DESCRIPTION
+     _P_u_t_c appends the character _c to the named output _s_t_r_e_a_m.  It
+     returns the character written.
+
+     _P_u_t_c_h_a_r(_c) is defined as _p_u_t_c(_c, stdout).
+
+     _F_p_u_t_c behaves like _p_u_t_c, but is a genuine function rather
+     than a macro.
+
+     _P_u_t_w appends word (that is, int) _w to the output _s_t_r_e_a_m.  It
+     returns the word written.	_P_u_t_w neither assumes nor causes
+     special alignment in the file.
+
+SEE ALSO
+     fopen(3S), fclose(3S), getc(3S), puts(3S), printf(3S),
+     fread(3S)
+
+DIAGNOSTICS
+     These functions return the constant EOF upon error.  Since
+     this is a good integer, _f_e_r_r_o_r(3S) should be used to detect
+     _p_u_t_w errors.
+
+BUGS
+     Because it is implemented as a macro, _p_u_t_c treats a _s_t_r_e_a_m
+     argument with side effects improperly.  In particular
+
+     putc(c, *f++);
+
+     doesn't work sensibly.
+
+     Errors can occur long after the call to _p_u_t_c.
+
+
+
+
+
+Printed 11/26/99	November 6, 1985			1
+
+
+

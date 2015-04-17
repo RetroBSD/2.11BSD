@@ -1,0 +1,36 @@
+  A short preface to this is in order.  We didn't include this fix because
+we do soft-carrier differently from 4.XBSD and we would have had to
+modify the drivers.  Basically acucntrl is the wrong way to do this.  The
+kernel should be modified to provide the service which acucntrl is trying
+to provide out in user-land; perhaps Chris Torek's multiple interface
+scheme is the right way to go ...  This unfortunately doesn't help 4.3BSD
+and 2.10BSD people much.
+
+  Following is an UNTESTED fix for /sys/pdpuba/dh.c.  Similar fixes for
+dhu.c and dz.c are possible:
+
+*** /tmp/dh.c	Wed Sep  7 03:31:38 1988
+--- /sys/pdpuba/dh.c	Thu Aug 18 17:49:17 1988
+***************
+*** 598,604 ****
+  	dm = unit >> 4;
+  	tp = &dh11[unit];
+  	unit &= 0xf;
+! 	if ((dev & 0200) || (dhinfo[dm].ui_flags & (1<<unit)))
+  		dhsoftCAR[dm] |= (1<<(unit&0xf));
+  	else
+  		dhsoftCAR[dm] &= ~(1<<(unit&0xf));
+--- 598,604 ----
+  	dm = unit >> 4;
+  	tp = &dh11[unit];
+  	unit &= 0xf;
+! 	if (dev & 0200)
+  		dhsoftCAR[dm] |= (1<<(unit&0xf));
+  	else
+  		dhsoftCAR[dm] &= ~(1<<(unit&0xf));
+
+  As stated above, we would far rather see Chris Torek's multiple
+interface code installed.  That would allow uucico, tip and any other
+programs to simply use the right interface in their opens on the outgoing
+modems.  The corresponding fixes to the various tty drivers are
+unfortunately fairly extensive.  See Chris for the diffs ...

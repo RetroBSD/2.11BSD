@@ -1,0 +1,66 @@
+
+
+
+MKLOST+FOUND(8)     UNIX Programmer's Manual	  MKLOST+FOUND(8)
+
+
+
+NAME
+     mklost+found - make a lost+found directory for fsck
+
+SYNOPSIS
+     /usr/sbin/mklost+found
+
+DESCRIPTION
+     A directory _l_o_s_t+_f_o_u_n_d is created in the current directory
+     and a number of empty files are created therein and then
+     removed so that there will be empty slots for _f_s_c_k(8).
+
+     This command is obsolete because _f_s_c_k(8) automatically
+     creates and extends the _l_o_s_t+_f_o_u_n_d directory as needed.
+
+SEE ALSO
+     fsck(8), mkfs(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 17, 1996			1
+
+
+

@@ -1,0 +1,42 @@
+d--755 0 10
+dev	d--755 0 10
+	MAKEDEV	---755 0 10 /dev/MAKEDEV
+	console	c--622 0 10 0 0
+	tty	c--666 0 10 2 0
+	hk0a	b--600 0 10 3 0
+	hk0g	b--600 0 10 3 6
+	rhk0a	c--600 0 10 11 0
+	rhk0g	c--600 0 10 11 6
+	klog	c--600 0 10 22 0
+	kmem	c--640 0 2  1 1
+	mem	c--640 0 2  1 0
+	null	c--666 0 10 1 2
+	$
+bin	d--755 0 10
+	sh	---755 0 10 /bin/sh
+	csh	---755 0 10 /bin/csh
+	ls	---755 0 10 /bin/ls
+	sync	---755 0 10 /bin/sync
+	cp	---755 0 10 /bin/cp
+	rm	---755 0 10 /bin/rm
+	mkdir	---755 0 10 /bin/mkdir
+	pwd	---755 0 10 /bin/pwd
+	$
+etc	d--755 0 10
+	init	---755 0 10 /etc/init
+	$
+sbin	d--755 0 10
+	mknod	---755 0 10 /sbin/mknod
+	restor	---755 0 10 /sbin/restor
+	mkfs	---755 0 10 /sbin/mkfs
+	fsck	---755 0 10 /sbin/fsck
+	icheck	---755 0 10 /sbin/icheck
+	ncheck	---755 0 10 /sbin/ncheck
+	dcheck	---755 0 10 /sbin/dcheck
+	dump	---755 0 10 /sbin/dump
+	$
+tmp	d--777 0 10
+	$
+boot	---755 0 10 /boot
+unix	---755 0 10 /unix
+$

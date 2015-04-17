@@ -1,0 +1,616 @@
+#	@(#)disktab	1.3 (2.11BSD) 1995/12/05
+#
+# Disk geometry and partition layout tables. 
+# Key:
+#	dt	controller type
+#	ty	type of disk (fixed, removeable, simulated)
+#	d[0-4]	drive-type-dependent parameters
+#	ns	#sectors/track
+#	nt	#tracks/cylinder
+#	nc	#cylinders/disk
+#	sc	#sectors/cylinder, nc*nt default
+#	su	#sectors/unit, sc*nc default
+#	se	sector size, 512 default (getdiskbyname always sets 512)
+#	rm	rpm, 3600 default
+#	sf	supports bad144-style bad sector forwarding
+#	sk	sector skew per track, default 0
+#	cs	sector skew per cylinder, default 0
+#	hs	headswitch time, default 0
+#	ts	one-cylinder seek time, default 0
+#	il	sector interleave (n:1), 1 default
+#	bs	boot block size, default BBSIZE  (getdiskbyname returns BBSIZE)
+#	sb	superblock size, default SBSIZE  (getdiskbyname returns SBSIZE)
+#	b0	block zero dead start primary bootstrap
+#	o[a-h]	partition offsets in sectors
+#	p[a-h]	partition sizes in sectors
+#	b[a-h]	partition block sizes in bytes
+#	f[a-h]	partition fragment sizes in bytes
+#	t[a-h]	partition types (filesystem, swap, etc)
+#
+# On drives that contain bad-sector replacement areas the 'h' (and in some
+# cases 'c') partitions do NOT overlap the bad-sector track.
+#
+# Entries may also be used for other compatible drives
+# with the same geometry.
+
+#
+# Drives on xp
+#
+# These partition tables are a mess.  Several of them overlap the bad
+# sector area, others do not overlap but end up with not cylinder sized
+# filesystems.  Many of these aren't even in use any longer.  A couple 
+# did not even match the tables that were in the kernel.
+#
+# I've done my best to match these up with the old partition tables in
+# the 'xp' driver but a typo or arithmetic error could easily have crept in.
+#
+
+# RM02/03 - 'c' and 'h' partitions are whole drive except bad sector track.
+#	
+rm02|RM02|rm03|RM03|DEC RM02/03:\
+	:ty=removable:ns#32:nt#5:nc#823:sf:\
+	:b0=/mdec/rm03uboot:\
+	:pa#9600:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#9600:ob#9600:bb#1024:fb#1024:tb=swap:\
+	:pc#131520:oc#0:bc#1024:fc#1024:\
+	:pf#121920:of#9600:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#112320:og#19200:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#131520:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+# RM05:
+rm05|RM05|cdc9766|CDC9766|9766|DEC RM05, CDC 9766:\
+	:ty=removable:ns#32:nt#19:nc#823:sf:\
+	:b0=/mdec/rm05uboot:\
+	:pa#9120:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#9120:ob#9120:bb#1024:fb#1024:tb=swap:\
+	:pc#234080:oc#18240:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#247906:od#252320:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#164160:oe#18240:be#1024:fe#1024:te=2.11BSD:\
+	:pf#152000:of#182400:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#165826:og#334400:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#500226:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+9775|CDC 9775:\
+	:ty=fixed:ns#32:nt#40:nc#842:sf:\
+	:pa#10240:oa#0:ba#1024:fa#1024:ty=2.11BSD:\
+	:pb#10240:ob#10240:bb#1024:fb#1024:tb=swap:\
+	:pc#510720:oc#20480:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#541440:od#531200:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#363520:oe#20480:be#1024:fe#1024:te=2.11BSD:\
+	:pf#320000:of#384000:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#368640:og#704000:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#1072640:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+# EATON BR1537 or 1711 controller.  The CSR set looks like an RP03,
+# that's about all.
+#
+br1538d|BR1538D|EATON 1538D, 1711:\
+	:ty=removable:ns#32:nt#19:nc#815:so:\
+	:b0=/mdec/bruboot:\
+	:pa#18240:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#12160:ob#18240:bb#1024:fb#1024:tb=swap:\
+	:pc#232256:oc#30400:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#232256:od#262656:bd#4096:fd#1024:td=2.11BSD:\
+	:ph#494912:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rp04|RP04|rp05|RP05|DEC RP04/05:\
+	:ty=removable:ns#22:nt#19:nc#411:sf:\
+	:b0=/mdec/hpuboot:\
+	:pa#9614:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8778:ob#9614:bb#1024:fb#1024:tb=swap:\
+	:pc#152988:oc#18392:bc#1024:fc#1024:tc=2.11BSD:\
+	:pg#171650:og#0:bg#1024:fg#1024:tg=2.11BSD
+
+rp06|RP06|DEC RP06:\
+	:ty=removable:ns#22:nt#19:nc#815:sf:\
+	:b0=/mdec/hpuboot:\
+	:pa#9614:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8778:ob#9614:bb#1024:fb#1024:tb=swap:\
+	:pc#153406:oc#18392:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#168724:od#171798:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#322130:oe#18392:be#1024:fe#1024:te=2.11BSD:\
+	:pg#171798:og#0:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#340522:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rp07|RP07|DEC RP07:\
+	:ty=fixed:ns#50:nt#32:nc#630:sf:\
+	:b0=/mdec/hpuboot:\
+	:pa#19200:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#51200:ob#19200:bb#1024:fb#1024:tb=swap:\
+	:pc#1006400:oc#0:bc#1024:fc#1024:\
+	:pd#320000:od#70400:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#320000:oe#390400:be#1024:fe#1024:te=2.11BSD:\
+	:pf#296000:of#710400:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#936000:og#70400:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#1006400:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rm2x|160|fuji|fuji160|Fujitsu 160:\
+	:ty=fixed:ns#32:nt#10:nc#823:sf:\
+	:b0=/mdec/si94uboot:\
+	:pa#9600:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#9600:ob#9600:bb#1024:fb#1024:tb=swap:\
+	:pc#244160:oc#19200:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#164800:od#19200:bd#1024:fd#1024:td=unused:\
+	:pe#79360:oe#184000:be#1024:fe#1024:te=unused:\
+	:pf#39680:of#184000:bf#1024:ff#1024:tf=unused:\
+	:pg#39680:og#223680:bg#1024:fg#1024:tg=unused:\
+	:ph#263360:oh#0:bh#1024:fh#1024:th=unused
+
+diva|DIVA|9300|Diva Comp V, Ampex 9300 (in direct mode):\
+	:ty=fixed:ns#33:nt#19:nc#815:sf:\
+	:b0=/mdec/dvhpuboot:\
+	:pa#9405:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#9405:ob#9405:bb#1024:fb#1024:tb=swap:\
+	:pc#241395:oc#18810:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#250641:od#260205:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#169290:oe#18810:be#1024:fe#1024:te=2.11BSD:\
+	:pf#156750:of#188100:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#165996:og#344850:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#510846:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+330|capricorn|Capricorn|Ampex Capricorn:\
+	:ty=fixed:ns#32:nt#16:nc#1024:sf:\
+	:pa#16384:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#33792:ob#16384:bb#1024:fb#1024:tb=swap:\
+	:pc#291840:oc#50176:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#16384:od#342016:bd#4096:fd#1024:td=2.11BSD:\
+	:pe#56320:oe#358400:be#1024:fe#1024:te=2.11BSD:\
+	:pf#107008:of#414720:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#179712:og#342016:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#521728:bh#1024:fh#1024:th=2.11BSD
+
+si_eagle|SI_Eagle|2351|2351A|Fujitsu Eagle 2351A (48 sectors):\
+	:ty=fixed:ns#48:nt#20:nc#842:rm#3961:sf:\
+	:b0=/mdec/si51uboot:\
+	:pa#11520:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#11520:ob#11520:bb#1024:fb#1024:tb=swap:\
+	:pc#474240:oc#23040:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#92160:od#497280:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#218880:oe#589440:be#1024:fd#1024:te=2.11BSD:\
+	:ph#803520:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+si9766|si9766|CDC 9766 on SI 9500 controller:\
+	:ty=removable:ns#32:nt#19:nc#823:sf:\
+	:b0=/mdec/si95uboot:\
+	:pa#9120:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#9120:ob#9120:bb#1024:fb#1024:tb=swap:\
+	:pc#234080:oc#18240:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#244866:od#252320:bd#4096:fd#1024:td=2.11BSD:\
+	:pe#164160:oe#18240:be#1024:fe#1024:te=2.11BSD:\
+	:pf#152000:of#182400:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#162786:og#334400:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#497344:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rk06|RK06|DEC RK06:\
+	:ty=removable:ns#22:nt#3:nc#411:sf:\
+	:b0=/mdec/hkuboot:\
+	:pa#8316:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8316:ob#8316:bb#1024:fb#1024:tb=swap:\
+	:pc#27126:oc#0:bc#1024:fc#1024:tc=unused:\
+	:pg#10428:og#16632:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#27060:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rk07|RK07|DEC RK07:\
+	:ty=removable:ns#22:nt#3:nc#815:sf:bt=hkuboot:\
+	:b0=/mdec/hkuboot:\
+	:pa#8316:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8316:ob#8316:bb#1024:fb#1024:tb=swap:\
+	:pc#53790:oc#0:bc#1024:fc#1024:tc=unused:\
+	:pg#37092:og#16632:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#53724:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+# The RL02 and RL01 have 256 byte sectors,  getdiskbyname ignores 'se' 
+# (thankfully) but partitions are still in units of 512-byte sectors.
+rl01|RL01|DEC RL01:\
+	:ty=removable:se#256:ns#20:nt#2:nc#256:\
+	:b0=/mdec/rluboot:\
+	:ph#10240:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rl02|RL02|DEC RL02:\
+	:ty=removable:se#256:ns#20:nt#2:nc#512:\
+	:b0=/mdec/rluboot:\
+	:pa#15360:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#5120:ob#15360:bb#1024:fb#1024:tb=swap:\
+	:ph#20480:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rk05|RK05|DEC RK05:\
+	:ty=removable:ns#12:nt#2:nc#203:bt=rkuboot:\
+	:b0=/mdec/rkuboot:\
+	:ph#4872:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+#
+# Disks on a UDA50
+#
+
+ra60|RA60|DEC RA60 Removable|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=removable:ns#42:nt#4:nc#2382:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#33440:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#193282:oc#49324:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#15884:od#242606:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#140686:oe#258490:be#1024:fe#1024:te=2.11BSD:\
+	:pg#156570:og#242606:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#399176:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+ra80|RA80|DEC RA80 Winchester|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=fixed:ns#31:nt#14:nc#559:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#33440:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#186888:oc#49324:bc#1024:fc#1024:tc=2.11BSD:\
+	:ph#236212:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+ra81|RA81|DEC RA81 Winchester|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=fixed:ns#51:nt#14:nc#1248:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#33440:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#193282:oc#49324:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#15884:od#242606:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#307200:oe#258490:be#1024:fe#1024:te=2.11BSD:\
+	:pf#324382:of#565690:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#647466:og#242606:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#890072:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+ra81x|RA81X|Extended DEC RA81 Winchester|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=fixed:ns#51:nt#14:nc#1815:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#33440:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#193282:oc#49324:bc#1024:fc#1024:tc=2.11BSD:\
+	:pd#15884:od#242606:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#307200:oe#258490:be#1024:fe#1024:te=2.11BSD:\
+	:pf#728952:of#565690:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#1052036:og#242606:bg#1024:fg#1024:\
+	:ph#1294642:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rd52|RD52|DEC RD52|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=fixed:ns#18:nt#7:nc#480:so:\
+	:b0=/mdec/rauboot:\
+	:pa#9700:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#17300:ob#9700:bb#1024:fb#1024:tb=2.11BSD:\
+	:pc#3100:oc#27000:bc#1024:fc#1024:tc=swap:\
+	:pd#30348:od#30100:bd#1024:fd#1024:td=2.11BSD:\
+	:pg#50748:og#9700:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#60448:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rd53|RD53||DEC RD53|OLD STYLE PARTITIONS:\
+	:dt=MSCP:ty=fixed:ns#18:nt#8:nc#963:so:\
+	:b0=/mdec/rauboot:\
+	:pa#9700:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#17300:ob#9700:bb#1024:fb#1024:tb=2.11BSD:\
+	:pc#3100:oc#27000:bc#1024:fc#1024:tc=swap:\
+	:pd#108540:od#30100:bd#1024:fd#1024:td=2.11BSD:\
+	:pg#128940:og#9700:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#138640:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+rc25|RC25|rcf25|RCF25|DEC RC25 and RC25F:\
+	:dt=MSCP:ty=removable:ns#42:nt#4:nc#2382:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#50902:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+	:pg#26658:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rd31|RD31|DEC RD31:\
+	:dt=MSCP:ty=fixed:ns#17:nt#4:nc#615:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#41560:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+	:pg#17316:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rd32|RD32|DEC RD32:\
+	:dt=MSCP:ty=fixed:ns#17:nt#6:nc#820:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#83236:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+	:pg#58992:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rd33|RD33|DEC RD33:\
+	:dt=MSCP:ty=fixed:ns#17:nt#7:nc#1170:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#138565:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+	:pg#114321:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rd51|RD51|DEC RD51:\
+	:dt=MSCP:ty=fixed:ns#18:nt#4:nc#300:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#5716:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#21600:oc#0:bc#1024:fc#1024:tc=2.11BSD
+
+rd52new|RD52new|DEC RD52|NEW STYLE PARTITIONS:\
+ 	:dt=MSCP:ty=fixed:ns#18:nt#7:nc#480:so:\
+ 	:b0=/mdec/rauboot:\
+ 	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+ 	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+ 	:pc#60480:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+ 	:pg#36236:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rd53new|RD53new|DEC RD53|NEW STYLE PARTITIONS:\
+ 	:dt=MSCP:ty=fixed:ns#17:nt#8:nc#1024:so:\
+ 	:b0=/mdec/rauboot:\
+ 	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+ 	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+ 	:pc#138672:oc#0:bc#1024:fc#1024:tc=2.11BSD:\
+ 	:pg#114428:og#24244:bg#1024:fg#1024:tg=2.11BSD\
+
+rd54|RD54|DEC RD54:\
+	:dt=MSCP:ty=fixed:ns#17:nt#15:nc#1221:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#311200:oc#0:bc#1024:fc#1024:tc=unused:\
+	:pg#278596:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+rx23|RX23|DEC RX23:\
+	:dt=MSCP:ty=floppy:ns#18:nt#2:nc#80:\
+	:b0=/mdec/rauboot:\
+	:pa#2880:oa#0:ba#1024:fa#1024:ta=2.11BSD
+
+rx26|RX26|DEC RX26:\
+	:dt=MSCP:ty=floppy:ns#36:nt#2:nc#80:\
+	:b0=/mdec/rauboot:\
+	:pa#5760:oa#0:ba#1024:fa#1024:ta=2.11BSD
+
+rx33|RX33|DEC RX33:\
+	:dt=MSCP:ty=floppy:ns#15:nt#2:nc#80:\
+	:b0=/mdec/rauboot:\
+	:pa#2400:oa#0:ba#1024:fa#1024:ta=2.11BSD
+
+rx50|RX50|DEC RX50:\
+	:dt=MSCP:ty=removable:ns#10:nt#1:nc#80:\
+	:b0=/mdec/rauboot:\
+	:pa#800:oa#0:ba#1024:fa#1024:2.11BSD
+
+ra60new|RA60new|DEC RA60|NEW STYLE PARTITIONS:\
+ 	:dt=MSCP:ty=removable:ns#42:nt#4:nc#2382:so:\
+ 	:b0=/mdec/rauboot:\
+ 	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+ 	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+ 	:pc#400176:oc#0:bc#1024:fc#1024:\
+ 	:pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+ 	:pe#140436:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+ 	:pg#367572:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+ra70|RA70|DEC RA70:\
+        :dt=MSCP:ty=fixed:ns#33:nt#11:nc#1507:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#547041:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#287301:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pg#514437:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+ra71|RA71|DEC RA71:\
+        :dt=MSCP:ty=fixed:ns#51:nt#14:nc#1915:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#1367310:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#515506:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra72|RA72|DEC RA72:\
+        :dt=MSCP:ty=fixed:ns#51:nt#20:nc#1915:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#1953300:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#1101496:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra73|RA73|DEC RA73:\
+        :dt=MSCP:ty=fixed:ns#70:nt#21:nc#2667:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#3920490:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#3068686:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra80new|RA80new|DEC RA80|NEW STYLE PARTITIONS:\
+ 	:dt=MSCP:ty=fixed:ns#31:nt#14:nc#546:so:\
+ 	:b0=/mdec/rauboot:\
+ 	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+ 	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+ 	:pc#237212:oc#0:bc#1024:fc#1024:\
+ 	:pg#204608:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+ra81new|RA81new|DEC RA81|NEW STYLE PARTITIONS:\
+ 	:dt=MSCP:ty=fixed:ns#51:nt#14:nc#1248:so:\
+ 	:b0=/mdec/rauboot:\
+ 	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+ 	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+ 	:pc#891072:oc#0:bc#1024:fc#1024:\
+ 	:pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+ 	:pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+ 	:pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+ 	:pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+ 	:ph#39268:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra82|RA82|DEC RA82:\
+	:dt=MSCP:ty=fixed:ns#57:nt#15:nc#1423:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#1216665:oc#0:bc#1024:fc#1024:\
+	:pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+	:pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#364861:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra90|RA90|DEC RA90:\
+	:dt=MSCP:ty=fixed:ns#69:nt#13:nc#2649:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#2376153:oc#0:bc#1024:fc#1024:\
+	:pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+	:pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#1524349:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+ra92|RA92|DEC RA92:\
+	:dt=MSCP:ty=fixed:ns#69:nt#13:nc#3279:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#2940951:oc#0:bc#1024:fc#1024:\
+	:pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+	:pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+	:pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+	:pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#2089147:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+rz22|RZ22|DEC RZ22:\
+	:dt=MSCP:ty=fixed:ns#33:nt#4:nc#776:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#102432:oc#0:bc#1024:fc#1024:\
+	:pg#78188:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rz23|RZ23|DEC RZ23:\
+	:dt=MSCP:ty=fixed:ns#33:nt#8:nc#776:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#204864:oc#0:bc#1024:fc#1024:\
+	:pg#180620:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rz23l|RZ23L|DEC RZ23L:\
+	:dt=MSCP:ty=fixed:ns#39:nt#4:nc#1524:so:\
+	:b0=/mdec/rauboot:\
+	:pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+	:pb#8360:ob#15884:bb#1024:fb#1024:tb=swap:\
+	:pc#237588:oc#0:bc#1024:fc#1024:\
+	:pg#213344:og#24244:bg#1024:fg#1024:tg=2.11BSD
+
+rz24|RZ24|DEC RZ24:\
+        :dt=MSCP:ty=fixed:ns#38:nt#8:nc#1348:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#409792:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#150052:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pg#377188:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+rz24l|RZ24L|DEC RZ24L:\
+        :dt=MSCP:ty=fixed:ns#65:nt#4:nc#1818:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#479350:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#219610:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pg#446746:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+rz25|RZ25|DEC RZ25:\
+        :dt=MSCP:ty=fixed:ns#62:nt#9:nc#1476:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#832527:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#130590:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#799923:og#32604:bg#1024:fg#1024:tg=2.11BSD:
+
+rz26|RZ26|DEC RZ26:\
+        :dt=MSCP:ty=fixed:ns#57:nt#14:nc#2570:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#2050860:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+	:ph#1199056:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+rz55|RZ55|DEC RZ55:\
+        :dt=MSCP:ty=fixed:ns#36:nt#15:nc#1224:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#649040:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#389300:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pg#616436:og#32604:bg#1024:fg#1024:tg=2.11BSD
+
+rz56|RZ56|DEC RZ56:\
+        :dt=MSCP:ty=fixed:ns#54:nt#15:nc#1632:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#1299174:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#447370:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+rz57|RZ57|DEC RZ57:\
+        :dt=MSCP:ty=fixed:ns#71:nt#15:nc#1854:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16720:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#1954050:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#1102246:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+rz58|RZ58|DEC RZ58:\
+        :dt=MSCP:ty=fixed:ns#85:nt#15:nc#2112:so:\
+	:b0=/mdec/rauboot:\
+        :pa#15884:oa#0:ba#1024:fa#1024:ta=2.11BSD:\
+        :pb#16270:ob#15884:bb#1024:fb#1024:tb=swap:\
+        :pc#2698061:oc#0:bc#1024:fc#1024:\
+        :pd#227136:od#32604:bd#1024:fd#1024:td=2.11BSD:\
+        :pe#409600:oe#259740:be#1024:fe#1024:te=2.11BSD:\
+        :pf#182464:of#669340:bf#1024:ff#1024:tf=2.11BSD:\
+        :pg#819200:og#32604:bg#1024:fg#1024:tg=2.11BSD:\
+        :ph#1846257:oh#851804:bh#1024:fh#1024:th=2.11BSD
+
+# The RX driver uses partition 'a' to select single density and 'b' to
+# select double density.  Partition sizes are in units of 512-byte sectors
+# even though the rx01 uses 128 byte hardware sectors and the rx02 256 byte
+# sectors.  This really doesn't work too well for the RX01 due to the odd
+# number of sectors - are there any of them still running?
+
+rx01|RX01|DEC RX01:\
+	:ty=floppy:se#128:ns#13:nt#1:nc#77:\
+	:b0=/mdec/rx01uboot:\
+	:pa#500:ba#1024:fa#1024:\
+
+rx02|RX02|DEC RX02:\
+	:ty=floppy:se#256:ns#13:nt#1:nc#77:\
+	:b0=/mdec/rx02uboot:\
+	:pb#1001:bb#1024:fb#1024:
+
+#
+# RAM disk
+#
+ram|RAM|Ram disk:\
+	:ty=simulated:ns#2:nt#1024:nc#4096:

@@ -1,0 +1,66 @@
+
+
+
+VALLOC(3C)	    UNIX Programmer's Manual	       VALLOC(3C)
+
+
+
+NAME
+     valloc - aligned memory allocator
+
+SYNOPSIS
+     char *valloc(size)
+     unsigned size;
+
+DESCRIPTION
+     Valloc is obsoleted by the current version of malloc, which
+     aligns page-sized and larger allocations.
+
+     _V_a_l_l_o_c allocates _s_i_z_e bytes aligned on a page boundary.  It
+     is implemented by calling _m_a_l_l_o_c(3) with a slightly larger
+     request, saving the true beginning of the block allocated,
+     and returning a properly aligned pointer.
+
+DIAGNOSTICS
+     _V_a_l_l_o_c returns a null pointer (0) if there is no available
+     memory or if the arena has been detectably corrupted by
+     storing outside the bounds of a block.
+
+BUGS
+     _V_f_r_e_e isn't implemented.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

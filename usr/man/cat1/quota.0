@@ -1,0 +1,66 @@
+
+
+
+QUOTA(1)	    UNIX Programmer's Manual		 QUOTA(1)
+
+
+
+NAME
+     quota - display disc usage and limits
+
+SYNOPSIS
+     quota [ -qv ] [ user ]
+
+DESCRIPTION
+     _Q_u_o_t_a displays users' disc usage and limits. Only the
+     super-user may use the optional _u_s_e_r argument to view the
+     limits of users other than himself.
+
+     The -q flag prints a more terse message, containing only
+     information on file systems where usage is over quota.
+
+     If a -v flag is supplied, _q_u_o_t_a will also display user's
+     quotas on file systems where no storage is allocated.
+
+     _Q_u_o_t_a reports only on file systems which have disc quotas.
+     If _q_u_o_t_a exits with a non-zero status, one or more file sys-
+     tems are over quota.
+
+SEE ALSO
+     quota(2), quotaon(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

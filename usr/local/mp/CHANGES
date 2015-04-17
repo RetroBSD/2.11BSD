@@ -1,0 +1,919 @@
+
+@(#)CHANGES 1.8 92/02/17
+
+Mp change history.
+------------------
+
+v2.5 - patchlevel 6 - 17th February 1992.
+
+    * Removed Bertrands' portion of the fix (introduced in patch #5) to
+      prevent text overwriting in the top banner. Just Rainers' fix is now
+      being used.
+
+    * From Donn Fisher <Donn.Fisher@Eng.Sun.COM>
+      Various fixups to the mp and mailp manual pages to get them inline
+      with the OpenWindows V3.0.1 ones.
+
+    * Occurances of index() in header.c and misc.c have been replaced with
+      strchr(). The definition for NOINDEX in Makefile.dist has been changed
+      to a definition for NOSTRCHR. The README has been updated.
+
+    * Added in a -C command line option to mp. If used, mp will look for (and
+      use) a Content-Length: header line to determine the length of the mail
+      message to print, rather than the "\nFrom" string. If the Content-Length
+      doesn't take you to the next "\nFrom", then it's wrong, and mp falls back
+      to looking for the next "\nFrom" in the mail folder.
+
+      The Content-Length doesn't seem to include the blank line between the
+      header and the message body or the blank line after the message body
+      and before the next header, so for the purposes of getting to the start
+      of the next message, mp adds two to the Content-Length count.
+
+      Mp manual pages have been updated.
+
+v2.5 - patchlevel 5 - 3rd February 1992.
+
+    * From Mark Prior <mrp@itd.adelaide.edu.au>
+      New location for the mp files via anon ftp on ftp.adelaide.edu.au.
+      They are now in a compressed tar file called mp.tar.Z in pub/sun/richb
+
+    * From Bertrand Decouty <Bertrand.Decouty@irisa.fr>
+      Patch #4 broke the support for printing of 8bit characters (see entry
+      from Sjoerd.Mullender@cwi.nl). The parameter to expand() has been
+      returned to being an unsigned char *, and all places where this is
+      called have been adjusted accordingly.
+
+    * From Bertrand Decouty <Bertrand.Decouty@irisa.fr>
+      Adjusted Makefile.dist to install mailp (and friends) with symbolic
+      links as opposed to hard links. Added a small comment to the trouble-
+      shooting section of the README file, to detail this possible problem
+      for UNIX systems which don't have symbolic links.
+
+    * From Bjorn P. Brox <brox@dms.corena.no>
+      The current /backspace definition in the PostScript prologue files
+      won't work on all PostScript variants using Type1 fonts. A comment has
+      been added to the trouble-shooting section in the README file describing
+      a workaround.
+
+    * From Bjorn P. Brox <brox@dms.corena.no>
+      The ISOLatin1Encoding array is only present in "new" PostScript
+      printers. Need to include definitions for "old" printers. Some printers
+      don't have the /Thorn character. The PostScript versions I have used,
+      including GhostScript does not fail if an entry in /Encoding does not
+      exist in /CharStrings.
+
+      From the Reference Manual, second edition, page 271 (5.3 Character
+      Encoding):
+
+        "If some encoding maps to a character name that does not exist in
+         the font, .notdef is substituted."
+
+      Therefore it should be safe to define ISOLatin1Encoding even if some
+      of the characters does not exist.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      From Bjorn P. Brox <brox@dms.corena.no>
+      I suggest that mp be reorganised to have one prologue file containing
+      definitions, like backspacefont and reencodeISO, for all prologue files,
+      and let the special prolog files just contain the differences. The common
+      prologue file is called mp.common.ps. FILES, Makefile.dist, README and
+      MANIFEST have been updated.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      A little change to the Makefile, making $(MPPATH)/man/man$(MPMANSECT)
+      the default path for manual pages instead of $(MPPATH)/man$(MPMANSECT).
+      Seems more conventional.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      A solution to the From/Date clashes in the header mentioned by Fulvio
+      Marino <fulvio@ssuxos.ICO.OLIVETTI.COM> in the TODO file. These
+      clashes can occur if the mail address is quite long (like mine). In
+      such a case the font sizes of all header strings are reduced a bit so
+      that everythings fits into the available space nicely.
+ 
+      The patch should also make the PostScript thing a little faster.
+
+      [Applied to mp.pro.ps and mp.pro.l.ps]
+
+    * From Bertrand Decouty <Bertrand.Decouty@irisa.fr>
+      As I have very quickly observed such a clash while printing, in
+      landscape mode, an article from a newsgroup (comp.unix.questions), I
+      propose to print the left and the right parts on 2 lines, with the same
+      alignment and fonts.
+
+      [Applied to mp.pro.ps and mp.pro.l.ps]
+
+    * From Glenn M. Lewis <glewis@fws204.intel.com>
+      Typing "mail -F -m mail/survey > survey.ps" has a couple of of problems.
+      First, the "From:" name is not necessarily correct.  It often is the name
+      of the person who sent the message *following* the current one.  [The
+      subject printed in the bottom banner can be incorrect too - Rich]. Also,
+      when a message is too long for a single page, it seems to print the tail
+      of the message before the top of it.
+
+    * From Fulvio Marino <fulvio@ssuxos.ICO.OLIVETTI.COM>
+      Printing a mail folder in landscape mode, top and bottom headers are
+      wrong: the last page of each mail has the headers of the following one!
+      My platform is: Olivetti LSX-3020 running X/OS 2.4 (a SysV+Bsd system
+      with X/OPEN compatibility); printer is an Olivetti PG-306 (emulating HP
+      LJ II) with an expansion board of Bauer Enterprises (PostScript Emulation
+      Version 4.1).
+
+v2.5 - patchlevel 4 - 28th January 1992.
+
+    * From Sjoerd.Mullender@cwi.nl
+      I have ported mp to an SGI system running IRIX 4.0.1.  To get it to
+      compile without warnings using the ANSI C compiler I had to make a few
+      modifications.
+
+    * Added a section to the README file describing the two sites where mp
+      is available via anon ftp.
+
+    * From Lars P. Fischer <fischer@iesd.auc.dk>
+      It would nice with a PREFIX variable of some sort for PATH's in the
+      makefile, so that you don't have to edit "/usr/local" to /home/pd or
+      whatever in three lines. This is a very minor hassle, of course.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      In the Makefile the macro PROLOGUE is not set by default. If mp is
+      installed in the standard places this is no problem, but if it is
+      installed somewhere else mp still searches for the prolog files in
+      /usr/local/lib.  Setting PROLOGUE to -DPROLOGUE=\"$(MPLIBDIR)\" by
+      default seems reasonable in any case.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      Fix for the -fp (Franklin Planner) prologue output.
+
+    * From Fulvio Marino <fulvio@ssuxos.ICO.OLIVETTI.COM>
+      The A4 paper size is 210x297 mm, NOT 8.5x11.4 inches.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de> 
+      Mp prints one line more on each page than specified by %%PageLength,
+      except the first page.
+
+v2.5 - patchlevel 3 - 21st January 1992.
+
+    * Removed the check of the OPENWINHOME environment variable for the
+      location of the mp prologue files. This is confusing and is only
+      really needed for the OpenWindows version of mp. Also removed two
+      small sections for the Makefile.dist file, which are not needed for
+      the non-OpenWindows version.
+
+    * Added a section to the README, containing information on possible
+      trouble shooting hints for mp.
+
+    * From John Macdonald <mauxci!eci386!jmm@apple.com>
+      Added a comment to the prologue files, and an item in the trouble
+      shooting section, to provide possible further pointers with regards
+      to the setscreen black magic.
+
+    * From David W. Sanderson <dws@cs.wisc.edu>
+      Slight fixups to the mp manual pages including replacing ".LP" with
+      ".PP" throughout, since ".LP" is just a symonym for ".PP" anyway.
+
+    * From David W. Sanderson <dws@cs.wisc.edu>
+      Included a significantly revised version of mailp. Changes include:
+
+      - Adjusted mailp to only supply a -P argument if $PRINTER is set, rather
+        than forcing a -Pps if PRINTER is not set. I don't have a printer named
+        "ps".
+
+      - mailp accepts -P and -d arguments, which are passed on to lpr or lp.
+        They set PRINTER and LPDEST respectively.
+
+    * From Lupe Christoph <lupe@alanya.Germany.Sun.COM>
+      From Meinhard Kniffki <Meinhard.Kniffki@Germany.Sun.COM>
+      Problems printing with the -ts Time/System print option, when printing
+      more than one page. The second and subsequent pages were not scaled down
+      in size.
+
+    * Fixed up two occurances of strchr that were used directly, instead of
+      index (which can be changed to strchr via the Makefile definition
+      NOINDEX).
+
+    * From Peter J. Ebbelink <pe@asd.tes.nl>
+      When using mp together with the elm mail frontend, there is a slight
+      problem with the output: elm uses a format for it's printer output that
+      is slightly different from the normal folder format. To be specific:
+      It lacks the UNIX "From " line and adds a formfeed after each message.
+      This is done for those who miss the comfort of mp. When sending a single
+      message to the printer this turn out mighty good, but when tagging some
+      messages to be printed in one turn, the bold "From: ", "To: ",
+      "Subject: " and "Date: " turn out in normal message body font.
+
+      I've added a commandline option -e that expect the input to be formatted
+      according to the elm intermediate file format, rather than the standard
+      folder format. mp can be invoked from within elm by setting up elm using
+      o)ptions P)rint mail using, and then specifying "mp -e %s | lpr"
+
+    * Put the LIBDIR and BINDIR sections back in the manual pages and mailp.
+      Renamed mp.1 to mp.man, added the sed section to Makefile.dist. Updated
+      MANIFEST and FILES.
+
+    * From Rainer Klute <klute@tommy.informatik.uni-dortmund.de>
+      When using mp with Ghostscript and a heavy-duty (ca. 50 pages/minute)
+      PostScript-less laser printer it turned out that a single page generated
+      by mp took 2-3 minutes to print. Obviously the "sf" before each text line
+      is a very expensive operation in our configuration. I fixed the problem
+      by only outputting an "sf" at the beginning of the page, after the
+      headers.
+
+    * From David W. Smith <dws@dbsoft.com>
+      Support for the Franklin Planner personal organiser. Prologue file is
+      mp.pro.fp.ps, command line option is -fp. Updates to mailp, mp.man,
+      Makefile.dist, FILES and MANIFEST.
+
+      It also works for the intermediate size of the Day Timer(tm) system.
+      By moving the holes, this prologue can be made to work with the
+      DayRunner(tm) and a number of the other half-size page systems.
+      To some extent, magic numbers have been replaced by units in inches.
+
+    * Added in a manual page for mailp, in both troff/nroff format and plain
+      text.
+
+    * Adjust the "shar" section of Makefile.dist, to create shars of a size
+      that can be posted to comp.sources.misc.
+
+    * Updated the TODO file with the list of outstanding problems received
+      via mail in the last eighteen months.
+
+v2.5 - patchlevel 2 - 10th January 1992.
+
+    * From Donn Fisher (Donn.Fisher@Eng.Sun.COM)
+      Two small adjustments to the mp.1 manual pages to correctly print.
+
+    * Changed the default landscape mode to work like a 2up version of the
+      normal print mode. The previous version of the landscape mode has been
+      moved to mp.pro.altl.ps, for those who prefer that capability. The
+      PostScript for mp.pro.l.ps can certainly be improved. I'm no PostScript
+      expert. Fixes the following problems:
+
+      From Michael J. Tuchiarone <tooch@plan9.Sun.COM>
+      With landscape mode: There are a few things I don't like still, and chief
+      among them is that the last page printed "wins" and gets its subject
+      printed in the banner. It actually should (I think) be either the
+      left-hand message, or better yet, if the subjects are different then
+      print a different subject under each message.
+
+      From Andreas Wettengel <nixhhs!andreas@relay.EU.net>
+      I would like to be able to specify an offset within a logical page.
+      If you print in landscape mode, the text of the second page starts
+      at the left edge of the page, which prevents you from cutting the
+      paper in halves and putting each half into a folder.
+
+      From John Macdonald <mtxinu!uunet.UU.NET!jmm%eci386@Sun.COM>
+      With the landscape format, I am tempted to put a separate subject
+      box at the top of each set of columns that have a different column.
+      Thus, for a digest, there would be a subject header for each item
+      in the digest, not just the ones that were current during a left
+      most logical page.
+
+v2.5 - patchlevel 1 - 6th January 1992.
+
+    * Inverted the order of entries in the CHANGES file. The latest patch is
+      now at the beginning of the file.
+
+    * From John Macdonald <mtxinu!uunet.UU.NET!jmm%eci386@Sun.COM>
+      Included two new prologue files. These have become the defaults
+      for mp.pro.ps and mp.pro.l.ps, and the previous versions of these
+      files have been moved to mp.pro.old and mp.pro.l.old.
+
+    * Integrated the changes needed to compile mp in the Open Windows build
+      into the generic Makefile.dist file.
+
+    * Adjusted the entry that make mp in Makefile.dist to add write
+      permission to mp.1 before sed edits it, just in case it's under SCCS
+      control at the time.
+
+    * Removed the credits section from the initial comment in main.c. The
+      credits are part of the acknowledgement section in the README file.
+
+    * From Francois Ougier <ougier@saphir.cl.bull.fr>
+      I'm not a PostScript expert, but the way CharStrings is used seems to
+      inhibit the font cache machinery; this may cause the abort. However, I
+      found a solution in the Adobe's red book which works on my LaserWriter.
+      It uses the Metrics dictionary.
+
+    * From Michael J. Tuchiarone <tooch@plan9.Sun.COM>
+      NeWS/OpenWindows does not implement the CharStrings dictionary.
+      Therefore /backspacefont doesn't work correctly. Need to generate a
+      NeWS/OW compatible version of CourierBack.
+
+    * From Hardy <hardy@golem.ps.uci.edu>
+      Mp has problem printing with the NeXT printer driver, which is more
+      finicky about PostScript. Whenever I printed something to it (either
+      directly, or remotely from the HP-machines), I ended up with an
+      "invalid restore" message.
+
+    * From Dennis Linse <djlinse@phoenix.Princeton.EDU>
+      Due to an apparent error when using mp (patchlevel 14) on a NeXT, I
+      investigated the prologue code a little and found a bit of bad
+      PostScript.  The /backspace function used for CourierBack leaves a
+      dictionary on the PostScript operand stack.  When a file is printed on
+      a NeXT using the most recent operating system (OS2.1), this leftover
+      dictionary causes an 'invalidrestore' PostScript error when printed.
+ 
+      One way to fix this is to add a pop as the last item in the definition
+      of the /backspace function.
+
+    * From Andy Hall <andyh@ncduk.com>
+      Running on a Sparcstation 1+ and with a Canon LBP8 mark 3 printer with
+      PS-1 Scriptcard. This is a true version 51.4 Adobe Interpreter. If I
+      print Unix manual pages using standard Nroff output and the mp.pro.ps
+      v1.2 prologue the job gets aborted after a few pages with a stackoverflow
+      message on the serial output (I am using serial interface).  After a bit
+      of investigation using a small C program to produce lines consisting only
+      of a printed line number, a printable character, a backspace, an
+      underscore and a newline, it appears that the job gets aborted on the
+      page where the 500th backspace is. I am not a PostScript expert but I am
+      wondering whether the problem lies with the embedded piece of code
+      backspacefont.ps or the way it is used. It is rather too convoluted for
+      me to understand fully but my suspicions are aroused in that the default
+      operand stack size mentioned by Adobe in their red book is 500.
+
+    * From Bertrand Decouty <Bertrand.Decouty@irisa.fr>
+      Mp outputs 8-bit characters as one single character and not like \ijk
+      The prologue is not made to support ISO8859 character set. Fixes bug
+      #1078112.
+
+v2.5 - patchlevel 0 - 20th November 1991.
+
+    * Reset patchlevel and incremented version number.
+
+    * Fixed up usage message.
+
+    * Added in two new command line options:
+
+      -US - use US paper size (8.5" x 11")
+      -A4 - use A4 paper size (8.5" x 11.4")
+
+      This causes an appropriate definition for /fullheight to be written
+      to standard output, over-riding the one in the PostScript prologue
+      file. Mp manual pages have been updated to reflect this change.
+      Fixes bugid #1070432.
+
+--------------
+
+v2.4 - patchlevel 22. - 10th July 1991.
+        
+    *  Multiple space and/or tabs in the passwd gecos field or the NAME
+       environment variable were being processed incorrectly.
+        
+    *  Changed the grayscale level in mp.pro.ps and mp.pro.l.ps from .98 to
+       .88. This should printout much better on the Sun SparcPrinters.
+
+v2.4 - patchlevel 21. - 9th July 1991.
+        
+    *  If a ^L (form-feed), is immediately followed by a line starting
+       with "From", and we are printing a mail folder (-m command line
+       option is set), then only page new page is done.
+        
+       This functionality has been added at the request of the mailtool
+       team. Mailtool inserts ^L's between each mail message in a multiple
+       batch.
+
+v2.4 - patchlevel 20. - 6th June 1991.
+        
+    *  Added in ANSI function prototypes for all the mp routines.
+
+v2.4 - patchlevel 19. - 2nd May 1991.
+        
+    *  Changes needed to get mp to work under SVR4 (Zeus). There are no
+       SVR4 specifics; the same code runs unchanged under both SunOS v4.1.1
+       and SVR4.
+
+v2.4 - patchlevel 18. - 18 April 1991.
+
+    *  Mp has been modified so that all warning messages from the acc
+       compiler have been eliminated.
+
+v2.4 - patchlevel 17. - 15 April 1991.
+
+    *  mp.pro.ps and mp.pro.pl.ps were identical. Modified mp.pro.ps to be
+       for portrait mode. Bugid 1056540 can be closed.
+
+v2.4 - patchlevel 16. - 1 March 1991.
+
+    *  CRT 35 - Modified Makefile to install mailp.1 and create filep.1,
+       etc., links.
+
+v2.4 - patchlevel 15. - 26 February 1991.
+
+    *  Modified the mailp script to fix up the use of the PRINTER environment
+       variable, and to correctly handle the -h command line option (needed to
+       suppress the banner page).
+
+    *  Added in a mailp.1 manual page.
+
+v2.4 - patchlevel 14. - 1st November 1990.
+ 
+    *  From Amos Shapir <amos@nsc.nsc.com>
+       From Felix Ingrand <felix@ai.sri.com>
+       From Mike Khaw <khaw@parcplace.com>
+       From Ken Hayman <hayman@itd.nrl.navy.mil>
+       From John Macdonald <mtxinu!uunet.UU.NET!jmm%eci386@Sun.COM>
+       mp was no longer correctly recognising "from " header lines. This was
+       a bug in hdr_equal(), and affected the default mode of mail printing.
+       I've used a replacement hdr_equal() routine from Amos, which only
+       scans the string once instead of four times.
+ 
+    *  From Mike Khaw <khaw@parcplace.com>
+       From yonkers@ncsc.org
+       In our environment the "newfile" code causes the Apple laserwriter NTX's
+       to barf. This is a page reversal problem, with the PostScript routine
+       newfile being undefined. All references to newfile and endfile have
+       been removed from the prologue files and the mp program. The routine
+       startfile() has been left in as a null routine for now.
+        
+    *  From Ian Hoyle <ianh@bhpmrl.oz.au>
+       There is a problem with allocation of memory via the realloc calls in
+       print.c, on an SGI box running Irix 3.2, due to rounding. I'm simply
+       allocated one extra byte in each of the realloc calls.
+ 
+    *  From John Macdonald <mtxinu!uunet.UU.NET!jmm%eci386@Sun.COM>
+       Now that mp is case insensitive about mail headers, it was possible for
+       mail digests (ala comp.risks) and mail folders to be incorrectly
+       processed. If mp was finding a line beginning with "from ", it was
+       taking this as the start of a new message. A check has been added to
+       the folder and digest processing in printfile() in main.c, to only
+       proceed with new message processing, if the line in question matches
+       the test criteria *and* the first character is upper-case.
+
+    *  From Francois Ougier <ougier@saphir.cl.bull.fr>
+       Just like pageno, colct should be reset (to 0) when looping for
+       argument files in main.c (line 164). Otherwise, when printing multiple
+       ascii files in landscape mode, the second column of each first page is
+       always empty..
+
+    *  From Francois Ougier <ougier@saphir.cl.bull.fr>
+       The README file has been changed to suggest that a page length of 70
+       might be more useful to A4 sites, rather than 72, and to include that
+       86 seems a good value for LineLength in landscape mode for A4 paper.
+
+v2.4 - patchlevel 13. - 3rd October 1990.
+
+    *  The other PostScript prologue files need to be modified in a similar
+       way, to mp.pro.ps (changed in patch #12).
+ 
+    *  The meaning of the -PS switch to mp has been reversed. If you don't
+       specify -PS on the command line, and mp finds a PostScript file as
+       the body of the message, then it will just dump it out. Specifying
+       -PS causes it to be printed as text.
+ 
+    *  From Larry Virden <lwv27%CAS@pucc.PRINCETON.EDU>
+       Further modifications to mailp:
+ 
+       - If the user had specified a flag of "-sThis is my subject" then it
+         wouldn't have printed correctly.
+ 
+       - If the user tries to print files with tabs or spaces in them there
+         would have been problems.
+ 
+    *  From Larry Virden <lwv27%CAS@pucc.PRINCETON.EDU>
+       Specifying "mp -o -F <mailfile" causes mp to dump core.
+
+v2.4 - patchlevel 12. - 2nd October 1990.
+ 
+    *  From Geoff Mulligan <mulligan@wrl.dec.com>
+       Added in the ability for mp to recognize mail or digest messages
+       which have PostScript as the text of the message and just dump it
+       out. As this might not be the preferred option for everybody, this
+       will only occur when the -PS command line option is given.
+ 
+    *  From Geoff Mulligan <mulligan@wrl.dec.com>
+       Added more saving and restoring of the PostScript state in mp.pro.ps.
+ 
+    *  From Bruno Pillard <bp@chorus.fr>
+       Modifications to mailp:
+ 
+       - changed the way control arguments (added -l) are checked
+         in mail, and the tricky "set -- -" to handle the stdin case.
+ 
+    *  From Larry Virden <lwv27%CAS@pucc.PRINCETON.EDU>
+       Modifications to Bruno's mailp:
+ 
+       - Move the -h out to a variable, so that the user can configure it
+         by setting a shell variable.
+ 
+       - Change the :- to - since some /bin/sh's do not handle :- properly
+         (at least Ultrix pre-4.0 does not handle it properly).
+ 
+       - Change the stdin processing so that if the user provides a -s flag
+         on the command line it is used, but if it is not, the default one
+         is used.
+ 
+       - Change the per file processing so that if the user provides a -s
+         flag on the command line it is used FOR ALL FILES, but if it is
+         not provided, the file name itself is used.
+
+    *  From Bill Houle <bhoule@se-sd.SanDiego.NCR.COM>
+       Modified the mailp script to work on SysV which usually has no lpr.
+
+    *  From Bruce Barnett <barnett@unclejack.crd.ge.com>
+       When you do a "make install", occurances of BINDIR in the mailp shell
+       script, are now replaced with the value of $(BINDIR) from the Makefile.
+
+    *  From Larry Virden <lwv27%CAS@pucc.PRINCETON.EDU>
+       Modifications to Makefile.dist
+
+       - Separated out the macro definitions from the compiler flags, and
+         combined these together in the CFLAGS definition.
+
+       - Used $(CC) instead of calling cc direct.
+
+       - Included the Saber-C source loading rule.
+
+    *  From Andy Norman <ange@hplb.hpl.hp.com>
+       The install command under SysV does not have the same parameter order
+       as the BSD one. I've replaced all the install commands in the Makefile
+       with their equivalent cp and chmods.
+
+    *  From Paul Higgins <phiggins@orion.oac.uci.edu>
+       Mp is now case insensitive about mail header lines. The first word
+       of the line is now converted to lower-case before doing a comparison.
+       The first letter of each header is capitalised when printing.
+
+v2.4 - patchlevel 11. - 24th September 1990.
+
+    *  From Sato Toshihiko <sato@omphalos.bug.co.jp>
+       The names of the personal organiser prologue files in get_options()
+       in misc.c, was not changed to the new names in patch #10.
+
+    *  From Paul Eggert <eggert@twinsun.com>
+       mp.1 should be built when you type "make". On many hosts, you must
+       install as root, but root lacks write privaledge to the working
+       directory because it's mounted via NFS.
+ 
+    *  From Rick Rodgers <rodgers@maxwell.mmwb.ucsf.EDU>
+       From Paul Eggert <eggert@twinsun.com>
+       When you do a "make", occurances of BINDIR in the mp.man manual pages,
+       are now replaced with the value of $(BINDIR) from the Makefile.
+ 
+    *  From Johan Vromans <jv@mh.nl>
+       Added the rule "install-a4" to Makefile.dist. If you do a "make
+       install-a4", mp is initially installed. This is then followed by
+       the prologue files being edited in situ, and adjusted for A4 sized
+       paper. The README file has been updated to mention this.
+
+v2.4 - patchlevel 10. - 20th September 1990.
+
+    *  Four files should have their names changed before applying this patch.
+       These are:
+
+           mp.pro.filofax.ps ==> mp.pro.ff.ps
+           mp.pro.timeman.ps ==> mp.pro.tm.ps
+           mp.pro.timesys.ps ==> mp.pro.ts.ps
+           mp.1              ==> mp.man
+
+       This is to make filenames < 14 chars, which is needed on SysV systems,
+       and also to prevent any possible problems with trademarked names.
+
+       If you are on a Unix machine, then you should first run the following
+       four commands:
+
+         mv  mp.pro.filofax.ps  mp.pro.ff.ps
+         mv  mp.pro.timeman.ps  mp.pro.tm.ps
+         mv  mp.pro.timesys.ps  mp.pro.ts.ps
+         mv  mp.1               mp.man
+
+       If you are running mp on another O/S, then you should do the equivalent
+       of these four moves.
+
+    *  From Jim Sanchez <syteke!jim@relay.EU.net>
+       Please reduce the file name length on the mp.pro.filofax and
+       mp.pro.timeman files for us system V guys. We are stuck with short file
+       names and have to edit the source files each time you issue a patch.
+       [Fixed by renaming the files as above - Rich].
+
+    *  From Bruno Pillard <bp@chorus.fr>
+       The opportunity to change the location of the LIBDIR is given in the
+       Makefile, so you should update the Makefile to update the man page
+       accordingly; For example in the Makefile:
+
+       man:;      sed -e s,LIBDIR,$$LIBDIR,g mp.man > mp.1
+
+       Of course, you have to change the name of mp.1 to mp.man in the
+       distribution and all occurrence of /usr/local/lib by LIBDIR.
+
+    *  From Johan Vromans <jv@mh.nl>
+       From Ian Young <YoungIM@cs.bham.ac.uk>
+       When compiled with gcc, mp -a falls over with a seg fault.
+       In print.c, there are two places where a string is being copied to
+       message_for, which is an inappropriate character pointer.
+
+    *  From Andreas Wettengel <nixhhs!andreas@relay.EU.net>
+       the option string to get_opt() in get_options() in print.c has been
+       changed to allow "-t m" and "-t s" as well as '-tm" and "-ts".
+
+    *  From Bruno Pillard <bp@chorus.fr>
+       Added into the README file, the instructions for A4 sites that they
+       have also to change the "%%PageLength" line in mp.pro.ps. In my
+       opinion, 72 seems to be a good value.
+
+v2.4 - patchlevel 9. - 17th September 1990.
+
+    *  From Paul Eggert <eggert@twinsun.com>
+       From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       From Rick Rodgers <rodgers@maxwell.mmwb.ucsf.EDU>
+       The SunOS v4.1 /bin/make doesn't like blank lines half way through a
+       Makefile rule.
+ 
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       The SYSV definition was not added to the CFLAGS line in Makefile.dist.
+       It also needs to be added to the section in the README file, that
+       describes settable Makefile definitions.
+ 
+    *  From Rick Gunderson <rickg@toshiba.tic.oz.au>
+       The mp.pro.ps file won't center the page number in the gray bar if
+       ``leftedge'' is non-zero. We set left-edge to 0.5 inches so that there
+       is a margin at the left of the page for punched holes.
+ 
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       Some slight changes to the mailp shell script for -s subject handling.
+ 
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       From Rick Rodgers <rodgers@maxwell.mmwb.ucsf.EDU>
+       Some adjustments to the mp manual pages.
+        
+    *  From Peter Collinson <pc@hillside.co.uk>
+       I have my own machine and printer and KNOW that the mail is for
+       me.. I would like to have the header say
+        
+                Mail from ........
+        
+       The -F flag has been added for this option. The manual page has also
+       been updated.
+
+v2.4 - patchlevel 8. - 14th September 1990.
+
+    *  From Johan Vromans <jv@mh.nl>
+       Introduces another PostScript prologue file for the Time/System
+       International personal organiser. The prologue file is called
+       mp.pro.timesys.ps. The command line option to invoke Time Manager
+       output has been changed to -tm, and the Time/System output uses -ts.
+       The MANIFEST and FILES files have been updated to mention this new
+       file. The mailp shell script, Makefile.dist and mp manual pages
+       have been adjusted accordingly.
+
+    *  Not everybody wants the newsp, filep ... shell scripts installed.
+       To prevent this, you will need to comment out some lines in your
+       Makefile (after you copy it from Makefile.dist). This is now explicitly
+       mentioned in the Makefile.dist file and in the README under the
+       installation section.
+
+    *  The -v and the -? command line options now both output the current
+       mp version number and the usage message then exit.
+
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       Modifications to the mailp shell script to better handle the
+       printing of the subject lines. Added a comment to the shell script
+       to mention that banner printing is turned off by default. Most of
+       the banner information is handled in the mp banners. Certain sites
+       though, might wish to alter this by removing the -h switch to the
+       lpr command.
+
+    *  From Bill Houle <bhoule@se-sd.SanDiego.NCR.COM>
+       Have added a SYSV definition to the Makefile.dist file which should
+       be uncommented if you are compiling mp on a System V machine.
+ 
+       In mp.h, compiling mp on an NCR Tower V.3 system, the compiler did
+       not like the #include for sys/pathname.h, so it's been eliminated.
+       [If this is a problem for any SysV sites, please let me know - Rich].
+
+       cc complained about redefinition of sprintf et al, which were
+       already defined in <string.h>. I fixed by bracketing with #ifndef:
+
+       To get rid of the annoying warnings about illegal structure operations,
+       I included definitions for getpwuid() and getpwnam(). On the SysV Tower
+       at least, <pwd.h> defines the passwd structure, but not the functions.
+
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       The sprintf hard coded externs are in conflict with at least the
+       SunOS 4.1 systme 5 declarations.
+
+       Line 225 of misc.c is :   *ptr++ ;
+       Why?  The * is never used - it just falls on the floor.
+
+    *  From Jim Sanchez <syteke!jim@relay.EU.net>
+       Please reduce the file name length on the mp.pro.filofax and
+       mp.pro.timeman files for us system V guys. We are stuck with short
+       file names and have to edit the source files each time you issue a
+       patch.
+
+       [For now, I've detailed this problem in the TODO file. When the next
+        version of mp is released, I'll make sure that all the filenames are
+        below 14 characters - Rich].
+
+v2.4 - patchlevel 7. - 7th September 1990.
+
+    *  From Johan Vromans <jv@mh.nl>
+       Completely revised how mp now does it's processing. See the new
+       section in the README file entitled "How mp works" for more details.
+       Introduces a new prologue file mp.pro.l.ps for handling the standard
+       printing in landscape mode with 2 columns. Changes to most other
+       files. The MANIFEST and FILES files have been updated.
+
+    *  From James F. Blake <jim@doctor.chem.yale.edu>
+       From Rainer Klute <klute@unido.informatik.uni-dortmund.de>
+       Mp crashed with a segmentation violation if the mail message has no
+       subject line.
+
+    *  From Bruno Pillard <bp@chorus.fr>
+       Added the printing of the username beside the date when printing
+       news articles.
+
+       Fixed two typos in the mailp shell script, and added the installation
+       of mailp to the Makefile.dist file. Support for the PRINTER variable
+       has also been added to mailp.
+
+    *  From Ran Ever-Hadani <nsc!taux01.nsc.com!crehta@Sun.COM>
+       When mp -a is invoked from within the nn news reader, the "Article
+       from" header was displayed incorrectly.
+        
+    *  From Lupe Christoph <lupe@alanya.Germany.Sun.COM>
+       The -f (filofax) and -t (Time Manager) options didn't print
+       correctly on a PostScript print which has page reversal set. Johan
+       Vromans work on the restructuring of the PostScript and the way
+       prologues are handled, has fixed this.
+        
+    *  From John Little <gaijin@ale.Japan.Sun.COM>
+       The NAME environment variable (if set) should be processed the same
+       way as the GECOS passwd field. See the GECOSFIELDS and GECOSLENGTH
+       definitions in Makefile.dist for more details.
+
+v2.4 - patchlevel 6. - 4th September 1990.
+ 
+    *  From Amos Shapir <amos@taux01.nsc.com>
+       Interpreting a '&' in the GECOS field should capitalize only the
+       first letter of the login name, not all of it.
+ 
+    *  From Bruce G Barnett <barnett@unclejack.crd.ge.com>
+       From Pauline van Winsen <pauline@Aus.Sun.COM>
+       Mp only extracted two "words" from the user's passwd gecos field.
+       This has been changed to now extract three "words" by default, but
+       two new definitions have been added to the Makefile.dist file to
+       allow you to adjust the username extraction:
+ 
+       GECOSFIELDS - Number of "words" extracted from the user's gecos field.
+       GECOSLENGTH - Maximum no. of chars. extracted from the gecos field.
+ 
+       See the comments in the Makefile.dist file for more details.
+       If needed, then these options should be uncommented and set accordingly.
+       The README file has been updated.
+ 
+    *  From Johan Vromans <jv@mh.nl>
+       An attempt to initialise the cc array in main.c when the variable
+       is declared doesn't work with the GNU C compiler. This has been
+       removed. Yes folks, this is deja vu.
+ 
+    *  From Johan Vromans <jv@mh.nl>
+       To allow MP to handle A4 formatted pages, I made a few mods to
+       mp.pro.ps. The reason to introduce the variables fullwidth and
+       fullheight is that they are used in more than one location.
+       Reasonable values for fullwidth and fullheight are 8.5/11 inch for US
+       Letter, and 8.5/11.4 inch for A4.
+       Since sites usually have one single format of paper, mp could be
+       installed with either the USLetter or A4 values.
+
+       I've also made the same modifications to mp.pro.alt.ps.
+
+       **IMPORTANT NOTE** You should adjust these values correctly for your
+                          site. I've added a couple of comments to the
+                          "make install" to try to remind people about this.
+
+       I've also left it defaulted at the US Letter size, so it should still
+       continue to work for A4 sites, but not use all of the paper.
+
+v2.4 - patchlevel 5. - 29th August 1990.
+ 
+    *  Posted to comp.sources.misc.
+ 
+    *  From Larry W. Virden <lwv27%cas.BITNET@CUNYVM.CUNY.Edu>
+       Include a Makefile.dist with the mp distribution. This file will
+       need to be copied to Makefile and adjusted accordingly, but it does
+       mean that future changes via patches don't clash with custom user
+       changes. The README file has been updated to mention this.
+ 
+    *  From Lupe Christoph <lupe@alanya.Germany.Sun.COM>
+       mp.pro.filofax.ps and mp.pro.timeman.ps still contained definitions
+       for PrimaryFont and SecondaryFont.
+
+v2.4 - patchlevel 4. - 27th August 1990.
+ 
+    *  From Mike Bundschuh <mjb@Eng.Sun.COM>
+       Added quick fix to expand() in print.c to check if pointer == NULL
+
+v2.4 - patchlevel 3. - 17th August 1990.
+ 
+    *  From Larry Tsui <larryt@Canada.Sun.COM>
+       With mp -o filename | lpr, the filename printed on the bottom bar
+       is missing the first character. The subject string setup at the end
+       of set_defs was incorrect.
+ 
+    *  Gave mp a though linting (Sun 4/65 - SunOS v4.1).
+
+v2.4 - patchlevel 2. - 14th August 1990.
+ 
+    *  From Pierre Mareschal <pmaresch@hawk.ulowell.edu>
+ 
+       - Fix for multiple mail printing:
+             % mp [-a] file1 file2 file3 ... > mp.out
+             * Outputs the Prolog only once at the beginning of the file.
+             * Gives a correct page count at the end of the PostScript file
+               in the Trailer
+             * Shorten PostScript output (by more than 10%):
+                      PrimaryFont -> pf
+                      SecondaryFont -> sf
+             * Correct global subject line with -s "Subject" flag.
+             * Correct current subject line when multiple articles.
+ 
+       - Added another style for mp.pro.ps with the page number in lower
+         right corner. This file has been called mp.pro.alt.ps.
+ 
+       - Added Example directory (called Data) with the mp distribution. This
+         contains examples for Mail, Mail Folders, News Articles, News Digests
+         and a plain listing.
+ 
+    *  Added a TODO file, with a list of the outstanding problems and
+       suggested enhancements.
+ 
+    *  Added MANIFEST and FILES files, to provide a manifest of the
+       distributed files, plus a description of what each file does.
+ 
+    *  From Roger Riggs <riggs@suneast.East.Sun.COM>
+       Created emacs functions for printing with mp. A new file (mp.el) has
+       been created.
+
+v2.4 - patchlevel 1. - 1st June 1990.
+ 
+    *  From Brachet <brachet@imag.fr>
+       Fix for segmentation violation core dump on a System V machine
+       when trying to print multiple news articles.
+ 
+    *  From Brachet <brachet@imag.fr>
+       mp took only the first subject of a group of news articles
+       because it didn't parse the subject line properly.
+
+v2.4 - patchlevel 0. - Started (april 1990).
+ 
+    *  From Michael J. Tuchiarone <tooch@plan9.Sun.COM>
+       Support for landscape mode. This allows two pages printed per
+       sheet of paper.
+
+v2.3 - patchlevel 5. - Posted to comp.sources.bugs (February 1990).
+ 
+    *  From Johan Vromans <jv@mh.nl>
+       From Rick Gunderson <rickg@toshiba.tic.oz.au>
+       Storage allocation for string constants is different with cc and
+       the GNU C compiler (gcc). Two adjustments in print.c are needed.
+
+v2.3 - patchlevel 4. - Posted to comp.sources.bugs (January 1990).
+ 
+    *  From Mike Khaw <khaw@parcplace.com>
+       The definition for NOINDEX in mp.h should be embedded in an
+       #ifdef not an #ifndef. Arrgghh!!
+ 
+    *  The CHANGES file is now upto date.
+ 
+    *  From Johan Vromans <jv@mh.nl>
+       An attempt to initialise the cc array in main.c when the variable
+       is declared doesn't work with the GNU C compiler. This has been
+       removed.
+
+v2.3 - patchlevel 3. - Posted to comp.sources.bugs (January 1990).
+
+    *  The Makefile did not include the CHANGES file in the OTHERS
+       macro definition.
+
+    *  From Steve Cliffe <steve@wolfen.cc.uow.oz>
+       The new Makefile definition NOINDEX, needs to be included in
+       the CFLAGS definition.
+ 
+    *  From Walter Underwood <wunder@hp-ses.sde.hp.com>
+       Several tweaks to the mp man page to correct print on Sys V
+       machines.
+
+v2.3 - patchlevel 2. - Posted to comp.sources.bugs (January 1990).
+
+  Changes:
+
+    *  From Steve Cliffe <steve@wolfen.cc.uow.oz>
+       The Makefile used a technique for generating the object files,
+       from the source files, that not every make has.
+
+    *  From Steve Cliffe <steve@wolfen.cc.uow.oz>
+       Mp used both the index and strchr library calls. It now uses
+       index by default, and if you don't have this, then you need
+       to uncomment a macro definition NOINDEX in the Makefile (which
+       has just been added).
+
+    *  From Brian Kohn <bicker@hoqax.att.com>
+       The variable MAXPATHLEN is not declared on all machines. An
+       appropriate definition has been added to the mp.h file.
+
+New files:
+
+    *   CHANGES - documented history of the changes made with each new
+                  mp patch.
+
+v2.3 - patchlevel 1. - Released to comp.sources.misc (January 1990).

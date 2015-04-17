@@ -1,0 +1,66 @@
+
+
+
+TRAVERSE(3WI)	    UNIX Programmer's Manual	    TRAVERSE(3WI)
+
+
+
+NAME
+     traverse - recursively traverse a directory
+
+SYNOPSIS
+     traverse (path, func)
+     char *path;
+     int  (*func) ();
+
+     func (path, filetype, position)
+     char *path;
+
+DESCRIPTION
+     traverse applies its argument function func to its argument
+     file pathname path.  If path is a directory, then traverse
+     applies func to all its entries.  This traversal is in depth
+     first order so that files are processed in the order that
+     they are stored in the directory.
+
+     The argument func should take three parameters: a file name,
+     a file type, and a position.  The call looks like this for
+     directories:
+		    (*func) (path, 'd', position);
+     and like this for other files:
+		    (*func) (path, 'f', position);
+     The position is 0 when path is first encountered and 1 when
+     traverse is done.	This is used to allow processing before
+     and after a directory is processed.
+
+EXAMPLE
+     list (name, type, pos)
+     char *name;
+	  {
+	  if (type == 'd')
+	       printf ("%s %s\n", pos ? "Leaving" : "Entering", name);
+	  else /* type == 'f' */
+	       printf (" %s\n", name);
+	  }
+
+AUTHOR
+     Gary Perlman
+
+BUGS
+     There are no diagnostics when directories cannot be
+     searched.
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 16, 1984			1
+
+
+

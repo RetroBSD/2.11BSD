@@ -1,0 +1,66 @@
+
+
+
+SIGACTION(2)	    UNIX Programmer's Manual	     SIGACTION(2)
+
+
+
+NAME
+     sigwait - wait for a signal
+
+SYNOPSIS
+     #include <signal.h>
+
+     int sigwait(set, sig)
+     _s_i_g_s_e_t__t *_s_e_t;
+     _i_n_t *_s_i_g;
+
+DESCRIPTION
+     Sigwait checks for a pending signal in _s_e_t, clears it from
+     the set of pending signals and returns the signal number in
+     the location referenced by _s_i_g.  If more than one of the
+     signals contained in _s_e_t is pending then sigwait selects
+     only one and acts upon it.  If no signal contained in _s_e_t is
+     pending, then sigwait waits for a signal to arrive.  All of
+     the signals contained in _s_e_t should be blocked or unpredict-
+     able results may occur.
+
+RETURN VALUES
+     The sigwait function returns 0 if successful and the signal
+     number is stored in the location referenced by _s_i_g.
+
+ERRORS
+     The sigwait function may return one of the following errors:
+
+     EINVAL		 The _s_e_t argument contains an invalid or
+			 unsupported signal number.
+
+     EFAULT		 _S_i_g points to memory that is not a valid
+			 part of the process address space.
+
+SEE ALSO
+     sigprocmask(2)
+
+STANDARDS
+     The sigwait function call conforms to IEEE Std1003.1-1998
+     (``POSIX'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99       September 10, 1999			1
+
+
+

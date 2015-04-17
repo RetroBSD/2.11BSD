@@ -1,0 +1,66 @@
+
+
+
+FCLOSE(3S)	    UNIX Programmer's Manual	       FCLOSE(3S)
+
+
+
+NAME
+     fclose, fflush - close or flush a stream
+
+SYNOPSIS
+     #include <stdio.h>
+
+     fclose(stream)
+     FILE *stream;
+
+     fflush(stream)
+     FILE *stream;
+
+DESCRIPTION
+     _F_c_l_o_s_e causes any buffers for the named _s_t_r_e_a_m to be emp-
+     tied, and the file to be closed.  Buffers allocated by the
+     standard input/output system are freed.
+
+     _F_c_l_o_s_e is performed automatically upon calling _e_x_i_t(3).
+
+     _F_f_l_u_s_h causes any buffered data for the named output _s_t_r_e_a_m
+     to be written to that file.  The stream remains open.
+
+SEE ALSO
+     close(2), fopen(3S), setbuf(3S)
+
+DIAGNOSTICS
+     These routines return EOF if _s_t_r_e_a_m is not associated with
+     an output file, or if buffered data cannot be transferred to
+     that file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

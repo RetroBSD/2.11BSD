@@ -1,0 +1,66 @@
+
+
+
+COMM(1)             UNIX Programmer's Manual		  COMM(1)
+
+
+
+NAME
+     comm - select or reject lines common to two sorted files
+
+SYNOPSIS
+     comm [ - [ 123 ] ] file1 file2
+
+DESCRIPTION
+     _C_o_m_m reads _f_i_l_e_1 and _f_i_l_e_2, which should be ordered in ASCII
+     collating sequence, and produces a three column output:
+     lines only in _f_i_l_e_1; lines only in _f_i_l_e_2; and lines in both
+     files.  The filename `-' means the standard input.
+
+     Flags 1, 2, or 3 suppress printing of the corresponding
+     column.  Thus comm -12 prints only the lines common to the
+     two files; comm -23 prints only lines in the first file but
+     not in the second; comm -123 is a no-op.
+
+SEE ALSO
+     cmp(1), diff(1), uniq(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

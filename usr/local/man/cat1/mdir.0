@@ -1,0 +1,66 @@
+
+
+
+MDIR(1)             UNIX Programmer's Manual              MDIR(1)
+
+
+
+NAME
+     mdir - display an MSDOS directory
+
+SYNOPSIS
+     mdir [ -w ] msdosdirectory
+
+     mdir [ -w ] msdosfile [ msdosfiles...  ]
+
+DESCRIPTION
+     _M_d_i_r displays the contents of an MSDOS directory.
+
+     _M_d_i_r will allow the following command line option:
+
+     w    Wide output.  This option will print the filenames
+          across the page without displaying the file size or
+          creation date.
+
+     An error occurs if a component of the path is not a direc-
+     tory.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the names to be enclosed in quotes to protect
+     them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1)
+
+BUGS
+     Allows multiple arguments, which does not follow the MSDOS
+     convention.
+
+     There is no /P (pause) option.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

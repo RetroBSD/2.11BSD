@@ -1,0 +1,29 @@
+@(#) BLURB 1.24 95/01/30 19:51:40
+
+This patch improves portability and backwards compatibility. It does
+not add any new features. If 7.0 or 7.1 works for you don't bother.
+
+    - Added a note to the README and to the manpages on using the IDENT
+    (rfc931) service to detect sequence number guessing attacks.
+
+    - Portability: support for the ConvexOS inetd.conf file format.
+
+    - Portability: the AIX compiler complained about a declaration that
+    was no longer needed.
+
+    - Backwards compatibility: some sites depended on leading and
+    trailing dot patterns for daemon process names.
+
+    - Backwards compatibility: hostname lookup remains enabled when
+    -DPARANOID is turned off. In order to disable hostname lookups you
+    must turn off -DALWAYS_HOSTNAME.
+
+    - Eliminated several false complaints from the tcpdmatch/tcpdchk
+    configuration checking programs.
+
+As always, suggestions for improvement are welcome.
+
+	Wietse Venema (wietse@wzv.win.tue.nl),
+	Department of Mathematics and Computing Science,
+	Eindhoven University of Technology,
+	The Netherlands.

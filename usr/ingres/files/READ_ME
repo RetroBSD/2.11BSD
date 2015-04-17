@@ -1,0 +1,26 @@
+.../files
+
+This directory is roughly equivalent to /etc in UNIX.  The files
+in this directory are critical for the system to run.  The important
+files are:
+
+	dayfile6.3 -- the dayfile printed out when INGRES starts
+		up.
+	dbtmplt6.3 -- the template for a database; this file
+		drives creatdb.
+	error6.3_1
+	error6.3_2
+	error6.3_3
+	error6.3_30
+	error6.3_4
+	error6.3_5 -- these files contain the error messages that
+		the system prints out.
+	grafile6.3 -- the dayfile for geoquel.
+	proctab6.3 -- the process table.  INGRES reads this to
+		decide what programs to load.
+	ttytype -- defines the terminal types on your system for
+		various ports.  Used by geoquel.
+	usage -- printed out by the INGRES driver when there is
+		something wrong.  Right now it is quite short,
+		but you could give a verbose message if that is
+		appropriate for your user population.

@@ -1,0 +1,21 @@
+.../source
+
+This directory is the root of the source code subtree.  All
+system sources reside in this directory.  If you are short of
+disk space and do not intend to recompile the system, this
+directory tree can be removed.  Much space will be saved.
+
+To compile a new system and install it in the local directories,
+use
+
+	make install
+
+To install a system in the system directories, use
+
+	make install sysinstall DESTDIR=/usr
+
+which will install everything in /usr/bin and /usr/lib.
+
+Each subdirectory represents a subsystem of INGRES.  Makefiles
+have entries for install in each case.  To simply recompile
+a module, just use "make" with no arguments.

@@ -1,0 +1,30 @@
+Application	Version
+-----------	-------
+lib2648/	4.3
+libF77/		4.3
+libI77/		4.3
+libU77/		4.3
+libcurses/	4.3  (some long/int fixes to tstp.c)
+libdbm/		4.3
+libg/		UNIMPLEMENTED (4.3 should be ported)
+libln/		4.3
+libm/		4.3  (no attempt made to convert yet - won't run on a PDP11)
+libmp/		4.3
+libpc/		4.3
+libom/		4.3  (used for both libom.a and libm.a)
+libplot/	4.3
+libtermlib/	4.3 
+liby/		4.3
+
+Notes
+-----
+libm/		We haven't made any effort to convert the new math library for
+		the PDP-11 yet (if it's even possible).  If anyone does it for
+		us, PLEASE #ifdef your changes on "pdp11".  A PDP support
+		subdirectory would be nice too ...  In any case, till that
+		happens (sic), 2.11BSD uses libom and hides that fact from
+		applications by linking libm.a to libom.a in /usr/lib.
+
+The directorie PORT is somewhat special.  It contains source from the 4.3
+that should probably be ported to 2.11 as soon as someone has the time
+and inclination to do so.

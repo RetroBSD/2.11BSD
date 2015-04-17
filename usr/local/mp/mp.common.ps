@@ -1,0 +1,73 @@
+
+%  @(#)mp.common.ps 1.3 92/02/17
+%
+%  Mp PostScript routines common to all prologue files.
+%
+%  The initial header comments are read (and output to stdout)
+%  from the individual prologue file, then the contents of this
+%  file are read (and output to stdout), then the remainder of
+%  the individual prologue file.
+
+/inch { 72 mul } bind def
+%
+%  IMPORTANT NOTE: The following two variables should be set correctly.
+%                  Reasonable values for fullwidth and fullheight are
+%                  8.5/11 inch for US Letter, and 8.5/11.4 inch for A4.
+%                  Since sites usually have one single format of paper,
+%                  mp should be installed with either the USLetter or A4
+%                  values.
+%
+/fullwidth 8.5 inch def
+/fullheight 11 inch def
+
+% Define /ISOLatin1Encoding only if it's not already there.
+/ISOLatin1Encoding where { pop save true }{ false } ifelse
+  /ISOLatin1Encoding [ StandardEncoding 0 45 getinterval aload pop /minus
+    StandardEncoding 46 98 getinterval aload pop /dotlessi /grave /acute
+    /circumflex /tilde /macron /breve /dotaccent /dieresis /.notdef /ring
+    /cedilla /.notdef /hungarumlaut /ogonek /caron /space /exclamdown /cent
+    /sterling /currency /yen /brokenbar /section /dieresis /copyright
+    /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron
+    /degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph
+    /periodcentered /cedilla /onesuperior /ordmasculine /guillemotright
+    /onequarter /onehalf /threequarters /questiondown /Agrave /Aacute
+    /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla /Egrave /Eacute
+    /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis /Eth
+    /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply
+    /Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn
+    /germandbls /agrave /aacute /acircumflex /atilde /adieresis /aring /ae
+    /ccedilla /egrave /eacute /ecircumflex /edieresis /igrave /iacute
+    /icircumflex /idieresis /eth /ntilde /ograve /oacute /ocircumflex
+    /otilde /odieresis /divide /oslash /ugrave /uacute /ucircumflex
+    /udieresis /yacute /thorn /ydieresis ] def
+{ restore } if
+
+%Title: backspacefont.ps suggested by Glenn Reid (Adobe Systems).
+
+/backspacefont {
+    /CourierISO findfont dup length dict begin
+        { %forall
+            1 index /FID eq { pop pop } { def } ifelse
+        } forall
+        currentdict /UniqueID known { %if
+              /UniqueID UniqueID 16#800000 xor def
+        } if
+        CharStrings length 1 add dict begin
+            CharStrings { def } forall
+          /backspace { -600 0 setcharwidth pop } bind def
+            currentdict
+      end
+        /CharStrings exch def
+        /Encoding Encoding 256 array copy def
+        Encoding 8 /backspace put
+        currentdict
+    end
+    definefont
+} bind def
+
+/reencodeISO { %def
+    findfont dup length dict begin
+    { 1 index /FID ne { def }{ pop pop } ifelse } forall
+    /Encoding ISOLatin1Encoding def
+    currentdict end definefont pop
+} bind def

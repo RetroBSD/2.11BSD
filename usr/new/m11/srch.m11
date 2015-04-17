@@ -1,0 +1,323 @@
+	.title	srch
+	.ident	/03apr4/
+
+	.mcall	(at)always,scan,genedt
+	.mcall (at)sdebug,ndebug
+	always
+
+	.globl	srchi
+	.globl	search,	next,	scan,	scanc,	scanw
+	.globl	append,	insert,	zap
+	.globl	rolndx,	rolupd,	mactop , symbot
+
+	.globl	symovf
+
+	.globl	xmit0
+	.globl	symlp,	symhp,	dumrol
+	.globl	savreg,	symbol
+
+	.if df	rsx11d
+	.globl	ed.reg,	edmask,	symrol,	regrol, cpopj
+	.endc
+
+	xitsec			;start in default sector
+
+srchi:				;search init
+	mov	#dumrol,r0	;end of variable rolls
+1$:	mov	symhp,<^pl rolbas>(r0)	;point all to top
+	mov	symhp,<^pl roltop>(r0)
+	clrb	<^pl rolsiz>+1(r0)
+	sub	#2,r0		;get next lower
+	bge	1$
+	mov	symlp,mactop	;bottom is start of macros
+	add	#bpmb-1,mactop	;must be even
+	bic	#bpmb-1,mactop
+	mov	symhp,symbot	;for sake of 'uplift' <<< REEDS
+	mov	symhp,symlp	;symlp should always == symbot [debug, REEDS]
+	return
+	.if ndf	rsx11d
+
+search:				;binary roll search
+	call	setrol		;set roll registers
+	mov	r3,-(sp)
+	sub	r3,r1		;point one slot low
+	mov	r2,r3
+	sub	r1,r3		;compute size
+	clr	r0		;get set to compute search offset
+	sec			;  (r0 doubles as t/f flag)
+1$:	rol	r0		;shift bit
+	bic	r0,r3		;clear corresponding bit.  last one?
+	bne	1$		;  no
+2$:	add	r0,r1
+3$:	asr	r0		;end of iteration, halve offset
+	bic	#2,r0		;end?
+	beq	7$		;  yes
+4$:	cmp	r2,r1		;off in no-mans's land?
+	blos	6$		;  yes
+	cmp	(r4),(r1)	;no, first words match?
+	bne	5$		;  no
+	cmp	2(r4),2(r1)	;yes, how about second?
+	beq	8$		;  yes, found
+5$:	bhi	2$		;no, branch if too high
+6$:	sub	r0,r1		;lower index
+	br	3$
+
+7$:	cmp	(r1)+,(r1)+	;point to insertion slot
+8$:	mov	(sp)+,r3
+	br	scanx		;exit through scan
+	.iff
+
+search:
+	call	setrol
+	bit	#ed.reg,edmask	;register definition enabled?
+	bne	10$		;if ne no
+	cmp	r5,#symrol	;symbol roll?
+	bne	10$		;if ne no
+	bit	#7,(r4)		;make ruff ruff test bypass 90%
+	bne	10$		;if ne don't check for register
+	scan	regrol		;scan register roll
+	mov	r5,rolndx	;restore roll index
+	tst	r0		;find symbol?
+	beq	10$		;if eq no find em
+	return			;
+10$:	mov	r1,-(sp)	;save roll base
+	cmp	r1,r2		;any in roll?
+	beq	5$		;if eq no
+	sub	r3,r2		;calculate high and low bounds
+	mov	r1,r0		;
+	bic	#177770,(sp)	;
+1$:	mov	r0,r1		;calculate trial index
+	add	r2,r1		;
+	ror	r1		;halve result
+	bic	#7,r1		;clear garbage bits
+	bis	(sp),r1		;
+	cmp	(r1),(r4)	;compare high parts
+	bhi	3$		;if hi set new high limit
+	blo	2$		;if lo set new low limit
+	cmp	2(r1),2(r4)	;compare low parts
+	beq	6$		;if eq hit
+	bhi	3$		;if hi set new high limit
+2$:	mov	r1,r0		;set new low limit
+	add	r3,r0		;reduce by one more
+	cmp	r0,r2		;any more to search?
+	blos	1$		;if los yes
+	add	r3,r1		;point to proper entry
+	br	5$		;exit
+3$:	mov	r1,r2		;se new high limit
+	sub	r3,r2		;reduce by one more
+	cmp	r0,r2		;any more to search?
+	blos	1$		;if los yes
+5$:	clr	r0		;set false flag
+6$:	tst	(sp)+		;clean stack
+	br	scanx		;vammoosa
+
+	genedt	reg
+
+	.endc
+next:				;get the next entry
+	call	setrol
+	mov	rolupd,r0
+	add	r0,r1
+	add	r3,r0
+	cmp	r1,r2
+	blo	scanx
+	br	scanxf
+
+scanw:				;scan one word
+	call	setrol		;set registers
+	clr	r0		;assume false
+1$:	inc	r0		;tally entry count
+	cmp	(r4),(r1)	;match?
+	beq	scany		;  yes
+	add	r3,r1		;no, increment pointer
+	cmp	r1,r2		;finished?
+	blo	1$		;  no
+	clr	r0
+	return			;yes, exit false
+
+scanc:				;scan continuation
+	call	setrof		;set regs
+	mov	rolpnt,r1	;get current pointer
+	add	r3,r1		;update
+	br	scanf		;jump into middle
+
+scan:				;linear roll scan
+	call	setrol		;set roll registers
+scanf:	clr	r0		;assume false
+1$:	cmp	r1,r2		;end?
+	bhis	scanxf		;  yes, exit false
+	inc	r0
+	cmp	(r4),(r1)	;no, match on first words?
+	bne	2$		;  yes
+	cmp	2(r4),2(r1)	;no, how about second?
+	beq	scanx		;  yes
+2$:	add	r3,r1		;increment by size
+	br	1$
+
+	.enabl	lsb
+scanxf:	clr	r0		;false exit
+scanx:	mov	r1,rolpnt	;set entry pointer
+	mov	r0,rolupd	;save flag
+	beq	1$		;branch if not found
+scany:	mov	r4,r2		;pointer to "symbol"
+	neg	r3		;negate entry size
+	jmp	xmit0(r3)	;found, xfer arguments
+
+1$:	cmp	(r4)+,(r4)+	;bypass symbol itself
+	asr	r3		;get word count
+	sub	#2,r3		;compensate for above cmp
+	ble	3$		;branch if end
+2$:	clr	(r4)+		;clear word
+	sob	r3,2$
+3$:	return
+	.dsabl	lsb
+append:				;append to end of roll
+	call	setrol
+	mov	r2,rolpnt	;set pointer
+	clr	rolupd
+	br	inserf
+
+insert:				;insert in roll
+	call	setrof		;set roll registers (but no arg)
+inserf:	mov	rolpnt,r0	;points to proper slot
+	tst	rolupd		;was search true?
+	bne	5$		;  yes
+	incb	<^pl rolsiz>+1(r5)	;update entry count
+	add	r3,<^pl roltop>(r5)	;update top pointer
+	cmp	r2,<^pl rolbas>+2(r5)	;gap between rolls?
+	bne	5$		;  yes, just stuff it
+	mov	<^pl rolbas>,r1	;ditto for separate stack
+	mov	r1,r2
+	sub	r3,r2
+	mov	r2,symbot
+	;cmp	r2,mactop	;room?
+	;bhi	1$		;  yes
+	;jmp	symovf		;no, error
+	mov	#symovf,upbomb	; where to go on error
+	call	uplift
+	add	upgap,r0
+	add	upgap,r1
+	add	upgap,r2
+
+	; fall through...
+1$:	sub	r1,r0		;compute byte count
+	asr	r0		;  now word count
+	beq	4$		;branch if first time
+
+2$:	mov	(r1)+,(r2)+	;move an entry down
+	sob	r0,2$
+4$:	sub	r3,<^pl rolbas>(r5)	;decrement pointers
+	sub	r3,<^pl roltop>(r5)
+	sub	#2,r5		;more rolls?
+	bge	4$		;  yes
+	mov	r2,r0		;point to insertion slot
+5$:	asr	r3		;halve size count
+6$:	mov	(r4)+,(r0)+	;move an entry into place
+	sob	r3,6$		;loop if not end
+	mov	<^pl rolbas>,symbot
+	mov	<^pl rolbas>,symlp
+	return
+
+
+.globl	$brkad, $brksy		; defined in exec.m11
+
+.globl	putn
+uplift::			;<<< REEDS. move all the rolls up in core
+				; can be called from 'insert' above and also
+				; from 'getblk' in mac.m11.  Thanks to Steve
+				; Ragle for showing the need for a call from
+				; otherwise growing macros can scribble.
+				; And to Joel Rubin for debugging help.
+	.irpc	xx,<0123>
+	mov	r'xx,-(sp)
+	.endm
+	cmp	symbot,mactop
+	blos	10$ 		
+	clr	upgap
+	jmp	99$
+10$:				; go here if symbot <= mactop
+
+	mov	symhp,upgap	; stash old highest in-space address
+	add	#10102,symhp
+	bic	#77,symhp	; click bic rounds to next highest mult of 64
+
+	mov	symhp,$brkad
+	mov	$brkad,-(sp)
+	tst	-(sp)
+	$sbrk
+	bcs	98$
+	cmp	(sp)+,(sp)+
+	br	1$
+98$:
+	cmp	(sp)+,(sp)+
+	jmp	@upbomb		; error bail-out: symovf or macovf
+1$:
+	sub	#2,symhp	; new highest in-space address
+	mov	symhp,r0
+	mov	upgap,r1	; recall old highest address
+	mov	r0,r3
+	sub	r1,r3		; r3 has the distance syms were shifted
+	mov	symlp,r2	; symlp is OLD bottom of symbols.
+	tst	-(r2)		; r2 ==> word before old bottom
+2$:
+	mov	(r1),(r0)
+	tst	-(r1)
+	tst	-(r0)
+	cmp	r1,r2
+	bne	2$
+
+9$:	mov	r3,upgap	; how much the syms were lifted
+	mov	#dumrol,r0	; swiped from srchi
+3$:	add	r3,<^pl rolbas>(r0)
+	add	r3,<^pl roltop>(r0)
+	sub	#2,r0
+	bge	3$
+	
+	add	r3,rolpnt
+	add	r3,symlp
+	mov	symlp,symbot
+	tst	rolupd
+	beq	30$
+	add	r3,rolupd
+30$:	
+99$:
+	.irpc	xx,<3210>
+	mov	(sp)+,r'xx
+	.endm
+	return
+
+	entsect	mixed
+upgap:		.blkw
+upbomb::	.blkw			; contains address of error handler
+	xitsec
+zap:				;empty a roll
+	call	setrol
+	mov	r1,<^pl roltop>(r5)	;make top = bottom
+	clrb	<^pl rolsiz>+1(r5)	;clear entry count
+	return
+
+
+setrol:				;set roll registers
+	mov	r0,rolndx	;set argument
+setrof:	mov	(sp)+,r0	;save return address
+	call	savreg		;save registers
+	mov	r5,-(sp)	;  and current character
+	mov	rolndx,r5	;set index
+	mov	<^pl rolbas>(r5),r1	;current base
+	mov	<^pl roltop>(r5),r2	;current top
+	movb	<^pl rolsiz>(r5),r3	;entry size
+	mov	#symbol,r4	;pointer to symbol
+	call	(r0)		;call proper routine
+	mov	(sp)+,r5	;restore current character
+	return			;  and rest of regs
+
+	entsec	mixed
+rolndx:	.blkw			;roll index
+rolpnt:	.blkw			;roll pointer
+rolupd:	.blkw			;roll update
+mactop:	.blkw			;current top of macro storage
+symbot:	.blkw			;current bottom of dynamic rolls.
+				;	@mactop<=@symbot  or uplift will fix it
+	xitsec
+
+	.end

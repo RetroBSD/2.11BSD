@@ -1,0 +1,112 @@
+.TH SHAR 1net "March 4, 1986" "UNIX User's Manual" "Wang Institute"
+.SH NAME
+shar \- create file storage archive for extraction by /bin/sh
+.SH SYNOPSIS
+.B shar
+[-abcmsuv] [-p prefix] [-d delim] files > archive
+.SH DESCRIPTION
+.I shar
+prints its input files with special command lines around them
+to be used by the shell,
+.I /bin/sh ,
+to extract the files later.
+The output can be filtered through the shell to
+recreate copies of the original files.
+.PP
+.I shar
+allows directories to be named, and
+.I shar
+prints the necessary commands
+.ul
+(mkdir & cd)
+to create new directories and fill them.
+.I shar
+will not allow existing files to be over-written;
+such files must be removed by the user extracting the files.
+.SH OPTIONS
+.de OP
+.TP
+.B -\\$1
+..
+.OP a
+All the options.
+The options:
+.B "-v -c -b -p <tab>X"
+are implied.
+.OP b
+Extract files into basenames so that files with absolute path names
+are put into the current directory.
+This option has strange effects when directories are archived.
+.OP c
+Check file size on extraction by counting characters.
+An error message is reported to the person doing the
+extraction if the sizes don't match.
+One reason why the sizes may not match is that
+.I shar
+will append a newline to complete incomplete last lines;
+.I shar
+prints a message that mentions added newlines.
+Another reason why the sizes may not match is that some
+network mail programs remove non-whitespace control characters.
+.I shar
+prints a message that mentions control characters to the extractor.
+.OP d delim
+Use this as the ``end of file'' delimiter instead of the default.
+The only reason to change it is if you suspect a file
+contains the default delimiter:
+.B SHAR_EOF.
+.OP m
+Reset the exact protection modes of files when they are extracted
+(using the
+.I chmod
+program).
+By default, the extractor's default file modes are used,
+and executable files (e.g., shell scripts)
+are made executable.
+.OP p prefix
+Use this as the prefix to each line of the archived files.
+This is to make sure that special characters at the start of lines are not
+eaten up by programs like mailers.
+If this option is used,
+the files will be extracted with the stream editor
+.B sed
+rather than
+.B cat
+so it is more efficient and portable to avoid setting the prefix,
+though perhaps less safe if you don't know what is in the files.
+.OP s
+Silent running.
+All checking and extra output is inhibited.
+.OP u
+Archive the input files with the
+.I uuencode
+format for later extraction with
+.I uudecode.
+This will allow you to send files with control characters in them,
+but will slow down the extracting.
+You must be sure that the receiving party has access to uudecode.
+.OP v
+Print verbose feedback messages about what
+.I shar
+is doing to be printed during extraction.
+Sizes of plain files are echoed to allow a simple validity check.
+.SH "SEE ALSO
+sh(1), tar(1), cpio(1), tp(1), uuencode(1), uudecode(1)
+.br
+fpack(1) is a plain-file packer useful for UNIX and MSDOS
+.SH AUTHOR
+Gary Perlman
+(based on a shell version by James Gosling,
+with additions motivated by many people on the UNIX network:
+Derek Zahn,
+Michael Thompson,
+H. Morrow Long,
+Fred Avolio,
+Gran Uddeborg,
+Chuck Wegrzyn,
+nucleus!randy@TORONTO,
+&
+Bill McKeeman)
+.SH LIMITATIONS
+.I shar
+does not know anything about links between files.

@@ -1,0 +1,66 @@
+
+
+
+SCRIPT(1)	    UNIX Programmer's Manual		SCRIPT(1)
+
+
+
+NAME
+     script - make typescript of terminal session
+
+SYNOPSIS
+     script [ -a ] [ file ]
+
+DESCRIPTION
+     _S_c_r_i_p_t makes a typescript of everything printed on your ter-
+     minal.  The typescript is written to _f_i_l_e, or appended to
+     _f_i_l_e if the -a option is given.  It can be sent to the line
+     printer later with _l_p_r.  If no file name is given, the
+     typescript is saved in the file _t_y_p_e_s_c_r_i_p_t.
+
+     The script ends when the forked shell exits.
+
+     This program is useful when using a crt and a hard-copy
+     record of the dialog is desired, as for a student handing in
+     a program that was developed on a crt when hard-copy termi-
+     nals are in short supply.
+
+BUGS
+     _S_c_r_i_p_t places everything in the log file.	This is not what
+     the naive user expects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

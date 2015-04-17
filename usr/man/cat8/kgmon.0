@@ -1,0 +1,66 @@
+
+
+
+KGMON(8)	    UNIX Programmer's Manual		 KGMON(8)
+
+
+
+NAME
+     kgmon - generate a dump of the operating system's profile
+     buffers
+
+SYNOPSIS
+     /usr/sbin/kgmon [ -b ] [ -h ] [ -r ] [ -p ] [ system ] [
+     memory ]
+
+DESCRIPTION
+     _K_g_m_o_n is a tool used when profiling the operating system.
+     When no arguments are supplied, _k_g_m_o_n indicates the state of
+     operating system profiling as running, off, or not config-
+     ured.  (see _c_o_n_f_i_g(8)) If the -p flag is specified, _k_g_m_o_n
+     extracts profile data from the operating system and produces
+     a _g_m_o_n._o_u_t file suitable for later analysis by _g_p_r_o_f(1).
+
+     The following options may be specified:
+
+     -b   Resume the collection of profile data.
+
+     -h   Stop the collection of profile data.
+
+     -p   Dump the contents of the profile buffers into a
+	  _g_m_o_n._o_u_t file.
+
+     -r   Reset all the profile buffers. If the -p flag is also
+	  specified, the _g_m_o_n._o_u_t file is generated before the
+	  buffers are reset.
+
+     If neither -b nor -h is specified, the state of profiling
+     collection remains unchanged.  For example, if the -p flag
+     is specified and profile data is being collected, profiling
+     will be momentarily suspended, the operating system profile
+     buffers will be dumped, and profiling will be immediately
+     resumed.
+
+FILES
+     /vmunix - the default system
+     /dev/kmem - the default memory
+
+SEE ALSO
+     gprof(1), config(8)
+
+DIAGNOSTICS
+     Users with only read permission on /dev/kmem cannot change
+     the state of profiling collection. They can get a _g_m_o_n._o_u_t
+     file with the warning that the data may be inconsistent if
+     profiling is in progress.
+
+
+
+
+
+
+
+Printed 11/26/99	November 17, 1996			1
+
+
+

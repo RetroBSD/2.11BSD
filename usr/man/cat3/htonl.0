@@ -1,0 +1,66 @@
+
+
+
+BYTEORDER(3N)	    UNIX Programmer's Manual	    BYTEORDER(3N)
+
+
+
+NAME
+     htonl, htons, ntohl, ntohs - convert values between host and
+     network byte order
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <netinet/in.h>
+
+     netlong = htonl(hostlong);
+     u_long netlong, hostlong;
+
+     netshort = htons(hostshort);
+     u_short netshort, hostshort;
+
+     hostlong = ntohl(netlong);
+     u_long hostlong, netlong;
+
+     hostshort = ntohs(netshort);
+     u_short hostshort, netshort;
+
+DESCRIPTION
+     These routines convert 16 and 32 bit quantities between net-
+     work byte order and host byte order.  On machines such as
+     the SUN these routines are defined as null macros in the
+     include file <_n_e_t_i_n_e_t/_i_n._h>.
+
+     These routines are most often used in conjunction with
+     Internet addresses and ports as returned by
+     _g_e_t_h_o_s_t_b_y_n_a_m_e(3N) and _g_e_t_s_e_r_v_e_n_t(3N).
+
+SEE ALSO
+     gethostbyname(3N), getservent(3N)
+
+BUGS
+     The VAX handles bytes backwards from most everyone else in
+     the world.  This is not expected to be fixed in the near
+     future.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1986				1
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+IDATE(3F)	    UNIX Programmer's Manual		IDATE(3F)
+
+
+
+NAME
+     idate, itime - return date or time in numerical form
+
+SYNOPSIS
+     subroutine idate (iarray)
+     integer iarray(3)
+
+     subroutine itime (iarray)
+     integer iarray(3)
+
+DESCRIPTION
+     _I_d_a_t_e returns the current date in _i_a_r_r_a_y. The order is: day,
+     mon, year.  Month will be in the range 1-12. Year will be >_
+     1969.
+
+     _I_t_i_m_e returns the current time in _i_a_r_r_a_y. The order is:
+     hour, minute, second.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     ctime(3F), fdate(3F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+XARGS(1)	    UNIX Programmer's Manual		 XARGS(1)
+
+
+
+NAME
+     xargs - construct argument list(s) and execute utility
+
+SYNOPSIS
+     xargs [ -t ][[ -x ] -n number ][ -s size ][ utility [ argu-
+     ments...  ]]
+
+DESCRIPTION
+     The xargs utility reads space, tab, newline and end-of-file
+     delimited arguments from the standard input and executes the
+     specified utility with them as arguments.
+
+     The utility and any arguments specified on the command line
+     are given to the utility upon each invocation, followed by
+     some number of the arguments read from standard input.  The
+     utility is repeatedly executed until standard input is
+     exhausted.
+
+     Spaces, tabs and newlines may be embedded in arguments using
+     single (`` ' '') or double (``"'') quotes or backslashes
+     (``\'').  Single quotes escape all non-single quote charac-
+     ters, excluding newlines, up to the matching single quote.
+     Double quotes escape all non-double quote characters,
+     excluding newlines, up to the matching double quote.  Any
+     single character, including newlines, may be escaped by a
+     backslash.
+
+     The options are as follows:
+
+     -n number Set the maximum number of arguments taken from
+	       standard input for each invocation of the utility.
+	       An invocation of utility will use less than number
+	       standard input arguments if the number of bytes
+	       accumulated (see the s option) exceeds the speci-
+	       fied size or there are fewer than number arguments
+	       remaining for the last invocation of utility.  The
+	       current default value for number is 5000.
+
+     -s size   Set the maximum number of bytes for the command
+	       line length provided to utility.  The sum of the
+	       length of the utility name and the arguments
+	       passed to utility (including /_d_e_v/_n_u_l_l termina-
+	       tors) will be less than or equal to this number.
+	       The current default value for size is ARG_MAX -
+	       2048.
+
+     -t        Echo the command to be executed to standard error
+	       immediately before it is executed.
+
+     -x        Force xargs to terminate immediately if a command
+	       line containing number arguments will not fit in
+	       the specified (or default) command line length.
+
+
+
+Printed 11/26/99	  June 6, 1993				1
+
+
+
+
+
+
+XARGS(1)	    UNIX Programmer's Manual		 XARGS(1)
+
+
+
+     If no utility is specified, echo(1) is used.
+
+     Undefined behavior may occur if utility reads from the stan-
+     dard input.
+
+     The xargs utility exits immediately (without processing any
+     further input) if a command line cannot be assembled, util-
+     ity cannot be invoked, an invocation of the utility is ter-
+     minated by a signal or an invocation of the utility exits
+     with a value of 255.
+
+     The xargs utility exits with a value of 0 if no error
+     occurs.  If utility cannot be invoked, xargs exits with a
+     value of 127.  If any other error occurs, xargs exits with a
+     value of 1.
+
+SEE ALSO
+     echo(1), find(1)
+
+STANDARDS
+     The xargs utility is expected to be IEEE Std 1003.2("POSIX")
+     compliant.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 6, 1993				2
+
+
+

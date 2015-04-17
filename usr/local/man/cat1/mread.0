@@ -1,0 +1,66 @@
+
+
+
+MREAD(1)            UNIX Programmer's Manual             MREAD(1)
+
+
+
+NAME
+     mread - low level read (copy) an MSDOS file to Unix
+
+SYNOPSIS
+     mread [ -tnm ] msdosfile unixfile
+
+     mread [ -tnm ] msdosfile [ msdosfiles... ] unixdirectory
+
+DESCRIPTION
+     In the first form, _m_r_e_a_d copies the specified MSDOS file to
+     the named Unix file.  The second form of the command copies
+     multiple MSDOS files to the named Unix directory.
+
+     _M_r_e_a_d will allow the following command line options:
+
+     t    Text file transfer.  _M_r_e_a_d will translate incoming car-
+          riage return/line feeds to line feeds.
+
+     n    No warning.  _M_r_e_a_d will not warn the user when
+          overwriting an existing file.
+
+     m    Preserve the file modification times.
+
+     If the target file already exists, and the -_n option is not
+     in effect, _m_r_e_a_d asks whether or not to overwrite the file.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the names to be enclosed in quotes to protect
+     them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1), mcopy(1), mtype(1), mwrite(1)
+
+BUGS
+     Unlike MSDOS, the destination directory may not be omitted.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

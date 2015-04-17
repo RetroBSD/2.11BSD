@@ -1,0 +1,28 @@
+#	@(#)READ_ME	2.2	SCCS id keyword
+preliminary version	preliminary version	preliminary version
+
+this version of pi has been munged to supposedly make it portable
+between a vax and an 11.  it seems to run on a vax, but hasn't been
+ported back to an 11.
+
+known changes from the 11 version:
+    -   if VAX is defined, pointers (for pointer variables, files,
+    and with pointers are allocated 4 bytes, instead of 2 for 11's.
+    appropriate opcodes are put out for these variables.
+    -   stdio is used for input and listing files.
+    -   a lot of type casting has been done.
+    -   the whole ball of wax is written in c.  all the as stuff
+    was rewritten.  this necessitated changing calls to put[345]
+    with long or double arguments to call put directly.
+
+known bugs in the version 7 version:
+    -   since atof now dies with an illegal instruction,
+    pi dies if you have a floating constant too large for the machine.
+    -   if a listing is redirected, sometimes the last buffer gets
+    written out twice.
+
+things we decided not to do:
+    -   no attempt was made to maek the added address space available.
+    stack frames are still limited to 50000 bytes.
+    -   no attempt has been made to clean up any more than we had to
+    or to get pi to lint.

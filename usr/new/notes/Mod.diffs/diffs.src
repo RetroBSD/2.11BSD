@@ -1,0 +1,865 @@
+*** /tmp/,RCSt1020325	Wed Jul  1 13:38:12 1987
+--- Makefile	Wed Jul  1 13:10:53 1987
+***************
+*** 10,22 ****
+  #	217-333-7937
+  #
+  
+! BIN = /usr/local
+  MSTDIR = /usr/spool/notes
+  ARCHDIR = /usr/spool/oldnotes
+  NET = /usr/bin
+  AUTOSEQ = autoseq
+  NOTES = notes
+! NOTESUID = 10
+  NOTESGRP = notes
+  ANON = anon
+  ANONUID = 4
+--- 10,22 ----
+  #	217-333-7937
+  #
+  
+! BIN = /usr/local/bin
+  MSTDIR = /usr/spool/notes
+  ARCHDIR = /usr/spool/oldnotes
+  NET = /usr/bin
+  AUTOSEQ = autoseq
+  NOTES = notes
+! NOTESUID = 24
+  NOTESGRP = notes
+  ANON = anon
+  ANONUID = 4
+***************
+*** 124,130 ****
+  	  pattern.o perms.o recsio.o startup.o expand.o
+  NFTIMESTAMP = check.o cursor.o datein.o gname.o gtime.o misc.o miscio.o \
+  	  pattern.o permit.o recsio.o startup.o times.o expand.o \
+! 	  getdate.o perms.o ftime.o
+  NFXMIT	= check.o cursor.o dmpnote.o dmpresp.o getnet.o gname.o \
+  	  gtime.o lrsp.o misc.o miscio.o next.o nfalias.o nfsend.o \
+  	  pageout.o pattern.o permit.o perms.o recsio.o \
+--- 124,130 ----
+  	  pattern.o perms.o recsio.o startup.o expand.o
+  NFTIMESTAMP = check.o cursor.o datein.o gname.o gtime.o misc.o miscio.o \
+  	  pattern.o permit.o recsio.o startup.o times.o expand.o \
+! 	  getdate.o perms.o
+  NFXMIT	= check.o cursor.o dmpnote.o dmpresp.o getnet.o gname.o \
+  	  gtime.o lrsp.o misc.o miscio.o next.o nfalias.o nfsend.o \
+  	  pageout.o pattern.o permit.o perms.o recsio.o \
+***************
+*** 216,224 ****
+  	-chgrp $(NOTESGRP) $(UTILITY)/coredump
+  #	generate the available notesfile file here - only once!
+  	echo "available notesfiles" > $(UTILITY)/avail.notes
+  	touch $(UTILITY)/Dflt-Seq
+! 	-chown $(NOTES) $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+! 	-chgrp $(NOTESGRP) $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+  	chmod 664 $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+  	touch spool
+  	@echo Notesfile Spool directories ready
+--- 216,225 ----
+  	-chgrp $(NOTESGRP) $(UTILITY)/coredump
+  #	generate the available notesfile file here - only once!
+  	echo "available notesfiles" > $(UTILITY)/avail.notes
++ 	cp moderators $(UTILITY)/moderators
+  	touch $(UTILITY)/Dflt-Seq
+! 	-chown $(NOTES) $(UTILITY)/moderators $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+! 	-chgrp $(NOTESGRP) $(UTILITY)/moderators $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+  	chmod 664 $(UTILITY)/avail.notes $(UTILITY)/Dflt-Seq
+  	touch spool
+  	@echo Notesfile Spool directories ready
+*** /tmp/,RCSt1020338	Wed Jul  1 13:38:22 1987
+--- dropt.c	Wed Jul  1 12:54:59 1987
+***************
+*** 24,29 ****
+--- 24,31 ----
+   *		 -4 if the user hit cntrl d ( to total exit)
+   *
+   *	original author/outliner : Ray Essick may 29, 1981
++  *      added the "moderated" flag:Rich $alz  aug 19, 1985
++  *      added "local" flag, toggle, YorN:    Rich $alz  aug 19, 1985
+   *
+   */
+  
+***************
+*** 35,43 ****
+              netrow,					/* networked */
+              expirerow,					/* expire age */
+              longrow,					/* longest ok text */
+!             worksetrow;					/* working set */
+  static int  lastrow;
+  
+  direct (io) struct io_f *io;
+  {
+      int     i;						/* scratch */
+--- 37,51 ----
+              netrow,					/* networked */
+              expirerow,					/* expire age */
+              longrow,					/* longest ok text */
+!             worksetrow,					/* working set */
+! 	    modrow,					/* moderated flag */
+! 	    localrow;					/* local flag */
+  static int  lastrow;
+  
++ #define YorN(c)		((c) != 0 ? YES : NO)
++ static char YES[] = "YES";
++ static char NO[] = "NO ";
++ 
+  direct (io) struct io_f *io;
+  {
+      int     i;						/* scratch */
+***************
+*** 113,143 ****
+  		break;					/* skipt out of the loop */
+  
+  	    case 'a': 					/* toggle anonymous option */
+! 		locknf (io, DSCRLOCK);			/* lock the thing for a minute */
+! 		getdscr (io, &io -> descr);		/* get up to date descriptor */
+! 		if (io -> descr.d_stat & ANONOK)
+! 		    io -> descr.d_stat &= NOT ANONOK;
+! 		else
+! 		    io -> descr.d_stat |= ANONOK;
+! 		putdscr (io, &io -> descr);
+! 		unlocknf (io, DSCRLOCK);
+! 		at (anonrow, 18);
+! 		printf (io -> descr.d_stat & ANONOK ? "ON " : "OFF");
+! 		redraw = 0;
+  		break;
+  
+  	    case 'A': 					/* Archive option */
+! 		locknf (io, DSCRLOCK);			/* lock the thing for a minute */
+! 		getdscr (io, &io -> descr);		/* get up to date descriptor */
+! 		if (io -> descr.d_stat & ISARCH)
+! 		    io -> descr.d_stat &= NOT ISARCH;
+! 		else
+! 		    io -> descr.d_stat |= ISARCH;
+! 		putdscr (io, &io -> descr);
+! 		unlocknf (io, DSCRLOCK);
+! 		at (archrow, 18);
+! 		printf (io -> descr.d_stat & ISARCH ? "YES" : "NO ");
+! 		redraw = 0;
+  		break;
+  
+  	    case 'l': 					/* message length */
+--- 121,131 ----
+  		break;					/* skipt out of the loop */
+  
+  	    case 'a': 					/* toggle anonymous option */
+! 		toggle(io, ANONOK, anonrow);
+  		break;
+  
+  	    case 'A': 					/* Archive option */
+! 		toggle(io, ISARCH, archrow);
+  		break;
+  
+  	    case 'l': 					/* message length */
+***************
+*** 173,183 ****
+  		unlocknf (io, DSCRLOCK);		/* all done ... */
+  		at (longrow, 27);
+  		printf ("%ld bytes   ", io -> descr.d_longnote);
+- 		redraw = 0;
+  		break;
+  
+  	    case 'c': 					/* compress the notefile */
+- 		redraw = 0;
+  		if (io -> descr.d_stat & OPEN)
+  		{
+  		    at (lastrow, 10);
+--- 161,169 ----
+***************
+*** 265,271 ****
+  			printf ("%ld days     ", io -> descr.d_archtime);
+  			break;
+  		}
+- 		redraw = 0;
+  		break;
+  
+  	    case 'W': 					/* working Set size */
+--- 251,256 ----
+***************
+*** 311,317 ****
+  		    default: 
+  			printf ("%ld Notes    ", io -> descr.d_workset);
+  		}
+- 		redraw = 0;
+  		break;
+  
+  	    case 'E': 					/* keep/delete/default */
+--- 296,301 ----
+***************
+*** 348,354 ****
+  			printf ("UNKNOWN");
+  			break;
+  		}
+- 		redraw = 0;
+  		break;
+  
+  	    case 'D': 					/* Archive dirmsg */
+--- 332,337 ----
+***************
+*** 397,435 ****
+  			printf ("UNKNOWN  ");
+  			break;
+  		}
+- 		redraw = 0;
+  		break;
+  
+  	    case 'o': 					/* toggle open status */
+! 		locknf (io, DSCRLOCK);
+! 		getdscr (io, &io -> descr);
+! 		if (io -> descr.d_stat & OPEN)
+! 		    io -> descr.d_stat &= NOT OPEN;
+! 		else
+! 		    io -> descr.d_stat |= OPEN;
+! 		putdscr (io, &io -> descr);
+! 		unlocknf (io, DSCRLOCK);
+! 		at (openrow, 18);
+! 		printf (io -> descr.d_stat & OPEN ? "OPEN  " : "CLOSED");
+! 		redraw = 0;
+  		break;
+  
+  	    case 'n': 					/* toggle network status */
+! 		locknf (io, DSCRLOCK);
+! 		getdscr (io, &io -> descr);
+! 		if (io -> descr.d_stat & NETWRKD)
+! 		{
+! 		    io -> descr.d_stat &= NOT NETWRKD;
+! 		}
+! 		else
+! 		{
+! 		    io -> descr.d_stat |= NETWRKD;
+! 		}
+! 		putdscr (io, &io -> descr);
+! 		unlocknf (io, DSCRLOCK);
+! 		at (netrow, 18);
+! 		printf (io -> descr.d_stat & NETWRKD ? "YES" : "NO ");
+! 		redraw = 0;
+  		break;
+  
+  
+--- 380,401 ----
+  			printf ("UNKNOWN  ");
+  			break;
+  		}
+  		break;
+  
+  	    case 'o': 					/* toggle open status */
+! 		toggle (io, OPEN, openrow);
+  		break;
+  
++ 	    case 'M': 					/* toggle moderated status */
++ 		toggle (io, MODERATED, modrow);
++ 		break;
++ 
++ 	    case 'L': 					/* toggle local status */
++ 		toggle(io, LOCAL, localrow);
++ 		break;
++ 
+  	    case 'n': 					/* toggle network status */
+! 		toggle(io, NETWRKD, netrow);
+  		break;
+  
+  
+***************
+*** 530,536 ****
+  
+  	    default: 
+  		printf ("\07");
+- 		redraw = 0;
+  		goto getkey;				/* hit a bad key */
+  
+  	}
+--- 496,501 ----
+***************
+*** 559,568 ****
+      printf (io -> descr.d_stat & OPEN ? "OPEN  " : "CLOSED");
+      at (netrow = atrow++, atcol);
+      printf ("(n) Networked:   ");			/* at(5,18); */
+!     printf (io -> descr.d_stat & NETWRKD ? "YES" : "NO ");
+      at (archrow = atrow++, atcol);
+      printf ("(A) Is Archive:  ");			/* at(6,18); */
+!     printf (io -> descr.d_stat & ISARCH ? "YES" : "NO");
+      at (expirerow = atrow++, atcol);
+      printf ("(e) Expiration Threshold: ");		/* at (6,27); */
+      switch ((int) (io -> descr.d_archtime))
+--- 524,539 ----
+      printf (io -> descr.d_stat & OPEN ? "OPEN  " : "CLOSED");
+      at (netrow = atrow++, atcol);
+      printf ("(n) Networked:   ");			/* at(5,18); */
+!     printf (YorN(io -> descr.d_stat & NETWRKD));
+      at (archrow = atrow++, atcol);
+      printf ("(A) Is Archive:  ");			/* at(6,18); */
+!     printf (YorN(io -> descr.d_stat & ISARCH));
+!     at (modrow = atrow++, atcol);
+!     printf ("(M) Moderated:   ");
+!     printf (YorN(io -> descr.d_stat & MODERATED));
+!     at (localrow = atrow++, atcol);
+!     printf ("(L) Local:       ");
+!     printf (YorN(io -> descr.d_stat & LOCAL));
+      at (expirerow = atrow++, atcol);
+      printf ("(e) Expiration Threshold: ");		/* at (6,27); */
+      switch ((int) (io -> descr.d_archtime))
+***************
+*** 640,646 ****
+      atrow = 4;
+      atcol = 40;
+      at (atrow++, atcol);
+!     printf ("Policy Note Exists: %s", io -> descr.d_plcy ? "YES" : "NO");
+      at (atrow++, atcol);
+      printf ("Next note in slot: %d", io -> descr.d_nnote + 1);
+      at (atrow++, atcol);
+--- 611,617 ----
+      atrow = 4;
+      atcol = 40;
+      at (atrow++, atcol);
+!     printf ("Policy Note Exists: %s", YorN(io -> descr.d_plcy));
+      at (atrow++, atcol);
+      printf ("Next note in slot: %d", io -> descr.d_nnote + 1);
+      at (atrow++, atcol);
+***************
+*** 655,658 ****
+--- 626,646 ----
+      if (atrow > lastrow)
+  	lastrow = atrow;
+      lastrow++;
++ }
++ 
++ toggle(io, flag, row)
++     struct io_f *io;
++     int flag;
++     int row;
++ {
++     locknf (io, DSCRLOCK);
++     getdscr (io, &io -> descr);
++     if (io -> descr.d_stat & flag)
++ 	io -> descr.d_stat &= NOT flag;
++     else
++ 	io -> descr.d_stat |= flag;
++     putdscr (io, &io -> descr);
++     unlocknf (io, DSCRLOCK);
++     at (row, 18);
++     printf (YorN(io -> descr.d_stat & flag));
+  }
+*** /tmp/,RCSt1020349	Wed Jul  1 13:38:31 1987
+--- gtext.c	Wed Jul  1 12:56:31 1987
+***************
+*** 1,5 ****
+--- 1,7 ----
+  #include "parms.h"
+  #include "structs.h"
++ #include <sys/types.h>
++ #include <sys/stat.h>
+  
+  #ifdef	RCSIDENT
+  static char rcsid[] = "$Header: gtext.c,v 1.7 87/07/01 12:39:33 paul Locked $";
+***************
+*** 17,24 ****
+--- 19,31 ----
+   *	modified again:	rbe 12 nov 81	fix to version 7 and general shtuff
+   *	modified a third time to add insert-text for user
+   *		Ray Essick	December 1981
++  *	modified to add non-portable way of appending a signature file.
++  *		Rich $alz	July, 1985
++  *	did signatures the "right" way (better, at least) - LOCAL flag
++  *		Rich $alz	August, 1985
+   */
+  
++ extern char hissig[];
+  long    gettext (io, where, preface, editflag)
+  struct io_f *io;
+  struct daddr_f *where;					/* where we left it */
+***************
+*** 29,34 ****
+--- 36,42 ----
+      register int    c;
+      long    count;
+      char    fn[20];					/* scratch file name */
++     struct stat    sbuf;
+  
+      sprintf (fn, "/tmp/nf%d", getpid ());
+      x ((scr = fopen (fn, "w")) == NULL, "gettext: create scratch");
+***************
+*** 69,74 ****
+--- 77,106 ----
+      {
+  	unlink (fn);					/* might just be protections */
+  	return ((long) 0);
++     }
++ 
++     (void) fstat (fileno (scr), &sbuf);
++     if (sbuf.st_size > (off_t) 0 && hissig[0]
++      && io -> descr.d_stat & NETWRKD && !(io -> descr.d_stat & LOCAL))
++     {
++ 	c = askyn ("Add signature (y/n): ");
++ 	printf ("\r                      \r");
++ 	if (c == 'y')
++ 	{
++ 	    FILE * siggy;
++ 
++ 	    if ((siggy = fopen (hissig, "r")) == NULL)
++ 		printf ("Can't find %s", hissig);
++ 	    else
++ 	    {
++ 		/* Flop to append mode, append, flip back to read */
++ 		freopen (fn, "a", scr);
++ 		while ((c = getc (siggy)) != EOF)
++ 		    putc (c, scr);
++ 		fclose (siggy);
++ 		freopen (fn, "r", scr);
++ 	    }
++ 	}
+      }
+  
+      count = pagein (io, scr, where);			/* move text in */
+*** /tmp/,RCSt1020354	Wed Jul  1 13:38:35 1987
+--- index.c	Wed Jul  1 12:55:09 1987
+***************
+*** 20,27 ****
+--- 20,33 ----
+   *
+   *	Original Coding:	Rob Kolstad	Winter 1980
+   *	modifications:		Ray Essick	December 1981
++  *	added MODERATED code:	Rich $alz	August 1985
++  *	added LOCAL flag:	Rich $alz	August 1985
+   */
+  
++ static char YES[] = "YES";
++ static char NO[] = "NO ";
++ #define YorN(c)		((c) != 0 ? YES : NO)
++ 
+  indx (io, firstdis, lastdis, respnum)
+  struct io_f *io;
+  int    *firstdis,
+***************
+*** 58,66 ****
+  
+  	    case 'W': 					/* this too shall write a note */
+  	    case 'w': 					/* write a note */
+! 		return addnote (io, NULL, "Edit Note text:", "Note Title: ", NULL, EDIT);
+! 							/* do it */
+  
+  	    case 'B': 					/* bitch, bitch, bitch */
+  		if (init (&io2, GRIPES) < 0)		/* no gripe file */
+  		{
+--- 64,77 ----
+  
+  	    case 'W': 					/* this too shall write a note */
+  	    case 'w': 					/* write a note */
+! 		if ( ! (io -> descr.d_stat & MODERATED ) )
+! 		    return addnote (io, NULL, "Edit Note text:", "Note Title: ", NULL, EDIT);
+! 		if (askyn ("Moderated; send mail to moderator? ") == 'y')
+! 		    mailit(io, (struct daddr_f *)0, (struct auth_f *)0,
+! 			(struct when_f *)0, (char *)0, MODERATED, 0);
+! 		return (-1);
+  
++ 
+  	    case 'B': 					/* bitch, bitch, bitch */
+  		if (init (&io2, GRIPES) < 0)		/* no gripe file */
+  		{
+***************
+*** 167,175 ****
+  		else
+  		{
+  		    at (0, PROMPTMSGX);
+! 		    printf (" Anonymous: %s   Networked: %s",
+! 			    (io -> descr.d_stat & ANONOK) ? "YES" : "NO",
+! 			    (io -> descr.d_stat & NETWRKD) ? "YES" : "NO");
+  		    continue;
+  		}
+  
+--- 178,190 ----
+  		else
+  		{
+  		    at (0, PROMPTMSGX);
+! 		    printf (
+!          "Anonymous: %s   Networked: %s   Moderated: %s   Local: %s",
+! 			    YorN (io -> descr.d_stat & ANONOK),
+! 			    YorN (io -> descr.d_stat & NETWRKD),
+! 			    YorN (io -> descr.d_stat & MODERATED),
+! 			    YorN (io -> descr.d_stat & LOCAL));
+! 
+  		    continue;
+  		}
+  
+*** /tmp/,RCSt1020366	Wed Jul  1 13:38:40 1987
+--- mailit.c	Wed Jul  1 12:55:11 1987
+***************
+*** 20,25 ****
+--- 20,27 ----
+   *	modified:	Ray Essick	December 1981.
+   *	modified again:	Thanks to Malcolm Slaney of Purdue EE dept.
+   *		added the SUPERMAILER processing. May 25, 1982
++  *	added code to handle the MODERATED flag.
++  *		rich $alz, mirror systems, august 19, 1985
+   *
+   */
+  
+***************
+*** 38,51 ****
+      char    fn[20];					/* hold scratch file name */
+      int     f;
+      char   *p;
+-     int     i;
+      FILE * txtfile;
+  #ifdef	SUPERMAILER
+      char    subject[TITLEN + 20];			/* mailer subject */
+  #endif
+  
+!     if (toauth)
+      {
+  	if (strcmp (author -> aname, "Anonymous") == 0)
+  	{
+  	    printf ("Can't send to Anonymous\n");
+--- 40,70 ----
+      char    fn[20];					/* hold scratch file name */
+      int     f;
+      char   *p;
+      FILE * txtfile;
+  #ifdef	SUPERMAILER
+      char    subject[TITLEN + 20];			/* mailer subject */
+  #endif
+  
+!     if (toauth == MODERATED)
+      {
++ 	f = 1;
++ 	toauth = 0;
++     }
++     else
++ 	f = 0;
++     if (f && io -> descr.d_stat & MODERATED)
++     {
++ 	if (modaddress (io -> nf, whoto) == 1)
++ 	{
++ 	    at (0, 1);
++ 	    printf ("\nComplain to a guru; can't find moderator!\007\n");
++ 	    fflush (stdout);
++ 	    sleep (1);
++ 	    return (-1);				/* no letter sent */
++ 	}
++     }
++     else if (toauth)
++     {
+  	if (strcmp (author -> aname, "Anonymous") == 0)
+  	{
+  	    printf ("Can't send to Anonymous\n");
+***************
+*** 53,62 ****
+  	    sleep (2);
+  	    return (-1);
+  	}
+-     }
+- 
+-     if (toauth)
+-     {
+  	if (strcmp (System, author -> asystem) != 0)
+  	{
+  #ifdef	USERHOST
+--- 72,77 ----
+***************
+*** 189,192 ****
+--- 204,246 ----
+  #endif	SUPERMAILER
+  
+      return 0;
++ }
++ 
++ modaddress (notesname, address)
++     char *notesname;
++     char *address;
++ {
++     char buff[WDLEN];
++     register FILE *mods;
++     register char *p;
++ 
++     sprintf (buff, "%s/%s/moderators", MSTDIR, UTILITY);
++ 
++     if ((mods = fopen (buff, "r")) == NULL)
++     {
++ 	printf ("Can't open moderators file!\n");
++ 	return 1;
++     }
++ 
++     while (fgets ( buff, sizeof buff, mods))
++     {
++ 	/* read lines of the form <name><whitespace>path; blanks and lines */
++ 	/* starting with "#" are comments. */
++ 	if (buff[0] == '\0' || buff[0] == '#'
++ 	 || (((p=index(buff, ' ')) == NULL) && (p=index(buff, '\t')) == NULL))
++ 	    continue;
++ 	*p++ = '\0';					/* split into halves */
++ 	while (*p == ' ' || *p == '\t')
++ 	    p++;					/* skip whitespace */
++ 	if (!strcmp (notesname, buff))
++ 	{
++ 	    strcpy (address, p);
++ 	    address[strlen(address) - 1] = '\0';	/* kill the \n */
++ 	    fclose (mods);
++ 	    return 0;
++ 	}
++     }
++ 
++     fclose (mods);
++     return 1;
+  }
+*** /tmp/,RCSt1020372	Wed Jul  1 13:38:45 1987
+--- main.c	Wed Jul  1 12:55:13 1987
+***************
+*** 16,27 ****
+   *	Original author: Rob Kolstad	Winter, 1980.
+   *	Modifications:	Ray Essick	June, 1981.
+   *	Modified more:	Ray Essick	May, 1982.
+   *
+-  *
+   */
+  
+  
+  static int  seqon = NOSEQ;				/* sequencer mode */
+  
+  main (argc, argv)
+  char  **argv;
+--- 16,29 ----
+   *	Original author: Rob Kolstad	Winter, 1980.
+   *	Modifications:	Ray Essick	June, 1981.
+   *	Modified more:	Ray Essick	May, 1982.
++  *	modified:	Rich $alz	July, 1985
++  *		To add the hissig (signature file) variable.
+   *
+   */
+  
+  
+  static int  seqon = NOSEQ;				/* sequencer mode */
++ char hissig[WDLEN];					/* signature file */
+  
+  main (argc, argv)
+  char  **argv;
+***************
+*** 60,65 ****
+--- 62,69 ----
+  /*
+   *	grab some variables from the environment
+   */
++     if ((p = getenv ("NFSIG")) != 0 && access (p, 04) >= 0)
++ 	strcpy(hissig, p);				/* his signature file */
+      if ((p = getenv ("SHELL")) != 0)
+  	hisshell = p;					/* his shell */
+      if ((p = getenv ("NFED")) != 0)
+*** /tmp/,RCSt1020383	Wed Jul  1 13:38:49 1987
+--- nfadmin.c	Wed Jul  1 12:58:15 1987
+***************
+*** 21,33 ****
+      int     argn;
+      struct nflist_f *nfptr;
+      int	    change, newexp;
+!     int	    newanon, newopen, newnet, newarch;
+      int	    newwset, newdir, newact, newlen;
+  
+      startup (argc, argv);				/* common init code */
+  
+      newdir = newact = newwset = newlen = newexp = -2;
+!     newanon = newopen = newnet = newarch = change = 0;
+      for ( argc--, argv++; argc > 0 && argv[0][0] == '-'; argc--, argv++)
+      {
+  	switch(argv[0][1])
+--- 21,33 ----
+      int     argn;
+      struct nflist_f *nfptr;
+      int	    change, newexp;
+!     int	    newanon, newopen, newnet, newarch, newlocal, newmod;
+      int	    newwset, newdir, newact, newlen;
+  
+      startup (argc, argv);				/* common init code */
+  
+      newdir = newact = newwset = newlen = newexp = -2;
+!     newanon = newopen = newnet = newarch = newlocal = newmod = change = 0;
+      for ( argc--, argv++; argc > 0 && argv[0][0] == '-'; argc--, argv++)
+      {
+  	switch(argv[0][1])
+***************
+*** 48,53 ****
+--- 48,61 ----
+  		change = 1;
+  		newopen = newval(argv[0][2]);
+  		break;
++ 	case 'L':
++ 		change = 1;
++ 		newlocal = newval(argv[0][2]);
++ 		break;
++ 	case 'M':
++ 		change = 1;
++ 		newmod = newval(argv[0][2]);
++ 		break;
+  	case 'A':
+  		change = 1;
+  		newarch = newval(argv[0][2]);
+***************
+*** 151,156 ****
+--- 159,174 ----
+  			io.descr.d_stat |= OPEN;
+  		else
+  			io.descr.d_stat &= ~OPEN;
++ 	    if (newlocal)
++ 		if (newlocal > 0)
++ 			io.descr.d_stat |= LOCAL;
++ 		else
++ 			io.descr.d_stat &= ~LOCAL;
++ 	    if (newmod)
++ 		if (newmod > 0)
++ 			io.descr.d_stat |= MODERATED;
++ 		else
++ 			io.descr.d_stat &= ~MODERATED;
+  	    if (newarch)
+  		if (newarch > 0)
+  			io.descr.d_stat |= ISARCH;
+***************
+*** 210,217 ****
+  
+  	if (!flag)
+  	{
+! 		printf("notesfile title NetW Open Anon Arch   WSet Arch. Keep DirM     #         Max\n");
+! 		printf("                -------status------   Size Time  Actn Stat   Notes       Size\n");
+  	}
+  	flag = 1;
+  	switch(d->d_dmesgstat)
+--- 228,235 ----
+  
+  	if (!flag)
+  	{
+! 		printf("    notesfile title     NetW Open Anon Arch Locl Mod    WSet Arch. Keep DirM     #         Max\n");
+! 		printf("                        ------------status-----------   Size Time  Actn Stat   Notes       Size\n");
+  	}
+  	flag = 1;
+  	switch(d->d_dmesgstat)
+***************
+*** 247,255 ****
+  	else	sprintf(archtime, "%4d ", d->d_archtime);
+  
+  
+! 	printf("%14.14s: %s %s %s %s  %5d %s %s %s   %5d%12d\n",
+  		d->d_title, yes(d->d_stat & NETWRKD), yes(d->d_stat & OPEN),
+  		yes(d->d_stat & ANONOK), yes(d->d_stat & ISARCH), 
+  		d->d_workset, archtime, archkeep, msgstat, d->d_nnote, 
+  		d->d_longnote);
+  
+--- 265,274 ----
+  	else	sprintf(archtime, "%4d ", d->d_archtime);
+  
+  
+! 	printf("%22.22s: %s %s %s %s %s %s  %5d %s %s %s   %5d%12d\n",
+  		d->d_title, yes(d->d_stat & NETWRKD), yes(d->d_stat & OPEN),
+  		yes(d->d_stat & ANONOK), yes(d->d_stat & ISARCH), 
++ 		yes(d->d_stat & LOCAL), yes(d->d_stat & MODERATED), 
+  		d->d_workset, archtime, archkeep, msgstat, d->d_nnote, 
+  		d->d_longnote);
+  
+*** /tmp/,RCSt1020391	Wed Jul  1 13:38:57 1987
+--- readem.c	Wed Jul  1 12:55:20 1987
+***************
+*** 19,26 ****
+--- 19,32 ----
+  *	modified	: ray essick may 22, 1981
+  *	modified (again): Ray Essick December 1981
+  *	modified (more):  Ray Essick, February 1982
++ *	added MODERATED:  Rich $alz, August 1985
++ *	added LOCAL and YorN: Rich $alz, August 1985
+  *
+  */
++ static char YES[] = "YES";
++ static char NO[] = "NO ";
++ #define YorN(c)		((c) != 0 ? YES : NO)
++ 
+  readem (io, readnum, firstdis, resp)
+  struct io_f *io;
+  int    *firstdis;
+***************
+*** 333,347 ****
+  		toauth = 0;
+  		wtext = 1;				/* to others with text */
+  		goto sendmail;
+  	    case 'P': 
+- 		toauth = 1;
+- 		wtext = 1;				/* to author with text */
+- 		goto sendmail;
+  	    case 'p': 
+  		toauth = 1;
+! 		wtext = 0;				/* to author, no text */
+! 		goto sendmail;
+! 
+  	sendmail: 					/* jump to here once set mail parms */
+  		if (resp)
+  		{
+--- 339,358 ----
+  		toauth = 0;
+  		wtext = 1;				/* to others with text */
+  		goto sendmail;
++ 	    /* mail to author, possibly with text. */
+  	    case 'P': 
+  	    case 'p': 
++ #ifdef NO_Pp_FOR_MODERATED
++ 		/* some people may want this */
++ 		if (io -> d_descr.d_stat & MODERATED)
++ 		{
++ 		    at (0, 10);
++ 		    printf ("Moderated; use 'm' or 'M' command\n");
++ 		    continue;
++ 		}
++ #endif NO_Pp_FOR_MODERATED
+  		toauth = 1;
+! 		wtext = c == 'P';			/* to author with text */
+  	sendmail: 					/* jump to here once set mail parms */
+  		if (resp)
+  		{
+***************
+*** 454,462 ****
+  		if (allow (io, DRCTOK) == 0)
+  		{					/* tell him what's up */
+  		    at (0, PROMPTMSGX);
+! 		    printf (" Anonymous: %s   Networked: %s",
+! 			    (io -> descr.d_stat & ANONOK) ? "YES" : "NO",
+! 			    (io -> descr.d_stat & NETWRKD) ? "YES" : "NO");
+  		    replot = 0;				/* leave on screen */
+  		    goto showit;
+  		}
+--- 465,476 ----
+  		if (allow (io, DRCTOK) == 0)
+  		{					/* tell him what's up */
+  		    at (0, PROMPTMSGX);
+! 		    printf (
+!          "Anonymous: %s   Networked: %s   Moderated: %s   Local: %s",
+! 			    YorN (io -> descr.d_stat & ANONOK),
+! 			    YorN (io -> descr.d_stat & NETWRKD),
+! 			    YorN (io -> descr.d_stat & MODERATED),
+! 			    YorN (io -> descr.d_stat & LOCAL));
+  		    replot = 0;				/* leave on screen */
+  		    goto showit;
+  		}
+***************
+*** 528,533 ****
+--- 542,555 ----
+  	    case 'W': 					/* write a response with the text */
+  	    case 'w': 					/* let him write a response */
+  		getdscr (io, &io -> descr);		/* get up to date */
++ 
++ 		if (io -> descr.d_stat & MODERATED)
++ 		{
++ 		    wtext = c == 'W';
++ 		    toauth = MODERATED;		/* toauth distinguishes m/w */
++ 		    goto sendmail;
++ 		}
++ 
+  		if (allow (io, RESPOK) == 0)
+  		{
+  		    at (0, PROMPTMSGX);
+*** /tmp/,RCSt1020405	Wed Jul  1 13:39:16 1987
+--- structs.h	Wed Jul  1 12:55:22 1987
+***************
+*** 105,110 ****
+--- 105,112 ----
+  #define		WRITONLY   0100				/* writeonly access when written */
+  #define		ORPHND	   0200				/* foster parent */
+  #define		ISARCH	   0400				/* is an archive */
++ #define		MODERATED 01000				/* mail to moderator */
++ #define		LOCAL     02000				/* no signature */
+  
+  /*	change these only after modifying the table in access.c		*/
+  #define		READOK	01				/* allow user to read */

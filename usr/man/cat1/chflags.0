@@ -1,0 +1,132 @@
+
+
+
+CHFLAGS(1)	    UNIX Programmer's Manual	       CHFLAGS(1)
+
+
+
+NAME
+     chflags - change file flags
+
+SYNOPSIS
+     chflags [-R] [-f]flags file ...
+
+DESCRIPTION
+     The chflags utility modifies the file flags of the listed
+     files as specified by the flags operand.
+
+     The options are as follows:
+
+     -R             Change the file flags for the file hierar-
+		    chies rooted in the files instead of just the
+		    files themselves.
+
+     -f chflags will not complain if it fails to change the flags
+     on a file.
+
+     Flags are a comma separated list of keywords.  The following
+     keywords are currently defined:
+
+     arch		 No effect.  This bit is defined and will
+			 be set/cleared as requested but nothing
+			 in the system makes use of it yet.
+
+     dump		 Set the dump flag
+
+     sappnd		 Set the system append-only flag (super-
+			 user only)
+
+     schg		 Set the system immutable flag (super-
+			 user only)
+
+     uappnd		 Set the user append-only flag (owner or
+			 super-user only)
+
+     uchg		 Set the user immutable flag (owner or
+			 super-user only)
+
+     Putting the letters no before an option causes the flag to
+     be turned off.  For example:
+
+     nodump		 the file should never be dumped
+
+     Symbolic links do not have flags and are silently ignored by
+     chflags. When the -R option is given and symbolic links are
+     encountered they are not traversed.  This is the same
+     behaviour as chmod(1).
+
+     The chflags utility exits 0 on success, and >0 if an error
+     occurs.
+
+
+
+Printed 11/24/99	November 28, 1994			1
+
+
+
+
+
+
+CHFLAGS(1)	    UNIX Programmer's Manual	       CHFLAGS(1)
+
+
+
+SEE ALSO
+     chflags(2), stat(2), symlink(7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 28, 1994			2
+
+
+

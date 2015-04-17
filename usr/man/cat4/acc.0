@@ -1,0 +1,66 @@
+
+
+
+ACC(4)		    UNIX Programmer's Manual		   ACC(4)
+
+
+
+NAME
+     acc - ACC LH/DH IMP interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NACC 0    # ACC LH/DH ARPAnet IMP interface
+	  PLI  YES  # LH/DH is connected to a PLI
+
+DESCRIPTION
+     The _a_c_c device provides a Local Host/Distant Host interface
+     to an IMP.  It is normally used when participating in the
+     DARPA Internet.  The controller itself is not accessible to
+     users, but instead provides the hardware support to the IMP
+     interface described in _i_m_p(4).  When configuring, the
+     _i_m_p(_N_I_M_P) pseudo-device must also be included.
+
+DIAGNOSTICS
+     acc%d: not alive.	The initialization routine was entered
+     even though the device did not autoconfigure.  This indi-
+     cates a system problem.
+
+     acc%d: can't initialize.  Insufficient UNIBUS resources
+     existed to initialize the device.	This is likely to occur
+     when the device is run on a buffered data path on an 11/750
+     and other network interfaces are also configured to use buf-
+     fered data paths, or when it is configured to use buffered
+     data paths on an 11/730 (which has none).
+
+     acc%d: imp doesn't respond, icsr=%b.  The driver attempted
+     to initialize the device, but the IMP failed to respond
+     after 500 tries.  Check the cabling.
+
+     acc%d: stray xmit interrupt, csr=%b.  An interrupt occurred
+     when no output had previously been started.
+
+     acc%d: output error, ocsr=%b, icsr=%b.  The device indicated
+     a problem sending data on output.
+
+     acc%d: input error, csr=%b.  The device indicated a problem
+     receiving data on input.
+
+     acc%d: bad length=%d.  An input operation resulted in a data
+     transfer of less than 0 or more than 1008 bytes of data into
+     memory (according to the word count register).  This should
+     never happen as the maximum size of a host-IMP message is
+     1008 bytes.
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  July 26, 1987                         1
+
+
+

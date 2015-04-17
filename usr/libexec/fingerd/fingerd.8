@@ -1,0 +1,133 @@
+.\" Copyright (c) 1980, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)fingerd.8	8.1.1 (2.11BSD) 1995/04/01
+.\"
+.TH FINGERD 8 "April 1, 1995"
+.UC 5
+.SH NAME
+fingerd \- remote user information server
+.SH SYNOPSIS
+.B fingerd [-s][-l][-p \fIfilename\fP ]
+.SH DESCRIPTION
+.B Fingerd
+is a simple protocol based on
+.I RFC1196
+that provides an interface to the
+Name and Finger programs at several network sites.
+The program is supposed to return a friendly,
+human-oriented status report on either the system at the moment
+or a particular person in depth.
+There is no required format and the
+protocol consists mostly of specifying a single
+``command line''.
+.PP
+.B Fingerd
+listens for
+TCP
+requests at port 79.
+Once connected it reads a single command line
+terminated by a
+<CRLF>
+which is passed to
+.IR finger (1).
+.B Fingerd
+closes its connections as soon as the output is finished.
+.PP
+If the line is null (i.e. just a
+<CRLF>
+is sent) then 
+.I finger
+returns a
+``default''
+report that lists all people logged into
+the system at that moment.
+.PP
+If a user name is specified (e.g.
+eric<CRLF> )
+then the
+response lists more extended information for only that particular user,
+whether logged in or not.
+Allowable
+``names''
+in the command line include both
+``login names''
+and
+``user names''.
+If a name is ambiguous, all possible derivations are returned.
+.PP
+The following options may be passed to
+.B fingerd
+as server program arguments in
+\fI/etc/inetd.conf\fP:
+.IP \-s
+Enable secure mode.
+Queries without a user name are rejected and
+forwarding of queries to other remote hosts is denied.
+.IP \-l
+Enable logging.
+The name of the host originating the query is reported via
+.IR syslog (3)
+at LOG_NOTICE priority.
+.IP \-p
+Use an alternate program as the local information provider.
+The default local program
+executed by
+.B fingerd
+is 
+.IR finger (1).
+By specifying a customized local server,
+this option allows a system manager
+to have more control over what information is
+provided to remote sites.
+.PP
+.SH SEE ALSO
+.IR finger (1)
+.SH BUGS
+Connecting directly to the server from a
+TIP
+or an equally narrow-minded
+TELNET\-protocol
+user program can result
+in meaningless attempts at option negotiation being sent to the
+server, which will foul up the command line interpretation.
+.B Fingerd
+should be taught to filter out
+IAC's
+and perhaps even respond
+negatively
+(IAC WON'T)
+to all option commands received.
+.SH HISTORY
+The
+.B fingerd
+command appeared in
+4.3BSD.

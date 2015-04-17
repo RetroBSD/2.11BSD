@@ -1,0 +1,66 @@
+
+
+
+strcompact(1)	    UNIX Programmer's Manual	    strcompact(1)
+
+
+
+NAME
+     strcompact - string compaction for object files
+
+SYNOPSIS
+     strcompact [ object_name ... ]
+
+DESCRIPTION
+     strcompact scans the symbol and string tables of an object
+     file looking for multiple references in the symbol table to
+     the same string.  The string offset of symbol table entries
+     is updated to preserve only one copy of the string.
+
+     strcompact cut the size of the kernel string table by about
+     25%.
+
+     The user must have write permission to the object/executable
+     file.
+
+     strcompact writes to _s_t_d_e_r_r the number of shared strings
+     found.
+
+     strcompact exits 0 if successful, and >0 if an error
+     occurred.
+
+SEE ALSO
+     sort(1), symcompact(1), symorder(1), uniq(1)
+
+BUGS
+     Execution speed leaves much to be desired - on a 11/73 it
+     takes about 4 minutes to process the string table of the
+     kernel.  Fortunately this is only done once when the kernel
+     is created.
+
+     Although strcompact may be run on .o files as well as exe-
+     cutables but this is probably not worth the trouble since
+     the linker will not create shared strings in the final exe-
+     cutable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 25, 1994			1
+
+
+

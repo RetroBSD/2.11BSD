@@ -1,0 +1,132 @@
+
+
+
+ACCTON(8)	    UNIX Programmer's Manual		ACCTON(8)
+
+
+
+NAME
+     accton - enable/disable system accounting
+
+SYNOPSIS
+     accton [-f file] [-r resum] [-s suspend] [-t freq]
+     [filename]
+
+DESCRIPTION
+     With no argument, accton will disable system accounting.  If
+     the -f option is given or the last argument is an existing
+     pathname accounting is enabled and for every process which
+     terminates under normal conditions an accounting record is
+     sent to the accounting daemon.
+
+     accton is a frontend to  the accounting daemon: acctd(8).
+     Accounting is turned off by sending a SIGTERM to the running
+     accounting daemon.  Changes in configuration (free space
+     thresholds, etc) are made by writing /etc/acctd.cf and issu-
+     ing a SIGHUP to the accounting daemon.  If the daemon is not
+     running it is started.
+
+     The options are:
+
+     -f file   Specifies the name of an existing file to which
+	       accounting records are to be appended.  If this
+	       option and a trailing filename (the historical
+	       form of use) is given then the last filename given
+	       is  used.
+
+     -r resum  Percentage of diskspace that must be free in order
+	       for accounting to be resumed.  The default is 4%.
+
+     -s susp   If the percentage of free diskspace falls below
+	       susp accounting is suspended.  The default is 2%.
+
+     -t freq   How often (in seconds) to check the free diskpace.
+	       Default is 30.
+
+FILES
+     /usr/libexec/acctd  The accounting daemon that reads
+			 /dev/acct
+
+     /etc/acctd.cf	 The configuration file.  Must be owned
+			 by root and writeable only by root.
+			 This file, while simple text, is not
+			 meant for human editing since the parse
+			 is simpleminded and the daemon is
+			 paranoid.
+
+SEE ALSO
+     acct(5), acctd(8), sa(8)
+
+
+
+
+Printed 11/26/99	February 19, 1999			1
+
+
+
+
+
+
+ACCTON(8)	    UNIX Programmer's Manual		ACCTON(8)
+
+
+
+HISTORY
+     A accton command appeared in Version 7 AT&T UNIX.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 19, 1999			2
+
+
+

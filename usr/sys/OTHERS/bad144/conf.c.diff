@@ -1,0 +1,46 @@
+*** /sys/pdp/conf.c	Thu Aug 25 18:52:49 1988
+--- /tmp/conf.c	Sat Dec 31 14:27:49 1988
+***************
+*** 58,64 ****
+  
+  #include "xp.h"
+  #if NXPD > 0
+! int	xpopen(), xpstrategy(), xpread(), xpwrite(), xproot();
+  #define	xpclose		nulldev
+  #else
+  #define	xpopen		nodev
+--- 58,64 ----
+  
+  #include "xp.h"
+  #if NXPD > 0
+! int	xpopen(), xpstrategy(), xpread(), xpwrite(), xproot(), xpioctl();
+  #define	xpclose		nulldev
+  #else
+  #define	xpopen		nodev
+***************
+*** 67,72 ****
+--- 67,73 ----
+  #define	xpstrategy	nodev
+  #define	xpread		nodev
+  #define	xpwrite		nodev
++ #define	xpioctl		nodev
+  #endif
+  
+  #include "br.h"
+***************
+*** 363,369 ****
+  	nodev,		nulldev,	0,		seltrue,
+  /* xp = 19 */
+  	xpopen,		xpclose,	xpread,		xpwrite,
+! 	nodev,		nulldev,	0,		seltrue,
+  /* br = 20 */
+  	bropen,		brclose,	brread,		brwrite,
+  	nodev,		nulldev,	0,		seltrue,
+--- 364,370 ----
+  	nodev,		nulldev,	0,		seltrue,
+  /* xp = 19 */
+  	xpopen,		xpclose,	xpread,		xpwrite,
+! 	xpioctl,	nulldev,	0,		seltrue,
+  /* br = 20 */
+  	bropen,		brclose,	brread,		brwrite,
+  	nodev,		nulldev,	0,		seltrue,

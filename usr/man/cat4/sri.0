@@ -1,0 +1,66 @@
+
+
+
+SRI(4)		    UNIX Programmer's Manual		   SRI(4)
+
+
+
+NAME
+     sri - DR11-C IMP interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NSRI _s_r_i__c_o_n_t_r_o_l_l_e_r_s	   # SRI DR11c ARPAnet IMP
+
+DESCRIPTION
+DIAGNOSTICS
+     sri%d: not alive.	The initialization routine was entered
+     even though the device did not autoconfigure.  This indi-
+     cates a system problem.
+
+     sri%d: can't initialize.  Insufficient UNIBUS resources
+     existed to initialize the device.	This is likely to occur
+     when the device is run on a buffered data path on an 11/750
+     and other network interfaces are also configured to use buf-
+     fered data paths, or when it is configured to use buffered
+     data paths on an 11/730 (which has none).
+
+     sri%d: imp doesn't respond, ibf=%b.  The driver attempted to
+     initialize the device, but the IMP failed to respond after 5
+     tries.  Check the cabling.
+
+     sri%d: stray xmit interrupt, csr=%b.  An interrupt occurred
+     when no output had previously been started.
+
+     sri%d: output error, csr=%b.  The device indicated a problem
+     sending data on output.
+
+     sri%d: input error, ibf=%b.  The device indicated a problem
+     receiving data on input.
+
+     sri%d: bad length=%d.  An input operation resulted in a data
+     transfer of less than 10 or more than 1008 bytes of data
+     into memory (according to the word count register).  This
+     should never happen as the maximum size of a host-IMP mes-
+     sage is 1018 bytes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 20, 1987			1
+
+
+

@@ -1,0 +1,198 @@
+
+
+
+REFER(1)	    UNIX Programmer's Manual		 REFER(1)
+
+
+
+NAME
+     refer - find and insert literature references in documents
+
+SYNOPSIS
+     refer [ -a ] [ -b ] [ -c ] [ -e ] [ -f_n ] [ -k_x ] [ -l_m,_n ]
+     [ -n ] [ -p bib ] [ -s_k_e_y_s ] [ -B_l._m ] [ -P ] [ -S ] [ file
+     ... ]
+
+DESCRIPTION
+     _R_e_f_e_r is a preprocessor for _n_r_o_f_f or _t_r_o_f_f(1) that finds and
+     formats references for footnotes or endnotes.  It is also
+     the base for a series of programs designed to index, search,
+     sort, and print stand-alone bibliographies, or other data
+     entered in the appropriate form.
+
+     Given an incomplete citation with sufficiently precise key-
+     words, _r_e_f_e_r will search a bibliographic database for refer-
+     ences containing these keywords anywhere in the title,
+     author, journal, etc.  The input file (or standard input) is
+     copied to standard output, except for lines between .[ and
+     .] delimiters, which are assumed to contain keywords, and
+     are replaced by information from the bibliographic database.
+     The user may also search different databases, override par-
+     ticular fields, or add new fields.  The reference data, from
+     whatever source, are assigned to a set of _t_r_o_f_f strings.
+     Macro packages such as _m_s(7) print the finished reference
+     text from these strings.  By default references are flagged
+     by footnote numbers.
+
+     The following options are available:
+
+     -a_n   Reverse the first _n author names (Jones, J. A. instead
+	   of J. A. Jones).  If _n is omitted all author names are
+	   reversed.
+
+     -b    Bare mode: do not put any flags in text (neither
+	   numbers nor labels).
+
+     -c_k_e_y_s
+	   Capitalize (with CAPS SMALL CAPS) the fields whose
+	   key-letters are in _k_e_y_s.
+
+     -e    Instead of leaving the references where encountered,
+	   accumulate them until a sequence of the form
+		.[
+		$LIST$
+		.]
+	   is encountered, and then write out all references col-
+	   lected so far.  Collapse references to same source.
+
+     -f_n   Set the footnote number to _n instead of the default of
+	   1 (one).  With labels rather than numbers, this flag
+
+
+
+Printed 11/26/99	October 22, 1996			1
+
+
+
+
+
+
+REFER(1)	    UNIX Programmer's Manual		 REFER(1)
+
+
+
+	   is a no-op.
+
+     -k_x   Instead of numbering references, use labels as speci-
+	   fied in a reference data line beginning %_x; by default
+	   _x is L.
+
+     -l_m,_n Instead of numbering references, use labels made from
+	   the senior author's last name and the year of publica-
+	   tion.  Only the first _m letters of the last name and
+	   the last _n digits of the date are used.  If either _m
+	   or _n is omitted the entire name or date respectively
+	   is used.
+
+     -n    Do not search the default file /usr/dict/papers/Ind.
+	   If there is a REFER environment variable, the speci-
+	   fied file will be searched instead of the default
+	   file; in this case the -n flag has no effect.
+
+     -p _b_i_b
+	   Take the next argument _b_i_b as a file of references to
+	   be searched.  The default file is searched last.
+
+     -s_k_e_y_s
+	   Sort references by fields whose key-letters are in the
+	   _k_e_y_s string; permute reference numbers in text accord-
+	   ingly.  Implies -e.	The key-letters in _k_e_y_s may be
+	   followed by a number to indicate how many such fields
+	   are used, with + taken as a very large number.  The
+	   default is AD which sorts on the senior author and
+	   then date; to sort, for example, on all authors and
+	   then title, use -sA+T.
+
+     -B_l._m Bibliography mode.  Take a file composed of records
+	   separated by blank lines, and turn them into _t_r_o_f_f
+	   input.  Label _l will be turned into the macro ._m with
+	   _l defaulting to %X and ._m defaulting to .AP (annota-
+	   tion paragraph).
+
+     -P    Place punctuation marks .,:;?! after the reference
+	   signal, rather than before.	(Periods and commas used
+	   to be done with strings.)
+
+     -S    Produce references in the Natural or Social Science
+	   format.
+
+     To use your own references, put them in the format described
+     below.  They can be searched more rapidly by running _i_n_d_x_-
+     _b_i_b(1) on them before using _r_e_f_e_r; failure to index results
+     in a linear search.  When _r_e_f_e_r is used with the _e_q_n, _n_e_q_n
+     or _t_b_l preprocessors _r_e_f_e_r should be first, to minimize the
+     volume of data passed through pipes.
+
+
+
+
+Printed 11/26/99	October 22, 1996			2
+
+
+
+
+
+
+REFER(1)	    UNIX Programmer's Manual		 REFER(1)
+
+
+
+     The _r_e_f_e_r preprocessor and associated programs expect input
+     from a file of references composed of records separated by
+     blank lines.  A record is a set of lines (fields), each con-
+     taining one kind of information.  Fields start on a line
+     beginning with a ``%'', followed by a key-letter, then a
+     blank, and finally the contents of the field, and continue
+     until the next line starting with ``%''.  The output order-
+     ing and formatting of fields is controlled by the macros
+     specified for _n_r_o_f_f/_t_r_o_f_f (for footnotes and endnotes) or
+     _r_o_f_f_b_i_b (for stand-alone bibliographies).	For a list of the
+     most common key-letters and their corresponding fields, see
+     _a_d_d_b_i_b(1).  An example of a _r_e_f_e_r entry is given below.
+
+EXAMPLE
+     %A   M. E. Lesk
+     %T   Some Applications of Inverted Indexes on the UNIX System
+     %B   UNIX Programmer's Manual
+     %V   2b
+     %I   Bell Laboratories
+     %C   Murray Hill, NJ
+     %D   1978
+
+FILES
+     /usr/dict/papers  directory of default publication lists
+     /usr/libexec/refer  directory of companion programs
+
+SEE ALSO
+     addbib(1), sortbib(1), roffbib(1), indxbib(1), lookbib(1)
+
+AUTHOR
+     Mike Lesk
+
+BUGS
+     Blank spaces at the end of lines in bibliography fields will
+     cause the records to sort and reverse incorrectly.  Sorting
+     large numbers of references causes a core dump.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	October 22, 1996			3
+
+
+

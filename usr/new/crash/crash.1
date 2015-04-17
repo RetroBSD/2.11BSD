@@ -1,0 +1,77 @@
+.TH CRASH L "March 1983" 
+.SH NAME
+crash \- analyze kernel dump or active system image
+.SH SYNOPSIS
+.B crash
+[ aps ]
+[ -bdvtiz ]
+[ -s sfile ]
+[ -c cfile ]
+[ -u addr ]
+.SH DESCRIPTION
+.nf
+Synopsis of options -
+-b	Brief mode; skip general display of processes
+-d	Crash dump contains swap image.  (default?)
+-v	Verbose; dump much information about each proc [future]
+-t	TTY structs to be dumpped
+-i	Incore inode table to be printed
+-c FILE	Provide non-standard file name for system image input
+-s FILE Provide non-standard symboltable input
+-u ADDR	Trace a process other than currently selected one
+-z	Interrupt Trace displayed
+\fIaps\fR	Print PS & PC at time of interupt (doesn't do anything)
+.fi
+.PP
+.I crash
+examines a dump of unix which it looks for in the file
+sysdump.  It prints out the contents of the general
+registers, the kernel stack and a traceback through the
+kernel stack.  If an aps is specified, the ps and pc at
+time of interrupt are also printed out.  The dump of the
+stack commences from a "reasonable" address and all addresses
+are relocated to virtual addresses by using the value of
+kdsa6 found in the dump.
+.PP
+The following options may be specified.
+.IP -b
+Brief mode; skip general display of processes.  Only the currently
+selected process will be traced.
+.IP "-c \fIcfile\fR"
+If the -c argument is found, the following argument
+is taken to be the name of a file containing the system image.
+The default is "/usr/sys/core".
+.IP "-s \fIsfile\fR"
+If the -s argument is found the following argument is taken
+to be the name of a file, containing a symbol table which
+should be used in interpreting text addresses.
+The default is "/unix".
+.IP "-u \fIaddr\fR"
+Force a process to be displayed as if it were active when the
+crash occurred.  \fIaddr\fR is the octal address of the proc
+table entry.
+.SH FILES
+.ta \w'/usr/sys/core 'u
+/unix	system namelist
+.br
+/dev/swap	swap device
+.br
+/usr/sys/core	core file
+.SH "SEE ALSO"
+crash(8), adb(1), ps(1), rstat(1)
+.SH DIAGNOSTICS
+Missing arg
+Unable to Open \fIfile\fR
+Format Error in \fIsymbolfile\fR
+.SH BUGS
+Care should be used in running
+.I crash
+on "/dev/mem".
+Things can change while
+.I crash
+is running; the picture it gives is only a close
+approximation to reality.
+.SH AUTHOR
+Mike Muuss, JHU EE
+.br
+John Stewart, Teledyne Geotech

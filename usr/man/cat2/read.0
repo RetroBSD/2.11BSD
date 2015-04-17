@@ -1,0 +1,132 @@
+
+
+
+READ(2)             UNIX Programmer's Manual		  READ(2)
+
+
+
+NAME
+     read, readv - read input
+
+SYNOPSIS
+     cc = read(d, buf, nbytes)
+     int cc, d;
+     char *buf;
+     unsigned short nbytes;
+
+     #include <sys/types.h>
+     #include <sys/uio.h>
+
+     cc = readv(d, iov, iovcnt)
+     int cc, d;
+     struct iovec *iov;
+     int iovcnt;
+
+DESCRIPTION
+     _R_e_a_d attempts to read _n_b_y_t_e_s of data from the object refer-
+     enced by the descriptor _d into the buffer pointed to by _b_u_f.
+     _R_e_a_d_v performs the same action, but scatters the input data
+     into the _i_o_v_c_n_t buffers specified by the members of the _i_o_v
+     array: iov[0], iov[1], ..., iov[iovcnt-1].
+
+     For _r_e_a_d_v, the _i_o_v_e_c structure is defined as
+
+	  struct iovec {
+	       caddr_t	 iov_base;
+	       u_short	 iov_len;
+	  };
+
+     Each _i_o_v_e_c entry specifies the base address and length of an
+     area in memory where data should be placed. _R_e_a_d_v will
+     always fill an area completely before proceeding to the
+     next.
+
+     On objects capable of seeking, the _r_e_a_d starts at a position
+     given by the pointer associated with _d (see _l_s_e_e_k(2)).  Upon
+     return from _r_e_a_d, the pointer is incremented by the number
+     of bytes actually read.
+
+     Objects that are not capable of seeking always read from the
+     current position.	The value of the pointer associated with
+     such an object is undefined.
+
+     Upon successful completion, _r_e_a_d and _r_e_a_d_v return the number
+     of bytes actually read and placed in the buffer.  The system
+     guarantees to read the number of bytes requested if the
+     descriptor references a normal file that has that many bytes
+     left before the end-of-file, but in no other case.
+
+
+
+
+
+Printed 11/26/99	 August 1, 1987                         1
+
+
+
+
+
+
+READ(2)             UNIX Programmer's Manual		  READ(2)
+
+
+
+     If the returned value is 0, then end-of-file has been
+     reached.
+
+RETURN VALUE
+     If successful, the number of bytes actually read is
+     returned.	Otherwise, a -1 is returned and the global vari-
+     able _e_r_r_n_o is set to indicate the error.
+
+ERRORS
+     _R_e_a_d and _r_e_a_d_v will fail if one or more of the following are
+     true:
+
+     [EBADF]	    _D is not a valid file or socket descriptor
+		    open for reading.
+
+     [EFAULT]	    _B_u_f points outside the allocated address
+		    space.
+
+     [EIO]	    An I/O error occurred while reading from the
+		    file system.
+
+     [EINTR]	    A read from a slow device was interrupted
+		    before any data arrived by the delivery of a
+		    signal.
+
+     [EINVAL]	    The pointer associated with _d was negative.
+
+     [EWOULDBLOCK]  The file was marked for non-blocking I/O, and
+		    no data were ready to be read.
+
+     In addition, _r_e_a_d_v may return one of the following errors:
+
+     [EINVAL]	    _I_o_v_c_n_t was less than or equal to 0, or
+		    greater than 16.
+
+     [EINVAL]	    The sum of the _i_o_v__l_e_n values in the _i_o_v
+		    array overflowed a short.
+
+     [EFAULT]	    Part of the _i_o_v points outside the process's
+		    allocated address space.
+
+SEE ALSO
+     dup(2), fcntl(2), open(2), pipe(2), select(2), socket(2),
+     socketpair(2)
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 1, 1987                         2
+
+
+

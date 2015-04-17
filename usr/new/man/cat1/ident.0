@@ -1,0 +1,132 @@
+
+
+
+IDENT(1)	    UNIX Programmer's Manual		 IDENT(1)
+
+
+
+NAME
+     ident - identify files
+
+SYNOPSIS
+     ident file ...
+
+DESCRIPTION
+     _I_d_e_n_t searches the named files for all occurrences of the
+     pattern $_k_e_y_w_o_r_d:...$, where _k_e_y_w_o_r_d is one of
+
+	     Author
+	     Date
+	     Header
+	     Locker
+	     Log
+	     Revision
+	     Source
+	     State
+
+     These patterns are normally inserted automatically by the
+     RCS command _c_o (_1), but can also be inserted manually.
+
+     _I_d_e_n_t works on text files as well as object files.  For
+     example, if the C program in file f.c contains
+
+	     char rcsid[] = "$Header:  Header information $";
+
+     and f.c is compiled into f.o, then the command
+
+	     ident  f.c  f.o
+
+     will print
+
+	     f.c:
+		     $Header:  Header information $
+	     f.o:
+		     $Header:  Header information $
+
+
+IDENTIFICATION
+     Author: Walter F. Tichy, Purdue University, West Lafayette,
+     IN, 47907.
+     Revision Number: 3.0 ; Release Date: 82/12/04 .
+     Copyright (C) 1982 by Walter F. Tichy.
+
+SEE ALSO
+     ci (1), co (1), rcs (1), rcsdiff(1), rcsintro (1), rcsmerge
+     (1), rlog (1), rcsfile (5).
+     Walter F. Tichy, "Design, Implementation, and Evaluation of
+     a Revision Control System," in _P_r_o_c_e_e_d_i_n_g_s _o_f _t_h_e _6_t_h _I_n_t_e_r_-
+     _n_a_t_i_o_n_a_l _C_o_n_f_e_r_e_n_c_e _o_n _S_o_f_t_w_a_r_e _E_n_g_i_n_e_e_r_i_n_g, IEEE, Tokyo,
+     Sept. 1982.
+
+
+
+Printed 11/24/99	     6/29/83				1
+
+
+
+
+
+
+IDENT(1)	    UNIX Programmer's Manual		 IDENT(1)
+
+
+
+BUGS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	     6/29/83				2
+
+
+
+
+
+

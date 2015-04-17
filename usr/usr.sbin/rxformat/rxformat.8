@@ -1,0 +1,52 @@
+.\" Copyright (c) 1983 Regents of the University of California.
+.\" All rights reserved.  The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.\"
+.\"	@(#)rxformat.8	6.4.1 (2.11BSD) 1996/11/17
+.\"
+.TH RXFORMAT 8 "November 17, 1996"
+.UC 2
+.SH NAME
+rxformat \- format floppy disks (2.11BSD)
+.SH SYNOPSIS
+.B rxformat
+special
+.SH DESCRIPTION
+The
+.I rxformat
+program formats a diskette in the specified drive
+associated with the special device
+.IR special .
+.I Special
+is normally /dev/rrx0?, for drive 0, or /dev/rrx1?,
+for drive 1,
+where ``?'' is either "a" or "b" to indicate single or double density
+access.  The ``raw'' device must be used.
+Single density is compatible 
+with the IBM 3740 standard (128 bytes/sector). 
+In double density, each sector
+contains 256 bytes of data.
+.PP
+Before formatting a diskette
+.I rxformat
+prompts for verification if standard input is a tty
+(this allows a user to cleanly
+abort the operation; note that
+formatting a diskette will destroy any existing data).
+Formatting is done by the hardware.
+All sectors are zero-filled.
+.SH DIAGNOSTICS
+`No such device' means that the drive is not ready, 
+usually because no disk is in the drive or the drive door is open.
+Other error messages are selfexplanatory.
+.SH FILES
+/dev/rrx??
+.SH SEE ALSO
+rx(4)
+.SH AUTHOR
+Helge Skrivervik
+.SH BUGS
+A floppy may not be formatted if the
+header info on sector 1, track 0 has been damaged.  Hence, it is not
+possible to format a completely degaussed disk. 
+(This is actually a problem in the hardware.)

@@ -1,0 +1,57 @@
+#	How to get to assorted systems.
+#
+#	The DCS machines are all on the Ethernet and running 4.2
+#
+uiucdcs:x:::/usr/ucb/rsh uiucdcs nfrcv %s %s
+uiucdcs:r:::/usr/ucb/rsh uiucdcs nfxmit %s -d%s
+uiuccsb:x:::/usr/ucb/rsh csb nfrcv %s %s
+uiuccsb:r:::/usr/ucb/rsh csb nfxmit %s -d%s
+#
+# see utility/nfincoming.c for a program that can be used as a login shell
+# for a remote site that watches for meta characters and restricts access
+# to just "nfrcv". This lets you use RSH to send notes across a tcp link
+# to a neighboring site that you would rather not have in your /etc/hosts.equiv
+#
+suspect:x:::/usr/ucb/rsh suspect -l signon nfrcv %s %s
+# 
+# suspect has the following in /tc/passwd:
+# signon:pw:uid:gid:Networked Notesfiles:/usr/spool/notes/.utilities:/usr/spool/notes/.utilities/nfincoming
+# and notes/.utilities/.rhosts has an appropriate entry in for the sending
+# system.
+#
+#	send articles to Usenet via the "newsoutput" command
+#	Notice that no %s fields are needed or wanted
+#	There are several examples here.
+#	Usenet		assumes you run news locally
+#	Usenet2		assumes a UUCP neighbor runs news
+#	Usenet3		assumes an "rsh" host runs news
+#
+Usenet:x:::/usr/bin/rnews
+Usenet2:x:::uux - -z neighbor!/usr/bin/rnews
+Usenet3:x:::/usr/ucb/rsh centralhost /usr/bin/rnews
+#
+#	Ideas on how to get to sites connected in other ways.
+#	berkhost: a host connected over a berknet. (untested)
+#	xuucp: a host connected via UUCP with the notesfile programs
+#		in strange places.
+#
+berkhost:x:::net -m berkhost - nfrcv %s %s
+berkhost:r:::net -m berkhost nfxmit %s -d%s
+xuucp:x:::uux -n - xuucp\!/some/path/nfrcv %s %s
+xuucp:r:::uux -n xuucp\!/some/path/nfxmit %s -d%s
+#
+#	For dumping a notesfile into a file
+#
+tarall:x:::(cat - > /tmp/notes/%s ; echo %s done)
+rbenet:x:::(cat - > %s ; echo %s done)
+#
+# using the 4th field: the "nflist" field.
+# here, we use it to set up different priorities for different notesfiles.
+# "to.uicsl" is deemed important and goes at higher priority
+# big volume groups go at low priority.
+# the third entry defines the default for things to uicsl.
+#   this third entry could be omitted; in that case, the default uux
+#   setup would be used.
+uicsl:x::to.uicsl:uux - -n -gZ -r uicsl!nfrcv %s %s
+uicsl:x::sources,religion,politic:uux - -n -gz -r uicsl!nfrcv %s %s
+uicsl:x:::uux - -n -gn -r uicsl!nfrcv %s %s

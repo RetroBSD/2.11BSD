@@ -1,0 +1,53 @@
+.mcall	(at)	always
+.globl	$write
+
+.globl	ndebug,sdebug, ..z,..zbuf
+.globl	savreg,dnc
+.globl	xx.flg
+always
+
+xitsec
+sdebug:
+	call	savreg
+	mov	r0,-(sp)
+
+	mov	#..s,r2
+	mov	..z,r3
+	mov	#2,r0
+1$:	movb	(r3)+,(r2)+
+	beq	2$
+	inc	r0
+	br	1$
+2$:
+	movb	#12,(r2)
+	mov	r0,..n
+ddd:
+	tst	xx.flg
+	beq	100$
+	mov	..n,-(sp)	;write(2, ..s, ..n)
+	mov	#..s,-(sp)
+	mov	#2,-(sp)
+	tst	-(sp)		;simulate return address stack spacing
+	$write
+	add	#8.,sp		;toss syscall cruft
+100$:
+	mov	(sp)+,r0
+	return
+ndebug:
+	call	savreg
+	mov	r0,-(sp)
+	mov	#..s,r2
+	mov	..z,r1
+	call	dnc
+	movb	#12,(r2)+
+	mov	r2,..n
+	sub	#..s,..n
+	br	ddd
+
+	entsec	mixed
+..n:	.blkw
+..z:	.word
+..s:	.blkw	100
+..zbuf:	.blkw	100
+
+	.end

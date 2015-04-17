@@ -1,0 +1,142 @@
+Relay-Version: version B 2.10.3 4.3bsd-beta 6/6/85; site seismo.UUCP
+Posting-Version: version B 2.10.3 4.3bsd-beta 6/6/85; site seismo.UUCP
+Path: seismo!keith
+From: keith@seismo.UUCP (Keith Bostic)
+Newsgroups: net.sources,net.bugs.2bsd
+Subject: 2.9BSD
+Message-ID: <2793@seismo.UUCP>
+Date: 17 Jul 85 07:46:29 GMT
+Date-Received: 17 Jul 85 07:46:29 GMT
+Distribution: net
+Organization: Center for Seismic Studies, Arlington, VA
+Lines: 129
+Keywords: 2.9BSD networking release
+Xref: seismo net.sources:3180 net.bugs.2bsd:226
+
+A new copy of the 2.9BSD release of UNIX for the PDP family will be
+available starting around the 29th of July.  This release was developed
+from the original 2.9 release by Berkeley.
+
+Several people have been working on this release over the past nine months,
+in three major areas: to make the system run reliably, to make the networking
+code work and to bring the system closer to 4.2 standards.  While we are
+going to continue to further develop the system, we think that we are at a
+point where other people can benefit from the work done up to now.  The 2.9
+that we're offering has working networking code, many of the 4.2 system calls,
+and is much more stable than the original release.
+
+The release is available from two sites, Harvard University and The
+Center for Seismic Studies.  As noted above, we hope to start cutting
+tapes around the 29th of July.  The release will be in "tar" format,
+1600 bpi and will consist of a replacement /usr/src.
+
+To get your copy please send a 2400 ft. mag tape, a copy of your 2.9 BSD
+Berkeley license, and a self-addressed, stamped package.  Nobody is making
+any money from this, so *please* make it as easy for us as possible --
+don't forget the return postage and the self-addressed package.
+
+You can send your tape to either of the following addresses:
+
+Keith Bostic                            Scott Bradner
+Center for Seismic Studies              Harvard University
+Suite 1450                              William James Hall
+1300 N. 17th St.                        Rm 1232
+Arlington VA  22209                     33 Kirkland St.
+                                        Cambridge MA 02138
+
+Note: Because of certain legal requirements, if you request a tape
+from Harvard, please enclose $100.00 to cover costs, checks payable
+to Harvard University.
+
+================
+
+For everyone's information, the 5 most asked questions from this
+week's mail.
+
+Q:      Is this the last release you'll make?
+A:      This release is definitely temporary.  We are continuing to work
+        on the system, and hope to have another release available sometime
+        this fall.  Most of the basic groundwork has been done; what we're
+        trying to do now is to clean up the kernel and make sure that all of
+        the stuff floating around actually works.  We also hope to move
+        closer to the 4BSD release.
+
+Q:      What's the difference between your stuff and 2.9BSD from Berkeley?
+A:      This release is much more stable, has a great many bug fixes,
+        is much faster and has networking.
+
+Q:      Where else can I get UNIX for the PDP's?  And whose is best?
+A:      Basically, there are 2 other places you can get it, not counting
+        the standard Berkeley 2.9 release.  The first is DEC -- they're
+        releasing Ultrix for the 11's fairly soon.  The last I heard
+        they were looking for sites for beta-testing.
+        Advantages:
+                Supported by DEC.
+                Wider selection of peripherals.
+                True 4.2 networking.
+        Disadvantages:
+                It costs bucks.
+                No source code is available.
+                Based on V7 kernel.
+                Some of the 2.9 features such as vfork are missing.
+
+        NOTE: I do not know the DEC system well, and I don't want to get
+        into a flame war about how good it is.  Please call your local
+        DEC rep and make your own decision.
+
+        The second is from Greg Travis.  I'm sure that most of you saw
+        Greg's posting to net.bugs.2bsd a few days ago; you might
+        want to refer back to that notice for more information on
+        exactly what his system consists of.  For more information, you
+        can contact Greg at:
+
+                Greg Travis
+                1022 E. 3rd St.
+                Institute for Social Research
+                Bloomington IN 47405
+                ...!ihnp4!inuxc!isrnix!greg
+
+        Greg has contributed heavily to our release and I would estimate
+        that about 70% of the items he mentioned in his posting have been
+        included in our system; the major differences in the two systems
+        are that our release is more similar to the 4BSD release and has
+        networking.  Other than that I don't anticipate major differences
+        in the capabilities of the two systems.
+
+Q:      Where can I get networking for my PDP?  And will it talk to my VAX?
+A:      There are only two networking PDP UNIXes around, to my knowledge.
+        The first is the DEC one, mentioned above and ours.  The DEC one
+        (as far as I know) is a true 4.2 networking, while ours is around
+        a 4.1b/c networking interface.  We do hope to have a 4.2 interface
+        in sometime, but not quite yet.  Either networking will talk to
+        your VAX, obviously the DEC one will do it a little more easily.
+        To port a 4.2 networking program to our system requires a
+        few hours work.
+
+Q:      Are you guys going to support this puppy?
+A:      No.  Well, not much.  Well, just a little, okay?  We will not
+        officially support it, e.g. we all have other work and our bosses
+        somewhat unreasonably expect us to do it.  We *are* interested
+        in making it work, we are continuing to develop the system
+        and we will definitely try to help you out.  If nothing else,
+        we'll put you in contact with someone who has solved the problem
+        you're working on.
+
+Finally, a little recognition -- a few people have contributed a lot of
+time and effort to getting this stuff working.  Credit goes to:
+
+Scooter Morris   -- University of California
+Terry Slattery   -- U.S. Naval Academy
+Michael Petry    -- University of Maryland
+Louis Mamakos    -- University of Maryland
+Stephen Uitti    -- Purdue
+Daniel Lanciani  -- Harvard
+Greg Travis      -- Institute for Social Research
+
+Well, that's about it, folks.  If you have any questions
+about 2.9 feel free to contact me.
+
+Keith Bostic
+        ARPA: keith@seismo
+        UUCP: seismo!keith
+        (703) 276-7900

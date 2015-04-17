@@ -1,0 +1,66 @@
+
+
+
+SYSERRLST(3)	    UNIX Programmer's Manual	     SYSERRLST(3)
+
+
+
+NAME
+     syserrlst, __errlst - read system error messages from file
+
+SYNOPSIS
+     char *
+     syserrlst(err)
+     int err;
+
+     char *
+     __errlst(err, path);
+     int err;
+     char *path;
+
+DESCRIPTION
+     Syserrlst(3) reads the error message string corresponding to
+     _e_r_r from the file /_e_t_c/_s_y_s_e_r_r_l_s_t.
+
+     __errlst(3) reads the error message string corresponding to
+     _e_r_r from the file _p_a_t_h.  The file _p_a_t_h must be in the format
+     described in syserrlst(5).
+
+     NULL is returned if _e_r_r is out of bounds (negative or
+     greater than the highest message number in /_e_t_c/_s_y_s_e_r_r_l_s_t or
+     _p_a_t_h) or if the error message file can not be opened.  It is
+     the responsibility of the caller (strerror(3)) to check for
+     and properly handle the _N_U_L_L return.
+
+RETURN VALUE
+     NULL if an error was encountered in opening the error mes-
+     sage file, if the error was out of bounds, or if the file
+     did not start with the correct magic number.  Otherwise a
+     char * is returned pointing to a static buffer containing
+     the text of the error message.
+
+ERRORS
+     syserrlst(3) and __errlst(3) can return any of the errors
+     for the open(2), lseek(2), or read(2) system calls.
+
+SEE ALSO
+     perror(3), strerror(3), syserrlst(5)
+
+HISTORY
+     syserrlst(3), and __errlst(3) were created for 2.11BSD with
+     the aim of saving 2kb of Data space in programs which called
+     perror(3), or strerror(3).
+
+BUGS
+     The information is stored in a static buffer.
+
+
+
+
+
+
+
+Printed 11/26/99	 March 26, 1996                         1
+
+
+

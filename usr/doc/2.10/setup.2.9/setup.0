@@ -1,0 +1,61 @@
+.bd S B 3
+.if \nv .rm CM
+.TL
+Installing and Operating 2.9BSD
+.br
+\*(DY
+.AU
+Michael J. Karels
+Carl F. Smith
+.AI
+University of California
+Berkeley, California 94720
+.de IR
+\fI\\$1\|\fP\\$2
+..
+.de UX
+UNIX\\$1
+..
+.AB
+.PP
+.FS
+\u\(dg\d\s-2DEC\s0, \s-2MASSBUS\s0, \s-2PDP\s0, and \s-2UNIBUS\s0
+are trademarks of Digital Equipment Corporation.
+.FE
+.FS
+\u\(dd\d\s-2UNIX\s0 is a trademark of Bell Laboratories.
+.FE
+This document contains instructions for installation and operation of the
+Second Berkeley Software Distribution's
+2.9BSD release of the PDP-11\(dg
+.UX \(dd
+system.
+It is adapted from the paper
+.I
+Installing and Operating 4.1bsd
+.R
+by Bill Joy.
+.PP
+This document explains the procedures for installation of
+Berkeley UNIX on a PDP-11
+or to upgrade an existing Berkeley PDP-11 UNIX system to the new release.
+It then explains how to configure the kernel for the available devices
+and user load, lay out file systems on the available disks,
+set up terminal lines and user accounts, and do system specific tailoring.
+It also explains system operations procedures: shutdown and startup,
+hardware error reporting and diagnosis, file system backup procedures,
+resource control, performance monitoring, and procedures for recompiling
+and reinstalling system software.
+Technical details on the kernel changes are presented in the accompanying paper,
+``Changes in the Kernel in 2.9BSD.''
+.PP
+The 2.9BSD release, unlike previous versions of the Second Berkeley
+Software Distribution, is a complete Version 7 UNIX system with
+all of the standard UNIX tools and utilities, with or without Berkeley
+modifications.
+Therefore, it does not need to be layered onto an existing Version 7 system;
+because of the many changes and additions throughout the system,
+it would require a substantial effort to merge into most earlier systems.
+.AE
+.ds LH "Installing/Operating 2.9BSD
+.ds CF \*(DY

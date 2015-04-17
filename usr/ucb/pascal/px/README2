@@ -1,0 +1,16 @@
+Sun Mar 19 02:19:44 PST 1978
+
+This directory contains the interpreter for Pascal.
+Use the script "install" to install it.
+If you have
+	1. An 11/34
+	2. An 11/40
+	3. An 11/45 or 11/70 without floating point and with no
+	   "fetch from I space system call (nominally no. 61.)
+then you will want to use the NOID binaries:
+	mv a.outNOID a.out
+before you install if you have floating point and an 11/34 or 11/40,
+	mv a.outNOIDNOFP a.out
+before you install otherwise.
+
+					Bill Joy

@@ -1,0 +1,66 @@
+
+
+
+GROUP(5)	    UNIX Programmer's Manual		 GROUP(5)
+
+
+
+NAME
+     group - group file
+
+DESCRIPTION
+     _G_r_o_u_p contains for each group the following information:
+
+     group name
+     encrypted password
+     numerical group ID
+     a comma separated list of all users allowed in the group
+
+     This is an ASCII file.  The fields are separated by colons;
+     Each group is separated from the next by a new-line.  If the
+     password field is null, no password is demanded.
+
+     This file resides in directory /etc.  Because of the
+     encrypted passwords, it can and does have general read per-
+     mission and can be used, for example, to map numerical group
+     ID's to names.
+
+FILES
+     /etc/group
+
+SEE ALSO
+     setgroups(2), initgroups(3X), crypt(3), passwd(1), passwd(5)
+
+BUGS
+     The _p_a_s_s_w_d(1) command won't change the passwords.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

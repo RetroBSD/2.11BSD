@@ -1,0 +1,143 @@
+.\" Copyright (c) 1983, 1990, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" This code is derived from software contributed to Berkeley by
+.\" Robert Elz at The University of Melbourne.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)quotacheck.8	8.1.1 (2.11BSD) 1996/1/24
+.\"
+.TH QUOTACHECK 8 "January 24, 1996"
+.UC 5
+.SH NAME
+\fBquotacheck\fP \- filesystem quota consistency checker
+.SH SYNOPSIS
+.B quotacheck
+[ \fB\-v\fP ]
+.I filesystem ...
+.br
+.B quotacheck
+[ \fB\-v\fP ]
+\fB\-a\fP
+.SH DESCRIPTION
+.B Quotacheck
+examines each filesystem,
+builds a table of current disk usage,
+and compares this table against that recorded
+in the disk quota file for the filesystem.
+If any inconsistencies are detected, both the
+quota file and the current system copy of the
+incorrect quotas are updated (the latter only
+occurs if an active filesystem is checked).
+.PP
+Available options:
+.sp
+.TP 15
+\fB\-a\fP
+If the
+\fB\-a\fP
+flag is supplied in place of any filesystem names,
+\fBquotacheck\fP
+will check all the filesystems indicated in
+\fI/etc/fstab\fP
+to be read-write with disk quotas.
+.TP 15
+\fB\-v\fP
+\fBquotacheck\fP
+reports discrepancies between the
+calculated and recorded disk quotas.
+.PP
+Parallel passes are run on the filesystems required,
+using the pass numbers in
+.I /etc/fstab
+in an identical fashion to
+fsck(8).
+.PP
+Normally
+.B quotacheck
+operates silently.
+.PP
+.B Quotacheck
+expects each filesystem to be checked to have a
+quota files named
+.I quotas
+located at the root of the associated file system.
+These defaults may be overridden in
+.IR /etc/fstab .
+If a file is not present, 
+.B quotacheck
+will create it.
+.PP
+.B Quotacheck
+is normally run at boot time from the
+.I /etc/rc.local
+file, see
+rc(8),
+before enabling disk quotas with
+quotaon(8).
+.PP
+.B Quotacheck
+accesses the raw device in calculating the actual
+disk usage for each user.
+Thus, the filesystems
+checked should be quiescent while
+.B quotacheck
+is running.
+.SH FILES
+.TP 15
+.I quotas
+at the filesystem root
+.TP 15
+.I /etc/fstab
+default filesystems
+.SH BUGS
+The \fIquotas\fP file may be named arbitrarily but \fBmust\fP reside in
+the filesystem for which it contains quota information.
+.B Quotacheck
+will give the error:
+.sp
+.in +0.5i
+.I %s dev (0x%x) mismatch %s (0x%x)
+.sp
+.in -0.5i
+if the \fIquotas\fP file is not in the filesystem being checked.  This
+restriction is enforced by the kernel but may be lifted in the future.
+.SH SEE ALSO
+quota(1),
+quotactl(2),
+fstab(5),
+edquota(8),
+fsck(8),
+quotaon(8),
+repquota(8)
+.SH HISTORY
+The
+.B quotacheck
+command appeared in 4.2BSD.

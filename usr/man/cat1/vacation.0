@@ -1,0 +1,66 @@
+
+
+
+VACATION(1)	    UNIX Programmer's Manual	      VACATION(1)
+
+
+
+NAME
+     vacation - return ``I am on vacation'' indication
+
+SYNOPSIS
+     vacation -I
+     vacation user
+
+DESCRIPTION
+     _V_a_c_a_t_i_o_n returns a message to the sender of a message tel-
+     ling that you are on vacation.  The intended use is in a
+     ._f_o_r_w_a_r_d file.  For example, your ._f_o_r_w_a_r_d file might have:
+
+	  \eric, "|vacation eric"
+
+     which would send messages to you (assuming your login name
+     was eric) and send a message back to the sender.
+
+     _V_a_c_a_t_i_o_n expects a file ._v_a_c_a_t_i_o_n._m_s_g in your home directory
+     containing a message to be sent back to each sender.  It
+     should be an entire message (including headers).  For exam-
+     ple, it might say:
+
+	  From: eric@ucbmonet.Berkeley.EDU (Eric Allman)
+	  Subject: I am on vacation
+	  Delivered-By-The-Graces-Of: the Vacation program
+
+	  I am on vacation until July 22.  If you have something urgent,
+	  please contact Joe Kalash <kalash@ucbingres.Berkeley.EDU>.
+	       --eric
+
+     This message will only be sent once a week to each unique
+     sender.  The people who have sent you messages are kept in
+     the files ._v_a_c_a_t_i_o_n._p_a_g and ._v_a_c_a_t_i_o_n._d_i_r in your home
+     directory.  The -I option initializes these files, and
+     should be executed before you modify your ._f_o_r_w_a_r_d file.
+
+     If the -I flag is not specified, _v_a_c_a_t_i_o_n reads the first
+     line from the standard input for a UNIX-style ``From'' line
+     to determine the sender.  If this is not present, a nasty
+     diagnostic is produced.  _S_e_n_d_m_a_i_l(8) includes the ``From''
+     line automatically.
+
+     No message is sent if the initial ``From'' line includes the
+     string ``-REQUEST@'' or if a ``Precedence: bulk'' or ``Pre-
+     cedence: junk'' line is included in the header.
+
+SEE ALSO
+     sendmail(8)
+
+
+
+
+
+
+
+Printed 11/26/99	  June 16, 1985                         1
+
+
+

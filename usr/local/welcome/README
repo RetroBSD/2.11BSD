@@ -1,0 +1,31 @@
+Disclaimer: I originally found this program for VAX/VMS systems in
+the March 1988 issue of Hardcopy magazine (page 83).  I do not credit
+the idea to me, but since the actual program was in VMS command form,
+I deided it would be nice to put it on an Ultrix compatible system.
+This program is intended to be shareware.
+
+Welcome prints out a nice welcome message for the user.
+
+Version 1: Initial program translated, debugged.  At this time there is only
+a set message in the middle box.  Future copies should work so that it will
+nlist the kernel and find the type of VAX and version of Ultrix.
+
+Version 2: Added load average box and LOAD define in cpu.h
+
+Version 3: Added CPU type and CPU define, along with Ultrix version and
+hostname.
+
+** This program translated from VMS command language by Jim King at lsrhs
+** (And added a few extra features...)
+
+NOTES --
+
+Define LOAD if you want the little load average box
+
+Define CPU If you want to know the type of CPU you are using.
+
+Define LIGHT if you want the messages in the box highlighted.
+
+Define UVERS If you want to know the version of Ultrix.
+	NOTE: This program assumes that /etc/motd is a known file
+	      produced by /etc/rc.

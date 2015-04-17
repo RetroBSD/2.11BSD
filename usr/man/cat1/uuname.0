@@ -1,0 +1,66 @@
+
+
+
+UUNAME(1C)	    UNIX Programmer's Manual	       UUNAME(1C)
+
+
+
+NAME
+     uuname - list names of UUCP hosts
+
+SYNOPSIS
+     uuname [ -l ]
+
+DESCRIPTION
+     _U_u_n_a_m_e lists the UUCP names of known systems.  The -l option
+     returns the local system name; this may differ from the
+     _h_o_s_t_n_a_m_e(1) for the system if the _h_o_s_t_n_a_m_e is very long.
+
+SEE ALSO
+     uucp(1C), uux(1C).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 24, 1986                         1
+
+
+

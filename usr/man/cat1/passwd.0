@@ -1,0 +1,66 @@
+
+
+
+PASSWD(1)	    UNIX Programmer's Manual		PASSWD(1)
+
+
+
+NAME
+     passwd - change password file information
+
+SYNOPSIS
+     passwd [ user ]
+
+DESCRIPTION
+     _P_a_s_s_w_d changes the user's password.  First, the user is
+     prompted for their old password, and then, if that is
+     correct, for the new password.  The new password must be
+     entered twice to forestall any typing errors.  The super-
+     user is not prompted for the old password.
+
+     Once the password has been verified, _p_a_s_s_w_d uses _m_k_p_a_s_s_w_d(8)
+     to update the user database.  This is run in the background,
+     and, at very large sites could take several minutes.  Until
+     this update is completed, the password file is unavailable
+     for other updates and the new password will not be available
+     to programs.
+
+FILES
+     /etc/master.passwd       the user database
+
+SEE ALSO
+     chpass(1), login(1), passwd(5), mkpasswd(8), vipw(8)
+     Robert Morris and Ken Thompson, _U_N_I_X _p_a_s_s_w_o_r_d _s_e_c_u_r_i_t_y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	February 22, 1989			1
+
+
+

@@ -1,0 +1,886 @@
+	.title	mac		;macro handlers
+
+	.ident	/03apr4/
+
+	.mcall	(at)always,ch.mne,ct.mne
+	.mcall (at)putkb
+	.mcall	(at)sdebug ,ndebug
+	always
+	ch.mne
+	ct.mne
+
+	.if ndf	xmacro
+
+	.mcall	(at)append,gencnd,error,scan,search
+	.mcall	(at)setnz,xmit,zap
+
+	.globl	mx.flg			; defined in lout.m11
+
+	.globl	smllvl,	msbmrp,	getmch,	mactst
+
+	.globl	absexp,	aexp,	argcnt,	asgmtf,	chrpnt,	cndmex
+	.globl	codrol,	cradix
+	.globl	dflmac,	dflsmc,	dmarol,	endflg
+	.globl	ed.lc,	edmask
+	.globl	endlin,	finsml,	getchr,	getlin,	getnb
+	.globl	mdepth
+	.globl	getr50,	getsym,	gsarg,	gsargf,	inisml
+	.globl	insert,	lblend,	lcendl,	lcflag,	lcmask
+	.globl	lc.mc,	lc.me,	linbuf,	lsgbas
+	.globl	mactop,	macrol,	mode,	pass, symbot,macovf,uplift,upbomb
+	.globl	r50unp,	rolupd,	savreg
+	.globl	setchr,	setcli,	setnb,	setpf0,	setpf1
+	.globl	setsym,	smlnam, smlfil,	tstarg,	value
+	.globl	symbol,	lc.md,	xmit0
+	.globl	ucflag
+
+
+	.globl	crfdef,	crfref
+	xitsec			;start in default sector
+
+getmch:				;get a macro character
+	tst	getmcs		;working on argument?
+	bne	18$		;  yes
+	call	getmc2		;move a character
+	bgt	4$		;all set if .gt. zero
+	beq	2$		;end if zero
+	cmp	r5,#mt.max	;end of type?
+	bhi	10$		;  no
+	mov	#vt,r5		;yes, fudge return
+	call	savreg
+	jmp	endmac		;close out expansion
+
+2$:	mov	r1,msbmrp	;eol, store new pointer
+	bis	#lc.me,lcflag	;flag as macro expansion
+	mov	#lf,r5		;mark end
+4$:	return
+
+10$:	mov	r1,getmcs	;remember read pointer
+	mov	msbarg,r1
+	tst	(r1)+
+	mov	r5,r3		;count
+	neg	r3		;assume macro
+	cmp	msbtyp,#mt.mac	;true?
+	beq	12$		;  yes, use it
+	mov	msbcnt,r3	;get arg number
+12$:	dec	r3		;move to proper arg
+	ble	18$		;found
+14$:	call	getmc2		;get next char
+	bgt	14$		;loop if pnz
+	beq	12$		;new arg if zero
+16$:	mov	getmcs,r1	;reset read pointer
+	clr	getmcs		;clear (used as flag)
+	br	getmch		;null arg
+
+18$:	call	getmc2		;get next character
+	ble	16$		;finished if .le. zero
+	return
+
+getmc2:	bit	#bpmb-1,r1	;macro, end of block?
+	bne	22$		;  no
+	mov	-bpmb(r1),r1	;yes, point to next block
+	tst	(r1)+		;move past link
+22$:	movb	(r1)+,r5	;set in r5
+	return
+
+	entsec	impure
+getmcs:	.blkw			;macro pntr save while
+				;processing args
+	xitsec
+
+	.endc
+	.if ndf	xmacro
+
+mt.rpt=	177601
+mt.irp=	177602
+mt.mac=	177603
+mt.max=	mt.mac
+
+	.globl	rept,	endr,	endm
+
+rept:				;repeat handler
+	call	absexp		;evaluate count
+	mov	r0,-(sp)	;save count
+	call	setpf1		;mark the listing
+	call	getblk		;get a storage block
+	clr	(r2)+		;start in third word
+	clr	-(sp)		;no arguments
+	mov	r0,-(sp)	;  and start of block
+	tst	mx.flg		; <<<
+	beq	1$		; <<< REEDS june 81
+	bis	#lc.mc,lcflag	; <<<
+1$:				; <<<
+	call	endlin		;polish off line
+	zap	dmarol		;no dummy args for repeat
+	call	promt		;use macro stuff
+
+	mov	#mt.rpt,r5	;fudge an "end of repeat"
+reptf:	call	wcimt
+	call	mpush		;push previous macro block
+	mov	(sp)+,(r2)+	;store text pointer
+	mov	(sp)+,(r2)+	;store arg pointer
+	clr	(r2)+		;counter
+	mov	(sp)+,(r2)+	;max
+	call	setchr		;restore character
+
+endmac:	mov	#msbcnt,r0	;set pointer to count
+	inc	(r0)		;bump it
+	cmp	(r0)+,(r0)+	;through?
+	bgt	1$		;  yes
+	mov	msbtxt,(r0)	;no, set read pointer
+	add	#4,(r0)		;bypass link
+	return
+
+1$:	clr	cndmex		;clear mexit flag
+	jmp	mpop
+
+endm:
+	error	56,o,<.endm out of context>
+	return
+endr:
+	error	57,o,<.endr out of context>
+	return
+	.iftf
+	.globl	opcerr
+opcerr:	error	24,o,<opcode out of context>
+	return
+opcer1:	error	25,o,<missing macro name>
+	return
+	.ift
+	.globl	macro,	macr
+
+macro:
+macr:				;macro definition
+	call	gsarg		;get the name
+	beq	opcer1		;  error if null
+macrof:
+	call	tstarg		;bypass possible comma
+	mov	symbol,macnam
+	mov	symbol+2,macnam+2
+	call	msrch		;search the table
+	 beq	1$		;branch if null
+	call	decmac		;decrement the reference
+1$:
+	call	getblk		;get a storage block
+	mov	r0,-(sp)	;save pointer
+	call	msrch		;getblk might have moved things
+	mov	(sp)+,(r4)	;set pointer
+	call	insert		;insert in table
+	call	crfdef
+	call	proma		;process dummy args
+	clr	(r2)+		;clear level count
+	mov	argcnt,(r2)+	;keep number of args
+	mov	macgsb,(r2)+	;  and generated symbol bits
+	bis	#lc.md,lcflag
+	call	endlin		;polish off line
+	call	promt		;process the text
+	call	getsym
+	beq	mac3
+	cmp	r0,macnam
+	bne	2$
+	cmp	symbol+2,macnam+2
+	beq	mac3
+2$:	error	26,a,<.endm name doesn't match .macro name>
+mac3:	mov	#mt.mac,r5
+	call	wcimt		;set end marker
+	call	setchr
+	return
+mactst:				;test for macro call
+	call	msrch		;search for macro
+	beq	9$		;  exit with zero if not found
+	call	setpf0		;mark location
+	mov	r0,-(sp)	;save text pointer
+	call	incmac		;increment reference
+	cmp	(r0)+,(r0)+	;move up a couple of slots
+	mov	(r0)+,argmax	;set number of args
+	mov	(r0)+,macgsb	;  and generated symbol bits
+	mov	r0,-(sp)	;save pointer
+	call	crfref		;cref it
+	call	promc		;process call arguments
+	mov	r0,r3		;save block pointer
+	mov	#mt.mac,r5
+	call	mpush		;push nesting level
+	mov	(sp)+,msbmrp
+	mov	(sp)+,(r2)+	;set text pointer
+	mov	r3,(r2)+	;  and argument pointer
+	mov	argcnt,(r2)	;fill in argument count
+	mov	(r2)+,(r2)+	;  and replecate
+	call	setchr
+	setnz	r0		;return non-zero
+9$:	return
+
+
+msrch:	search	macrol		;search macro roll
+	mov	value,r0	;doesn't count if no pointer
+	return
+	.globl	irp,	irpc
+
+irpc:	inc	r3
+irp:
+	call	gmarg
+	beq	1$
+	call	proma
+	call	rmarg
+	call	gmarg
+	beq	1$
+	mov	#177777,argmax	;any number of arguments
+	call	promcf
+	mov	r0,r3
+	call	rmarg
+	call	getblk
+	clr	(r2)+
+	mov	argcnt,-(sp)
+	mov	r3,-(sp)
+	mov	r0,-(sp)
+	tst	mx.flg		;
+	beq	111$;		; <<< REEDS june 81
+	bis	#lc.mc,lcflag	;
+111$:	call	endlin
+	call	promt
+	mov	#mt.irp,r5
+	jmp	reptf
+
+1$:	error	27,a,<illegal arguments>
+	return
+
+proma:				;process macro args
+	zap	dmarol		;clear dummy argument roll
+	clr	argcnt		;get a fresh start with arguments
+	clr	macgsb		;clear generated bit pattern
+	mov	#100000,-(sp)	;stack first generated symbol bit
+1$:	call	tstarg		;any more args?
+	beq	3$		;  no, quit and go home
+	cmp	#ch.qm,r5	;yes, generated type?
+	bne	2$		;  no
+	bis	(sp),macgsb	;yes, set proper bit
+	call	getnb		;bypass it
+2$:	call	gsargf		;get symbolic argument
+	append	dmarol		;append to dma roll
+	clc
+	ror	(sp)		;shift generated sym bit
+	br	1$
+
+3$:	tst	(sp)+		;prune stack
+	return
+
+
+promc:	clr	r3
+promcf:
+	clr	argcnt
+	call	getblk
+	mov	r0,-(sp)
+	tst	r3
+	bne	prmc7
+prmc1:	cmp	argmax,argcnt
+	blos	prmc10
+	call	tstarg		;bypass any comma
+	bne	9$		;ok if non-null
+	tst	macgsb		;null, any generated stuff left?
+	beq	prmc10		;  no, through
+9$:	cmp	#ch.bsl,r5	; "\"?
+	beq	prmc20		;  yes
+	call	gmargf		;get argument
+	.if ndf	xedlsb
+	tst	r5		;any arguments?
+	bne	2$		;  yes
+	tst	macgsb		;no, generation requested?
+	bmi	prmc30		;  yes
+	.endc
+2$:	.if ndf	xedlc		;>>>gh 5/15/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	3$		;  no, leave as upper case
+	tst	ucflag
+	bne	3$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+	.endc
+
+3$:	call	wcimt
+	beq	prmc4
+	call	getchr
+	br	2$
+
+prmc4:	call	rmarg
+prmc5:	asl	macgsb		;move generation bit over one
+	br	prmc1
+
+prmc6:	inc	argcnt
+	call	getchr
+prmc7:	.if ndf	xedlc		;>>>gh 5/15/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	8$		;  no, leave as upper case
+	tst	ucflag
+	bne	8$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+	.endc
+8$:	call	wcimt
+	beq	prmc10
+	clr	r5
+	call	wcimt
+	br	prmc6
+
+prmc10:	com	r5
+	call	wcimt
+	com	r5
+	bit	#lc.mc,lcmask	;macro call suppression?
+	beq	12$		;  no
+	mov	lblend,r0	;yes, have we a label?
+	beq	11$		;  no, suppress entire line
+	mov	r0,lcendl	;yes, list only label
+	br	12$
+
+11$:	bis	#lc.mc,lcflag
+12$:	mov	(sp)+,r0
+	return
+prmc20:	call	getnb		; "\", bypass
+	call	absexp		;evaluate expression, abs
+	mov	r5,-(sp)	;stack character
+	mov	r3,-(sp)
+	mov	cradix,r3	;break out in current radix
+	mov	r0,r1		;value to r1
+	call	prmc40		;convert to ascii
+	clr	r5
+	call	wcimt
+	mov	(sp)+,r3	;restore regs
+	mov	(sp)+,r5
+	br	prmc5
+
+	.if ndf	xedlsb
+prmc30:	inc	lsgbas		;generated symbol, bump count
+	mov	lsgbas,r1	;fetch it
+	add	#^d<64-1>,r1	;start at 64.
+	bit	#177600,r1	;gen symbols in range 64-127 only
+	beq	1$
+	error	54,t,<no generated symbols after 127$>
+1$:
+	mov	r5,-(sp)	;stack current char
+	mov	r3,-(sp)	;and r3
+	mov	#10.,r3		;make it decimal
+	call	prmc40		;convert to ascii
+	mov	#ch.dol,r5
+	call	wcimt		;write "$"
+	clr	r5
+	call	wcimt
+	mov	(sp)+,r3	;restore regs
+	mov	(sp)+,r5
+	br	prmc4		;return
+	.endc
+
+prmc40:				;macro number converter
+	clr	r0
+	div	r3,r0
+	mov	r1,-(sp)	;stack remainder
+	mov	r0,r1		;set new number
+	beq	41$		;down to zero?
+	call	prmc40		;  no, recurse
+41$:	mov	(sp)+,r5		;get number
+	add	#dig.0,r5	;convert to ascii
+	jmp	wcimt		;write in tree and exit
+.globl	lst.kb,linbuf,putil2
+promt:
+	clr	r3
+1$:	call	getlin
+	bne	2$
+	inc	macdfn
+	bis	#lc.md,lcflag
+	call	setcli
+	bit	#dflmac,r0
+	beq	63$
+	inc	r3
+	cmp	#endm,value	; what a crock: .endm & .endr are synonyms
+	beq	10$		; in spite of what the manual says
+	cmp	#endr,value
+	bne	3$
+10$:	dec	r3
+	dec	r3
+	bpl	3$
+2$:
+	clr	macdfn
+	return
+63$:
+	.if ndf	xsml
+	tst	smllvl		;in system macro?
+	beq	3$		;  no
+	bit	#dflsmc,r0	;yes, nested?
+	beq	3$		;  no
+	cmp	r5,#'(		;check for prefix, crudely
+	bne	64$
+	call	getnb
+	call	getsym
+	cmp	r5,#')
+	bne	64$
+	call	getnb
+64$:	call	smltst		;yes, test for more
+	.endc
+3$:	mov	#linbuf,chrpnt
+	call	setchr
+4$:	call	getsym
+	beq	7$
+	scan	dmarol
+	mov	r0,r4
+	beq	5$
+	mov	rolupd,r5
+	neg	r5
+	dec	concnt
+	call	wcimt
+	dec	concnt
+5$:	call	setsym
+6$:	tst	r4
+	bne	61$
+	.if ndf	xedlc		;>>>gh 5/16/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	21$		;  no, leave as upper case
+	tst	ucflag
+	bne	21$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+21$:	.endc
+	call	wcimt
+61$:	call	getr50
+	bgt	6$
+7$:	cmp	r5,#ch.xcl
+	beq	8$
+	.if ndf	xedlc		;>>>gh 5/16/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	22$		;  no, leave as upper case
+	tst	ucflag
+	bne	22$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+22$:	.endc
+	call	wcimt
+	bne	9$
+	call	endlin
+	jmp	1$
+
+8$:	inc	concnt
+9$:	call	getchr
+	br	4$
+
+	.globl	narg,	nchr,	ntype,	mexit
+	.globl	mx.2,mx.sym,mx.num ,dnc
+
+narg:				;number of arguments
+	call	gsarg		;get a symbol
+	beq	ntyper		;error if missing
+	mov	msbcnt+2,r3	;set number
+	br	ntypex
+
+nchr:				;number of characters
+	call	gsarg
+	beq	ntyper		;  error id no symbol
+	call	gmarg		;isolate argument
+	beq	ntypex		;  zero if null
+	tst	r5		;quick test for completion
+	beq	2$		;  yes
+1$:	inc	r3		;bump count
+	call	getchr		;get the next character
+	bne	1$		;loop if not end
+2$:	call	rmarg		;remove arg delimiters
+	br	ntypex
+
+ntype:				;test expression mode
+	call	gsarg		;get the symbol
+	beq	ntyper		;  error
+	call	tstarg		;bypass any commas
+	mov	#symbol,r1
+	mov	(r1)+,-(sp)	;preserve symbol
+	mov	(r1)+,-(sp)
+	call	aexp		;evaluate
+	mov	r0,r3		;set result
+	zap	codrol		;clear any generated code
+	mov	(sp)+,-(r1)	;restore symbol
+	mov	(sp)+,-(r1)
+ntypex:	clr	mode		;clear mode
+	mov	r3,value	;  and set value
+	tst	mx.flg		; <<< REEDS june 81
+	beq	100$		; <<<
+	bis	#lc.mc,lcflag	; <<<
+	mov	#1,mx.2		; <<<
+	.irpc	xx,<012345>	; <<<
+	mov	r'xx,-(sp)	; <<<
+	.endm			; <<<
+	mov	#mx.sym,r2	; <<<
+	call	r50unp		; <<<
+	mov	#mx.num,r2	; <<<
+	mov	value,r1	; <<<
+	call	dnc		; <<<
+	movb	#0,(r2)		; <<<
+	.irpc	xx,<543210>	; <<<
+	mov	(sp)+,r'xx	; <<<
+	.endm			; <<<
+100$:				; <<<
+	jmp	asgmtf		;exit through assignment
+
+;
+; there are mxpand problems here.
+;
+;
+;
+ntyper:	error	28,a,<no symbol to assign to>
+	br	ntypex
+
+mexit:				;macro/repeat exit
+	mov	maclvl,cndmex	;in macro?
+	bne	mex1		;  yes, pop
+	error	29,o,<unbalanced .endm>		;  no, error
+mex1:	return
+
+	gencnd	b,	tcb
+	gencnd	nb,	tcb,	f
+	gencnd	idn,	tcid
+	gencnd	dif,	tcid,	f
+
+
+tcb:				; "ifb" conditional
+	beq	tcberx		;ok if null
+	call	gmargf		;isolate argument
+	call	setnb		;bypass any blanks
+	beq	tcidt		;true if pointing at delimiter
+	br	tcidf		;else false
+
+tcberr:	error	30,a,<missing argument in 'if' construction>
+					;naughty
+tcberx:	return
+
+tcid:				; "ifidn" conditional
+	beq	tcberr		;error if null arg
+	call	gmargf		;isolate first arg
+	mov	chrpnt,r1	;save character pointer
+	tst	-(r0)
+	mov	-(r0),r2	;pointer to terminator
+	call	rmarg		;return this arg
+	call	gmarg		;get the next
+	beq	tcberr
+1$:	movb	(r1),r0		;set character from first field
+	cmp	r1,r2		;is it the last?
+	bne	2$		;  no
+	clr	r0		;yes, clear it
+2$:	.if ndf	xedlc		;>>>gh 5/17/78 to properly compare upper and lower case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	3$		;  no, leave as upper case
+	tst	ucflag
+	bne	3$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+	.endc
+3$:	cmp	r0,r5		;match?
+	bne	tcidf		;  no
+	tst	r5		;yes, finished?
+	beq	tcidt		;  yes, good show
+	call	getchr		;no, get the next character
+	inc	r1		;advance first arg pointer
+	br	1$		;try again
+
+tcidf:	com	r3		;false, toggle condition
+tcidt:	jmp	rmarg		;ok, restore argument
+
+gmarg:				;get macro argument
+	call	tstarg		;test for null
+	beq	gmargx		;  yes, just exit
+gmargf:	call	savreg		;stash registers
+	clr	r1		;clear count
+	mov	#chrpnt,r2
+	mov	(r2),-(sp)	;save initial character pointer
+	mov	#ch.lab,r3	;assume "<>"
+	mov	#ch.rab,r4
+	cmp	r5,r3		;true?
+	beq	11$		;  yes
+	cmp	r5,#ch.uar	;up-arrow?
+	beq	10$		;  yes
+1$:	bitb	#ct.pc-ct.com-ct.smc,cttbl(r5)	;printing character?
+	beq	gm21		;  no
+	call	getchr		;yes, move on
+	br	1$
+
+10$:	call	getnb		; "^", bypass it
+	beq	20$		;error if null
+	mov	(r2),(sp)	;set new pointer
+	com	r3		;no "<" equivalent
+	.if ndf	xedlc		;>>>gh 5/17/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	3$		;  no, leave as upper case
+	tst	ucflag
+	bne	3$
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+3$:	.endc
+	mov	r5,r4		;">" equivalent
+11$:	call	getchr
+	beq	20$		;  error if eol
+	.if ndf	xedlc		;>>>gh 5/17/78 to not automatically upper-case
+	bit	#ed.lc,edmask	;lower case enabled?
+	bne	4$		;  no, leave as upper case
+	tst	ucflag
+	bne	4$		;  no, leave as upper case
+	mov	chrpnt,r5	;fake for ovlay pic
+	movb	(r5),r5		;fetch original character
+4$:	.endc
+	cmp	r5,r3		; "<"?
+	beq	12$		;  yes
+	cmp	r5,r4		;no, ">"?
+	bne	11$		;  no, try again
+	dec	r1		;yes, decrement level count
+	dec	r1
+12$:	inc	r1
+	bpl	11$		;loop if not through
+	inc	(sp)		;point past "<"
+	bis	#100000,r5	;must move past in rmarg
+	br	gm21
+
+20$:	error	31,a,<missing argument>
+gm21:	mov	gmapnt,r0	;get current arg save pointer
+	bne	22$		;branch if initialized
+	mov	#gmablk,r0	;do so
+22$:	mov	(r2),(r0)+	;save pointer
+	mov	r5,(r0)+	;  and character
+	clrb	@(r2)		;set null terminator
+	mov	(sp)+,(r2)	;point to start of arg
+	call	setchr		;set register 5
+	mov	r0,gmapnt	;save new buffer pointer
+gmargx:	return
+rmarg:				;remove macro argument
+	mov	gmapnt,r0	;set pointer to saved items
+	mov	-(r0),r5	;set character
+	tst	-(r0)
+	movb	r5,@(r0)	;restore virgin character
+	asl	r5
+	adc	(r0)
+	mov	(r0),chrpnt
+	call	setnb
+	mov	r0,gmapnt
+	return
+
+	entsec	imppas
+gmapnt:	.blkw	1		;pointer to following buffer
+gmablk:	.blkw	1		;pointer to "borrowed" character
+	.blkw	1		;character itself
+	.blkw	3*2		;room for more pairs
+	xitsec
+wcimt:				;write character in macro tree
+	dec	concnt		;any concatenation chars pending?
+	bmi	1$		;  no
+	mov	r5,-(sp)	;yes, stack current character
+	mov	#ch.xcl,r5
+	call	2$
+	mov	(sp)+,r5
+	br	wcimt
+
+1$:	clr	concnt
+2$:	bit	#bpmb-1,r2	;room in this block?
+	bne	3$		;  yes
+	sub	#bpmb,r2	;no, point to link
+	mov	r2,-(sp)
+	call	getblk
+	mov	r0,@(sp)+	;set new link
+3$:	movb	r5,(r2)+	;write, leaving flags set
+	return
+
+getblk:				;get a macro block
+	mov	r3,-(sp)
+	mov	macnxt,r0	;test for block in garbage
+	bne	1$		;  yes, use it
+	mov	mactop,r0	;no, get a new one
+	add	#bpmb,mactop	;set new pointer
+	mov	#macovf,upbomb	; on error, print message & die
+	call	uplift		; check if overran dynamic tables
+				; if so, buy more core & shuffle
+				; (on error, uplift won't return)
+	br	2$
+
+1$:	mov	(r0),macnxt	;set new chain
+2$:	mov	r0,r2
+	clr	(r2)+		;clear link cell, point past it
+	mov	(sp)+,r3
+	return
+
+
+
+incmac:	inc	2(r0)		;increment macro reference
+	return
+
+decmac:	dec	2(r0)		;decrement macro storage
+	bpl	remmax		;just exit if non-negative
+
+remmac:	mov	r0,-(sp)	;save pointer
+1$:	tst	(r0)		;end of chain?
+	beq	2$		;  yes
+	mov	(r0),r0		;no, link
+	br	1$
+
+2$:	mov	macnxt,(r0)
+	mov	(sp)+,macnxt
+remmax:	return
+mpush:				;push macro nesting level
+	inc	mdepth
+	call	getblk		;get a storage block
+	tst	-(r2)		;point to start
+	mov	#msbblk,r1	;pointer to start of prototype
+	mov	r2,-(sp)	;save destination
+	mov	r1,-(sp)	;  and core pointers
+1$:	mov	(r1),(r2)+	;xfer an item
+	clr	(r1)+		;clear core slot
+	cmp	#msbend,r1	;through?
+	bne	1$		;  no
+	mov	(sp)+,r2	;yes, make core destination
+	mov	r5,(r2)+	;save type
+	mov	(sp)+,(r2)+	;  and previous block pointer
+	inc	maclvl		;bump level count
+	return			;return with r2 pointing at msbtxt
+
+mpop:				;pop macro nesting level
+	dec	mdepth		;for lout.m11
+	mov	#msbarg+2,r2	;point one slot past arg
+	mov	-(r2),r0	;get pointer to arg block
+	beq	1$		;branch if null
+	call	remmac		;remove it
+1$:	mov	-(r2),r0	;point to text block
+	beq	2$		;branch if null
+	call	decmac		;decrement level
+2$:	mov	-(r2),r1	;get previous block
+	tst	-(r2)		;point to start
+	mov	r1,r0		;save block pointer
+	call	xmit0-<msbend-msbblk>	;xfer block
+	clr	(r0)		;clear link
+	call	remmac		;return block for deposit
+	dec	maclvl		;decrement level count
+	return
+
+
+	entsec	impure
+msbblk:				;pushable block (must be ordered)
+msbtyp:	.blkw			;block type
+msbpbp:	.blkw			;previous block pointer
+msbtxt:	.blkw			;pointer to basic text block
+msbarg:	.blkw			;pointer to arg block
+msbcnt:	.blkw	2		;repeat count, etc.
+msbmrp:	.blkw			;macro read pointer
+msbend:				;end of ordered storage
+
+macnxt:	.blkw
+maclvl:	.blkw			;macro level count
+concnt:	.blkw
+argmax:	.blkw
+macnam:	.blkw	2
+macgsb:	.blkw			;macro generated symbol bits
+	xitsec
+	.if ndf	xsml
+
+	.globl	mcall		;.mcall
+
+mcall:	bis	#lc.md,lcflag	;for listing control
+	mov	#sysmac,-(sp)	;assume system mcall
+	cmp	r5,#'(		;named file?
+	bne	14$		;  no, use system
+	mov	#smlfil,r1	;yes, point to dest. for specified pathname.
+	mov	r1,(sp)		;store as adr. of pathname being gathered
+11$:	cmp	r1,#smlfil+34	;any more room?
+	blo	12$		;yes
+	dec	r1		;no, cause truncation.
+12$:	call	getnb		;get next char. (ignoring blanks)
+	.if ndf xedlc
+	movb	@chrpnt,(r1)	;store char.
+	bicb	#200,(r1)	;turn off sign bit
+	.iff
+	movb	r5,(r1)		;store char.
+	.endc
+	cmpb	(r1)+,#')
+	bne	11$		;continue till ")"
+	clrb	-(r1)		;end, make null
+	call	getnb		;yes, bypass it
+14$:	mov	(sp)+,smlnam	;store pointer to asciz name
+	call	smltst		;test for undefined arguments
+	jeq	5$		;  branch if none
+	tst	pass		;found some, pass one?
+	bne	41$		;  no, error
+1$:	call	inisml		;get another file
+	beq	42$		;  error if none
+2$:	clr	r3		;set count to zero
+3$:	call	getlin		;get a new line
+	bne	1$		;try another file if eof
+	call	setcli		;test for directive
+	bit	#dflmac,r0	;macro/endm?
+	beq	3$		;  no
+	mov	#value,r4	;set for local and macrof
+	dec	r3		;yes, assume .endm
+	cmp	#endm,(r4)	;good guess?
+	beq	3$		;  yes
+	cmp	#endr,(r4)	;a synonym for .endm
+	beq	3$		;  yes
+	inc	r3		;no, bump count
+	inc	r3
+	cmp	#1,r3		;outer level?
+	bne	3$		;  no
+	call	gsarg		;yes, get name
+	beq	44$		;  error if null
+	search	macrol		;search table
+	beq	3$		;  ignore if not found
+	tst	(r4)		;has it a value?
+	 bne	3$		;  no, not interested
+	call	macrof		;good, define it
+	dec	smllvl		;decrement count
+	bgt	2$		;loop if more to go
+	br	5$		;ok, clean up
+
+4$:	error	60,u ,<.mcall error>
+	br	5$
+41$:	tst	err.xx		; dont want this message to mask the others
+	bne	5$
+	error	61,u ,<macro not defined by .mcall>
+	br	5$
+42$:	error	62,u ,<cannot open .mcall file>
+	br	5$
+44$:	error	63,u ,<illegal .macro statement in .mcall>
+5$:	clr	smllvl		;make sure count is zapped
+	clr	endflg		;ditto for end flag
+	jmp	finsml		;be sure files are closed
+
+	entsec	dpure
+sysmac:			;kludged to lower-case
+	.enabl lc
+	.asciz	+/usr/share/misc/sysmac+
+
+	xitsec
+smltst:				;test mcall arguments
+1$:	call	gsarg		;fetch next argument
+	beq	3$		;  exit if through
+	call	msrch		;ok, test for macros
+	bne	2$		;  found, not interested
+	call	insert		;insert with zero pointer
+	inc	smllvl		;bump count
+2$:	call	crfdef		;cref it
+	br	1$
+
+3$:	mov	smllvl,r0	;finished, count to r0
+	return
+
+	entsec	imppas
+smllvl:	.blkw			;mcall hit count
+	xitsec
+
+	.endc			;xsml
+
+	.endc			;xmacro
+;
+; mac.er is called on reaching end of prog w/o .end file or when
+; running out of core.
+;
+.globl	lst.kb,putli2, mac.er, macdfn
+.text
+mac.er:
+	call	savreg
+	tst	macdfn
+	beq	9$
+	tst	pass
+	beq	9$
+	mov	#mac.xx,r2
+	mov	#lst.kb,r4
+	call	putli2
+9$:	return
+.data
+mac.xx:	.asciz /possibly unterminated .macro, .rept, .irp, or .irpc/
+.even
+.bss
+macdfn:	.blkw
+	.end

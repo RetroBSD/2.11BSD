@@ -1,0 +1,1 @@
+#define NTM	0

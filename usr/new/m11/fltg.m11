@@ -1,0 +1,250 @@
+	.title	fltg
+
+	.ident	/27dec3/
+
+	.mcall	(at)always,xmit,genedt,error
+	.mcall	(at)sdebug,ndebug
+	always
+
+	.globl	savreg,	abstrm,	chrpnt,	cpopj,	cradix
+	.globl	getchr,	getnb,	mode
+	.globl	setnb,	stcode,	tstarg,	value
+	.globl	edmask,	ed.fpt
+
+
+	.if ndf	xfltg
+
+	.globl	flt2,	flt4,	fltg1w
+
+	xitsec			;start in default sector
+
+
+flt4:	inc	r3
+flt2:
+	inc	r3		;make it 1 or 2
+	asl	r3		;now 2 or 4
+fp.1:	call	tstarg
+	beq	fp.9
+	mov	fltpnt-2(r3),-(sp)	;evaluate number
+	call	@(sp)+
+	bne	fp.2		;branch if non-null
+	error	9,a,<empty floating point number>		;  null, flag error
+fp.2:	mov	r3,r2		;get a working count
+	mov	#fltbuf,r1	;point to floating point buffer
+3$:	mov	(r1)+,(r4)	;move in next number
+	call	stcode		;place on code roll
+	sob	r2,3$		;loop on word count
+	br	fp.1		;continue
+
+fp.9:	return
+
+	entsec	dpure
+fltpnt:	.word	fltg2w,	fltg4w
+	xitsec
+
+	.if ndf	xedfpt
+	genedt	fpt		;floating point truncation
+	.endc
+
+fltg4w:	inc	fltwdc		;floating point number evaluator
+fltg2w:	inc	fltwdc
+fltg1w:
+	call	savreg		;save registers
+	mov	chrpnt,-(sp)	;stack current character pointer
+	mov	#fltbuf,r3	;convenient copy of pointers
+	mov	#fltsav,r4	;  to buffer and save area
+	mov	r4,r1
+1$:	clr	-(r1)		;init variables
+	cmp	r1,#fltbeg
+	bhi	1$		;loop until done
+	mov	#65.,fltbex	;init binary exponent
+	cmp	#'+,r5		;  "+"?
+	beq	10$		;  yes, bypass and ignore
+	cmp	#'-,r5		; "-"?
+	bne	11$		;  no
+	mov	#100000,fltsgn	;yes, set sign and bypass char
+10$:	call	getchr		;get the next character
+11$:	cmp	r5,#'0		;numeric?
+	blo	20$
+	cmp	r5,#'9
+	bhi	20$		;  no
+	bit	#174000,(r3)	;numeric, room for multiplication?
+	beq	12$		;  yes
+	inc	fltexp		;no, compensate for the snub
+	br	13$
+
+12$:	call	fltm50		;multiply by 5
+	call	fltgls		;correction, make that *10
+	sub	#'0,r5		;make absolute
+	mov	r4,r2		;point to end of buffer
+	add	r5,-(r2)	;add in
+	adc	-(r2)		;ripple carry
+	adc	-(r2)
+	adc	-(r2)
+13$:	add	fltdot,fltexp	;decrement if processing fraction
+	clr	(sp)		;clear initial char pointer (we're good)
+	br	10$		;try for more
+
+20$:	cmp	#'.,r5		;decimal point?
+	bne	21$		;  no
+	com	fltdot		;yes, mark it
+	bmi	10$		;loop if first time around
+21$:	cmp	#105,r5		;exponent?(routine  is passed upper case)
+	bne	fltg3		;  no
+	call	getnb		;yes, bypass "e" and blanks
+	mov	cradix,-(sp)	;stack current radix
+	mov	#10.,cradix	;set to decimal
+	call	abstrm		;absolute term
+	mov	(sp)+,cradix	;restore radix
+	add	r0,fltexp	;update exponent
+;	br	fltg3		;fall through
+fltg3:	mov	r3,r1
+	mov	(r1)+,r0	;test for zero
+	bis	(r1)+,r0
+	bis	(r1)+,r0
+	bis	(r1)+,r0
+	jeq	fltgex		;exit if so
+31$:	tst	fltexp		;time to scale
+	beq	fltg5		;fini if zero
+	blt	41$		;divide if .lt. zero
+	cmp	(r3),#031426	;multiply, can we *5?
+	bhi	32$		;  no
+	call	fltm50		;yes, multiply by 5
+	inc	fltbex		;  and by two
+	br	33$
+
+32$:	call	fltm54		;multiply by 5/4
+	add	#3.,fltbex	;  and by 8
+33$:	dec	fltexp		;  over 10
+	br	31$
+
+40$:	dec	fltbex		;division, left justify bits
+	call	fltgls
+41$:	tst	(r3)		;sign bit set?
+	bpl	40$		;  no, loop
+	mov	#16.*2,-(sp)	;16 outer, 2 inner
+	call	fltgrs		;shift right
+	call	fltgsv		;place in save buffer
+42$:	bit	#1,(sp)		;odd lap?
+	bne	43$		;  yes
+	call	fltgrs		;move a couple of bits right
+	call	fltgrs
+43$:	call	fltgrs		;once more to the right
+	call	fltgad		;add in save buffer
+	dec	(sp)		;end of loop?
+	bgt	42$		;  no
+	tst	(sp)+		;yes, prune stack
+	sub	#3.,fltbex
+	inc	fltexp
+	br	31$
+fltg5:	dec	fltbex		;left justift
+	call	fltgls
+	bcc	fltg5		;lose one bit
+	add	#200,fltbex	;set excess 128.
+	ble	2$		;branch if under-flow
+	tstb	fltbex+1	;high order zero?
+	beq	fg53$		;  yes
+2$:	error	10,n,<floating point overflow>		;no, error
+fg53$:	mov	r4,r2		;set to shift eight bits
+	mov	r2,r1
+	tst	-(r1)		;r1 is one lower than r2
+4$:	cmp	-(r1),-(r2)	;down one word
+	movb	(r1),(r2)	;move up a byte
+	swab	(r2)		;beware of the inside-out pc!!
+	cmp	r2,r3		;end?
+	bne	4$
+	call	fltgrs		;shift one place right
+	ror	(r4)		;set high carry
+	.if ndf	xedfpt
+	bit	#ed.fpt,edmask	;truncation?
+	beq	fp57$		;  yes
+	.endc
+	mov	fltwdc,r2	;get size count
+	asl	r2		;double
+	bne	8$		;preset type
+	inc	r2		;single word
+8$:	asl	r2		;convert to bytes
+	bis	#077777,fltbuf(r2)
+	sec
+5$:	adc	fltbuf(r2)
+	dec	r2
+	dec	r2
+	bge	5$
+	tst	(r3)		;test sign position
+	bpl	fp57$		;ok if positive
+6$:	error	11,t,<trunctation error>
+fp57$:	add	fltsgn,(r3)	;set sign, if any
+fltgex:	clr	mode		;make absolute
+	clr	fltwdc		;clear count
+	mov	(r3),value	;place first guy in value
+	mov	(sp)+,r0	;origional char pointer
+	beq	1$		;zero (good) if any digits processed
+	mov	r0,chrpnt	;none, reset to where we came in
+	clr	r3		;flag as false
+1$:	mov	r3,r0		;set flag in r0
+	jmp	setnb		;return with non-blank
+fltm54:				;*5/4
+	cmp	(r3),#146314	;room?
+	blo	1$
+	call	fltgrs
+	inc	fltbex
+1$:	call	fltgsv		;save in backup
+	call	fltgrs		;scale right
+	call	fltgrs
+	br	fltgad
+
+fltm50:				;*5
+	call	fltgsv
+	call	fltgls
+	call	fltgls
+
+fltgad:				;add save buffer to fltbuf
+	mov	r4,r2		;point to save area
+1$:	add	6(r2),-(r2)	;add in word
+	mov	r2,r1		;set for carries
+2$:	adc	-(r1)		;add in
+	bcs	2$		;continue ripple, if necessary
+	cmp	r2,r3		;through?
+	bne	1$		;  no
+	return
+fltgrs:	clc			;right shift
+	mov	r3,r1		;right rotate
+	ror	(r1)+
+	ror	(r1)+
+	ror	(r1)+
+	ror	(r1)+
+	return
+
+fltgls:				;left shift
+	mov	r4,r2
+	asl	-(r2)
+	rol	-(r2)
+	rol	-(r2)
+	rol	-(r2)
+	return
+
+fltgsv:	mov	r3,r1		;move fltbuf to fltsav
+	mov	r4,r2
+	xmit	4
+	return
+
+
+	entsec	impure
+fltbeg:				;start of floating point impure
+fltsgn:	.blkw			;sign bit
+fltdot:	.blkw			;decimal point flag
+fltexp:	.blkw			;decimal exponent
+fltbex:	.blkw	1		;binary exponent (must preceed fltbuf)
+fltbuf:	.blkw	4		;main ac
+fltsav:	.blkw	4
+
+	entsec	implin
+fltwdc:	.blkw			;word count
+
+	xitsec
+
+
+	.endc
+
+	.end
+

@@ -1,0 +1,132 @@
+
+
+
+REBOOT(8)	    UNIX Programmer's Manual		REBOOT(8)
+
+
+
+NAME
+     reboot - stopping and restarting the system
+
+SYNOPSIS
+     /sbin/reboot [ -lqnhdarsfRD ]
+     /sbin/halt [ -lqndars ]
+     /sbin/fastboot [ -lqndarsRD ]
+
+DESCRIPTION
+     2.11BSD is started by placing it in memory at location zero
+     and transferring to its entry point.  Since the system is
+     not reentrant, it is necessary to read it in from disk or
+     tape each time it is to be boot strapped.
+
+     Rebooting a running system: When the system is running and a
+     reboot is desired, _s_h_u_t_d_o_w_n(8) is normally used to stop time
+     sharing and put the system into single user mode.	If there
+     are no users then /sbin/reboot can be used without shutting
+     the system down first.
+
+     Reboot normally causes the disks to be synced and allows the
+     system to perform other shutdown activities such as resyn-
+     chronizing hardware time-of-day clocks.  A multi-user reboot
+     (as described below) is then initiated.  This causes a sys-
+     tem to be booted and an automatic disk check to be per-
+     formed.  If all this succeeds without incident, the system
+     is then brought up for multi-user operation.
+
+     Options to reboot are:
+
+     -l   Don't try to tell _s_y_s_l_o_g_d(8) what's about to happen.
+
+     -q   Reboot quickly and ungracefully, without shutting down
+	  running processes first.
+
+     -n   Don't sync before rebooting.	This can be used if a
+	  disk or the processor is on fire.
+
+     -h   Don't reboot, simply halt the processor.
+
+     -d   Dump memory onto the dump device, usually part of swap,
+	  before rebooting.  The dump is done in the same way as
+	  after a panic.
+
+     -a   Have the system booter ask for the name of the system
+	  to be booted, rather than immediately booting the
+	  default system (/unix).
+
+     -r   Mount the root file system as _r_e_a_d _o_n_l_y when the system
+	  reboots.  This is not supported by the kernel in
+	  2.11BSD.
+
+
+
+
+Printed 11/24/99	  May 24, 1996				1
+
+
+
+
+
+
+REBOOT(8)	    UNIX Programmer's Manual		REBOOT(8)
+
+
+
+     -s   Don't enter multi-user mode after system has rebooted -
+	  stay in single user mode.
+
+     -f   Fast reboot.	Omit the automatic file system con-
+	  sistency check when the system reboots and goes multi-
+	  user.  This is accomplished by passing a _f_a_s_t _r_e_b_o_o_t
+	  flag on to the rebooting kernel.  This currently
+	  prevents the use of -f flag in conjunction with the -h
+	  (halt) flag.
+
+     -D   Set the _a_u_t_o_c_o_n_f_i_g(8) debug flag.  This is normally not
+	  used unless one is debugging the _a_u_t_o_c_o_n_f_i_g program.
+
+     -R   Tells the kernel to use the compiled in root device.
+	  Normally the system uses the device from which it was
+	  booted as the root/swap/pipe/dump device.
+
+     _R_e_b_o_o_t normally places a shutdown record in the login
+     accounting file /usr/adm/wtmp.  This is inhibited if the -q
+     or -n options are present.  Note that the -f (fast reboot)
+     and -n (don't sync) options are contradictory; the request
+     for a fast reboot is ignored in this case.
+
+     _H_a_l_t and _f_a_s_t_b_o_o_t are synonymous with ``reboot -h'' and
+     ``reboot -f'', respectively.
+
+     Power fail and crash recovery: Normally, the system will
+     reboot itself at power-up or after crashes if the contents
+     of low memory are intact.	An automatic consistency check of
+     the file systems will be performed, and unless this fails,
+     the system will resume multi-user operations.
+
+SEE ALSO
+     autoconfig(8), sync(2), utmp(8), shutdown(8), syslogd(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	  May 24, 1996				2
+
+
+

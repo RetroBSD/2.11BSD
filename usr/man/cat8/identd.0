@@ -1,0 +1,330 @@
+
+
+
+IDENTD(8)	    UNIX Programmer's Manual		IDENTD(8)
+
+
+
+NAME
+     identd, in.identd - TCP/IP IDENT protocol server
+
+SYNOPSIS
+     /usr/libexec/[in.]identd [-i|-w|-b [-t<seconds>] [-u<uid>]
+     [-g<gid>] [-p<port>] [-a<address>] [-c<charset>]
+     [-C[<keyfile>]] [-o] [-e] [-l] [-V] [-m] [-N] [-d]
+     [-F<format>] [kernelfile[kmemfile]]
+
+DESCRIPTION
+     identd is a server which implements the TCP/IP proposed
+     standard IDENT user identification protocol as specified in
+     the RFC 1413 document.
+
+     identd operates by looking up specific TCP/IP connections
+     and returning the user name of the process owning the con-
+     nection.  It can optionally return other information instead
+     of a user name.
+
+ARGUMENTS
+     The -i flag, which is the default mode, should be used when
+     starting the daemon from inetd with the "nowait" option in
+     the /etc/inetd.conf file. Use of this mode will make inetd
+     start one identd daemon for each connection request.
+
+     The -w flag should be used when starting the daemon from
+     inetd with the "wait" option in the /etc/inetd.conf file .
+     This is the prefered mode of operation since that will start
+     a copy of identd at the first connection request and then
+     identd will handle subsequent requests without having to do
+     the nlist lookup in the kernel file for every request as in
+     the -i mode above. The identd daemon will run either for-
+     ever, until a bug makes it crash or a timeout, as specified
+     by the -t flag, occurs.
+
+     The -b flag can be used to make the daemon run in standalone
+     mode without the assistance from inetd.  This mode is the
+     least prefered mode since a bug or any other fatal condition
+     in the server will make it terminate and it will then have
+     to be restarted manually. Other than that it has the same
+     advantage as the -w mode in that it parses the nlist only
+     once.
+
+     The -t<seconds> option is used to specify the timeout limit.
+     This is the number of seconds a server started with the -w
+     flag will wait for new connections before terminating. The
+     server is automatically restarted by inetd whenever a new
+     connection is requested if it has terminated. A suitable
+     value for this is 120 (2 minutes), if used. It defaults to
+     no timeout (i.e. will wait forever, or until a fatal condi-
+     tion occurs in the server).
+
+
+
+
+Printed 11/24/99	   27 May 1992				1
+
+
+
+
+
+
+IDENTD(8)	    UNIX Programmer's Manual		IDENTD(8)
+
+
+
+     The -u<uid> option is used to specify a user id number which
+     the ident server should switch to after binding itself to
+     the TCP/IP port if using the -b mode of operation.
+
+     The -g<gid> option is used to specify a group id number
+     which the ident server should switch to after binding itself
+     to the TCP/IP port if using the -b mode of operation.
+
+     The -p<port> option is used to specify an alternative port
+     number to bind to if using the -b mode of operation. It can
+     be specified by name or by number. Defaults to the IDENT
+     port (113).
+
+     The -a<address> option is used to specify the local address
+     to bind the socket to if using the -b mode of operation. Can
+     only be specified by IP address and not by domain name.
+     Defaults to the INADDR_ANY address which normally means all
+     local addresses.
+
+     The -V flag makes identd display the version number and then
+     exit.
+
+     The -l flag tells identd to use the System logging daemon
+     syslogd for logging purposes.
+
+     The -o flag tells identd to not reveal the operating system
+     type it is run on and to instead always return "OTHER".
+
+     The -e flag tells identd to always return "UNKNOWN-ERROR"
+     instead of the "NO-USER" or "INVALID-PORT" errors.
+
+     The -c<charset> flags tells identd to add the optional
+     (according to the IDENT protocol) character set designator
+     to the reply generated. _c_h_a_r_s_e_t should be a valid character
+     set as described in the MIME RFC in upper case characters.
+
+     The -C[<keyfile>] option tells identd to return encrypted
+     tokens instead of user names.  The local and remote IP
+     addresses and TCP port numbers, the local user's uid number,
+     a timestamp, a random number, and a checksum, are all
+     encrypted using DES with a secret key derived from the first
+     line of the _k_e_y_f_i_l_e (using des_string_to_key(3)).	The
+     encrypted binary information is then encoded in a base64
+     string (32 characters in length) and enclosed in square
+     brackets to produce a token that is transmitted to the
+     remote client.  The encrypted token can later be decrypted
+     by idecrypt(8).  There may not be a space between the -C and
+     the name of the _k_e_y_f_i_l_e.  If the _k_e_y_f_i_l_e is not specified,
+     it defaults to /etc/identd.key.
+
+     The -n flag tells identd to always return user numbers
+     instead of user names if you wish to keep the user names a
+
+
+
+Printed 11/24/99	   27 May 1992				2
+
+
+
+
+
+
+IDENTD(8)	    UNIX Programmer's Manual		IDENTD(8)
+
+
+
+     secret.  The -N flag makes identd check for a file
+     ".noident" in each homedirectory for a user which the daemon
+     is about to return the user name for. It that file exists
+     then the daemon will give the error HIDDEN-USER instead of
+     the normal USERID response.
+
+     -m flag makes identd use a mode of operation that will allow
+     multiple requests to be processed per session. Each request
+     is specified one per line and the responses will be returned
+     one per line. The connection will not be closed until the
+     connecting part closes it's end of the line.  PLEASE NOTE
+     THAT THIS MODE VIOLATES THE PROTOCOL SPECIFICATION AS IT
+     CURRENTLY STANDS.
+
+     The -d flag enables some debugging code that normally should
+     NOT be enabled since that breaks the protocol and may reveal
+     information that should not be available to outsiders.
+
+     The -F<format> option makes identd use the specified format
+     to display info. The allowed format specifiers are:
+	  %u   print user name
+	  %U   print user number
+	  %g   print (primary) group name
+	  %G   print (primary) group number
+	  %l   print list of all groups by name
+	  %L   print list of all groups by number
+	  %p   print process ID of running process
+	  %c   print command name
+	  %C   print command and arguments
+     The lists of groups (%l, %L) are comma-separated, and start
+     with the primary group which is not repeated. The %p and the
+     %c and %C formats are not supported on all architecture
+     implementations (printing 0 or empty string instead).
+     Any other characters (preceded by %, and those not preceded
+     by it) are printed literally. The "default" format is %u,
+     and you should not use anything else without the -o flag.
+     Not implemented yet, but on my wish-list are the following:
+	  %w   print working (current) directory
+	  %h   print home (login, naming) directory
+	  %e   print the environment
+
+     kernelfile defaults to the normally running kernel file.
+
+     kmemfile defaults to the memory space of the normally run-
+     ning kernel.
+
+UNDOCUMENTED FLAGS
+     The -v flag enables more verbose output or messages.
+     (Further occurences of the -v flag make things even more
+     verbose.) Currently not used: ignored.
+
+
+
+
+
+Printed 11/24/99	   27 May 1992				3
+
+
+
+
+
+
+IDENTD(8)	    UNIX Programmer's Manual		IDENTD(8)
+
+
+
+     The -f<config-file> option causes identd to use the named
+     config file (instead of the default /etc/identd.conf ?).
+     Currently not used: ignored, no config files are used.
+
+     The -r<indirect_host> option is used in some way (for proxy
+     queries?).
+
+     The -C<keyfile> option is used in some way for DES encryp-
+     tion.
+
+INSTALLATION
+     identd is invoked either by the internet server (see
+     inetd(8C) ) for requests to connect to the IDENT port as
+     indicated by the /etc/services file (see services(5) ) when
+     using the -w or -i modes of operation or started manually by
+     using the -b mode of operation.
+
+EXAMPLES
+     Assuming the server is located in /usr/etc/in.identd one can
+     put either:
+
+     ident stream tcp wait sys /usr/etc/in.identd in.identd -w
+     -t120
+
+     or:
+
+     ident stream tcp nowait sys /usr/etc/in.identd in.identd -i
+
+     into the /etc/inetd.conf file. User "sys" should have enough
+     rights to READ the kernel but NOT to write to it.
+
+     To start it using the -b mode of operation one can put a
+     line like this into the /etc/rc.local file:
+
+     /usr/etc/in.identd -b -u2 -g2
+
+     This will make it run in the background as user 2, group 2
+     (user "sys", group "kmem" on SunOS 4.1.1).
+
+NOTES
+     The username (or UID) returned ought to be the login name.
+     However it (probably, for most architecture implementations)
+     is the "real user ID" as stored with the process; there is
+     no provision for returning the "effective user ID". Thus the
+     UID returned may be different from the login name for setuid
+     programs (or those running as root) which done a setuid(3)
+     call and their children. For example, it may (should?) be
+     wrong for an incoming ftpd ; and we are probably interested
+     in the running shell, not the telnetd for an incoming telnet
+     session. (But of course identd returns info for outgoing
+     connections, not incoming ones.)
+
+
+
+
+Printed 11/24/99	   27 May 1992				4
+
+
+
+
+
+
+IDENTD(8)	    UNIX Programmer's Manual		IDENTD(8)
+
+
+
+     The group or list of groups returned (with the -F option)
+     are as looked up in the /etc/passwd and /etc/group files,
+     based on the UID returned. Thus these may not relate well to
+     the group(s) of the running process for setuid or setgid
+     programs or their children.
+
+     The command names returned with formats %c and %C may be
+     different, use one or the other or both.
+
+FILES
+     /etc/identd.conf
+	  This file is as yet un-used, but will eventually con-
+	  tain configuration options for identd
+
+     /etc/identd.key
+	  If compiled with -_l_d_e_s this file can be used to specify
+	  a secret key for encrypting replies.
+
+SEE ALSO
+     authuser(3) , inetd.conf(5) , idecrypt(8)
+
+BUGS
+     The handling of fatal errors could be better.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	   27 May 1992				5
+
+
+

@@ -1,0 +1,9 @@
+echo "#define NRM	$NRM"		> ../$MACHINE/rm.h
+echo "#define RM_DKN	$RM_DKN"	>> ../$MACHINE/rm.h
+if [ $DUMPROUTINE = rmdump ]; then
+	echo "#define RM_DUMP"		>> ../$MACHINE/rm.h
+fi
+if [ $RM_RM05 = YES ]; then
+	echo "#define RM_RM05"		>> ../$MACHINE/rm.h
+fi
+

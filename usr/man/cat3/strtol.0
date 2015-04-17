@@ -1,0 +1,132 @@
+
+
+
+STRTOL(3)	    UNIX Programmer's Manual		STRTOL(3)
+
+
+
+NAME
+     strtol - convert string value to a long
+
+SYNOPSIS
+     #include <stdlib.h>
+     #include <limits.h>
+
+     long
+     strtol(nptr, endptr, base)
+     _c_h_a_r *_n_p_t_r;
+     _c_h_a_r **_e_n_d_p_t_r;
+     _i_n_t _b_a_s_e;
+
+DESCRIPTION
+     The strtol() function converts the string in _n_p_t_r to a _l_o_n_g
+     value.  The conversion is done according to the given _b_a_s_e,
+     which must be between 2 and 36 inclusive, or be the special
+     value 0.
+
+     The string may begin with an arbitrary amount of white space
+     (as determined by isspace(3)) followed by a single optional
+     `+' or `-' sign.  If _b_a_s_e is zero or 16, the string may then
+     include a `0x' prefix, and the number will be read in base
+     16; otherwise, a zero _b_a_s_e is taken as 10 (decimal) unless
+     the next character is `0', in which case it is taken as 8
+     (octal).
+
+     The remainder of the string is converted to a _l_o_n_g value in
+     the obvious manner, stopping at the first character which is
+     not a valid digit in the given base.  (In bases above 10,
+     the letter `A' in either upper or lower case represents 10,
+     `B' represents 11, and so forth, with `Z' representing 35.)
+
+     If _e_n_d_p_t_r is non nil, strtol() stores the address of the
+     first invalid character in *_e_n_d_p_t_r . If there were no digits
+     at all, however, strtol() stores the original value of _n_p_t_r
+     in *_e_n_d_p_t_r.  (Thus, if *_n_p_t_r is not `\0' but **_e_n_d_p_t_r is
+     `\0' on return, the entire string was valid.)
+
+RETURN VALUES
+     The strtol() function returns the result of the conversion,
+     unless the value would underflow or overflow.  If an under-
+     flow occurs, strtol() returns LONG_MIN.  If an overflow
+     occurs, strtol() returns LONG_MAX.  In both cases, errno is
+     set to ERANGE .
+
+ERRORS
+     [ERANGE]	    The given string was out of range; the value
+		    converted has been clamped.
+
+SEE ALSO
+     atof(3), atoi(3), atol(3), strtoul(3)
+
+
+
+Printed 11/26/99	January 12, 1996			1
+
+
+
+
+
+
+STRTOL(3)	    UNIX Programmer's Manual		STRTOL(3)
+
+
+
+STANDARDS
+     The strtol() function conforms to ANSI C X3.159-1989 (``ANSI
+     C'').
+
+BUGS
+     Ignores the current locale.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 12, 1996			2
+
+
+

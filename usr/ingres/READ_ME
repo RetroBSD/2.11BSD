@@ -1,0 +1,81 @@
+			I N G R E S
+
+			Version 6.3
+
+This version of INGRES runs under UNIX version seven.  In its
+current state it requires separated I/D space and floating point
+hardware.  The reason for this is that the version seven runtime
+support code is larger than in version six, so we no longer fit
+into a single process, even in a six process system.  However,
+all the code to do six processes still exists, so if you are
+willing to either (a) use the version 6 support code or (b) hack
+on INGRES to make it smaller, you may be able to make it fit.
+
+The following directories and files should exist:
+
+bin
+	Holds the system binaries.  Binaries fall into two classes.
+	The first are intended to live here forevermore, such things
+	as ksort, parser, etc.  They are used internally by the
+	rest of the system.  The second class consists of binaries
+	that are intended for use by users, such as ingres, creatdb,
+	printr, etc.  They live here when you get the tape, but
+	should be moved into a public directory before use.
+	---NOTE: binaries are not included on this tape; it will
+	   necessary to recompile the system.  Instructions are
+	   included below.
+data
+	This is the directory that holds the databases.  It has
+	only one entry, a subdirectory called "base".  The two
+	level scheme is needed to enforce protection and still
+	be able to create databases.  Data should be mode 700, and
+	base should be mode 777.
+demo
+	This directory holds the data used by the demodb command.
+	It is small and should not bother you too much.
+doc
+	Documentation lives in this directory.  See the READ_ME
+	file in this directory for more detail.
+files
+	Auxiliary files needed for the system to execute exist
+	in this directory.
+lib
+	Libraries used internally by the recompilation phase of
+	the system live here.  If you are not recompiling, you
+	can save a bunch of space by removing the contents of this
+	directory.  I suggest you leave the directory around, so
+	that if you ever do recompile you will minimize problems.
+source
+	The source of the system lives here.  This directory is
+	huge and should probably be rolled out to tape if you are
+	tight on space.  See the READ_ME file in this directory
+	for compilation instructions.  This file also contains the
+	initial installation instructions.
+version
+	This file marks the version of the system you have.  It
+	is not needed for anything, but it will help everyone a
+	lot if you leave it around, since it will enable you to
+	tell me what version you have when you call with problems.
+	It's small and doesn't eat much.
+
+To install the system, follow the instructions in the source/READ_ME
+file.
+
+NOTE: This version of INGRES is NOT compatible with version 6.2.
+The format of the protect catalog has changed.  It will be necessary
+for you to unload your existing databases and reload them into
+this version.
+
+For more detailed information, type
+
+	nroff ~ingres/doc/other/howto_setup.nr
+
+This document exists from the days of a separate release, but is
+fundamentally correct.  I recommend reading it carefully before you
+try recompilation.
+
+ ******  THIS SOFTWARE IS OFFERED ON AN AS IS BASIS ONLY!!  ******
+
+Please note that we cannot support this system in any way; we do
+not have a PDP-11 any more and are not running a compatible
+operating system.  Consulting is NOT available.

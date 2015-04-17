@@ -1,0 +1,132 @@
+
+
+
+MCOPY(1)            UNIX Programmer's Manual             MCOPY(1)
+
+
+
+NAME
+     mcopy - copy MSDOS files to/from Unix
+
+SYNOPSIS
+     mcopy [ -tnvm ] sourcefile targetfile
+
+     mcopy [ -tnvm ] sourcefile [ sourcefiles... ] targetdirec-
+     tory
+
+DESCRIPTION
+     _M_c_o_p_y copies the specified file to the named file, or copies
+     multiple files to the named directory.  The source and tar-
+     get can be either MSDOS or Unix files.
+
+     The use of a drive letter designation on the MSDOS files,
+     'a:' for example, determines the direction of the transfer.
+     A missing drive designation implies a Unix file whose path
+     starts in the current directory
+
+     _M_c_o_p_y will allow the following command line options:
+
+     t    Text file transfer.  _M_c_o_p_y will translate incoming car-
+          riage return/line feeds to line feeds.
+
+     n    No warning.  _M_c_o_p_y will not warn the user when
+          overwriting an existing file.
+
+     v    Verbose mode.
+
+     m    Preserve the file modification time.
+
+     If the target file already exists, and the -_n option is not
+     in effect, _m_c_o_p_y asks whether or not to overwrite the file.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the names to be enclosed in quotes to protect
+     them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1), mread(1), mwrite(1)
+
+BUGS
+     Unlike MSDOS, the destination directory may not be omitted.
+
+     The '+' operator (append) from MSDOS is not supported.
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+
+
+
+
+MCOPY(1)            UNIX Programmer's Manual             MCOPY(1)
+
+
+
+     No other _M_t_o_o_l_s command requires the use of a drive letter
+     designation on MSDOS files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             2
+
+
+

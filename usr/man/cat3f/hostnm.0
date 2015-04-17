@@ -1,0 +1,66 @@
+
+
+
+HOSTNM(3F)	    UNIX Programmer's Manual	       HOSTNM(3F)
+
+
+
+NAME
+     hostnm - get name of current host
+
+SYNOPSIS
+     integer function hostnm (name)
+     character*(*) name
+
+DESCRIPTION
+     This function puts the name of the current host into charac-
+     ter string _n_a_m_e.  The return value should be 0; any other
+     value indicates an error.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     gethostname(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

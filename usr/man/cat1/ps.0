@@ -1,0 +1,198 @@
+
+
+
+PS(1)		    UNIX Programmer's Manual		    PS(1)
+
+
+
+NAME
+     ps - process status
+
+SYNOPSIS
+     ps [ acgklnrtuwxU# [ core [ swap [ system ] ] ] ]
+
+DESCRIPTION
+     _P_s prints certain indicia about active processes.	To get a
+     complete printout on the console or lpr, use ``ps axlw'' For
+     a quick snapshot of system activity, ``ps au'' is recom-
+     mended.  A hyphen may precede options with no effect.  The
+     following options may be specified.
+
+     a	  asks for information about all processes with terminals
+	  (ordinarily only one's own processes are displayed).
+
+     c	  causes only the _c_o_m_m field to be displayed instead of
+	  the arguments.  (The comm field is the tail of the path
+	  name of the file the process last exec'ed.) This option
+	  speeds up _p_s somewhat and reduces the amount of output.
+	  It is also more reliable since the process can't scrib-
+	  ble on top of it.
+
+     g	  asks for all processes.  Without this option, _p_s only
+	  prints ``interesting'' processes.  Processes are deemed
+	  to be uninteresting if they are process group leaders,
+	  or if their arguments begin with a `-'.  This normally
+	  eliminates shells and getty processes.
+
+     k	  causes the file /_u_s_r/_s_y_s/_c_o_r_e is used in place of
+	  /_d_e_v/_k_m_e_m and /_d_e_v/_m_e_m.  This is used for postmortem
+	  system debugging.
+
+     l	  asks for a long listing.  The short listing contains
+	  the user name, process ID, tty, the cumulative execu-
+	  tion time of the process and an approximation to the
+	  command line.
+
+     n	  asks for numeric rather than symbolic wchans.  This
+	  flag implies the ``l'' flag.
+
+     r	  asks for ``raw'' output.  A non-human readable sequence
+	  of structures is output on the standard output.  There
+	  is one structure for each process, the format is
+	  defined by <psout.h>
+
+     t_t_t_y_n_a_m_e
+	  restricts output to processes whose controlling tty is
+	  the specified ttyname (which should be specified as
+	  printed by _p_s, including _t? for processes with no tty).
+	  This option must be the last one given.
+
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+PS(1)		    UNIX Programmer's Manual		    PS(1)
+
+
+
+     u	  A user oriented output is produced.  This includes the
+	  name of the owner of the process, process id, nice
+	  value, size, tty, cpu time used, and the command.
+
+     w	  tells _p_s you are on a wide terminal (132 columns).  _P_s
+	  normally assumes you are on an 80 column terminal.
+	  This information is used to decide how much of long
+	  commands to print.  The w option may be repeated, e.g.
+	  ww, and the entire command, up to 128 characters, will
+	  be printed without regard to terminal width.
+
+     x	  asks even about processes with no terminal.
+
+     U	  causes ps to update a private database where is keeps
+	  system information.  Thus ``ps -U'' should be included
+	  in the /etc/rc file.
+
+     #	  A process number may be given, (indicated here by #),
+	  in which case the output is restricted to that process.
+	  This option must also be last.
+
+     A second argument tells _p_s where to look for _c_o_r_e if the _k
+     option is given, instead of /usr/sys/core.  A third argument
+     is the name of a swap file to use instead of the default
+     /dev/swap.  If a fourth argument is given, it is taken to be
+     the file containing the system's namelist.  Otherwise,
+     ``/unix'' is used.
+
+     The output is sorted by tty, then by process ID.
+
+     The long listing is columnar and contains
+
+     F	  Flags associated with the process.  These are defined
+	  by #define lines in /usr/include/sys/proc.h.
+
+     S	  The state of the process.  0: nonexistent; S: sleeping;
+	  W: waiting; R: running; I: intermediate; Z: terminated;
+	  T: stopped.
+
+     UID  The user id of the process owner.
+
+     PID  The process ID of the process; as in certain cults it
+	  is possible to kill a process if you know its true
+	  name.
+
+     PPID The process ID of the parent process.
+
+     CPU  Processor utilization for scheduling.
+
+     PRI  The priority of the process; high numbers mean low
+	  priority.
+
+
+
+
+Printed 11/26/99						2
+
+
+
+
+
+
+PS(1)		    UNIX Programmer's Manual		    PS(1)
+
+
+
+     NICE Used in priority computation.
+
+     ADDR The memory address of the process if resident, other-
+	  wise the disk address.
+
+     SZ   The size in blocks (512 bytes) of the memory image of
+	  the process.
+
+     WCHAN
+	  The event for which the process is waiting or sleeping;
+	  if blank, the process is running.
+
+     TTY  The controlling tty for the process.
+
+     TIME The cumulative execution time for the process.
+
+     COMMAND
+	  The command and its arguments.
+
+     A process that has exited and has a parent, but has not yet
+     been waited for by the parent is marked <defunct>.  _P_s makes
+     an educated guess as to the file name and arguments given
+     when the process was created by examining memory or the swap
+     area.  The method is inherently somewhat unreliable and in
+     any event a process is entitled to destroy this information,
+     so the names cannot be counted on too much.
+
+FILES
+     /unix		 system namelist
+     /dev/kmem		 kernel memory
+     /dev/swap		 swap device
+     /usr/sys/core	 core file
+     /dev		 searched to find swap device and tty
+     names
+     /var/run/psdatabase system namelist and device information
+
+SEE ALSO
+     kill(1), w(1), pstat(8)
+
+BUGS
+     Things can change while _p_s is running; the picture it gives
+     is only a close approximation to reality.
+
+     Some processes, typically those in the background, are
+     printed with null or garbaged arguments, even though the
+     process has not swapped.  (Sometimes ps even loses on its
+     own arguments!) In these cases, the name of the command is
+     printed in parentheses.
+
+     When automatic crash dumps are enabled, /usr/sys/core is not
+     a sensible default core file name.
+
+
+
+
+Printed 11/26/99						3
+
+
+

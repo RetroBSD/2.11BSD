@@ -1,0 +1,132 @@
+
+
+
+INET(3N)	    UNIX Programmer's Manual		 INET(3N)
+
+
+
+NAME
+     inet_addr, inet_network, inet_ntoa, inet_makeaddr,
+     inet_lnaof, inet_netof - Internet address manipulation rou-
+     tines
+
+SYNOPSIS
+     #include <sys/socket.h>
+     #include <netinet/in.h>
+     #include <arpa/inet.h>
+
+     unsigned long inet_addr(cp)
+     char *cp;
+
+     unsigned long inet_network(cp)
+     char *cp;
+
+     char *inet_ntoa(in)
+     struct in_addr in;
+
+     struct in_addr inet_makeaddr(net, lna)
+     long net, lna;
+
+     long inet_lnaof(in)
+     struct in_addr in;
+
+     long inet_netof(in)
+     struct in_addr in;
+
+DESCRIPTION
+     The routines _i_n_e_t__a_d_d_r and _i_n_e_t__n_e_t_w_o_r_k each interpret char-
+     acter strings representing numbers expressed in the Internet
+     standard "." notation, returning numbers suitable for use as
+     Internet addresses and Internet network numbers, respec-
+     tively.  The routine _i_n_e_t__n_t_o_a takes an Internet address and
+     returns an ASCII string representing the address in "."
+     notation.	The routine _i_n_e_t__m_a_k_e_a_d_d_r takes an Internet net-
+     work number and a local network address and constructs an
+     Internet address from it.	The routines _i_n_e_t__n_e_t_o_f and
+     _i_n_e_t__l_n_a_o_f break apart Internet host addresses, returning
+     the network number and local network address part, respec-
+     tively.
+
+     All Internet address are returned in network order (bytes
+     ordered from left to right).  All network numbers and local
+     address parts are returned as machine format integer values.
+
+INTERNET ADDRESSES
+     Values specified using the "." notation take one of the fol-
+     lowing forms:
+	  a.b.c.d
+	  a.b.c
+	  a.b
+
+
+
+Printed 11/26/99	  May 27, 1986				1
+
+
+
+
+
+
+INET(3N)	    UNIX Programmer's Manual		 INET(3N)
+
+
+
+	  a
+     When four parts are specified, each is interpreted as a byte
+     of data and assigned, from left to right, to the four bytes
+     of an Internet address.  Note that when an Internet address
+     is viewed as a 32-bit integer quantity on the VAX the bytes
+     referred to above appear as "d.c.b.a".  That is, VAX bytes
+     are ordered from right to left.
+
+     When a three part address is specified, the last part is
+     interpreted as a 16-bit quantity and placed in the right
+     most two bytes of the network address.  This makes the three
+     part address format convenient for specifying Class B net-
+     work addresses as "128.net.host".
+
+     When a two part address is supplied, the last part is inter-
+     preted as a 24-bit quantity and placed in the right most
+     three bytes of the network address.  This makes the two part
+     address format convenient for specifying Class A network
+     addresses as "net.host".
+
+     When only one part is given, the value is stored directly in
+     the network address without any byte rearrangement.
+
+     All numbers supplied as "parts" in a "." notation may be
+     decimal, octal, or hexadecimal, as specified in the C
+     language (i.e., a leading 0x or 0X implies hexadecimal; oth-
+     erwise, a leading 0 implies octal; otherwise, the number is
+     interpreted as decimal).
+
+SEE ALSO
+     gethostbyname(3N), getnetent(3N), hosts(5), networks(5),
+
+DIAGNOSTICS
+     The value -1 is returned by _i_n_e_t__a_d_d_r and _i_n_e_t__n_e_t_w_o_r_k for
+     malformed requests.
+
+BUGS
+     The problem of host byte ordering versus network byte order-
+     ing is confusing.	A simple way to specify Class C network
+     addresses in a manner similar to that for Class B and Class
+     A is needed.  The string returned by _i_n_e_t__n_t_o_a resides in a
+     static memory area.
+     Inet_addr should return a struct in_addr.
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 27, 1986				2
+
+
+

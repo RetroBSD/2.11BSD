@@ -1,0 +1,66 @@
+
+
+
+FOLD(1)             UNIX Programmer's Manual		  FOLD(1)
+
+
+
+NAME
+     fold - fold long lines for finite width output device
+
+SYNOPSIS
+     fold [ -width ] [ file ...  ]
+
+DESCRIPTION
+     _F_o_l_d is a filter which will fold the contents of the speci-
+     fied files, or the standard input if no files are specified,
+     breaking the lines to have maximum width _w_i_d_t_h. The default
+     for _w_i_d_t_h is 80.  _W_i_d_t_h should be a multiple of 8 if tabs
+     are present, or the tabs should be expanded using _e_x_p_a_n_d(1)
+     before coming to _f_o_l_d.
+
+SEE ALSO
+     expand(1)
+
+BUGS
+     If underlining is present it may be messed up by folding.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

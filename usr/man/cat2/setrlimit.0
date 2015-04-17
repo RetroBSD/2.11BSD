@@ -1,0 +1,198 @@
+
+
+
+GETRLIMIT(2)	    UNIX Programmer's Manual	     GETRLIMIT(2)
+
+
+
+NAME
+     getrlimit, setrlimit - control maximum system resource con-
+     sumption
+
+SYNOPSIS
+     #include <sys/time.h>
+     #include <sys/resource.h>
+
+     getrlimit(resource, rlp)
+     int resource;
+     struct rlimit *rlp;
+
+     setrlimit(resource, rlp)
+     int resource;
+     struct rlimit *rlp;
+
+DESCRIPTION
+     Limits on the consumption of system resources by the current
+     process and each process it creates may be obtained with the
+     _g_e_t_r_l_i_m_i_t call, and set with the _s_e_t_r_l_i_m_i_t call.
+
+     The _r_e_s_o_u_r_c_e parameter is one of the following:
+
+     RLIMIT_CPU       the maximum amount of cpu time (in seconds)
+		      to be used by each process.
+
+     RLIMIT_FSIZE     the largest size, in bytes, of any single
+		      file that may be created.
+
+     RLIMIT_DATA      the maximum size, in bytes, of the data
+		      segment for a process; this defines how far
+		      a program may extend its break with the
+		      _s_b_r_k(2) system call.
+
+     RLIMIT_STACK     the maximum size, in bytes, of the stack
+		      segment for a process; this defines how far
+		      a program's stack segment may be extended.
+		      Stack extension is performed automatically
+		      by the system.
+
+     RLIMIT_CORE      the largest size, in bytes, of a _c_o_r_e file
+		      that may be created.
+
+     RLIMIT_RSS       the maximum size, in bytes, to which a
+		      process's resident set size may grow.  This
+		      imposes a limit on the amount of physical
+		      memory to be given to a process; if memory
+		      is tight, the system will prefer to take
+		      memory from processes that are exceeding
+		      their declared resident set size.
+
+
+
+
+
+Printed 11/26/99	  May 13, 1986				1
+
+
+
+
+
+
+GETRLIMIT(2)	    UNIX Programmer's Manual	     GETRLIMIT(2)
+
+
+
+     A resource limit is specified as a soft limit and a hard
+     limit.  When a soft limit is exceeded a process may receive
+     a signal (for example, if the cpu time is exceeded), but it
+     will be allowed to continue execution until it reaches the
+     hard limit (or modifies its resource limit).  The _r_l_i_m_i_t
+     structure is used to specify the hard and soft limits on a
+     resource,
+
+	  struct rlimit {
+	       int  rlim_cur; /* current (soft) limit */
+	       int  rlim_max; /* hard limit */
+	  };
+
+     Only the super-user may raise the maximum limits.	Other
+     users may only alter _r_l_i_m__c_u_r within the range from 0 to
+     _r_l_i_m__m_a_x or (irreversibly) lower _r_l_i_m__m_a_x.
+
+     An "infinite" value for a limit is defined as RLIM_INFINITY
+     (0x7fffffff).
+
+     Because this information is stored in the per-process infor-
+     mation, this system call must be executed directly by the
+     shell if it is to affect all future processes created by the
+     shell; _l_i_m_i_t is thus a built-in command to _c_s_h(1).
+
+     The system refuses to extend the data or stack space when
+     the limits would be exceeded in the normal way: a _b_r_e_a_k call
+     fails if the data space limit is reached.	When the stack
+     limit is reached, the process receives a segmentation fault
+     (SIGSEGV); if this signal is not caught by a handler using
+     the signal stack, this signal will kill the process.
+
+     A file I/O operation that would create a file that is too
+     large will cause a signal SIGXFSZ to be generated; this nor-
+     mally terminates the process, but may be caught.  When the
+     soft cpu time limit is exceeded, a signal SIGXCPU is sent to
+     the offending process.
+
+RETURN VALUE
+     A 0 return value indicates that the call succeeded, changing
+     or returning the resource limit.	A return value of -1
+     indicates that an error occurred, and an error code is
+     stored in the global location _e_r_r_n_o.
+
+ERRORS
+     The possible errors are:
+
+     [EFAULT]	    The address specified for _r_l_p is invalid.
+
+     [EPERM]   The limit specified to _s_e_t_r_l_i_m_i_t would have
+		    raised the maximum limit value, and the
+		    caller is not the super-user.
+
+
+
+Printed 11/26/99	  May 13, 1986				2
+
+
+
+
+
+
+GETRLIMIT(2)	    UNIX Programmer's Manual	     GETRLIMIT(2)
+
+
+
+SEE ALSO
+     csh(1), quota(2), sigvec(2), sigstack(2)
+
+BUGS
+     There should be _l_i_m_i_t and _u_n_l_i_m_i_t commands in _s_h(1) as well
+     as in _c_s_h.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 13, 1986				3
+
+
+

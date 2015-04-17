@@ -1,0 +1,66 @@
+
+
+
+HOSTNAME(1)	    UNIX Programmer's Manual	      HOSTNAME(1)
+
+
+
+NAME
+     hostname - set or print name of current host system
+
+SYNOPSIS
+     hostname [ -s ] [ nameofhost ]
+
+DESCRIPTION
+     _H_o_s_t_n_a_m_e prints the name of the current host.  The super-
+     user can set the hostname by supplying an argument; this is
+     usually done in the network initialization script
+     /_e_t_c/_n_e_t_s_t_a_r_t , normally run at boot time.
+
+     Options:
+
+     -s   Trims off any domain information from the printed name.
+
+
+SEE ALSO
+     gethostname(2), sethostname(2)
+
+HISTORY
+     The _h_o_s_t_n_a_m_e command appeared in BSD 4.2 .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	January 29, 1995			1
+
+
+

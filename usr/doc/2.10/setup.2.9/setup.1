@@ -1,0 +1,312 @@
+.ds RH Introduction
+.LP
+.nr H1 1
+.bp
+.LG
+.B
+.ce
+1. INTRODUCTION
+.sp 2
+.R
+.NL
+.PP
+This document explains how to install the 2.9BSD release of the Berkeley
+version of UNIX for the PDP-11 on your system.  If you are running the
+July 1981 release of the system, which was called 2.8BSD, you can avoid
+a full bootstrap from
+the new tape by extracting only the software that has changed.
+Be warned, however, that there are a large number of changes.
+Unless you have many local modifications
+it will probably be easier to bring up an intact 2.9BSD system
+and merge your local changes into it.
+If you are running any other version of UNIX on your
+PDP-11, you will have to do a full bootstrap.
+This means dumping all file systems which are to be retained
+onto tape in a format that can be read in again later (\fItar\fP
+format is best, or V7 \fIdump\fP if the file system configuration
+will be the same).
+A new root file system can be made and read in using
+standalone utilites on the tape.
+The system sources and the rest of the /usr file system
+can then be extracted.
+Finally, old file systems can be reloaded from tape.
+.PP
+To get an overview of the process and an idea
+of some of the alternative strategies that are available,
+it is wise to look through all of these instructions before
+beginning.
+.NH 2
+Hardware supported
+.PP
+This distribution can be booted on a PDP-11/23, 24, 34, 34A, 40, 44, 45,
+55, 60, or 70
+CPU with at least 192 Kbytes of memory and any of the following disks\(dg:
+.DS
+.TS
+lw(1.5i) l.
+DEC MASSBUS:	RM03, RM05, RP04, RP05, RP06
+DEC UNIBUS:	RK05, RK06, RK07, RL01, RL02,
+	RM02, RP03, RP04, RP05, RP06
+AED 8000 UNIBUS:	AMPEX DM980 (emulating RP03)
+AED STORM-II	AMPEX DM980 (emulating RM02)
+DIVA COMP V MASSBUS:	AMPEX 9300
+EMULEX SC-21 UNIBUS:	AMPEX 9300, CDC 9766 (emulating RM05)
+EMULEX SC-11 or SC-21 UNIBUS:	CDC 9762, AMPEX DM980
+.TE
+.DE
+The tape drives\(dg supported by this distribution are:
+.DS
+.TS
+lw(1.5i) l.
+DEC MASSBUS:	TE16, TU45, TU77
+DEC UNIBUS:	TE10, TE16, TS11, TU45, TU77
+DATUM 15X20 UNIBUS:	KENNEDY 9100 (emulating TE10)
+EMULEX TC-11 UNIBUS:	KENNEDY 9100, 9300 (emulating TE10)
+.TE
+.DE
+.FS
+\u\(dg\d Other controllers and drives may be easily usable with the system,
+but might require minor modifications to the system
+to allow bootstrapping.
+The controllers and the drives shown here are known
+to work as bootstrap devices.
+.FE
+.NH 2
+Distribution format
+.PP
+The distribution format is two 9-track 800bpi 2400' magnetic tapes.
+The tapes are also available at 1600bpi.  The format for 1600bpi tapes
+is the same.
+If you are able to do so,
+it is a good idea to immediately copy the
+tapes in the distribution kit to guard against disaster.
+The first tape contains some 512-byte records,
+some 1024-byte records, followed by many 10240-byte records.
+There are interspersed tape marks; end-of-tape is signaled
+by a double end-of-file.
+The second tape contains only 10240-byte records
+with no interspersed tape marks.
+.PP
+The boot tape contains several standalone utility programs,
+a \fIdump\fP image of a root file system, and a \fItar\fP image
+of part of the /usr file system.
+The files on this tape are:
+.DS
+.TS
+center;
+l l c
+n l n.
+File	Contents	Record Size
+
+0	boot block	512
+	(EOR)
+	boot block	512
+	(EOR)
+	Standalone \fBBoot\fP	512
+	(EOF)
+1	Standalone \fBcat\fP	1024
+	(EOF)
+2	This index	1024
+	(use \fBcat\fP to read)
+	(EOF)
+3	Standalone \fBmkfs\fP	1024
+	(see \fImkfs\fP\|(8)\(dg)
+	(EOF)
+4	Standalone \fBrestor\fP	1024
+	(see \fIrestor\fP\|(8))
+	(EOF)
+5	Standalone \fBicheck\fP	1024
+	(see \fIicheck\fP\|(8))
+	(EOF)
+6	Dump of small ``root'' file system	10240
+	(213 10K-byte blocks; see \fIdump\fP\|(8))
+	(EOF)
+7	Tar archive of /usr files	10240
+.\"CHECK
+	(most of the tape; see \fItar\fP\|(1))
+	(EOF)
+	(EOF)
+.TE
+.DE
+.FS
+\u\(dg\dReferences of the form \fIX\fP(\fIY\fP) mean the subsection named
+\fIX\fP in section \fIY\fP of the Berkeley \s-2PDP-11\s0
+\s-2UNIX\s0
+Programmer's manual.
+.FE
+The last file on the tape is a \fItar\fP image of most of the /usr file
+system except for sources (relative to /usr; see \fItar\fP\|(1)).
+It contains most of the binaries and other material
+which is normally kept on-line,
+with the following directories:
+\fB70 adm bin contrib dict doc games include lib local man
+msgs preserve public spool sys tmp ucb\fP.
+.\"CHECK
+It contains 1594 10K byte blocks.
+The second tape contains one file in \fItar\fP format, again relative to /usr,
+.\"CHECK
+consisting of 1958 10K byte blocks and
+containing the source
+tree with all command and kernel sources.
+It contains the directories \fBnet\fP,
+\fBsrc\fP, and \fBingres\fP and includes the Berkeley
+additions (which are in /usr/src/ucb and /usr/ingres).
+The \fBnet\fP directory contains sources for the TCP/IP system.
+.NH 2
+UNIX device naming
+.PP
+UNIX has a set of names for devices that are different
+from the DEC names for the devices.
+The disk and tape names used by the bootstrap and the system are:
+.DS
+.TS
+l l.
+RK05 disks	\fBrk\fP
+RK06, RK07 disks	\fBhk\fP
+RL01, RL02 disks	\fBrl\fP
+RP02, RP03 disks	\fBrp\fP
+TE16, TU45, TU77/TM02, 3 tapes	\fBht\fP
+TE10/TM11 tapes	\fBtm\fP
+TS11 tapes	\fBts\fP
+.TE
+.DE
+.PP
+There is also a generic disk driver, \fBxp\fP, that will handle
+most types of SMD disks on one or more controllers
+(even different types on the same controller).
+The \fBxp\fP driver handles RM02, RM03, RM05, RP04, RP05 and  RP06
+disks on DEC, Emulex, and Diva UNIBUS or MASSBUS controllers.
+.PP
+The standalone system used to bootstrap the full UNIX system
+uses device names of the form:
+.DS
+\fIxx\|\fP(\fIy\fP,\fIz\fP)
+.DE
+where \fIxx\fP is one of \fBhk\fP, \fBht\fP, \fBrk\fP, \fBrl\fP,
+\fBrp\fP, \fBtm\fP, \fBts\fP, or \fBxp\fP.  The value \fIy\fP
+specifies the device or drive unit to use.
+The \fIz\fP
+value is interpreted differently for tapes and disks:
+for disks it is a block offset for a file system
+and for tapes it is a file number on the tape.
+.PP
+Large UNIX physical disks (\fBhk\fP, \fBrp\fP, \fBxp\fP) are divided into 8
+logical disk partitions, each of which may occupy any
+consecutive cylinder range on the physical device.
+The cylinders occupied by the 8 partitions for each drive type
+are specified in section 4 of the Berkeley PDP-11
+\s-2UNIX\s0
+Programmer's manual.\(dg
+.FS
+\u\(dg\dIt is possible to change the partitions
+by changing the values in the disk's sizes array in ioconf.c.
+.FE
+Each partition may be used
+for either a raw data area such as a swapping area or to store a
+UNIX file system.
+It is conventional for the first partition on a disk to be used
+to store a root file system, from which UNIX may be bootstrapped.
+The second partition is traditionally used as a swapping area, and the
+rest of the disk is divided into spaces for additional ``mounted
+file systems'' by use of one or more additional partitions.
+.PP
+The disk partitions have names in the standalone system of the form
+``\fIxx\|\fP(\fIy\fP,\fIz\fP)'' as described above.  Thus partition
+1 of an RK07 at drive 0 would be ``hk(0,5940)''.
+When not running
+standalone, this partition would normally be available as ``/dev/hk0b''.
+Here the prefix ``/dev'' is the name of the directory where all
+``special files'' normally live, the ``hk'' serves an obvious purpose,
+the ``0'' identifies this as a partition of hk drive number ``0''
+and the ``b'' identifies this as partition 1 (where we number
+from 0, the 0th partition being ``hk0a'').
+Finally, ``5940'' is the sector offset to partition 1, as determined
+from the manual page
+.IR hk (4).
+.PP
+Returning to the discussion of the standalone system, we recall
+that tapes also took two integer parameters.  In the case of a
+TE16/TU tape formatter on drive 0, the
+files on the tape have names ``ht(0,0)'', ``ht(0,1)'', etc.
+Here ``file'' means a tape file containing a single data stream
+separated by a single tape mark.
+The distribution tapes have data structures in the tape
+files and though the first tape contains only 8 tape files, it contains
+several thousand UNIX files.
+.NH 2
+UNIX devices: block and raw
+.PP
+UNIX makes a distinction between ``block'' and ``character'' (raw)
+devices.  Each disk has a block device interface where
+the system makes the device byte addressable and you can write
+a single byte in the middle of the disk.  The system will read
+out the data from the disk sector, insert the byte you gave it
+and put the modified data back.  The disks with the names
+``/dev/\fIxx\^\fP0a'', etc. are block devices and thus use
+the system's normal buffering mechanism.
+There are also raw devices available, which do physical I/O operations
+directly from the program's data area.
+These have names like ``/dev/r\fIxx\^\fP0a'', the
+``r'' here standing for ``raw.''  In the bootstrap procedures we
+will often suggest using the raw devices, because these tend
+to work faster.  In general, however, the block
+devices are used.  They are where file systems are ``mounted.''
+The UNIX name space is increased by logically associating (\fImount\fP\|ing)
+a UNIX file system residing on a given block device with a directory
+in the current name space.  See \fImount\fP\|(2) and \fImount\fP\|(8).
+This association is severed by \fIumount\fP.
+.PP
+You should be aware that it is sometimes important to use
+the character device (for efficiency) or not (because it wouldn't
+work, e.g. to write a single byte in the middle of a sector).
+Don't change the instructions by using the wrong type of device
+indiscriminately.
+.NH 2
+Reporting problems or questions
+.PP
+Problems with the software of this distribution, or errors or omissions
+in the documentation, should be reported to the 2BSD group.
+Whenever possible, submit such reports by electronic mail; the address is:
+.DS
+.ta 2i
+2bsd@berkeley	(by ARPAnet)
+  or
+ucbvax!2bsd	(by UUCP)
+.DT
+.DE
+There is a mail drop for bug reports and fixes:
+.DS
+.ta 2i
+2bsd-bugs@berkeley	(by ARPAnet)
+  or
+ucbvax!2bsd-bugs	(by UUCP)
+.DT
+.DE
+These reports or fixes are expected to be in the format generated by the
+\fIsendbug\fP\|(1) program.
+A redistribution list of users who have indicated that they would like to
+receive bug reports is also maintained:
+.DS
+.ta 2i
+2bsd-people@berkeley	(by ARPAnet)
+  or
+ucbvax!2bsd-people	(by UUCP)
+.DT
+.DE
+This list may also be used as a general forum for help requests,
+sharing common experiences, etc.
+Requests to be added to (or deleted from) this list
+should be made to the 2bsd address above.
+If it is not possible to use electronic mail, then call or write the
+2BSD office.
+Although there is seldom someone there to take your call, there is an answering
+machine, and your request will be forwarded to the appropriate person.
+The phone number and mailing address are:
+.DS
+Berkeley \s-1PDP\s0-11 Software Distribution \- 2BSD
+Computer Science Division, Department of \s-1EECS\s0
+573 Evans Hall
+University of California, Berkeley
+Berkeley, California 94720
+(415) 642-6258
+.DE

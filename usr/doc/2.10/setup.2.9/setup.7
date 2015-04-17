@@ -1,0 +1,336 @@
+.nr H1 7
+.nr H2 0
+.ds RH "System Operation
+.ds CF \*(DY
+.bp
+.LG
+.B
+.ce
+7. SYSTEM OPERATION
+.sp 2
+.R
+.NL
+.PP
+This section describes procedures used to operate a PDP-11 UNIX system.
+Procedures described here are used periodically, to reboot the system,
+analyze error messages from devices, do disk backups, monitor
+system performance, recompile system software and control local changes.
+.NH 2
+Bootstrap and shutdown procedures
+.PP
+The system boot procedure varies with the hardware configuration,
+but generally uses the console emulator or a ROM routine to boot
+one of the disks.  /boot comes up and prompts (with ``: '')
+for the name of the system to load.  Simply hitting a carriage return
+will load the default system.
+The system will come up with a single-user shell on the console.
+To bring the system up to a multi-user configuration from the single-user
+status, all you have to do is hit ^D on the console (you should check
+and, if necessary, set the date before going multiuser; see \fIdate\fP\|(1)).
+The system will then execute /etc/rc,
+a multi-user restart script, and come up on the terminals listed as
+active in the file /etc/ttys.
+See
+\fIinit\fP\|(8)
+and
+\fIttys\fP\|(5).
+Note, however, that this does not cause a file system check to be performed.
+Unless the system was taken down cleanly, you should run
+``fsck \-p'' or force a reboot with
+\fIreboot\fP\|(8)
+to have the disks checked.
+.PP
+In an automatic reboot, the system checks the disks and comes up multi-user
+without intervention at the console.
+If the file system check fails, or is interrupted
+(after it prints the date) from the console when a delete/rubout is hit,
+it will leave the system in special-session mode, allowing root to
+log in on one of a limited number of terminals (generally including a dialup)
+to repair file systems, etc.
+The system is then brought to normal multiuser operations by signaling
+init with a SIGINT signal (with ``kill -INT 1'').
+.PP
+To take the system down to a single user state you can use
+.DS
+\fB#\fP kill 1
+.DE
+or use the
+\fIshutdown\fP\|(8)
+command (which is much more polite if there are other users logged in)
+when you are up multi-user.
+Either command will kill all processes and give you a shell on the console,
+almost as if you had just booted.  File systems remain mounted after the
+system is taken single-user.  If you wish to come up multi-user again, you
+should do this by:
+.DS
+\fB#\fP cd /
+\fB#\fP /etc/umount -a
+\fB#\fP ^D
+.DE
+The system can also be halted or rebooted with
+.IR reboot (8)
+if automatic reboots are enabled.
+Otherwise, the system is halted by switching to single-user mode to kill
+all processes, updating the disks with a ``sync'' command, and then
+halting.
+.PP
+Each system shutdown, crash, processor halt and reboot
+is recorded in the file /usr/adm/shutdownlog
+with the cause.
+.NH 2
+Device errors and diagnostics
+.PP
+When errors occur on peripherals or in the system, the system
+prints a warning diagnostic on the console.  These messages are collected
+regularly and written into a system error log file
+/usr/adm/messages by
+.IR dmesg (8).
+.PP
+Error messages printed by the devices in the system are described with the
+drivers for the devices in section 4 of the Berkeley \s-2PDP-11\s0
+UNIX Programmer's manual.
+If errors occur indicating hardware problems, you should contact
+your hardware support group or field service.  It is a good idea to
+examine the error log file regularly
+(e.g. with ``tail \-r /usr/adm/messages'').
+.PP
+If you have \s-2DEC\s0 field service, they should know how to interpret
+these messages.  If they do not, tell them to contact the \s-2DEC\s0 \s-2UNIX\s0
+Engineering Group.
+.NH 2
+File system checks, backups and disaster recovery
+.PP
+Periodically (say every week or so in the absence of any problems)
+and always (usually automatically) after a crash,
+all the file systems should be checked for consistency
+by
+\fIfsck\fP\|(8).
+The procedures of
+\fIboot\fP\|(8) or
+\fIreboot\fP\|(8)
+should be used to get the system to a state where a file system
+check can be performed manually or automatically.
+.PP
+Dumping of the file systems should be done regularly,
+since once the system is going it is easy to
+become complacent.
+Complete and incremental dumps are easily done with
+\fIdump\fP\|(8).
+You should arrange to do a towers-of-Hanoi dump sequence; we tune
+ours so that almost all files are dumped on two tapes and kept for at
+least a week in almost every case.  We take full dumps every month (and keep
+these indefinitely).
+.PP
+Dumping of files by name is best done by
+\fItar\fP\|(1)
+but the amount of data that can be moved in this way is limited
+to a single tape.
+Finally, if there are enough drives, entire
+disks can be copied with
+\fIdd\fP\|(1)
+using the raw special files and an appropriate
+block size.
+.PP
+It is desirable that full dumps of the root file system are made regularly.
+This is especially true when only one disk is available.
+Then, if the
+root file system is damaged by a hardware or software failure, you
+can rebuild a workable disk using a standalone restore in the
+same way that \fIrestor\fP was used to build the initial root file
+system.
+.PP
+Exhaustion of user-file space is certain to occur
+now and then;
+the only mechanisms for controlling this phenomenon
+are occasional use of
+\fIdf\fP\|(1),
+\fIdu\fP\|(1),
+\fIquot\fP\|(8),
+threatening
+messages of the day, personal letters, and (probably as
+a last resort) quotas (see \fIsetquota\fP\|(8)).
+.NH 2
+Moving file system data
+.PP
+If you have the equipment,
+the best way to move a file system
+is to dump it to magtape using
+\fIdump\fP\|(8),
+to use
+\fImkfs\fP\|(8)
+to create the new file system,
+and restore, using \fIrestor\fP\|(8), the tape.
+If for some reason you don't want to use magtape,
+dump accepts an argument telling where to put the dump;
+you might use another disk.
+Sometimes a file system has to be increased in logical size
+without copying.
+The super-block of the device has a word
+giving the highest address that can be allocated.
+For small increases, this word can be patched
+using the debugger \fIadb\fP\|(1)
+and the free list reconstructed using
+\fIfsck\fP\|(8).
+The size should not be increased greatly
+by this technique, since the file system will then be short of inode slots.
+Read and understand the description given in
+\fIfilsys\fP\|(5)
+before playing around in this way.
+.PP
+If you have to merge a file system into another, existing one,
+the best bet is to
+use
+\fItar\fP\|(1).
+If you must shrink a file system, the best bet is to dump
+the original and restor it onto the new file system.
+However, this will not work if the i-list on the smaller file system
+is smaller than the maximum allocated inode on the larger.
+If this is the case, reconstruct the file system from scratch
+on another file system (perhaps using \fItar\fP\|(1)) and then dump it.
+If you
+are playing with the root file system and only have one drive
+the procedure is more complicated.
+What you do is the following:
+.IP 1.
+GET A SECOND PACK!!!!
+.IP 2.
+Dump the root file system to tape using
+\fIdump\fP\|(8).
+.IP 3.
+Bring the system down and mount the new pack.
+.IP 4.
+Load the standalone versions of
+\fImkfs\fP\|(8)
+and
+\fIrestor\fP\|(8)
+.\"CHECK
+as in sections 2.1-2.3 above.
+.IP 5.
+Boot normally
+using the newly created disk file system.
+.PP
+Note that if you add new disk
+drivers they should also be added to the standalone system in
+/usr/src/sys/stand.
+.NH 2
+Monitoring System Performance
+.PP
+The
+.IR iostat (8)
+and
+.IR vmstat (8)
+programs provided with the system are designed to aid in monitoring
+systemwide activity.
+By running them
+when the system is active you can judge the system activity in several
+dimensions: job distribution, virtual memory load, swapping
+activity, disk and CPU utilization.
+Ideally, there should be few blocked (DW) jobs,
+there should be little swapping activity, there should
+be available bandwidth on the disk devices (most single arms peak
+out at 30-35 tps in practice), and the user CPU utilization (US) should
+be high (above 60%).
+.PP
+If the system is busy, then the count of active jobs may be large,
+and several of these jobs may often be blocked (DW).  
+.PP
+If you run
+.I vmstat
+when the system is busy (a ``vmstat 5'' gives all the
+numbers computed by the system), you can find
+imbalances by noting abnormal job distributions.  If many
+processes are blocked (DW), then the disk subsystem
+is overloaded or imbalanced.  If you have several non-DMA
+devices or open teletype lines that are ``ringing'', or user programs
+that are doing high-speed non-buffered input/output, then the system
+time may go high (60-70% or higher).
+It is often possible to pin down the cause of high system time by
+looking to see if there is excessive context switching (CS), interrupt
+activity (IN) or system call activity (SY).
+.PP
+If the system is heavily loaded, or if you have little memory
+for your load (248K is little in almost any case), then the system
+will be forced to swap.  This is likely to be accompanied by a noticeable
+reduction in system performance and pregnant pauses when interactive
+jobs such as editors swap out.
+If you expect to be in a memory-poor environment
+for an extended period you might consider administratively
+limiting system load.
+.NH 2
+Adding users
+.PP
+New users can be added to the system by adding a line to the
+password file
+/etc/passwd.
+You should add accounts for the initial user community, giving
+each a directory and a password, and putting users who will wish
+to share software in the same group.
+User id's should be assigned starting with 16 or higher, as lower
+id's are treated specially by the system.
+Default startup files should probably provided for new users
+and can be copied from /usr/public.
+Initial passwords should be set also.
+.PP
+A number of guest accounts have been provided on the distribution
+system; these accounts are for people at Berkeley and at Bell Laboratories
+who have done major work on UNIX in the past.  You can delete these accounts,
+or leave them on the system if you expect that these people would have
+occasion to login as guests on your system.
+.NH 2
+Accounting
+.PP
+UNIX currently optionally records two kinds of accounting information:
+connect time accounting and process resource accounting.  The connect
+time accounting information is normally stored in the file /usr/adm/wtmp,
+which is summarized by the program
+.IR ac (8).
+The process time accounting information is stored in the file /usr/adm/acct,
+and analyzed and summarized by the program
+.IR sa (8).
+.PP
+If you need to implement recharge for computing time, you can implement
+procedures based on the information provided by these commands.
+A convenient way to do this is to give commands to the clock daemon
+/etc/cron
+to be executed every day at a specified time.  This is done by adding
+lines to /usr/adm/crontab; see
+.IR cron (8)
+for details.
+.NH 2
+Resource control
+.PP
+Resource control in the current version of UNIX is rather primitive.
+Disk space usage can be monitored by
+.IR du (1)
+or
+.IR quot (8)
+as was previously mentioned.
+Disk quotas can be set and changed with \fIsetquota\fP\|(8)
+if the kernel has been configured for quotas.
+Our quota mechanism is simplistic and easily defeated but
+does make users more aware of the amount of space they use.
+.NH 2
+Files which need periodic attention
+.PP
+We conclude the discussion of system operations by listing
+the files and directories that continue to grow
+and thus require periodic truncation,
+along with references to relevant manual pages.
+.IR Cron (8)
+can be used to run scripts to
+truncate these periodically, possibly summarizing first
+or saving recent entries.
+Some of these can be disabled if you don't need to collect the information.
+.TS
+center;
+lb l a.
+/usr/adm/acct	sa(8)	raw process account data
+/usr/adm/messages	dmesg(8)	system error log
+/usr/adm/shutdownlog	shutdown(8)	log of system reboots
+/usr/adm/wtmp	ac(8)	login session accounting
+/usr/spool/uucp/LOGFILE	uulog(1)	uucp log file
+/usr/spool/uucp/SYSLOG	uulog(1)	more uucp logging
+/usr/dict/spellhist	spell(1)	spell log
+/usr/lib/learn/log	learn(1)	learn lesson logging
+/usr/sys	savecore(8)	system core images
+.TE

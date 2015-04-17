@@ -1,0 +1,66 @@
+
+
+
+MKERRLST(1)	    UNIX Programmer's Manual	      MKERRLST(1)
+
+
+
+NAME
+     mkerrlst - create system error file
+
+SYNOPSIS
+     mkerrlst [ -i _i_n_p_u_t_f_i_l_e ] [ -o _o_u_t_p_u_t_f_i_l_e ]
+
+DESCRIPTION
+     Mkerrlst(1) creates error message files in the format
+     described by syserrlst(5).
+
+     With no arguments mkerrlst creates the file /_e_t_c/_s_y_s_e_r_r_l_s_t
+     from the internal array sys_errlist.
+
+     Give just the -o option mkerrlst will create the file _o_u_t_-
+     _p_u_t_f_i_l_e from the internal array sys_errlist.
+
+     Given just the -i option mkerrlst will create the file
+     /_e_t_c/_s_y_s_e_r_r_l_s_t from the input file _i_n_p_u_t_f_i_l_e.
+
+     Given both -i and -o options mkerrlst will create the error
+     message file _o_u_t_p_u_t_f_i_l_e from the strings contained in _i_n_p_u_t_-
+     _f_i_l_e.
+
+     NOTE: error messages are numbered from 0.	If the error 0
+     does not have a message associated with it the first string
+     in _i_n_p_u_t_f_i_l_e must still be present.
+
+RETURN VALUE
+     mkerrlst exits with status of 0 if no errors are encoun-
+     tered.  If errors do occur an error message is printed on
+     _s_t_d_e_r_r and the exit status is 1.
+
+ERRORS
+     mkerrlst(1) can encounter any of the errors for the open(2),
+     lseek(2), read(2), or write(2) system calls.
+
+SEE ALSO
+     syserrlst(3) syserrlst(5)
+
+HISTORY
+     mkerrlst(1), first appeared in 2.11BSD.
+
+BUGS
+     Error messages can be a maximum of 80 characters.
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 March 14, 1996                         1
+
+
+

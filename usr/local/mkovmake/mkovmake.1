@@ -1,0 +1,273 @@
+./" mkovmake	by dennisf@ndcvx.cc.nd.edu
+./"	June 1990
+./"
+.TH MKOVMAKE 8 "June 30, 1990"
+.SH NAME
+mkovmake \- optimizing overlay makefile generator
+.SH SYNOPSIS
+.B mkovmake
+.RB [ \-O\fIn\fP
+.RI [ basesize ]
+.RB [ \-n ]]
+.RB [ \-f
+.IR makefile ]
+.RB [ \-s
+.IR ovsize ]
+.if n .ti +.5i
+.RB [ \-v
+.IR "max ov's" ]
+.RB [ \-o
+.IR program ]
+.RB [ \-l
+.IR "libraries ..." ]
+.ti +.5i
+.RI [ archives ".a ...]"
+.IR basemodules ".o ..."
+.B \-Z
+.IR ovmodules ".o ..."
+.SH DESCRIPTION
+.PP
+.I Mkovmake
+produces an overlay makefile (see
+.IR make (1))
+for a given set of object modules (see
+.IR ld (1)).
+It is intended to be used inside makefiles in order to avoid
+computing module sizes and base/overlay structures each time
+changes are made in the source.
+.I Mkovmake
+can be included, as shown in the examples below, inside makefiles
+of distributed sources so that the base and overlays would be
+automatically constructed whenever the program is made by a PDP-11.
+The makefile generated contains the
+.I make
+entry necessary for loading the modules together into an 
+automatic-overlay executable.
+.PP
+There are several options to allow various levels of user involvement
+in the construction process.  These options set the sizes of various
+components or the name of either the generated makefile or the 
+.I make
+entry inside it.  If these options are not used, 
+.I mkovmake
+will guess at the best sizes and use standard names, respectively.
+.SH OPTIONS
+.TP
+.BI \-O n
+Use optimizer level 
+.IR n .
+.RS
+.TP
+.B \-O1
+Put only those modules listed before the
+.B \-Z
+in the base, and construct optimal overlays for the remaining modules.
+The algorithm of optimization for overlays is to iteratively add the module
+with the greatest number of "ties" with the modules currently on the overlay.
+A "tie" is a match between a global undefined symbol (see
+.IR nm (1))
+in one module with
+a global text symbol in another.  This measure is on a per-kbyte of text
+basis, and modules are added until no more will fit.  If
+.I n
+is not specified, level
+.B 1
+optimization is assumed.
+.TP
+.B \-O2
+Optimize both the base and the overlays.  If a
+.B \-Z
+flag is used, modules before it will be placed in the base, plus those
+modules with the greatest number of global text symbols per kbyte of text,
+until no more modules will fit.  If no 
+.B \-Z
+appears on the command line, 
+.I mkovmake
+will assume no initial base preference and will examine all modules for
+base and overlay optimization.  This is recommended for beginners.
+.TP
+.I basesize
+If level-2 optimization is specified and the following argument begins 
+with a number, it will be used as the size of the base, without libraries.
+If not used, 
+.I mkovmake
+will guess at how much room the libraries will take up, upto 24k.  
+If 
+.I basesize
+is followed by the letter "k" or "K", it will be multiplied by 1024.
+If it is less than 10, it will be multiplied by 8192.
+.TP
+.B \-n
+List the global text and undefined symbols as they are encountered,
+preceded by the module name and a "T" for text or "U" for undefined.
+.LP
+If no optimization is specified, modules will be
+packed on overlays
+as they appear in the command line until no more fit.
+.RE
+.TP
+.BI \-f makefile
+Specify the name of the generated makefile.  If not specified, 
+.B stdout
+will be used.
+.TP
+.BI \-s ovsize
+Specify the maximum size of overlays.  Just as 
+.I basesize
+above, if followed by a "k" or "K", 
+.I ovsize
+will be multiplied by 1024, and if less than 10, it will be multiplied
+by 8192.  If 
+.I ovsize
+is not specified, 
+.I mkovmake
+will compute the total amount of text that is not already assigned
+to the base, and guess at the size of overlays.
+.I Mkovmake
+guesses, pessimisticly, that 1/16th of each overlay will be left
+blank.
+.TP
+.ne 3
+.BI \-v "max ov's"
+Specify the maximum number of overlays to use.  The default is
+.SM NOVL,
+15.
+.TP
+.BI \-o program
+The name of the program being made.  This is used in the 
+.I make
+entry generated after the base and overlay definitions.  If not used,
+the makefile macro
+.SM $(PROGRAM)
+will be inserted.
+.TP
+.BI \-l libraries " ..."
+.PD 0
+.TP
+.IR archives ".a ..."
+.PD
+Extra libraries or archives, such as 
+.I termlib
+or
+.I m
+can be specified, and will be placed in the generated
+.I make
+entry preceding the 
+.I c
+library.  If not used, 
+.SM $(LIBS)
+will be inserted.  Multiple libraries and archives can be specified
+and will be placed together in the order 
+they appear on the command line.
+.TP
+.ne 3
+\fIbasemodules\fR.o ... \fB\-Z \fIovmodules\fR.o ...
+Specify modules to be placed in the base and overlays, respectively.
+.I Mkovmake
+will ignore all redundancies, so 
+.IR ovmodules .o
+may be a macro of all modules, while
+.IR basemodules .o
+may be a subset.  If using level-2 optimization, only one list, the
+macro of all modules, is necessary.
+.SH EXAMPLES
+.PP
+If 
+.I
+mkovmake
+is being used inside a makefile, the following lines can be inserted
+to automatically construct the base and overlay definitions and
+load the result.  The macro
+.SM $(OBJS)
+is the list of all modules, 
+.B mybigprogram
+is the program being made, and 
+.B termlib
+is a library that has to be loaded with the object modules:
+.nf
+.ta +.5i
+	mkovmake \-fOvmakefile \-O2 $(OBJS) \-omybigprogram \-ltermlib
+	make \-f Ovmakefile
+.fi
+.PP
+If it is known that 
+.SM $(BASE)
+is a macro of the only modules that are wanted in the base,
+.SM $(GAME)
+is the program being made, and
+.SM $(LIBS)
+contains libraries (with \-l prefixed) to be loaded with the modules,
+the following lines can be used:
+.nf
+	mkovmake \-fOvmakefile \-O \-o$(GAME) $(LIBS) $(BASE) \-Z $(OBJS)
+	make \-f Ovmakefile
+.fi
+.PP
+If the user just wants a sample optimal makefile for the modules in
+the current working directory,
+.nf
+	mkovmake \-O2 *.o
+.fi
+.SH "SEE ALSO"
+make(1), nm(1), ld(1), strip(1), a.out(5), nlist(3)
+.SH DIAGNOSTICS
+.TP
+.B mkovmake: " unknown file type."
+A command-line argument not recognized as an option argument didn't
+end in
+.B .o
+or
+.BR .a .
+.TP
+.B mkovmake: " not enough memory for ..."
+.I mkovmake
+failed to use
+.IR malloc (2)
+to clear space for a needed list.
+.TP
+.B mkovmake: " specified modules don't fit in base."
+Level-2 optimization was used, and some modules were specified to
+be put in the base.  But these modules were too big.  Use
+.I basesize
+to increase the base allotment, or reduce the number of base modules.
+.SH BUGS
+.PP
+Certain pathological cases may cause unpredictable results.  In
+particular, if the argument to an 
+.BR \-f ,
+.BR \-o ,
+or
+.B \-l
+option is separated from the 
+.BR f ,
+.BR o ,
+or
+.B l
+by a space or tab, and the argument ends, for some reason, in
+.BR .o ,
+the second parsing of the command line will think it's a name of
+an object module and attempt to open it.  Otherwise, options and
+names of modules may be freely mixed.
+.PP
+.I Mkovmake
+assumes that all arguments ending with 
+.B .o 
+or 
+.B .a 
+are simple object modules or archives, respectively, rather than
+looking at the magic number and complaining if not.
+.PP
+There is no way to tell
+.I mkovmake
+to put a certain group of modules together on an overlay.
+.PP
+.I Mkovmake
+is incapable of telling how
+.I often
+a routine is called, or whether an executable could be loaded even
+without overlays.
+.SH AUTHOR
+.nf
+Dennis T. Flaherty,
+U of Notre Dame
+dennisf@ndcvx.cc.nd.edu

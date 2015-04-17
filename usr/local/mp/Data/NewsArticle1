@@ -1,0 +1,57 @@
+Article: 3019 of +Comp.object
+Path: swan!bbn.com!mit-eddie!rutgers!uwm.edu!rpi!image.soe.clarkson.edu!news
+From: cline@cheetah.ece.clarkson.edu (Marshall Cline)
+Newsgroups: comp.lang.c++,comp.object
+Subject: ``Object Oriented Design'' by Grady Booch -- A First Look
+Message-ID: <CLINE.90Jun2004848@cheetah.ece.clarkson.edu>
+Date: 2 Jun 90 04:51:44 GMT
+Sender: news@sun.soe.clarkson.edu
+Reply-To: cline@sun.soe.clarkson.edu (Marshall Cline)
+Distribution: comp
+Organization: (I don't speak for the) ECE Dept, Clarkson Univ, Potsdam, NY
+Lines: 44
+Xref: swan comp.lang.c++:3019
+
+Benjamin/Cummings just sent me a fresh copy of Grady Booch's new book:
+``Object Oriented Design''.  I had heard good things about it 4th hand, and
+I must say that I haven't been let down.  I like the numerous good examples,
+the Software Engineering approach, and the emphasis on design.  I've skimmed
+it, and will give a more complete report in a few weeks.  But my first
+impressions were very positive.  It's about time we had a good OOD book!
+
+	Author:		Grady Booch
+	Title:		Object Oriented Design with Applications
+	Publisher:	Benjamin/Cummings
+	ISBN:		0-8053-0091-0
+	Copyright:	1991
+
+A couple of initial thoughts: the book is not based on any one OOPL, but
+rather gives roughly equal time to C++, Smalltalk, CLOS, Object Pascal, and
+Ada.  He doesn't seem to `put down' any one of these, but rather discusses
+their relative strengths and weaknesses in a sensible manner.
+
+The book is distinctly *not* a book from which you could learn all the
+nuiances of any of these languages; rather it centers on the concepts of how
+you do *design* in the OO paradigm.
+
+Booch seems very concerned with unconstrained software complexity.  OOP
+isn't just a fun theoretical ideal to him, but it's something which may
+alleviate the software crisis we are presently battling.  He's wants
+`industrial strength software'.  Healthy dose of reality.
+
+The Section on Applications looks good.  It's quite a healthy chunk of the
+book (250 pgs out of around 500 total).  There's a rather large example in
+each of the major programming languages.  The key (as I understand Booch's
+goals) is not `this language or that', but rather how can these problems be
+*designed* using OO technology.  His method is: design a little, implement a
+little, think it through and redesign, etc.  Most of us are embarassed to
+admit that we do it that way too rather than getting it right the first time.
+
+Marshall Cline
+--
+==============================================================================
+Marshall Cline / Asst.Prof / ECE Dept / Clarkson Univ / Potsdam, NY 13676
+cline@sun.soe.clarkson.edu / Bitnet:BH0W@CLUTX / uunet!clutx.clarkson.edu!bh0w
+Voice: 315-268-3868 / FAX: 315-268-7600
+Career search in progress; ECE faculty; research oriented; will send vita.
+==============================================================================

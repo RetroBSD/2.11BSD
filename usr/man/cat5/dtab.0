@@ -1,0 +1,66 @@
+
+
+
+DTAB(5)             UNIX Programmer's Manual		  DTAB(5)
+
+
+
+NAME
+     dtab - automatic system configuration device table (2BSD)
+
+DESCRIPTION
+     The _d_t_a_b file contains a list of the devices that the _a_u_t_o_-
+     _c_o_n_f_i_g(8) program will attempt to attach to the system.
+
+     Each line describes one device which may be present on the
+     system; additional devices of the same type require addi-
+     tional lines.  The line contains at least six fields
+     separated by white space.	Blank lines and comments can
+     appear anywhere in the file except between fields; comments
+     are delimited by `#' and new line.  The fields are (in
+     order):
+
+     dev	 The device name, usually two characters
+
+     unit	 Either a unit number or a `?' indicating
+		 automatic selection of unit numbers.
+
+     addr	 The address of the device's first register, as a
+		 16-bit octal number.
+
+     vector	 The interrupt vector, in octal.
+
+     BR          The priority at which the device interrupts.
+
+     handler(s)  One or more routine names with which the inter-
+		 rupt vector is filled.
+
+EXAMPLE
+     #		     Device Configuration Table
+     #	  Clock and console are pre-configured and should not be listed here
+     #
+     # Dev#	 Addr	 Vector  Br Handler(s)	    # Comment
+     lp   ?	 177514  200	 4  lpio	    # lp-11 line printer
+     ht   0	 172440  224	 5  htintr	    # tu 16 massbus tape
+     xp   ?	 176700  254	 5  xpio	    # xp driver
+     dm   ?	 170500  310	 4  dmin	    # dm11 dh modem control
+     dh   ?	 160020  320	 5  dhin dhou	    # dh11 terminal mux
+     dz   ?	 160110  330	 5  dzin dzdma	    # dz11 terminal mux
+
+FILES
+     /etc/dtab		 device table
+
+SEE ALSO
+     autoconfig(8)
+
+BUGS
+     /_E_t_c/_d_t_a_b is unique to the PDP-11 and 2BSD.
+
+
+
+
+
+Printed 11/26/99	January 22, 1987			1
+
+
+

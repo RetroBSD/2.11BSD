@@ -1,0 +1,132 @@
+
+
+
+TALK(1)             UNIX Programmer's Manual		  TALK(1)
+
+
+
+NAME
+     talk - talk to another user
+
+SYNOPSIS
+     talk person [ ttyname ]
+
+DESCRIPTION
+     _T_a_l_k is a visual communication program which copies lines
+     from your terminal to that of another user.
+
+     If you wish to talk to someone on you own machine, then _p_e_r_-
+     _s_o_n is just the person's login name. If you wish to talk to
+     a user on another host, then _p_e_r_s_o_n is of the form :
+
+			 _h_o_s_t!_u_s_e_r  or
+			 _h_o_s_t._u_s_e_r  or
+			 _h_o_s_t:_u_s_e_r  or
+			 _u_s_e_r@_h_o_s_t
+
+     though _h_o_s_t@_u_s_e_r is perhaps preferred.
+
+     If you want to talk to a user who is logged in more than
+     once, the _t_t_y_n_a_m_e argument may be used to indicate the
+     appropriate terminal name.
+
+     When first called, it sends the message
+
+	  Message from TalkDaemon@his_machine...
+	  talk: connection requested by your_name@your_machine.
+	  talk: respond with: talk your_name@your_machine
+
+     to the user you wish to talk to. At this point, the reci-
+     pient of the message should reply by typing
+
+	  talk	your_name@your_machine
+
+     It doesn't matter from which machine the recipient replies,
+     as long as his login-name is the same.  Once communication
+     is established, the two parties may type simultaneously,
+     with their output appearing in separate windows. Typing con-
+     trol L will cause the screen to be reprinted, while your
+     erase, kill, and word kill characters will work in talk as
+     normal.  To exit, just type your interrupt character; _t_a_l_k
+     then moves the cursor to the bottom of the screen and
+     restores the terminal.
+
+     Permission to talk may be denied or granted by use of the
+     _m_e_s_g command.  At the outset talking is allowed.  Certain
+     commands, in particular _n_r_o_f_f and _p_r(1) disallow messages in
+     order to prevent messy output.
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			1
+
+
+
+
+
+
+TALK(1)             UNIX Programmer's Manual		  TALK(1)
+
+
+
+FILES
+     /etc/hosts     to find the recipient's machine
+     /var/run/utmp  to find the recipient's tty
+
+SEE ALSO
+     mesg(1), who(1), mail(1), write(1)
+
+BUGS
+     The version of _t_a_l_k(1) released with 4.3BSD uses a protocol
+     that is incompatible with the protocol used in the version
+     released with 4.2BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			2
+
+
+

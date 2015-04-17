@@ -1,0 +1,66 @@
+
+
+
+FDATE(3F)	    UNIX Programmer's Manual		FDATE(3F)
+
+
+
+NAME
+     fdate - return date and time in an ASCII string
+
+SYNOPSIS
+     subroutine fdate (string)
+     character*(*) string
+
+     character*(*) function fdate()
+
+DESCRIPTION
+     _F_d_a_t_e returns the current date and time as a 24 character
+     string in the format described under _c_t_i_m_e(3).  Neither
+     `newline' nor NULL will be included.
+
+     _F_d_a_t_e can be called either as a function or as a subroutine.
+     If called as a function, the calling routine must define its
+     type and length. For example:
+
+	  character*24	 fdate
+	  external	 fdate
+
+	  write(*,*) fdate()
+
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     ctime(3), time(3F), itime(3F), idate(3F), ltime(3F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 27, 1986				1
+
+
+

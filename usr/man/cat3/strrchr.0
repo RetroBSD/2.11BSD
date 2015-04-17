@@ -1,0 +1,132 @@
+
+
+
+COMPATS5(3)	    UNIX Programmer's Manual	      COMPATS5(3)
+
+
+
+NAME
+     memccpy, memchr, memcmp, memcpy, memset, strchr, strrchr,
+     tempnam, tmpfile, tmpnam - System V compatibility routines
+
+SYNOPSIS
+     char *memccpy(from, to, ch, count)
+     char *from, *to;
+     int ch, count;
+
+     char *memchr(str, ch, count)
+     char *str;
+     int ch, count;
+
+     int memcmp(str1, str2, count)
+     char *str1, *str2;
+     int count;
+
+     char *memcpy(from, to, count)
+     char *from, to;
+     int count;
+
+     char *memset(str, ch, count)
+     char *str;
+     int ch, count;
+
+     char *strchr(str, ch);
+     char *str;
+     int ch;
+
+     char *tempnam(tmpdir, prefix)
+     char *tmpdir, *prefix;
+
+     char *tmpfile()
+
+     char *tmpnam(str)
+     char *str;
+
+COMMENT
+     The #_d_e_f_i_n_e_s _P__t_m_p_d_i_r and _L__t_m_p_n_a_m, used by the routines
+     _t_e_m_p_n_a_m, _t_m_p_f_i_l_e, and _t_m_p_n_a_m are not available in <_s_t_d_i_o._h>.
+     If the code requires them, just use:
+
+     #include <sys/param.h>
+     #define   P_tmpdir  "/usr/tmp"
+     #define   L_tmpnam  MAXPATHLEN
+
+     Also, note that the caveat in the System V manual page that
+     these functions can start recycling previously used names is
+     untrue in this system.
+
+DESCRIPTION
+     The above routines are available and behave as in System V.
+
+
+
+Printed 11/26/99	January 12, 1996			1
+
+
+
+
+
+
+COMPATS5(3)	    UNIX Programmer's Manual	      COMPATS5(3)
+
+
+
+     strchr() and strrchr() are simply an alternate entry points
+     into index() and rindex() respectively.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 12, 1996			2
+
+
+

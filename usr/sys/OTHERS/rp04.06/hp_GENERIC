@@ -1,0 +1,4 @@
+NHP		0		# RJP04/06, RWP04/06
+HP_DKN		0		# drive # for iostat disk monitoring
+
+#BOOTDEV	rp			# rp03 boot device

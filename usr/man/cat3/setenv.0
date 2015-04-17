@@ -1,0 +1,66 @@
+
+
+
+GETENV(3)	    UNIX Programmer's Manual		GETENV(3)
+
+
+
+NAME
+     getenv, setenv, unsetenv - manipulate environmental vari-
+     ables
+
+SYNOPSIS
+     char *getenv(name)
+     char *name;
+
+     setenv(name, value, overwrite)
+     char *name, value;
+     int overwrite;
+
+     void unsetenv(name)
+     char *name;
+
+DESCRIPTION
+     _G_e_t_e_n_v searches the environment list (see _e_n_v_i_r_o_n(7)) for a
+     string of the form _n_a_m_e=_v_a_l_u_e and returns a pointer to the
+     string _v_a_l_u_e if such a string is present, and 0 (NULL) if it
+     is not.
+
+     _S_e_t_e_n_v searches the environment list as _g_e_t_e_n_v does; if the
+     string _n_a_m_e is not found, a string of the form _n_a_m_e=_v_a_l_u_e is
+     added to the environment.	If it is found, and _o_v_e_r_w_r_i_t_e is
+     non-zero, its value is changed to _v_a_l_u_e.  _S_e_t_e_n_v returns 0
+     on success and -1 on failure, where failure is caused by an
+     inability to allocate space for the environment.
+
+     _U_n_s_e_t_e_n_v removes all occurrences of the string _n_a_m_e from the
+     environment.  There is no library provision for completely
+     removing the current environment.	It is suggested that the
+     following code be used to do so.
+
+	  static char	 *envinit[1];
+	  extern char	 **environ;
+	  environ = envinit;
+
+     All of these routines permit, but do not require, a trailing
+     equals (``='') sign on _n_a_m_e or a leading equals sign on
+     _v_a_l_u_e.
+
+SEE ALSO
+     csh(1), sh(1), execve(2), environ(7)
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 March 20, 1987                         1
+
+
+

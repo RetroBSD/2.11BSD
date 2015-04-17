@@ -1,0 +1,66 @@
+
+
+
+WHICH(1)	    UNIX Programmer's Manual		 WHICH(1)
+
+
+
+NAME
+     which - locate a program file including aliases and paths
+     (_c_s_h only)
+
+SYNOPSIS
+     which [ name ] ...
+
+DESCRIPTION
+     _W_h_i_c_h takes a list of names and looks for the files which
+     would be executed had these names been given as commands.
+     Each argument is expanded if it is aliased, and searched for
+     along the user's path.  Both aliases and path are taken from
+     the user's .cshrc file.
+
+FILES
+     ~/.cshrc  source of aliases and path values
+
+DIAGNOSTICS
+     A diagnostic is given for names which are aliased to more
+     than a single word, or if an executable file with the argu-
+     ment name was not found in the path.
+
+BUGS
+     Must be executed by a csh, since only csh's know about
+     aliases.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

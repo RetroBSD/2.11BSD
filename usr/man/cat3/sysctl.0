@@ -1,0 +1,792 @@
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+NAME
+     sysctl - get or set system information
+
+SYNOPSIS
+     #include <sys/sysctl.h>
+
+     int
+     sysctl(name, namelen, oldp, *oldlenp, *newp, newlen)
+	int *name;
+	u_int namelen;
+	void *oldp;
+	size_t *oldlenp;
+	void *newp;
+	size_t newlen
+
+DESCRIPTION
+     The sysctl function retrieves system information and allows
+     processes with appropriate privileges to set system informa-
+     tion.  The information available from sysctl consists of
+     integers, strings, and tables.  Information may be retrieved
+     and set from the command interface using the _s_y_s_c_t_l(1) util-
+     ity.
+
+     Unless explicitly noted below, sysctl returns a consistent
+     snapshot of the data requested.  Calls to sysctl are serial-
+     ized to avoid deadlock.
+
+     The state is described using a ``Management Information
+     Base'' (MIB) style name, listed in _n_a_m_e , which is a _n_a_m_e_l_e_n
+     length array of integers.
+
+     The information is copied into the buffer specified by _o_l_d_p
+     .	The size of the buffer is given by the location specified
+     by _o_l_d_l_e_n_p before the call, and that location gives the
+     amount of data copied after a successful call.  If the
+     amount of data available is greater than the size of the
+     buffer supplied, the call supplies as much data as fits in
+     the buffer provided and returns with the error code ENOMEM.
+     If the old value is not desired, _o_l_d_p and _o_l_d_l_e_n_p should be
+     set to NULL.
+
+     The size of the available data can be determined by calling
+     sysctl with a NULL parameter for _o_l_d_p.  The size of the
+     available data will be returned in the location pointed to
+     by _o_l_d_l_e_n_p.  For some operations, the amount of space may
+     change often.  For these operations, the system attempts to
+     round up so that the returned size is large enough for a
+     call to return the data shortly thereafter.
+
+     To set a new value, _n_e_w_p is set to point to a buffer of
+     length _n_e_w_l_e_n from which the requested value is to be taken.
+     If a new value is not to be set, _n_e_w_p should be set to NULL
+
+
+
+Printed 11/26/99	January 13, 1995			1
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     and _n_e_w_l_e_n set to 0.
+
+     The top level names are defined with a CTL_ prefix in
+     <_s_y_s/_s_y_s_c_t_l._h>, and are as follows.  The next and subsequent
+     levels down are found in the include files listed here, and
+     described in separate sections below.
+
+       Name	    Next level names	  Description
+       CTL_DEBUG    sys/sysctl.h	  Debugging
+       CTL_FS	    sys/sysctl.h	  File system
+       CTL_HW	    sys/sysctl.h	  Generic CPU, I/O
+       CTL_KERN     sys/sysctl.h	  High kernel limits
+       CTL_MACHDEP  sys/sysctl.h	  Machine dependent
+       CTL_NET	    sys/socket.h	  Networking
+       CTL_USER     sys/sysctl.h	  User-level
+       CTL_VM	    vm/vm_param.h	  Virtual memory
+
+     For example, the following retrieves the maximum number of
+     processes allowed in the system:
+
+	  int mib[2], maxproc;
+	  size_t len;
+
+	  mib[0] = CTL_KERN;
+	  mib[1] = KERN_MAXPROC;
+	  len = sizeof(maxproc);
+	  sysctl(mib, 2, &maxproc, &len, NULL, 0);
+
+     To retrieve the standard search path for the system utilities:
+
+	  int mib[2];
+	  size_t len;
+	  char *p;
+
+	  mib[0] = CTL_USER;
+	  mib[1] = USER_CS_PATH;
+	  sysctl(mib, 2, NULL, &len, NULL, 0);
+	  p = malloc(len);
+	  sysctl(mib, 2, p, &len, NULL, 0);
+
+CTL_DEBUG
+     The debugging variables vary from system to system.  A
+     debugging variable may be added or deleted without need to
+     recompile sysctl to know about it.  Each time it runs,
+     sysctl gets the list of debugging variables from the kernel
+     and displays their current values.  The system defines
+     twenty _s_t_r_u_c_t _c_t_l_d_e_b_u_g variables named _d_e_b_u_g_0 through
+     _d_e_b_u_g_1_9.  They are declared as separate variables so that
+     they can be individually initialized at the location of
+     their associated variable.  The loader prevents multiple use
+     of the same variable by issuing errors if a variable is ini-
+     tialized in more than one place.  For example, to export the
+
+
+
+Printed 11/26/99	January 13, 1995			2
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     variable _d_o_s_p_e_c_i_a_l_c_h_e_c_k as a debugging variable, the follow-
+     ing declaration would be used:
+
+	  int dospecialcheck = 1;
+	  struct ctldebug debug5 = { "dospecialcheck", &dospecialcheck };
+
+CTL_FS
+     There are currently no second level names for the file sys-
+     tem.
+
+CTL_HW
+     The string and integer information available for the CTL_HW
+     level is detailed below.  The changeable column shows
+     whether a process with appropriate privilege may change the
+     value.
+
+       Second level name	Type	  Changeable
+       HW_MACHINE		string	  no
+       HW_MODEL                 string	  no
+       HW_NCPU			integer   no
+       HW_BYTEORDER		integer   no
+       HW_PHYSMEM		integer   no
+       HW_USERMEM		integer   no
+       HW_PAGESIZE		integer   no
+
+     HW_MACHINE
+	  The machine class.
+
+     HW_MODEL
+	  The machine model
+
+     HW_NCPU
+	  The number of cpus.
+
+     HW_BYTEORDER
+	  The byteorder (3412, 4321, or 1234).
+
+     HW_PHYSMEM
+	  The bytes of physical memory.
+
+     HW_USERMEM
+	  The bytes of non-kernel memory.
+
+     HW_PAGESIZE
+	  The software page size.
+
+
+CTL_KERN
+     The string and integer information available for the
+     CTL_KERN level is detailed below.	The changeable column
+     shows whether a process with appropriate privilege may
+     change the value.	The types of data currently available are
+
+
+
+Printed 11/26/99	January 13, 1995			3
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     process information, system inodes, the open file entries,
+     routing table entries, virtual memory statistics, load aver-
+     age history, and clock rate information.
+
+
+       Second level name	Type		  Changeable
+       KERN_ARGMAX		integer           no
+       KERN_BOOTTIME		struct timeval	  no
+       KERN_CHOWN_RESTRICTED	integer           no
+       KERN_CLOCKRATE		struct clockinfo  no
+       KERN_FILE		struct file	  no
+       KERN_HOSTID		long		  yes
+       KERN_HOSTNAME		string		  yes
+       KERN_JOB_CONTROL         integer           no
+       KERN_MAXFILES		integer           no
+       KERN_MAXPROC		integer           no
+       KERN_MAXINODES		integer           no
+       KERN_MAXTEXTS		integer           no
+       KERN_NGROUPS		integer           no
+       KERN_OSRELEASE		string		  no
+       KERN_OSREV		integer           no
+       KERN_OSTYPE		string		  no
+       KERN_POSIX1		integer           no
+       KERN_PROC		struct proc	  no
+       KERN_PROF		node		  not applicable
+       KERN_SAVED_IDS		integer           no
+       KERN_SECURELVL		integer           raise only
+       KERN_TEXT		struct text	  no
+       KERN_VERSION		string		  no
+       KERN_INODE		struct inode	  no
+
+     KERN_ARGMAX
+	  The maximum bytes of argument to exec(2).
+
+     KERN_BOOTTIME
+	  A _s_t_r_u_c_t _t_i_m_e_v_a_l structure is returned.  This structure
+	  contains the time that the system was booted.
+
+     KERN_CLOCKRATE
+	  A _s_t_r_u_c_t _c_l_o_c_k_i_n_f_o structure is returned.  This struc-
+	  ture contains the clock, statistics clock and profiling
+	  clock frequencies, and the number of micro-seconds per
+	  hz tick.
+
+     KERN_FILE
+	  Return the entire file table as an array of extended
+	  _f_i_l_e structures.  Each element of the array contains
+	  the kernel address of a file _s_t_r_u_c_t _i_n_o_d_e * followed by
+	  the file itself _s_t_r_u_c_t _f_i_l_e.	There can never be more
+	  than KERN_MAXFILES inodes returned.
+
+     KERN_HOSTID
+
+
+
+Printed 11/26/99	January 13, 1995			4
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+	  Get or set the host id.
+
+     KERN_HOSTNAME
+	  Get or set the hostname.
+
+     KERN_JOB_CONTROL
+	  Return 1 if job control is available on this system,
+	  otherwise 0.
+
+     KERN_MAXFILES
+	  The maximum number of open files that may be open in
+	  the system.
+
+     KERN_MAXPROC
+	  The maximum number of simultaneous processes the system
+	  will allow.
+
+     KERN_MAXINODES
+	  The maximum number of inodes available on the system.
+
+     KERN_MAXTEXTS
+	  The maximum number of text structures available on the
+	  system.
+
+     KERN_NGROUPS
+	  The maximum number of supplemental groups.
+
+     KERN_OSRELEASE
+	  The system release string.
+
+     KERN_OSREV
+	  The system revision string.
+
+     KERN_OSTYPE
+	  The system type string.
+
+     KERN_POSIX1
+	  The version of ISO/IEC 9945 (POSIX 1003.1) with which
+	  the system attempts to comply.
+
+     KERN_PROC
+	  Return the entire process table, or a subset of it.  An
+	  array of _s_t_r_u_c_t _k_i_n_f_o__p_r_o_c structures is returned,
+	  whose size depends on the current number of such
+	  objects in the system.
+
+     The third and fourth level names are as follows:
+
+       Third level name            Fourth level is:
+       KERN_PROC_ALL		   None
+       KERN_PROC_PID		   A process ID
+       KERN_PROC_PGRP		   A process group
+
+
+
+Printed 11/26/99	January 13, 1995			5
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+       KERN_PROC_TTY		   A tty device
+       KERN_PROC_UID		   A user ID
+       KERN_PROC_RUID		   A real user ID
+       KERN_PROF		   Return kernel profiling information.
+
+If the kernel is not compiled for profiling, attempts to retrieve
+any of the KERN_PROF values will fail with EOPNOTSUPP.
+
+The third level names for the string and integer profiling infor-
+mation is detailed below.  The changeable column shows whether a
+process with appropriate privilege may change the value.
+
+     Third level name	   Type                Changeable
+       GPROF_STATE	   integer	       yes
+       GPROF_COUNT	   u_short[]	       yes
+       GPROF_FROMS	   u_short[]	       yes
+       GPROF_TOS	   struct tostruct     yes
+       GPROF_GMONPARAM	   struct gmonparam    no
+
+     The variables are as follows:
+
+     GPROF_STATE
+	  Returns GMON_PROF_ON or GMON_PROF_OFF to show that pro-
+	  filing is running or stopped.
+
+     GPROF_COUNT
+	  Array of statistical program counter counts.
+
+     GPROF_FROMS
+	  Array indexed by program counter of call-from points.
+
+     GPROF_TOS
+	  Array of _s_t_r_u_c_t _t_o_s_t_r_u_c_t describing destination of
+	  calls and their counts.
+
+     GPROF_GMONPARAM
+	  Structure giving the sizes of the above arrays.
+
+     KERN_SAVED_IDS
+	  Returns 1 if saved set-group and saved set-user ID is
+	  available.
+
+KERN_SECURELVL
+     The system security level.  This level may be raised by
+     processes with appropriate privilege.  It may only be
+     lowered by process 1.
+
+KERN_VERSION
+     The system version string.
+
+KERN_INODE
+     Return the entire inode table.  Note, the inode table is not
+
+
+
+Printed 11/26/99	January 13, 1995			6
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     necessarily a consistent snapshot of the system.  The
+     returned data consists of an array whose size depends on the
+     current number of such objects in the system.  Each element
+     of the array contains the kernel address of a inode _s_t_r_u_c_t
+     _i_n_o_d_e * followed by the inode itself _s_t_r_u_c_t _i_n_o_d_e.  There
+     can never be more than KERN_MAXINODES inodes returned.
+
+KERN_TEXT
+     Return the entire text table.  The returned data consists of
+     an array whose size depends on the current number of such
+     objects active in the system. Each element of the array con-
+     tains the kernel address of a text _s_t_r_u_c_t _t_e_x_t * followed by
+     the text structure itself _s_t_r_u_c_t _t_e_x_t.  There can never be
+     more structures than returned by KERN_MAXTEXTS.
+
+CTL_MACHDEP
+     The set of variables defined is architecture dependent.
+     Most architectures define at least the following variables.
+
+       Second level name	Type	  Changeable
+       CPU_CONSDEV		dev_t	  no
+
+CTL_NET
+     The string and integer information available for the CTL_NET
+     level is detailed below.  The changeable column shows
+     whether a process with appropriate privilege may change the
+     value.
+
+       Second level name   Type              Changeable
+       PF_ROUTE            routing messages  no
+       PF_INET		   internet values   yes
+
+     PF_ROUTE
+	  Return the entire routing table or a subset of it.  The
+	  data is returned as a sequence of routing messages (see
+	  _r_o_u_t_e(_4) for the header file, format and meaning).  The
+	  length of each message is contained in the message
+	  header.
+
+     The third level name is a protocol number, which is
+     currently always 0.  The fourth level name is an address
+     family, which may be set to 0 to select all address fami-
+     lies.  The fifth and sixth level names are as follows:
+
+       Fifth level name         Sixth level is:
+       NET_RT_FLAGS		rtflags
+       NET_RT_DUMP		None
+       NET_RT_IFLIST		None
+
+     PF_INET
+	  Get or set various global information about the inter-
+	  net protocols.  The third level name is the protocol.
+
+
+
+Printed 11/26/99	January 13, 1995			7
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+	  The fourth level name is the variable name.  The
+	  currently defined protocols and names are:
+
+       Protocol name	 Variable name	  Type	    Changeable
+       ip		 forwarding	  integer   yes
+       ip		 redirect	  integer   yes
+       ip		 ttl		  integer   yes
+       icmp		 maskrepl	  integer   yes
+       udp		 checksum	  integer   yes
+
+     The variables are as follows:
+
+     ip.forwarding
+	  Returns 1 when IP forwarding is enabled for the host,
+	  meaning that the host is acting as a router.
+
+     ip.redirect
+	  Returns 1 when ICMP redirects may be sent by the host.
+	  This option is ignored unless the host is routing IP
+	  packets, and should normally be enabled on all systems.
+
+     ip.ttl
+	  The maximum time-to-live (hop count) value for an IP
+	  packet sourced by the system.  This value applies to
+	  normal transport protocols, not to ICMP.
+
+     icmp.maskrepl
+	  Returns 1 if ICMP network mask requests are to be
+	  answered.
+
+     udp.checksum
+	  Returns 1 when UDP checksums are being computed and
+	  checked.  Disabling UDP checksums is strongly
+	  discouraged.
+
+
+CTL_USER
+     The string and integer information available for the
+     CTL_USER level is detailed below.	The changeable column
+     shows whether a process with appropriate privilege may
+     change the value.
+
+       Second level name	   Type        Changeable
+       USER_BC_BASE_MAX            integer     no
+       USER_BC_DIM_MAX		   integer     no
+       USER_BC_SCALE_MAX	   integer     no
+       USER_BC_STRING_MAX	   integer     no
+       USER_COLL_WEIGHTS_MAX	   integer     no
+       USER_CS_PATH		   string      no
+       USER_EXPR_NEST_MAX	   integer     no
+       USER_LINE_MAX		   integer     no
+       USER_POSIX2_CHAR_TERM	   integer     no
+
+
+
+Printed 11/26/99	January 13, 1995			8
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+       USER_POSIX2_C_BIND	   integer     no
+       USER_POSIX2_C_DEV	   integer     no
+       USER_POSIX2_FORT_DEV	   integer     no
+       USER_POSIX2_FORT_RUN	   integer     no
+       USER_POSIX2_LOCALEDEF	   integer     no
+       USER_POSIX2_SW_DEV	   integer     no
+       USER_POSIX2_UPE		   integer     no
+       USER_POSIX2_VERSION	   integer     no
+       USER_RE_DUP_MAX		   integer     no
+       USER_STREAM_MAX		   integer     no
+       USER_TZNAME_MAX		   integer     no
+
+     USER_BC_BASE_MAX
+	  The maximum ibase/obase values in the _b_c(_1) utility.
+
+     USER_BC_DIM_MAX
+	  The maximum array size in the _b_c(_1) utility.
+
+     USER_BC_SCALE_MAX
+	  The maximum scale value in the _b_c(_1) utility.
+
+     USER_BC_STRING_MAX
+	  The maximum string length in the _b_c(_1) utility.
+
+     USER_COLL_WEIGHTS_MAX
+	  The maximum number of weights that can be assigned to
+	  any entry of the LC_COLLATE order keyword in the locale
+	  definition file.
+
+     USER_CS_PATH
+	  Return a value for the _P_A_T_H environment variable that
+	  finds all the standard utilities.
+
+     USER_EXPR_NEST_MAX
+	  The maximum number of expressions that can be nested
+	  within parenthesis by the _e_x_p_r(_1) utility.
+
+     USER_LINE_MAX
+	  The maximum length in bytes of a text-processing
+	  utility's input line.
+
+     USER_POSIX2_CHAR_TERM
+	  Return 1 if the system supports at least one terminal
+	  type capable of all operations described in POSIX
+	  1003.2, otherwise 0.
+
+     USER_POSIX2_C_BIND
+	  Return 1 if the system's C-language development facili-
+	  ties support the C-Language Bindings Option, otherwise
+	  0.
+
+     USER_POSIX2_C_DEV
+
+
+
+Printed 11/26/99	January 13, 1995			9
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+	  Return 1 if the system supports the C-Language Develop-
+	  ment Utilities Option, otherwise 0.
+
+     USER_POSIX2_FORT_DEV
+	  Return 1 if the system supports the FORTRAN Development
+	  Utilities Option, otherwise 0.
+
+     USER_POSIX2_FORT_RUN
+	  Return 1 if the system supports the FORTRAN Runtime
+	  Utilities Option, otherwise 0.
+
+     USER_POSIX2_LOCALEDEF
+	  Return 1 if the system supports the creation of
+	  locales, otherwise 0.
+
+     USER_POSIX2_SW_DEV
+	  Return 1 if the system supports the Software Develop-
+	  ment Utilities Option, otherwise 0.
+
+     USER_POSIX2_UPE
+	  Return 1 if the system supports the User Portability
+	  Utilities Option, otherwise 0.
+
+     USER_POSIX2_VERSION
+	  The version of POSIX 1003.2 with which the system
+	  attempts to comply.
+
+     USER_RE_DUP_MAX
+	  The maximum number of repeated occurrences of a regular
+	  expression permitted when using interval notation.
+
+     USER_STREAM_MAX
+	  The minimum maximum number of streams that a process
+	  may have open at any one time.
+
+     USER_TZNAME_MAX
+	  The minimum maximum number of types supported for the
+	  name of a timezone.
+
+CTL_VM
+     The string and integer information available for the CTL_VM
+     level is detailed below.  The changeable column shows
+     whether a process with appropriate privilege may change the
+     value.
+
+       Second level name   Type              Changeable
+       VM_LOADAVG	   struct loadavg    no
+       VM_METER            struct vmtotal    no
+       VM_SWAPMAP	   struct map	     no
+       VM_COREMAP	   struct map	     no
+
+
+
+
+
+Printed 11/26/99	January 13, 1995		       10
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     VM_LOADAVG
+	  Return the load average history.  The returned data
+	  consists of a _s_t_r_u_c_t _l_o_a_d_a_v_g.
+
+     VM_METER
+	  Return the system wide virtual memory statistics.  The
+	  returned data consists of a _s_t_r_u_c_t _v_m_t_o_t_a_l.
+
+     VM_SWAPMAP
+	  Return the swapmap.  The size of this structure is
+	  fixed and may be determined by specifying a oldlenp
+	  initialized to zero, the kernel will fill in the size
+	  of the swapmap.
+
+     VM_COREMAP
+	  Same as for swapmap above except that the core alloca-
+	  tion map is returned.
+
+RETURN VALUES
+     If the call to sysctl is successful, 0 is returned.  Other-
+     wise -1 is returned and _e_r_r_n_o is set appropriately.
+
+ERRORS
+     The following errors may be reported:
+
+     EFAULT	    The buffer _n_a_m_e, _o_l_d_p , _n_e_w_p , or length
+		    pointer _o_l_d_l_e_n_p contains an invalid address.
+
+     EINVAL	    The _n_a_m_e array is less than two or greater
+		    than CTL_MAXNAME.
+
+     EINVAL	    A non-null _n_e_w_p is given and its specified
+		    length in _n_e_w_l_e_n is too large or too small.
+
+     ENOMEM	    The length pointed to by _o_l_d_l_e_n_p is too short
+		    to hold the requested value.
+
+     ENOTDIR	    The _n_a_m_e array specifies an intermediate
+		    rather than terminal name.
+
+     EOPNOTSUPP     The _n_a_m_e array specifies a value that is unk-
+		    nown.
+
+     EPERM	    An attempt is made to set a read-only value.
+
+     EPERM	    A process without appropriate privilege
+		    attempts to set a value.
+
+FILES
+     <sys/sysctl.h> definitions for top level identifiers, second
+		    level kernel and hardware identifiers, and
+		    user level identifiers
+
+
+
+Printed 11/26/99	January 13, 1995		       11
+
+
+
+
+
+
+SYSCTL(3)	    UNIX Programmer's Manual		SYSCTL(3)
+
+
+
+     <sys/socket.h> definitions for second level network identif-
+		    iers
+
+     <sys/gmon.h>   definitions for third level profiling iden-
+		    tifiers
+
+     <sys/vmparam.h>
+		    definitions for second level virtual memory
+		    identifiers
+
+     <netinet/in.h> definitions for third level Internet identif-
+		    iers and fourth level IP identifiers
+
+     <netinet/icmp_var.h>
+		    definitions for fourth level ICMP identifiers
+
+     <netinet/udp_var.h>
+		    definitions for fourth level UDP identifiers
+
+SEE ALSO
+     _s_y_s_c_t_l(_8)
+
+HISTORY
+     The sysctl function first appeared in 4.4BSD.
+
+     The KERN_TEXT, KERN_MAXTEXTS, VM_SWAPMAP, VM_COREMAP options
+     are 2.11BSD specific extensions to the 4.4BSD _s_y_s_c_t_l impl-
+     mentation.
+
+     Having KERN_FILE return the address of the file structure
+     before the actual _s_t_r_u_c_t _f_i_l_e is a 2.11BSD enhancement.  The
+     _i_n_o_d_e (_v_n_o_d_e under 4.4) table was handled this way.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 13, 1995		       12
+
+
+

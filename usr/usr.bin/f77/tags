@@ -1,0 +1,358 @@
+ASSERT	malloc.c	?^)$?
+ERR	expr.c	?^#define ERR(s)   { errs = s; goto error; }$?
+ICONEQ	expr.c	?^#define ICONEQ(z, c)  (ISICON(z) && z->const.ci==c?
+Mdriver	driver.c	?^main(argc, argv)$?
+Mmain	main.c	?^main(argc, argv)$?
+V	io.c	?^#define V(z)	ioc[z].iocval$?
+addreg	pdp11.c	?^addreg(k)$?
+addressable	misc.c	?^addressable(p)$?
+addrof	expr.c	?^struct exprblock *addrof(p)$?
+analyz	lex.c	?^LOCAL analyz()$?
+autovar	proc.c	?^struct addrblock *autovar(nelt, t, lengp)$?
+await	driver.c	?^await(waitpid)$?
+badfile	driver.c	?^badfile(s)$?
+botch	malloc.c	?^botch(s)$?
+builtin	misc.c	?^struct addrblock *builtin(t, s)$?
+call0	misc.c	?^struct exprblock *call0(type, name)$?
+call1	misc.c	?^struct exprblock *call1(type, name, arg)$?
+call2	misc.c	?^struct exprblock *call2(type, name, arg1, arg2)$?
+call3	misc.c	?^struct exprblock *call3(type, name, arg1, arg2, ar?
+call4	misc.c	?^struct exprblock *call4(type, name, arg1, arg2, ar?
+callk	misc.c	?^struct exprblock *callk(type, name, args)$?
+ckalloc	driver.c	?^ptr ckalloc(n)$?
+ckalloc	misc.c	?^ptr ckalloc(n)$?
+cktype	expr.c	?^cktype(op, lt, rt)$?
+clearbusy	malloc.c	?^#define clearbusy(p) ((int)(p)&~BUSY)$?
+clf	driver.c	?^clf(p)$?
+clf	main.c	?^clf(p)$?
+clfiles	main.c	?^LOCAL clfiles()$?
+cmpstr	misc.c	?^cmpstr(a, b, la, lb)	/* compare two strings */$?
+comblock	proc.c	?^struct extsym *comblock(len, s)$?
+consbinop	expr.c	?^LOCAL consbinop(opcode, type, cp, ap, bp)$?
+consconv	expr.c	?^consconv(lt, lv, rt, rv)$?
+consnegop	expr.c	?^consnegop(p)$?
+conspower	expr.c	?^LOCAL conspower(powp, ap, n)$?
+conssgn	expr.c	?^conssgn(p)$?
+content	driver.c	?^content(filename)$?
+convcd	misc.c	?^double convcd(n, s)$?
+convci	misc.c	?^ftnint convci(n, s)$?
+convic	misc.c	?^char *convic(n)$?
+copyn	driver.c	?^copyn(n, s)$?
+copyn	misc.c	?^char *copyn(n, s)$?
+copys	driver.c	?^copys(s)$?
+copys	misc.c	?^char *copys(s)$?
+cpblock	misc.c	?^ptr cpblock(n,p)$?
+cpexpr	expr.c	?^tagptr cpexpr(p)$?
+cpn	misc.c	?^cpn(n, a, b)$?
+crfnames	driver.c	?^crfnames()$?
+crunch	lex.c	?^LOCAL crunch()$?
+dataval	data.c	?^dataval(repp, valp)$?
+dclerr	error.c	?^dclerr(s, v)$?
+deregister	expr.c	?^deregister(np)$?
+doasm	driver.c	?^doasm(s)$?
+dobss	proc.c	?^LOCAL dobss()$?
+docomleng	proc.c	?^LOCAL docomleng()$?
+docommon	proc.c	?^LOCAL docommon()$?
+dodata	driver.c	?^dodata()$?
+doentry	proc.c	?^LOCAL doentry(ep)$?
+doequiv	equiv.c	?^doequiv()$?
+doeven	driver.c	?^ftnint doeven(tot, align)$?
+doext	proc.c	?^doext()$?
+dofclose	io.c	?^LOCAL dofclose()$?
+dofinquire	io.c	?^LOCAL dofinquire()$?
+dofmove	io.c	?^LOCAL dofmove(subname)$?
+dofopen	io.c	?^LOCAL dofopen()$?
+dofort	driver.c	?^dofort(s)$?
+doinclude	lex.c	?^doinclude(name)$?
+doio	io.c	?^doio(list)$?
+doiolist	io.c	?^LOCAL doiolist(p0)$?
+doload	driver.c	?^doload(v0, v)$?
+done	driver.c	?^done(k)$?
+done	main.c	?^done(k)$?
+dopass2	driver.c	?^dopass2()$?
+dotchar	driver.c	?^dotchar(s)$?
+enbint	driver.c	?^enbint(k)$?
+enddcl	proc.c	?^enddcl()$?
+enddo	exec.c	?^enddo(here)$?
+endio	io.c	?^endio()$?
+endioctl	io.c	?^endioctl()$?
+endproc	proc.c	?^endproc()$?
+enregister	expr.c	?^enregister(np)$?
+entrypt	proc.c	?^entrypt(class, type, length, entry, args)$?
+epicode	proc.c	?^LOCAL epicode()$?
+eqn	misc.c	?^eqn(n, a, b)$?
+eqvcommon	equiv.c	?^LOCAL eqvcommon(p, comno, comoffset)$?
+eqveqv	equiv.c	?^LOCAL eqveqv(nvarno, ovarno, delta)$?
+err	driver.c	?^err(s)$?
+err	error.c	?^err(s)$?
+err1	error.c	?^err1(s,t)$?
+err2	error.c	?^err2(s,t,u)$?
+errnode	expr.c	?^struct errorblock *errnode()$?
+exar2	exec.c	?^LOCAL exar2(op, e, l1, l2)$?
+exarif	exec.c	?^exarif(expr, neglab, zerlab, poslab)$?
+exasgoto	exec.c	?^exasgoto(labvar)$?
+exassign	exec.c	?^exassign(vname, labelval)$?
+excall	exec.c	?^excall(name, args, nstars, labels)$?
+exdo	exec.c	?^exdo(range, spec)$?
+execerr	error.c	?^execerr(s, n)$?
+exelif	exec.c	?^exelif(p)$?
+exelse	exec.c	?^exelse()$?
+exendif	exec.c	?^exendif()$?
+exequals	exec.c	?^exequals(lp, rp)$?
+exgoto	exec.c	?^exgoto(lab)$?
+exif	exec.c	?^exif(p)$?
+exreturn	exec.c	?^exreturn(p)$?
+exstop	exec.c	?^exstop(stop, p)$?
+fatal	driver.c	?^static fatal(t)$?
+fatal	error.c	?^fatal(t)$?
+fatal1	driver.c	?^static fatal1(t,d)$?
+fatal1	error.c	?^fatal1(t,d)$?
+fileinit	init.c	?^fileinit()$?
+fixargs	expr.c	?^fixargs(doput, p0)$?
+fixexpr	expr.c	?^expptr fixexpr(p)$?
+fixtype	expr.c	?^expptr fixtype(p)$?
+flline	lex.c	?^flline()$?
+fmtstmt	io.c	?^fmtstmt(lp)$?
+fname	driver.c	?^LOCAL fname(name, suff)$?
+fold	expr.c	?^LOCAL expptr fold(e)$?
+frchain	misc.c	?^frchain(p)$?
+frdata	data.c	?^frdata(p0)$?
+free	malloc.c	?^free(p)$?
+freqchain	equiv.c	?^LOCAL freqchain(p)$?
+frexpr	expr.c	?^frexpr(p)$?
+frrpl	misc.c	?^frrpl()$?
+frtemp	proc.c	?^frtemp(p)$?
+getcd	lex.c	?^LOCAL getcd(b)$?
+getcds	lex.c	?^LOCAL getcds()$?
+getkwd	lex.c	?^LOCAL getkwd()$?
+gettok	lex.c	?^LOCAL gettok()$?
+goret	pdp11.c	?^goret(type)$?
+hextoi	misc.c	?^hextoi(c)$?
+hookup	misc.c	?^chainp hookup(x,y)$?
+iarrlen	proc.c	?^ftnint iarrlen(q)$?
+imagpart	put.c	?^struct addrblock *imagpart(p)$?
+impldcl	expr.c	?^impldcl(p)$?
+incomm	proc.c	?^incomm(c, v)$?
+inilex	lex.c	?^inilex(name)$?
+initkey	lex.c	?^initkey()$?
+inline	intr.c	?^struct exprblock *inline(fno, type, args)$?
+inregister	expr.c	?^inregister(np)$?
+intdouble	putdmr.c	?^LOCAL struct addrblock *intdouble(p, ncommap)$?
+intdouble	putscj.c	?^LOCAL struct addrblock *intdouble(p, ncommap)$?
+intraddr	intr.c	?^struct addrblock *intraddr(np)$?
+intrcall	intr.c	?^struct exprblock *intrcall(np, argsp, nargs)$?
+intrfunct	intr.c	?^intrfunct(s)$?
+intrupt	driver.c	?^intrupt()$?
+ioclause	io.c	?^ioclause(n, p)$?
+iocname	io.c	?^iocname()$?
+ioset	io.c	?^LOCAL ioset(type, offset, p)$?
+iosetc	io.c	?^LOCAL iosetc(offset, p)$?
+iosetecdc	io.c	?^iosetecdc(e)						/* E-D */$?
+iosetip	io.c	?^LOCAL iosetip(i, offset)$?
+iosetlc	io.c	?^LOCAL iosetlc(i, offp, offl)$?
+isaddr	misc.c	?^isaddr(p)$?
+lastchar	driver.c	?^char *lastchar(s)$?
+lastfield	driver.c	?^char *lastfield(s)$?
+lengtype	proc.c	?^lengtype(type, length)$?
+letter	expr.c	?^LOCAL letter(c)$?
+lexline	lex.c	?^char *lexline(n)$?
+lmax	misc.c	?^ftnint lmax(a, b)$?
+lmin	misc.c	?^ftnint lmin(a, b)$?
+log2	misc.c	?^log2(n)$?
+malloc	malloc.c	?^malloc(nbytes)$?
+max	misc.c	?^max(a,b)$?
+maxtype	misc.c	?^maxtype(t1, t2)$?
+memname	pdp11.c	?^char *memname(stg, mem)$?
+memversion	expr.c	?^struct addrblock *memversion(np)$?
+mkaddcon	expr.c	?^struct constblock *mkaddcon(l)$?
+mkaddr	expr.c	?^struct addrblock *mkaddr(p)$?
+mkarg	expr.c	?^mkarg(type, argno)$?
+mkbitcon	expr.c	?^struct constblock *mkbitcon(shift, leng, s)$?
+mkchain	misc.c	?^chainp mkchain(p,q)$?
+mkconst	expr.c	?^struct constblock *mkconst(t)$?
+mkconv	expr.c	?^expptr mkconv(t, p)$?
+mkcxcon	expr.c	?^struct constblock *mkcxcon(realp,imagp)$?
+mkexpr	expr.c	?^expptr mkexpr(opcode, lp, rp)$?
+mkext	misc.c	?^struct extsym *mkext(s)$?
+mkfunct	expr.c	?^expptr mkfunct(p)$?
+mkintcon	expr.c	?^struct constblock *mkintcon(l)$?
+mkiodo	misc.c	?^struct impldoblock *mkiodo(dospec, list)$?
+mklabel	misc.c	?^struct labelblock *mklabel(l)$?
+mklhs	expr.c	?^struct addrblock *mklhs(p)$?
+mklist	misc.c	?^struct listblock *mklist(p)$?
+mklogcon	expr.c	?^struct constblock *mklogcon(l)$?
+mkname	misc.c	?^struct nameblock *mkname(l, s)$?
+mkpower	expr.c	?^LOCAL expptr mkpower(p)$?
+mkprim	expr.c	?^tagptr mkprim(v, args, lstr, rstr)$?
+mkrealcon	expr.c	?^struct constblock *mkrealcon(t, d)$?
+mkscalar	expr.c	?^mkscalar(np)$?
+mkstfunct	exec.c	?^mkstfunct(lp, rp)$?
+mkstrcon	expr.c	?^struct constblock *mkstrcon(l,v)$?
+mktemp	proc.c	?^struct addrblock *mktemp(type, lengp)$?
+mktmpn	proc.c	?^struct addrblock *mktmpn(nelt, type, lengp)$?
+mvarg	pdp11.c	?^mvarg(type, arg1, arg2)$?
+mvarg1	pdp11.c	?^mvarg1(m, n)$?
+ncat	putdmr.c	?^LOCAL ncat(p)$?
+ncat	putscj.c	?^LOCAL ncat(p)$?
+newentry	proc.c	?^struct extsym *newentry(v)$?
+newlabel	misc.c	?^newlabel()$?
+newproc	proc.c	?^newproc()$?
+nextarg	proc.c	?^LOCAL nextarg(type)$?
+nextdata	data.c	?^struct addrblock *nextdata(elenp, vlenp)$?
+nodup	driver.c	?^nodup(s)$?
+nounder	misc.c	?^char * nounder(n, s)$?
+nsubs	equiv.c	?^LOCAL nsubs(p)$?
+opconv	expr.c	?^expptr opconv(p, t)$?
+opf	main.c	?^LOCAL FILEP opf(fn)$?
+p2flush	putscj.c	?^p2flush()$?
+p2i	putdmr.c	?^p2i(k)$?
+p2icon	putscj.c	?^p2icon(offset, type)$?
+p2li	putdmr.c	?^LOCAL p2li(n)$?
+p2name	putscj.c	?^p2name(s)$?
+p2offset	putdmr.c	?^LOCAL p2offset(type, offp)$?
+p2op	putdmr.c	?^p2op(op)$?
+p2op	putscj.c	?^p2op(op, type)$?
+p2op2	putdmr.c	?^p2op2(op, i)$?
+p2oreg	putscj.c	?^p2oreg(offset, reg, type)$?
+p2pass	putscj.c	?^p2pass(s)$?
+p2reg	putdmr.c	?^p2reg(k, type)$?
+p2reg	putscj.c	?^p2reg(reg, type)$?
+p2str	putdmr.c	?^p2str(s)$?
+p2str	putscj.c	?^p2str(s)$?
+p2triple	putscj.c	?^p2triple(op, var, type)$?
+p2word	putscj.c	?^p2word(w)$?
+popctl	exec.c	?^LOCAL popctl()$?
+popinclude	lex.c	?^LOCAL popinclude()$?
+poplab	exec.c	?^LOCAL poplab()$?
+popstack	misc.c	?^popstack(p)$?
+prarif	pdp11.c	?^prarif(p, neg,zer,pos)$?
+prarif	putdmr.c	?^prarif(p, neg, zero, pos)$?
+prbusy	malloc.c	?^prbusy()$?
+prch	driver.c	?^prch(c)$?
+prchars	pdp11x.c	?^prchars(fp, s)$?
+prcmgoto	pdp11.c	?^prcmgoto(p, nlab, skiplabel, labarray)$?
+prcomblock	pdp11x.c	?^prcomblock(fp, name)$?
+prcona	pdp11.c	?^prcona(fp, a)$?
+prconi	pdp11.c	?^prconi(fp, type, n)$?
+prconr	pdp11.c	?^prconr(fp, type, x)$?
+prdbginfo	pdp11.c	?^prdbginfo()$?
+prendproc	pdp11.c	?^prendproc()$?
+prentry	pdp11.c	?^prentry(s)$?
+preven	pdp11.c	?^preven(k)$?
+prext	pdp11.c	?^prext(name, leng, init)$?
+prhead	pdp11.c	?^prhead(fp)$?
+prlabel	pdp11.c	?^prlabel(fp, k)$?
+prlocvar	pdp11.c	?^prlocvar(s, len)$?
+procinit	init.c	?^procinit()$?
+procode	proc.c	?^LOCAL procode()$?
+prolog	pdp11.c	?^prolog(ep, argvec)$?
+prsave	pdp11.c	?^prsave()$?
+prskip	pdp11x.c	?^prskip(fp, k)$?
+prspace	driver.c	?^prspace(n)$?
+prtail	pdp11.c	?^prtail()$?
+pruse	pdp11x.c	?^pruse(fp, s)$?
+pushctl	exec.c	?^LOCAL pushctl(code)$?
+putaddr	putdmr.c	?^LOCAL putaddr(p, indir)$?
+putaddr	putscj.c	?^LOCAL putaddr(p, indir)$?
+putassign	put.c	?^putassign(lp, rp)$?
+putbracket	putscj.c	?^putbracket()$?
+putbranch	putdmr.c	?^putbranch(p)$?
+putbranch	putscj.c	?^putbranch(p)$?
+putcall	putdmr.c	?^LOCAL struct addrblock *putcall(p)$?
+putcall	putscj.c	?^LOCAL struct addrblock *putcall(p)$?
+putcat	putdmr.c	?^LOCAL putcat(lhs, rhs)$?
+putcat	putscj.c	?^LOCAL putcat(lhs, rhs)$?
+putch1	putdmr.c	?^LOCAL struct addrblock *putch1(p, ncommap)$?
+putch1	putscj.c	?^LOCAL struct addrblock *putch1(p, ncommap)$?
+putchcmp	putdmr.c	?^LOCAL putchcmp(p)$?
+putchcmp	putscj.c	?^LOCAL putchcmp(p)$?
+putcheq	putdmr.c	?^LOCAL putcheq(p)$?
+putcheq	putscj.c	?^LOCAL putcheq(p)$?
+putchop	putdmr.c	?^LOCAL putchop(p)$?
+putchop	putscj.c	?^LOCAL putchop(p)$?
+putcmgo	putdmr.c	?^putcmgo(index, nlab, labs)$?
+putcmgo	putscj.c	?^putcmgo(index, nlab, labs)$?
+putcomma	putdmr.c	?^LOCAL putcomma(n, type, indir)$?
+putcomma	putscj.c	?^LOCAL putcomma(n, type, indir)$?
+putconst	put.c	?^struct addrblock *putconst(p)$?
+putct1	putdmr.c	?^LOCAL putct1(q, lp, cp, ip, ncommap)$?
+putct1	putscj.c	?^LOCAL putct1(q, lp, cp, ip, ncommap)$?
+putcx1	putdmr.c	?^LOCAL struct addrblock *putcx1(p, ncommap)$?
+putcx1	putscj.c	?^LOCAL struct addrblock *putcx1(p, ncommap)$?
+putcxcmp	putdmr.c	?^LOCAL putcxcmp(p)$?
+putcxcmp	putscj.c	?^LOCAL putcxcmp(p)$?
+putcxeq	putdmr.c	?^LOCAL putcxeq(p)$?
+putcxeq	putscj.c	?^LOCAL putcxeq(p)$?
+putcxop	putdmr.c	?^LOCAL putcxop(p)$?
+putcxop	putscj.c	?^LOCAL putcxop(p)$?
+puteof	putdmr.c	?^puteof()$?
+puteof	putscj.c	?^puteof()$?
+puteq	put.c	?^puteq(lp, rp)$?
+putex1	put.c	?^putex1(p)$?
+putexpr	putdmr.c	?^putexpr(p)$?
+putexpr	putscj.c	?^putexpr(p)$?
+putforce	putdmr.c	?^putforce(t, p)$?
+putforce	putscj.c	?^putforce(t, p)$?
+putgoto	putdmr.c	?^putgoto(label)$?
+putgoto	putscj.c	?^putgoto(label)$?
+puthead	putdmr.c	?^puthead(s, class)$?
+puthead	putscj.c	?^puthead(s)$?
+putif	putdmr.c	?^putif(p,l)$?
+putif	putscj.c	?^putif(p,l)$?
+putio	io.c	?^LOCAL putio(nelt, addr)$?
+putiocall	io.c	?^LOCAL putiocall(q)$?
+putlabel	putdmr.c	?^putlabel(label)$?
+putlabel	putscj.c	?^putlabel(label)$?
+putmem	putscj.c	?^LOCAL putmem(p, class, offset)$?
+putmnmx	putdmr.c	?^LOCAL putmnmx(p)$?
+putmnmx	putscj.c	?^LOCAL putmnmx(p)$?
+putnreg	putdmr.c	?^putnreg()$?
+putnreg	putscj.c	?^putnreg()$?
+putop	putdmr.c	?^LOCAL putop(p)$?
+putop	putscj.c	?^LOCAL putop(p)$?
+putpower	putdmr.c	?^LOCAL putpower(p)$?
+putpower	putscj.c	?^LOCAL putpower(p)$?
+putrbrack	putscj.c	?^putrbrack(k)$?
+putsteq	put.c	?^putsteq(a, b)$?
+putstmt	putdmr.c	?^putstmt()$?
+putstmt	putscj.c	?^putstmt()$?
+putstr	put.c	?^putstr(fp, s, n)$?
+putx	putdmr.c	?^putx(p)$?
+putx	putscj.c	?^putx(p)$?
+rdlong	driver.c	?^rdlong(n)$?
+rdname	driver.c	?^rdname(vargroupp, name)$?
+realpart	put.c	?^struct addrblock *realpart(p)$?
+retval	proc.c	?^LOCAL retval(t)$?
+rmf	driver.c	?^rmf(fn)$?
+rmfiles	driver.c	?^rmfiles()$?
+setbound	proc.c	?^setbound(v, nd, dims)$?
+setbusy	malloc.c	?^#define setbusy(p) ((int)(p)+BUSY)$?
+setdata	data.c	?^LOCAL setdata(varp, valp, elen, vlen)$?
+setdoto	driver.c	?^char *setdoto(s)$?
+setext	proc.c	?^setext(v)$?
+setfmt	io.c	?^setfmt(lp)$?
+setimpl	init.c	?^setimpl(type, length, c1, c2)$?
+setintr	proc.c	?^setintr(v)$?
+setlog	put.c	?^setlog()$?
+settype	proc.c	?^settype(v, type, length)$?
+shorten	expr.c	?^expptr shorten(p)$?
+simoffset	putscj.c	?^ftnint simoffset(p0)$?
+startioctl	io.c	?^startioctl()$?
+startproc	proc.c	?^startproc(progname, class)$?
+startrw	io.c	?^startrw()$?
+stfcall	expr.c	?^LOCAL struct exprblock *stfcall(np, actlist)$?
+subcheck	expr.c	?^expptr subcheck(np, p)$?
+suboffset	expr.c	?^expptr suboffset(p)$?
+sys	driver.c	?^sys(str)$?
+testbusy	malloc.c	?^#define testbusy(p) ((int)(p)&BUSY)$?
+texec	driver.c	?^texec(f, av)$?
+unreadable	driver.c	?^unreadable(s)$?
+vardcl	expr.c	?^vardcl(v)$?
+varstr	misc.c	?^char * varstr(n, s)$?
+varunder	misc.c	?^char * varunder(n, s)$?
+warn	error.c	?^warn(s)$?
+warn1	error.c	?^warn1(s,t)$?
+yyerror	error.c	?^yyerror(s)$?
+yylex	lex.c	?^yylex()$?
+yyparse	gram.c	?^yyparse() {$?
+zdiv	expr.c	?^LOCAL zdiv(c, a, b)$?

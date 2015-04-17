@@ -1,0 +1,25 @@
+Machine Type:		Sequent Dynix/ptx versions 2 & 4
+
+Make using:		make ptx or make ptx4
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" ptx2/4
+
+Person(s) porting:	Tim Wright <timw@sequent.com>
+
+Port date:		Wed 19 Apr 1995
+
+Verified working:	OS version(s)	Pident vers	Person
+			2.1.6		2.5.2		<timw@sequent.com>
+			4.1beta		2.5.2		<timw@sequent.com>
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Tested running under inetd. This will *not* work
+			unless you have ptx TCP/IP v2.4.0 or later. This
+			was the first version where inetd will (optionally)
+			pass a socket instead of a TLI endpoint.
+			Has been tested in standalone mode.
+			It has also not been tested under ptx 4.0.X.
+			It may be necessary to change ptx4.c to open /dev/mem
+			instead of /dev/kmem for this release.

@@ -1,0 +1,66 @@
+
+
+
+HOSTID(1)	    UNIX Programmer's Manual		HOSTID(1)
+
+
+
+NAME
+     hostid - set or print identifier of current host system
+
+SYNOPSIS
+     hostid [ identifier ]
+
+DESCRIPTION
+     The _h_o_s_t_i_d command prints the identifier of the current host
+     in hexadecimal.  This numeric value is expected to be unique
+     across all hosts and is commonly set to the host's Internet
+     address.  The super-user can set the hostid by giving a hex-
+     adecimal argument or the hostname; this is usually done in
+     the startup script /etc/rc.local.
+
+SEE ALSO
+     gethostid(2), sethostid(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 5, 1986				1
+
+
+

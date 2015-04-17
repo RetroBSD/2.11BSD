@@ -1,0 +1,24 @@
+Return-Path: rb-archive-server@Aus.Sun.COM
+Received: by hawk from Sun.COM ([192.9.9.1])
+        for pmaresch (from rb-archive-server@Aus.Sun.COM)
+        id <AA23438@hawk>; Thu, 5 Jul 90 09:44:34 edt
+Received: from Aus.Sun.COM ([129.158.10.50]) by Sun.COM (4.1/SMI-4.1)
+	id AA04815; Thu, 5 Jul 90 06:48:22 PDT
+Received: from stard.Aus.Sun.COM by Aus.Sun.COM (4.1/SMI-4.1)
+	id AA28245; Thu, 5 Jul 90 23:51:17 EST
+Received: by stard.Aus.Sun.COM (4.1/SMI-4.1)
+	id AA19213; Thu, 5 Jul 90 23:46:07 EST
+Date: Thu, 5 Jul 90 23:46:07 EST
+Message-Id: <9007051346.AA19213@stard.Aus.Sun.COM>
+From: Rich Burridge Archive Service <rb-archive-server@Aus.Sun.COM>
+To: pmaresch@hawk.ulowell.edu (pierre mareschal)
+Subject: ack receipt of your archive retrieval request
+In-Reply-To: Request from pmaresch@hawk.ulowell.edu (pierre mareschal) dated Thu Jul 5 23:46:02 EST 1990
+
+The Rich Burridge Archive Server has received your request.
+All of the files that you asked for are in the database.
+Your request is 66314 bytes. It has been placed in the mailer's work
+queue. The work queue is periodically processed by the archive mailer, which
+always sends the shortest queued request first. The length of time that it
+takes to receive your request will depend on how many smaller requests are in
+front of it in line.

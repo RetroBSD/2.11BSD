@@ -1,0 +1,6 @@
+This version of RCS has been compiled and tested on 2.10; it is believed to
+work correctly.  However, because of memory limitations it runs very slowly.
+If you are willing to find ways to reduce the memory requirements of this
+version of RCS you may choose to run it.  Please send the changes in to us.
+Remember that the new revision 4 RCS files won't work correctly
+with version 3 of RCS.

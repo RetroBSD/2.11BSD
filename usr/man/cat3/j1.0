@@ -1,0 +1,66 @@
+
+
+
+J0(3M)		    UNIX Programmer's Manual		   J0(3M)
+
+
+
+NAME
+     j0, j1, jn, y0, y1, yn - bessel functions
+
+SYNOPSIS
+     #include <math.h>
+
+     double j0(x)
+     double x;
+
+     double j1(x)
+     double x;
+
+     double jn(n,x)
+     int n;
+     double x;
+
+     double y0(x)
+     double x;
+
+     double y1(x)
+     double x;
+
+     double yn(n,x)
+     int n;
+     double x;
+
+DESCRIPTION
+     These functions calculate Bessel functions of the first and
+     second kinds for real arguments and integer orders.
+
+DIAGNOSTICS
+     On a VAX, negative arguments cause y0, y1 and yn to return
+     the reserved operand and set _e_r_r_n_o to EDOM.
+
+SEE ALSO
+     math(3M), infnan(3M)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

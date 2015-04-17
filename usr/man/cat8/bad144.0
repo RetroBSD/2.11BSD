@@ -1,0 +1,132 @@
+
+
+
+BAD144(8)	    UNIX Programmer's Manual		BAD144(8)
+
+
+
+NAME
+     bad144 - read/write DEC standard 144 bad sector information
+
+SYNOPSIS
+     bad144 disktype disk [ sno [ bad ...  ] ]
+
+DESCRIPTION
+     _B_a_d_1_4_4 can be used to inspect the information stored on a
+     disk that is used by the disk drivers to implement bad sec-
+     tor forwarding.  The format of the information is specified
+     by DEC standard 144, as follows.
+
+     The bad sector information is located in the first 5 even
+     numbered sectors of the last track of the disk pack.  There
+     are five identical copies of the information, described by
+     the dkbad structure.  Only the first of these copies is
+     used.
+
+     Replacement sectors are allocated starting with the first
+     sector before the bad sector information and working back-
+     wards towards the beginning of the disk.  A maximum of 126
+     bad sectors can be supported.  The position of the bad sec-
+     tor in the bad sector table determines which replacement
+     sector it corresponds to.
+
+     The bad sector information and replacement sectors are con-
+     ventionally only accessible through the ``h'' file system
+     partition of the disk.  If that partition is used for a file
+     system, the user is responsible for making sure that it does
+     not overlap the bad sector information or any replacement
+     sectors.
+
+     The bad sector structure is as follows:
+
+     struct dkbad {
+	    long    bt_csn;		/* cartridge serial number */
+	    u_short bt_mbz;		/* unused; should be 0 */
+	    u_short bt_flag;		/* -1 => alignment cartridge */
+	    struct bt_bad {
+		    u_short bt_cyl;	/* cylinder number of bad sector */
+		    u_short bt_trksec;	/* track and sector number */
+	    } bt_bad[MAXBAD];
+     };
+
+     Unused slots in the bt_bad array are filled with all bits
+     set, a putatively illegal value.  MAXBAD (in <sys/dkbad.h>)
+     may be tuned locally to reduce the space required to hold
+     the bad-sector file in memory.  It may not be greater than
+     126, which uses the whole disk sector.  Bad sectors past
+     MAXBAD may be included by the formatter, but replacement
+     sectors will not be used until MAXBAD is increased.
+
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+BAD144(8)	    UNIX Programmer's Manual		BAD144(8)
+
+
+
+     _B_a_d_1_4_4 is invoked by giving a device type (e.g. rk07, rm03,
+     rm05, etc.), and a device name (e.g. hk0, hp1, etc.).  It
+     reads the first sector of the last track of the correspond-
+     ing disk and prints out the bad sector information.  It may
+     also be invoked giving a serial number for the pack and a
+     list of bad sectors, and will then write the supplied infor-
+     mation onto the same location.  Note, however, that _b_a_d_1_4_4
+     does not arrange for the specified sectors to be marked bad
+     in this case.  This option should only be used to restore
+     known bad sector information which was destroyed.
+
+     New bad sectors can be added by running the standard DEC
+     formatter in section ``bad.''
+
+SEE ALSO
+     badsect(8)
+
+BUGS
+     Not all drivers support bad-sector forwarding on the PDP-11.
+
+     It should be possible to both format disks on-line under
+     UNIX and to change the bad sector information, marking new
+     bad sectors, without running a standalone program.
+
+     The bootstrap drivers used to boot the system do not under-
+     stand bad sectors or handle ECC errors.  This means that
+     none of these errors can occur when reading the file /unix
+     to boot.  Sector 0 of the disk drive and the file /boot in
+     the root file system of that drive must also not have any of
+     these errors in it.
+
+     The drivers that write a system core image on disk after a
+     crash do not handle errors; thus the crash dump area must be
+     free of errors and bad sectors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						2
+
+
+

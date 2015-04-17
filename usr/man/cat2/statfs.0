@@ -1,0 +1,132 @@
+
+
+
+STATFS(2)	    UNIX Programmer's Manual		STATFS(2)
+
+
+
+NAME
+     statfs, fstatfs - get file system statistics
+
+SYNOPSIS
+     #include <sys/param.h>
+     #include <sys/mount.h>
+
+     _i_n_t
+     statfs(path,buf)
+     _c_h_a_r *_p_a_t_h;
+     _s_t_r_u_c_t _s_t_a_t_f_s *_b_u_f;
+
+     _i_n_t
+     fstatfs(fd,buf)
+     _i_n_t _f_d;
+     _s_t_r_u_c_t _s_t_a_t_f_s *_b_u_f;
+
+DESCRIPTION
+     Statfs() returns information about a mounted file system.
+     _P_a_t_h is the path name of any file within the mounted
+     filesystem.  _B_u_f is a pointer to a _s_t_a_t_f_s structure defined
+     as follows:
+
+
+     #define MNAMELEN 90       /* length of buffer for returned name */
+
+     struct statfs {
+     short   f_type;	       /* type of filesystem (see below) */
+     short   f_flags;	       /* copy of mount flags */
+     short   f_bsize;	       /* fundamental file system block size */
+     short   f_iosize;	       /* optimal transfer block size */
+     long    f_blocks;	       /* total data blocks in file system */
+     long    f_bfree;	       /* free blocks in fs */
+     long    f_bavail;	       /* free blocks avail to non-superuser */
+     ino_t   f_files;	       /* total file nodes in file system */
+     ino_t   f_ffree;	       /* free file nodes in fs */
+     u_long  f_fsid[2];        /* file system id */
+     long    f_spare[4];       /* spare for later */
+     char    f_mntonname[MNAMELEN];    /* mount point */
+     char    f_mntfromname[MNAMELEN];  /* mounted filesystem */
+     };
+     /*
+     * File system types. - Only UFS is supported so the other types are not
+     * given.
+     */
+     #define   MOUNT_UFS 1    /* Fast Filesystem */
+
+     Fields that are undefined for a particular file system are
+     set to -1.  Fstatfs() returns the same information about an
+     open file referenced by descriptor _f_d.
+
+
+
+
+
+Printed 11/26/99	December 26, 1995			1
+
+
+
+
+
+
+STATFS(2)	    UNIX Programmer's Manual		STATFS(2)
+
+
+
+RETURN VALUES
+     Upon successful completion, a value of 0 is returned.  Oth-
+     erwise, -1 is returned and the global variable _e_r_r_n_o is set
+     to indicate the error.
+
+ERRORS
+     Statfs() fails if one or more of the following are true:
+
+
+     [ENOTDIR]		 A component of the path prefix of _P_a_t_h
+			 is not a directory.
+
+     [EINVAL]		 _p_a_t_h contains a character with the
+			 high-order bit set.
+
+     [ENAMETOOLONG]	 The length of a component of _p_a_t_h
+			 exceeds 63 characters, or the length of
+			 _p_a_t_h exceeds 255 characters.
+
+     [ENOENT]		 The file referred to by _p_a_t_h does not
+			 exist.
+
+     [EACCES]		 Search permission is denied for a com-
+			 ponent of the path prefix of _p_a_t_h.
+
+     [ELOOP]		 Too many symbolic links were encountered
+			 in translating _p_a_t_h.
+
+     [EFAULT]		 _B_u_f or _p_a_t_h points to an invalid
+			 address.
+
+     [EIO]		 An I/O error occurred while reading from
+			 or writing to the file system.
+
+     Fstatfs() fails if one or more of the following are true:
+
+
+     [EBADF]		 _F_d is not a valid open file descriptor.
+
+     [EFAULT]		 _B_u_f points to an invalid address.
+
+     [EIO]		 An I/O error occurred while reading from
+			 or writing to the file system.
+
+HISTORY
+     The statfs function first appeared in 4.4BSD.
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 26, 1995			2
+
+
+

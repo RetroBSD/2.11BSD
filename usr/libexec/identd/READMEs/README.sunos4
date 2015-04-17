@@ -1,0 +1,17 @@
+Machine Type:		Sun SunOS 4.*
+
+Make using:		make sunos4
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" sunos4
+
+Person(s) porting:	Peter Eriksson <pen@lysator.liu.se>
+Port date:		A long time ago...
+Verified working:	OS version(s)	Pident vers	Person
+			4.0.3, 4.1.1,	2.1beta10	<pen@lysator.liu.se>
+			4.1.3
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Works as daemon or from inetd with wait/nowait
+			We run as user sys, but as root would be fine.

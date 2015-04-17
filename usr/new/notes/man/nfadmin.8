@@ -1,0 +1,200 @@
+.TH NFADMIN 8 "University of Illinois"
+.SH NAME
+nfadmin \- Change the status of a set of Notesfiles
+.SH SYNOPSIS
+.B nfadmin
+flags
+topic
+[ topic ... ]
+.br
+.B nfadmin 
+flags
+-f listfile
+.SH DESCRIPTION
+.B Nfadmin
+simplifies the task of displaying and setting director page options 
+of many notesfiles at once.
+.PP
+The 
+.I "flags"
+specify the status to be changed.
+.TP
+-a+
+Allow anonymous submissions.
+.TP
+-a-
+Disallow anonymous submissions.
+.TP
+-n+
+Allow network transmissions/receptions.
+.TP
+-n-
+Disallow network transmissions/receptions.
+.TP
+-o+
+Open the notesfile.  Allow local access by non-directors (subject to
+access permissions).
+.TP
+-o-
+Close the notesfile.  Disallow local access by non-directors.
+.TP
+-A+
+Flag this notesfile as an archive notesfile.
+(This does NOT mean that the notesfile will be archived.  You can't archive
+an archive!)
+.TP
+-A-
+Flag this notesfile as a non-archive notesfile.  This does not affect what
+happens to notes when they expire.
+.TP
+-M+
+Flag this notesfile as a moderated notesfile.  This causes commands that
+create new notes or responses to create a mail message to the newsgroup
+moderator instead.  A list of notesfiles and the mail address of the
+moderator is maintained in /usr/spool/notes/.utilities/moderators.
+.TP
+-M-
+Flag this notesfile as a non-moderated notesfile.
+.TP
+-L+
+Flag this notesfile as a local notesfile.  Local notesfiles don't ask
+whether to include a .signature file at the end of a new note or response.
+.TP
+-L-
+Flag this notesfile as a non-local notesfile.  If the NFSIG environment
+variable is set, notes will prompt whether or not to include the signature
+file named by NFSIG at the end of a new note or response.
+.TP
+-e=NN
+Set the expiration time of this notesfile to NN days.  (NN should be replaced
+with a positive number).
+.TP
+-e=0
+Set the expiration time of this notesfile to DEFAULT.  The number specified
+on the nfarchive command line will be used to determine expiration time.
+If no time is specified on the nfarchive command line, 14 days is used.
+.TP
+-e=-1
+Set the expiration time of this notesfile to NEVER.
+.TP
+-W=0
+Set the working set size of this notesfile to the command line default.
+.TP
+-W=NN
+Set the working set size of this notesfile to NN.
+.TP
+-l=NNNNN
+Set the maximum note size of an individual note in this notesfile to NNNNN.
+(Warning:  negative numbers and numbers under 1000 are a very bad idea here.
+The usual notes default of 100000 is too small for sources groups and
+mod.map.  Please consider raising the limit for these groups to something
+more reasonable, like 500000 or 2000000.  Also check your parms.h file;
+notes has a "hard limit", and if you set the maximum size over the hard
+limit, the hard limit still applies, even though the individual maximum
+is still displayed).
+.TP
+-E=default
+Set the expiration action of this notesfile to the command line default.
+.TP
+-E=delete
+Set the expiration action of this notesfile to DELETE.
+.TP
+-E=archive
+Set the expiration action of this notesfile to ARCHIVE
+.TP
+-D=default
+Set the director message status of this notesfile to the command line default.
+.TP
+-D=on
+Set the director message status of this notesfile to ON; only notes with
+the director message ON will be removed by nfarchive.
+.TP
+-D=off
+Set the director message status of this notesfile to OFF; only notes with
+the director message OFF will be removed by nfarchive.
+.TP
+-D=nocare
+Set the director message status of this notesfile to NOCARE; the director
+message flag is not used by nfarchive in selecting notes for archive/deletion.
+.TP
+-f file
+The file specified in the argument following the -f flag contains a series
+of lines, each specifying a notesfile or group of notesfiles (wildcard) to 
+be displayed or changed.
+.PP
+If no flags are specified (except possibly -f), no changes are made, but
+the current state of the notesfiles is displayed.  If flag(s) are specified,
+the new state after the changes is displayed, in the following format:
+.sp
+.nf
+notesfile title NetW Open Anon Arch WSet Arch. Keep DirM   #     Max
+                -------status------ Size Time  Actn Stat Notes   Size
+net.bugs.2bsd : YES  YES   NO   NO     0   12  ARCH DFLT     3  500000
+net.bugs.4bsd : YES  YES   NO   NO     2   12  ARCH DFLT    26  500000
+net.bugs.usg  : YES  YES   NO   NO     0   12  ARCH DFLT     8  500000
+net.bugs.uucp : YES  YES   NO   NO     0   12  ARCH DFLT     9  500000
+net.bugs.v7   : YES  YES   NO   NO     2   12  ARCH DFLT     1  500000
+nfmaint       : YES  YES   NO   NO     0 NEVER DEL  DFLT     3  500000
+nfgripes      : YES  YES   NO   NO     0   14  DEL  DFLT     0  500000
+net.micro.6809:  NO  YES   NO   NO     0    1  DEL  DFLT     0  500000
+net.announce  : YES  YES   NO   NO     0 DFLT  ARCH DFLT     0  500000
+.fi
+(The output has been squished slightly to allow it to fit in the manual
+page format).
+.PP
+All users are allowed to run this program.
+The changes are only applied to notesfiles for which the executing
+user is a director.
+.PP
+This program lives in the notesfile utility directory,
+typically ``/usr/spool/notes/.utilities''.
+.SH EXAMPLES
+.in +1i
+nfadmin -n+ -o+ -a- -e=14 "net.*"
+.br
+nfadmin -o- -f noteslist
+.in
+.PP
+In the first example, all of the net.* notesfiles are set to networked,
+open, non-anonymous, with an expiration time of 14 days.
+The second example closes access to non-directors for all of the files
+listed in the file "noteslist".  
+.SH BUGS
+.PP
+More parameters ought to be changable with this program.
+.PP
+Nfadmin has not been tested with systems that can have notesfile names
+longer than 14 characters.  The nfadmin code does not have such dependencies
+except in the output format, but the columns may look ugly.  
+.PP
+Nfadmin will probably stop working when a certain news administrator
+creates newsgroup names larger than any of the PDP-11 max data space 
+(64k), the maximum argument/environment to exec (something around 10k), or 
+the total amount of virtual memory on your machine.
+.PP
+.SH FILES
+.PD 0
+.TP 35
+/usr/spool/notes
+the default notesfile data base
+.PD
+.SH SEE ALSO
+mknf(8),
+notes(1),
+nfcomment(3),
+.br
+.ul
+The Notesfile Reference Manual
+.SH AUTHORS
+.nf
+Gordon Burditt (sneaky!gordon)
+Tandy Systems Design
+
+created this program using the Notesfiles system by
+
+Ray Essick (uiucdcs!essick, essick%uiuc@csnet-relay.arpa)
+University of Illinois at Urbana-Champaign
+Urbana, IL
+
+as a base.
+.fi

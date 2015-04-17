@@ -1,0 +1,66 @@
+
+
+
+CHMOD(3F)	    UNIX Programmer's Manual		CHMOD(3F)
+
+
+
+NAME
+     chmod - change mode of a file
+
+SYNOPSIS
+     integer function chmod (name, mode)
+     character*(*) name, mode
+
+DESCRIPTION
+     This function changes the filesystem _m_o_d_e of file _n_a_m_e.
+     _M_o_d_e can be any specification recognized by _c_h_m_o_d(1).  _N_a_m_e
+     must be a single pathname.
+
+     The normal returned value is 0.  Any other value will be a
+     system error number.
+
+FILES
+     /usr/lib/libU77.a
+     /bin/chmod          exec'ed to change the mode.
+
+SEE ALSO
+     chmod(1)
+
+BUGS
+     Pathnames can be no longer than MAXPATHLEN as defined in
+     <_s_y_s/_p_a_r_a_m._h>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,187 @@
+#symbols.raw	1.0 January 22, 1994
+	_version
+#checksys
+	_end
+	_nbuf
+	_buf
+	_nproc
+	_proc
+	_ntext
+	_text
+	_nfile
+	_file
+	_ninode
+	_inode
+	_ncallout
+	_callout
+	_ucb_clist
+	_nclist
+	_ram_size
+	_xitdesc
+	_quotdesc
+	_namecache
+	__iosize
+#ps
+	_proc
+	_nproc
+	_hz
+#snake
+	_avenrun
+#trace
+	_tracebuf
+#welcome
+	_avenrun
+#jove
+	_avenrun
+#ntpd
+	_tickadj
+	_hz
+	_tick
+#gcore
+	_proc
+	_nproc
+#netstat
+	_netdata
+	_nfile
+	_file
+	_mbstat
+	_ipstat
+	_tcb
+	_tcpstat
+	_udb
+	_udpstat
+	_rawcb
+	_ifnet
+	_hosts
+	_rthost
+	_rtnet
+	_icmpstat
+	_rtstat
+	_unixsw
+	_rthashsize
+	_nspcb
+	_idpstat
+#	_spp_istat
+#	_ns_errstat
+#w
+	_proc
+	_swapdev
+	_avenrun
+	_boottime
+	_nproc
+#vmstat
+	_cp_time
+	_rate
+	_total
+#	_deficit
+	_forkstat
+	_sum
+	_firstfree
+	_maxfree
+	_boottime
+	_dk_xfer
+#	_rectime
+#	_pgintime
+	_hz
+	_phz
+	_nchstats
+#	_intrnames
+#	_eintrnames
+#	_intrcnt
+#	_eintrcnt
+	_dk_ndrive
+	_xstats
+	_dk_name
+	_dk_unit
+	_freemem
+#	_mbdinit
+#	_ubdinit
+#acucntrl
+	_cdevsw
+	_dzopen
+	_dzinfo
+	_dz_cnt
+	_dzsoftCAR
+	_dhopen
+	_dhinfo
+	_ndh11
+	_dhsoftCAR
+	_dmfopen
+	_dmfinfo
+	_ndmf
+	_dmfsoftCAR
+#iostat
+	_dk_busy
+	_dk_time
+	_dk_xfer
+	_dk_wds
+	_tk_nin
+	_tk_nout
+	_dk_seek
+	_cp_time
+	_dk_wps
+	_hz
+	_dk_ndrive
+	_dk_name
+	_dk_unit
+#sendmail
+	_avenrun
+#fstat
+	_proc
+	_nproc
+	_netdata
+#trsp
+#	_spp_debug
+#	_spp_debx
+#savecore
+	_dumpdev
+	_dumplo
+	_time
+	_panicstr
+	_physmem
+	_boottime
+	_version
+#route.c
+	_rthost
+	_rtnet
+	_rthashsize
+	_netdata
+#trpt.c
+#	_tcp_debug
+#	_tcp_debx
+#dmesg
+	_msgbuf
+#arp
+	_arptab
+	_arptab_size
+	_netdata
+#rwhod
+	_avenrun
+	_boottime
+#pstat
+	_inode
+	_text
+	_proc
+	_dz_tty
+	_dz_cnt
+	_cons
+	_file
+	_nswap
+	_nkl11
+	_swapmap
+	_dh11
+	_ndh11
+	_nproc
+	_ntext
+	_nfile
+	_ninode
+	_pt_tty
+	_dmf_tty
+	_ndmf
+	_npty
+	_dhu_tty
+	_ndhu
+	_dmz_tty
+	_ndmz
+	_dhv_tty
+	_ndhv

@@ -1,0 +1,287 @@
+.RP
+.TL
+New UCB
+.UX
+Edition of 
+.I m11
+Assembler
+.AU
+Jim Reeds
+.AI
+Statistics Department
+Univerity of California
+Berkeley
+.AB
+A new edition of the old Harvard 
+.UX
+implementation of the
+.I Macro-11
+assembler for PDP-11 computers is now available.
+This document gives, in terse form, a list of features in the new
+assembler.
+The reader is assumed to have some prior knowledge of Macro-11,
+for instance by having previously read the DEC Macro-11 manual.
+.AE
+.SH
+History
+.PP
+Harvard modified
+an old (circa 1974) DEC implementation of Macro-11
+to run on
+.UX
+in the mid 1970's.
+They called it
+.I macro,
+but at Berkeley this program has been known as
+.I m11.
+I modified it further, borrowing features supported in current DEC
+assemblers.
+In the course of this work I found many bugs in the original
+.I m11
+and many cases of disagreement between the DEC Macro-11 manuals and the
+.I m11
+program.
+I have tried to fix as many of these as I could.
+.SH
+Assembler Directives
+.PP
+The following is a list of all the directives supported by 
+.I m11.
+Most work as described in the DEC manuals.
+One directive implemented in all DEC assemblers but not documented
+is the
+.I .rem
+directive.
+Its use is illustrated by the following example:
+.DS
+call	sub1
+call	sub2
+\\.rem	&
+mov	#message,-(sp)
+call	errpr
+tst	(sp)+
+&
+call	sub3
+.DE
+Here the text following the
+.I rem
+directive up through the second & sign is a comment.
+Any character may play the role of &.
+Another undocumented fact about all DEC Macro-11 assemblers
+is the fact that the
+.I .endm
+and
+.I .endr
+directives are complete synonyms and may be used interchangeably, as in
+.DS
+\\.macro	call1 func, arg
+mov	arg,-(sp)
+call	func
+tst	(sp)+
+\\.endr
+.DE
+in violation of the rules given in the DEC manuals.
+The directives are:
+.DS
+ascii	asciz	asect	blkb
+blkw	byte	csect	dsabl
+enabl	end	endc	endm
+endr	eot	error	even
+flt2	flt4	globl	ident
+if	ifdf	ifeq	iff
+ifg	ifge	ifgt	ifl
+ifle	iflt	ifndf	ifne
+ifnz	ift	iftf	ifz
+iif	irp	irpc	limit
+list	macr	macro	mcall
+mexit	narg	nchr	nlist
+ntype	odd	page	print
+psect	radix	rad50	rem
+rept	sbttl	title	word
+.DE
+.SH
+Op Codes
+.PP
+The following is a list of op codes supported by
+.I m11.
+Consult the PDP Procssor Handbook for details.
+One new feature of recent DEC assemblers and of the new version
+of 
+.I m11
+is the use of the short-hand opcodes
+.I call
+and
+.I return,
+which are simply the
+.I jsr
+and
+.I rts
+opcodes with use of the 
+.I pc
+enforced.
+.DS
+absd  absf  adc   adcb  add   addd  addf  ash  
+ashc  asl   aslb  asr   asrb  bcc   bcs   beq  
+bge   bgt   bhi   bhis  bic   bicb  bis   bisb 
+bit   bitb  ble   blo   blos  blt   bmi   bne  
+bpl   bpt   br    bvc   bvs   call  ccc   cfcc 
+clc   cln   clr   clrb  clrd  clrf  clv   clz  
+cmp   cmpb  cmpd  cmpf  cnz   com   comb  dec  
+decb  div   divd  divf  emt   fadd  fdiv  fmul 
+fsub  halt  inc   incb  iot   jmp   jsr   ldcdf
+ldcfd ldcid ldcif ldcld ldclf ldd   ldexp ldf   
+ldfps ldsc  ldub  mark  mfpd  mfpi  modd  modf
+mov   movb  mtpd  mtpi  mul   muld  mulf  neg 
+negb  negd  negf  nop   reset return rol  rolb
+ror   rorb  rti   rts   rtt   sbc   sbcb  scc  
+sec   sen   setd  setf  seti  setl  sev   sez   
+sob   spl   sta0  stb0  stcdf stcdi stcdl stcfd
+stcfi stcfl std   stexp stf   stfps stq0  stst
+sub   subd  subf  swab  sxt   trap  tst   tstb 
+tstd  tstf  wait  xor
+.DE 
+.SH
+.UX
+Command Line Arguments
+.PP
+.DS
+.DE
+.PP
+The list of valid arguments to the
+.I -cr
+flag is
+.DS
+s	sy	sym
+r	re	reg
+m	ma	mac
+p	pe	per	pst
+c	cs	cse	sec	pse
+e	er	err
+.DE
+.SH
+Psect Attributes
+.PP
+Psect attributes are coded by bits in a byte.
+The various attribute arguments turn selected bits on and selected 
+bits off.
+This attribute byte is interpreted by the loader.
+The following three kinds of program sections each have their own
+default attributes.
+These defaults can be changed by the system manager.
+The user can override them by using the
+.I -dp,
+.I -dc,
+and
+.I -da
+command line flags.
+.IP
+Blank
+.I csects
+and all
+.I .psects
+have the default attribute 
+.I relocatable.
+.IP
+Named
+.I .csects
+have the default attributes
+.I overlaid,
+.I global,
+and
+.I relocatable.
+.IP
+The absolute
+.I .asect
+has the attributes
+.I overlaid
+and
+.I global.
+.PP
+The meaning of the bits is (in octal):
+.DS
+shareable		1
+instructions		2
+bss			4
+defined			10
+overlaid		20
+relocatable		40
+global			100
+.DE
+.PP
+Each of the attribute key words turns some of these bits on
+and some off.
+The list is:
+.DS
+Keyword	Synonym		Turns On	Turns Off
+
+rel			40
+abs					40
+gbl			100
+lcl					100
+ovr			20
+con					20
+shr	ro		1		4
+prv	rw				5
+bss	b		4		3
+ins	i		2		4
+dat	d				6
+hgh	 low
+.DE
+.PP
+The 
+.I hgh
+and
+.I low
+attribute keywords are for compatability with DEC
+assemblers.
+They have no UNIX function.
+.SH
+Listing control arguments
+.DS
+seq	loc	bin	src	com
+bex	md	mc	me	meb
+cnd	ld	ttm	toc	sym
+.DE
+.SH
+Arguments to the 
+.I .enabl
+and
+.I .dsabl
+directives
+.PP
+These args are:
+.DS
+pnc	crf	gbl	fpt	lc	lsb
+cdr	reg	ama	pic	abs
+.DE
+.SH
+Arguments to Condtional Statements
+.PP
+The conditional directives
+.I .if,
+etc, take the following arguments:
+.DS
+eq	ne	z	nz
+gt	le	g	lt	
+ge	l	df	ndf
+b	nb	idn	dif
+.DE
+.I
+.SH
+Differences Between Old Harvard Assembler and New Assembler
+.PP
+The new assembler does not convert macro definition text to upper case.
+This feature can be disabled by using the
+.I -um
+switch.
+.SH
+Differences Between DEC Macro-11 Assemblers and the New Assembler
+.PP
+The new assembler does not have keyword arguments to macros, as described in
+section 7.3.6 in the DEC Macro 11 manual.
+.PP 
+The new assembler starts out with lower case enabled and it does not convert
+macro definition text to upper case.  Both of these features can be turned 
+off by specifying the
+.I -uc
+switch.

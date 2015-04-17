@@ -1,0 +1,63 @@
+#
+# Copyright (c) 1988 Regents of the University of California.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms are permitted
+# provided that this notice is preserved and that due credit is given
+# to the University of California at Berkeley. The name of the University
+# may not be used to endorse or promote products derived from this
+# software without specific prior written permission. This software
+# is provided ``as is'' without express or implied warranty.
+#
+#	2.2 (2.11BSD GTE) 1996/6/8
+#
+M=	../machine
+VPATH=	../machine
+
+CFILES=	${M}/clock.c ${M}/conf.c ${M}/cons.c ${M}/kern_pdp.c \
+	${M}/machdep.c ${M}/machdep2.c ${M}/mem.c ${M}/ram.c ${M}/trap.c
+COBJS=	clock.o conf.o cons.o kern_pdp.o machdep.o machdep2.o mem.o \
+	ram.o trap.o
+
+# We compile mch_KScall here rather than in Make.pdpnet so that it gets
+# compiled with the right flags.  This means that it gets compiled for all
+# kernel, but is only included in the networking kernel.  As it only takes
+# a few seconds to compile it, it isn't worth trashing up Make.pdpnet to
+# compile it there.
+
+SFILES=	${M}/mch_backup.s \
+	${M}/mch_click.s ${M}/mch_copy.s ${M}/mch_csv.s ${M}/mch_dump.s \
+	${M}/mch_dzpdma.s ${M}/mch_fpsim.s ${M}/mch_KScall.s \
+	${M}/mch_profile.s ${M}/mch_start.s ${M}/mch_trap.s \
+	${M}/mch_vars.s ${M}/mch_xxx.s ${M}/scb.s ${M}/toy.s
+SOBJS=	mch_backup.o mch_click.o mch_copy.o mch_csv.o \
+	mch_dump.o mch_dzpdma.o mch_fpsim.o mch_KScall.o mch_profile.o \
+	mch_start.o mch_trap.o mch_vars.o mch_xxx.o scb.o toy.o
+
+.c.o:
+	${CC} ${CFLAGS} -S $*.c
+	${SED} -f SPLFIX $*.s | ${AS} -u -o $*.o
+	rm -f $*.s
+
+.s.o:
+	${CPP} $*.s | ${AS} -u -o $*.o
+
+all: assym.h ${COBJS} ${SOBJS} ../pdp/symbols.sort
+
+assym.h: genassym
+	./genassym > $@
+
+genassym:
+	${CC} -O ${CFLAGS} ${M}/genassym.c -o $@
+
+# it's a tab character in the sed statement below not a space.
+
+../pdp/symbols.sort: ../pdp/symbols.raw
+	grep -v '^#' ../pdp/symbols.raw \
+	    | sed 's/^	//' | sort -u > ../pdp/symbols.sort
+
+depend:  assym.h
+	mkdep -f Make.pdp ${CFLAGS} ${CFILES} ${SFILES} ${M}/genassym.c
+
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

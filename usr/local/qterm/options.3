@@ -1,0 +1,367 @@
+.\"
+.\" Copyright (c) 1990 Michael A. Cooper.
+.\" This software may be freely distributed provided it is not sold for 
+.\" profit and the author is credited appropriately.
+.\"
+.\" $Header: /src/common/usc/lib/libgen/RCS/options.3,v 1.4 1991/02/22 02:30:06 mcooper Exp $
+.\"
+.TH PARSEOPTIONS 3 "30 October 1990"
+.ds ]W USC-UCS
+.SH NAME
+ParseOptions, UsageOptions, HelpOptions, Num_Opts \- Parse command line options
+.SH SYNOPSIS
+.LP
+.nf
+.ft B
+#include "/usr/local/include/options.h"
+.ft
+.fi
+.LP
+.nf
+.ft B
+int ParseOptions(options, num_options, argc, argv)
+OptionDescRec *options;
+int num_options;
+int argc;
+char **argv;
+.ft
+.fi
+.LP
+.nf
+.ft B
+void UsageOptions(options, num_options, badoption)
+OptionDescRec *options;
+int num_options;
+char *badoption;
+.ft
+.fi
+.LP
+.nf
+.ft B
+void HelpOptions(options, num_options, message)
+OptionDescRec *options;
+int num_options;
+char **message;
+.ft
+.fi
+.LP
+.nf
+.ft B
+int Num_Opts(options)
+OptionDescRec *options;
+.ft
+.fi
+.LP
+.nf
+.ft B
+extern char *OptionChars;
+extern char *ProgramName;
+.ft
+.fi
+.SH DESCRIPTION
+.LP
+.BR ParseOptions(\|)
+parses a given set of options found in
+.B argv.
+The
+.B argc
+parameter is the count of the number of string pointers
+in 
+.B argv.
+Both 
+.B argc
+and
+.B argv
+are typically passed directly from a
+.B main(\|)
+function.
+The
+.B argv
+parameter should contain an array of strings that
+need to be parsed.
+.B ParseOptions(\|)
+returns the number of entries in
+.B argv
+that were successfully parsed or -1 upon error.
+.LP
+The
+.B options
+structure should contain a valid description list of options.
+The type
+.B OptionDescRec
+is defined as the following in the
+.B "options.h"
+header file:
+.RS
+.LP
+.nf
+.ft B
+typedef struct {
+    char      *option;     /* Option string in argv */
+    int       flags;       /* Flag bits */
+    int       (*cvtarg)(); /* Function to convert argument */
+    caddr_t   valp;        /* Variable to set */
+    caddr_t   value;       /* Default value to provide */
+    char      *usage;      /* Usage message */
+    char      *desc;       /* Description message */
+} OptionDescRec, *OptionDescList;
+.ft R
+.fi
+.RE
+.LP
+The order of
+.I options
+is important because
+the first partial match found in
+.I options 
+is used.
+This allows abbreviations (except if the option is a
+.I StickArg
+[see below]).
+For instance, a user may specify only "\-n" for "\-number" provided
+that "\-n" is unique to
+.I options
+or that "\-number" is placed before any other "\-n*" options in
+.I options.
+.LP
+The
+.I option
+member of
+.B OptionDescRec
+is the string name of the option.
+This is typically something like
+.RS
+.ft B
+.nf
+.sp
+"\-c"
+"+c"
+"\-file"
+.fi
+.sp
+.ft
+.RE
+The first character of 
+.I option
+is special.  It must be one of the characters know to be the
+start of an option.
+The default list of starting option characters is "\-+".
+This indicates that an option can start with either a "\-" or
+a "+".  This list of characters may be changed by setting
+the variable
+.B OptionChars
+to point to a string of custom starting option characters.
+.LP
+The
+.I flags
+member is used to set bits to describe how an option
+is to be interpreted.
+Valid flags are defined in the
+.I "options.h"
+header file:
+.RS
+.IP NoArg
+No argument for this option.  
+Use the value in 
+.I OptionDescRec.value 
+to set the value in the
+.I valp
+member of 
+.B OptionDescRec.
+.IP IsArg
+Value is the option string itself.
+.IP SepArg
+Value is in next argument in argv.
+.IP StickyArg
+Value is the characters immediately following 
+the option.
+.IP SkipArg
+Ignore this option and the next argument in argv.
+.IP SkipLine
+Ignore this option and the rest of argv.
+.IP SkipNArgs
+Ignore this option and the next 
+.I OptionDescRes.value 
+arguments in argv.
+.IP ArgHidden
+Don't show this option in usage or help messages.
+.RE
+.LP
+The next member of
+.B OptionDescRec
+is
+.I cvtarg.
+This should be a pointer to a function that knows how to
+convert the given argument into the correct type.
+The predefined functions are as follows:
+.RS
+.IP OptBool
+Converts a boolean.
+.IP OptInt
+Converts an integer.
+.IP OptShort
+Converts a short.
+.IP OptLong
+Converts a long.
+.IP OptStr
+Converts a string.
+.RE
+.LP
+The
+.I valp
+member should be a pointer
+to the variable that needs to be set.
+.I valp
+should accept whatever type
+.I cvtarg
+is expected to return.
+.LP
+The
+.I value
+member should contain a default value to
+be used if no value is given for an option or
+this type of option does not require an argument
+(according to the 
+.I flags
+bits).
+If 
+.I value 
+is
+.B NULL
+then an argument for this option
+is optional.
+.LP
+.I usage
+is used to build usage and help messages.
+It should be a string containing a description of any arguments
+that may be used for this option.
+The option string itself should not be a part of 
+.I usage.
+The 
+.B UsageOptions(\|)
+and 
+.B HelpOptions(\|)
+functions combine the
+.I option
+field with
+.I usage
+and interpret the
+.I flags
+bits to build a usage string.
+If this field is 
+.B NULL,
+then just the
+.I option
+field itself is used for usage and help messages.
+.LP
+The
+.I desc
+member is used to build a help message for this option.
+This should be a string containing a brief description on what this
+option does.
+.LP
+The
+.B num_options
+parameter should be the number of 
+.B OptionDescRec's
+found in 
+.B options.
+The function
+.BR Num_Opts(\|)
+will return the number of 
+.B OptionDescRec's.
+.LP
+The
+.B UsageOptions(\|)
+function
+prints a usage message.
+If
+.I badoption
+is not 
+.B NULL, 
+then an initial message is displayed indicating that 
+.I badoption
+is not a valid option.
+.LP
+The
+.B HelpOptions(\|)
+function
+prints a nicely formatted message describing all options.
+If
+.I message
+is not 
+.B NULL
+it is taken to be a message that is displayed in the output of
+a "\-help" option.
+.SH EXAMPLE
+.LP
+Here is an example program:
+.nf
+.sp
+.ft B
+#include "options.h"
+
+char *filename = NULL;
+int number = \-1;
+int foo = \-1;
+int I = \-1;
+long L = \-1;
+short S = \-1;
+
+OptionDescRec opts[] = {
+    {"\-foo",	NoArg,		OptBool, (caddr_t) &foo,	"0",
+     (char *)NULL,	"Disable foo bar"},
+    {"+foo",	NoArg,		OptBool, (caddr_t) &foo,       	"1",
+     (char *)NULL,	"Enable foo bar"},
+    {"\-I",	StickyArg,	OptInt, (caddr_t) &I,		(caddr_t) NULL,
+     (char *)NULL,	"Set value of I"},
+    {"\-L",	StickyArg,	OptLong, (caddr_t) &L,		(caddr_t) NULL,
+     (char *)NULL,	"Set value of L"},
+    {"\-S",	SepArg,		OptShort, (caddr_t) &S,		(caddr_t) NULL,
+     (char *)NULL,	"Set value of S"},
+    {"\-C",	StickyArg,	OptStr, (caddr_t) &filename,	(caddr_t) NULL,
+     (char *)NULL,	"Alternate file to use"},
+    {"\-number",	SepArg, 	OptInt, (caddr_t) &number,	"66",
+     "interval",	NULL},
+    {"\-file",	SepArg, 	OptStr, (caddr_t) &filename,	(caddr_t) NULL,
+     "filename",	"Specify alternate file to use"},
+};
+
+main(argc, argv)
+     int argc;
+     char **argv;
+{
+    int c;
+
+    c = ParseOptions(opts, Num_Opts(opts), argc, argv);
+    printf("Count = %d of %d\n", c, argc);
+}
+.ft
+.fi
+.SH "RETURN VALUES"
+.B ParseOptions(\|)
+returns the number of arguments parsed or -1 upon error.
+.SH NOTES
+.LP
+The
+.I \-help
+option is automatically built into 
+.B ParseOptions(\|).
+.LP
+All error messages are sent to 
+.B stderr.
+.LP
+An option may be both 
+.I StickyArg
+and
+.I SepArg.
+If both are set for one option, preference is given to
+.I SepArg
+parsing.
+Also, no appreviations are allowed.
+.SH AUTHOR
+Michael A. Cooper, 
+.br
+University Computing Services, 
+.br
+University of Southern California.

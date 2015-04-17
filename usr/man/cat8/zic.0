@@ -1,0 +1,264 @@
+
+
+
+ZIC(8)		    UNIX Programmer's Manual		   ZIC(8)
+
+
+
+NAME
+     zic - time zone compiler
+
+SYNOPSIS
+     zic [ -v ] [ -d _d_i_r_e_c_t_o_r_y ] [ -l _l_o_c_a_l_t_i_m_e ] [ _f_i_l_e_n_a_m_e ...
+     ]
+
+DESCRIPTION
+     _Z_i_c reads text from the file(s) named on the command line
+     and creates the time conversion information files specified
+     in this input.  If a _f_i_l_e_n_a_m_e is -, the standard input is
+     read.
+
+     These options are available:
+
+     -d _d_i_r_e_c_t_o_r_y
+	  Create time conversion information files in the named
+	  directory rather than in the standard directory named
+	  below.
+
+     -l _t_i_m_e_z_o_n_e
+	  Use the given time zone as local time.  _Z_i_c will act as
+	  if the file contained a link line of the form
+
+	       Link _t_i_m_e_z_o_n_e	   localtime
+
+     -v   Complain if a year that appears in a data file is out-
+	  side the range of years representable by _t_i_m_e(2)
+	  values.
+
+	  Input lines are made up of fields.  Fields are
+	  separated from one another by any number of white space
+	  characters.  Leading and trailing white space on input
+	  lines is ignored.  An unquoted sharp character (#) in
+	  the input introduces a comment which extends to the end
+	  of the line the sharp character appears on.  White
+	  space characters and sharp characters may be enclosed
+	  in double quotes (") if they're to be used as part of a
+	  field.  Any line that is blank (after comment strip-
+	  ping) is ignored.  Non-blank lines are expected to be
+	  of one of three types: rule lines, zone lines, and link
+	  lines.
+
+     A rule line has the form
+
+	  Rule	NAME  FROM  TO	  TYPE	IN   ON       AT    SAVE  LETTER/S
+
+     For example:
+
+	  Rule	USA   1969  1973  -	Apr  lastSun  2:00  1:00  D
+
+     The fields that make up a rule line are:
+
+
+
+Printed 11/24/99						1
+
+
+
+
+
+
+ZIC(8)		    UNIX Programmer's Manual		   ZIC(8)
+
+
+
+     NAME    Gives the (arbitrary) name of the set of rules this
+	     rule is part of.
+
+     FROM    Gives the first year in which the rule applies.  The
+	     word minimum (or an abbreviation) means the minimum
+	     year with a representable time value.  The word max-
+	     imum (or an abbreviation) means the maximum year
+	     with a representable time value.
+
+     TO      Gives the final year in which the rule applies.  In
+	     addition to minimum and maximum (as above), the word
+	     only (or an abbreviation) may be used to repeat the
+	     value of the FROM field.
+
+     TYPE    Gives the type of year in which the year applies.
+	     If TYPE is - then the rule applies in all years
+	     between FROM and TO inclusive; if TYPE is uspres,
+	     the rule applies in U.S. Presidential election
+	     years; if TYPE is nonpres, the rule applies in years
+	     other than U.S. Presidential election years.  If
+	     TYPE is something else, then _z_i_c executes the com-
+	     mand
+		  yearistype _y_e_a_r _t_y_p_e
+	     to check the type of a year: an exit status of zero
+	     is taken to mean that the year is of the given type;
+	     an exit status of one is taken to mean that the year
+	     is not of the given type.
+
+     IN      Names the month in which the rule takes effect.
+	     Month names may be abbreviated.
+
+     ON      Gives the day on which the rule takes effect.
+	     Recognized forms include:
+
+		  5	   the fifth of the month
+		  lastSun  the last Sunday in the month
+		  lastMon  the last Monday in the month
+		  Sun>=8   first Sunday on or after the eighth
+		  Sun<=25  last Sunday on or before the 25th
+
+	     Names of days of the week may be abbreviated or
+	     spelled out in full.  Note that there must be no
+	     spaces within the ON field.
+
+     AT      Gives the time of day at which the rule takes
+	     affect.  Recognized forms include:
+
+		  2	   time in hours
+		  2:00	   time in hours and minutes
+		  15:00    24-hour format time (for times after noon)
+		  1:28:14  time in hours, minutes, and seconds
+
+
+
+
+Printed 11/24/99						2
+
+
+
+
+
+
+ZIC(8)		    UNIX Programmer's Manual		   ZIC(8)
+
+
+
+	     Any of these forms may be followed by the letter w
+	     if the given time is local ``wall clock'' time or s
+	     if the given time is local ``standard'' time; in the
+	     absence of w or s, wall clock time is assumed.
+
+     SAVE    Gives the amount of time to be added to local stan-
+	     dard time when the rule is in effect.  This field
+	     has the same format as the AT field (although, of
+	     course, the w and s suffixes are not used).
+
+     LETTER/S
+	     Gives the ``variable part'' (for example, the ``S''
+	     or ``D'' in ``EST'' or ``EDT'') of time zone abbre-
+	     viations to be used when this rule is in effect.  If
+	     this field is -, the variable part is null.
+
+     A zone line has the form
+
+	  Zone	NAME		      GMTOFF  RULES/SAVE  FORMAT  [UNTIL]
+
+     For example:
+
+	  Zone	Australia/South-west  9:30    Aus	  CST	  1987 Mar 15 2:00
+
+     The fields that make up a zone line are:
+
+     NAME  The name of the time zone.  This is the name used in
+	   creating the time conversion information file for the
+	   zone.
+
+     GMTOFF
+	   The amount of time to add to GMT to get standard time
+	   in this zone.  This field has the same format as the
+	   AT and SAVE fields of rule lines; begin the field with
+	   a minus sign if time must be subtracted from GMT.
+
+     RULES/SAVE
+	   The name of the rule(s) that apply in the time zone
+	   or, alternately, an amount of time to add to local
+	   standard time.  If this field is - then standard time
+	   always applies in the time zone.
+
+     FORMAT
+	   The format for time zone abbreviations in this time
+	   zone.  The pair of characters %s is used to show where
+	   the ``variable part'' of the time zone abbreviation
+	   goes.  UNTIL The time at which the GMT offset or the
+	   rule(s) change for a location.  It is specified as a
+	   year, a month, a day, and a time of day.  If this is
+	   specified, the time zone information is generated from
+	   the given GMT offset and rule change until the time
+	   specified.
+
+
+
+Printed 11/24/99						3
+
+
+
+
+
+
+ZIC(8)		    UNIX Programmer's Manual		   ZIC(8)
+
+
+
+	   The next line must be a ``continuation'' line; this
+	   has the same form as a zone line except that the
+	   string ``Zone'' and the name are omitted, as the con-
+	   tinuation line will place information starting at the
+	   time specified as the UNTIL field in the previous line
+	   in the file used by the previous line.  Continuation
+	   lines may contain an UNTIL field, just as zone lines
+	   do, indicating that the next line is a further con-
+	   tinuation.
+
+     A link line has the form
+
+	  Link	LINK-FROM   LINK-TO
+
+     For example:
+
+	  Link	US/Eastern  EST5EDT
+
+     The LINK-FROM field should appear as the NAME field in some
+     zone line; the LINK-TO field is used as an alternate name
+     for that zone.
+
+     Except for continuation lines, lines may appear in any order
+     in the input.
+
+NOTE
+     For areas with more than two types of local time, you may
+     need to use local standard time in the AT field of the ear-
+     liest transition time's rule to ensure that the earliest
+     transition time recorded in the compiled file is correct.
+
+FILES
+     /usr/share/zoneinfostandard directory used for created files
+
+SEE ALSO
+     newctime(3), tzfile(5), zdump(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						4
+
+
+

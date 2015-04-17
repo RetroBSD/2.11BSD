@@ -1,0 +1,66 @@
+
+
+
+PUTS(3S)	    UNIX Programmer's Manual		 PUTS(3S)
+
+
+
+NAME
+     puts, fputs - put a string on a stream
+
+SYNOPSIS
+     #include <stdio.h>
+
+     puts(s)
+     char *s;
+
+     fputs(s, stream)
+     char *s;
+     FILE *stream;
+
+DESCRIPTION
+     _P_u_t_s copies the null-terminated string _s to the standard
+     output stream stdout and appends a newline character.
+
+     _F_p_u_t_s copies the null-terminated string _s to the named out-
+     put _s_t_r_e_a_m.
+
+     Neither routine copies the terminal null character.
+
+SEE ALSO
+     fopen(3S), gets(3S), putc(3S), printf(3S), ferror(3S)
+     fread(3S) for _f_w_r_i_t_e
+
+BUGS
+     _P_u_t_s appends a newline, _f_p_u_t_s does not, all in the name of
+     backward compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

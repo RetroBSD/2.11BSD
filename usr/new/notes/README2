@@ -1,0 +1,69 @@
+Written  7:27 am  Aug 22, 1985 by sources-request@panda in comp.sources.unix
+	Note title: changes to notes
+
+Mod.sources:  Volume 2, Issue 36
+Submitted by: genrad!mit-eddie!mirror!rs (Rich Salz)
+
+This note contains modifications to the latest version of notes, 1.7.
+
+The diffs listed below will modify notes (version 1.7, at least) to
+understand moderated newsgroups, as well as "local" notesfiles.
+
+In a MODERATED notesfile, any attempt to write a note or send mail
+is turned into a call that sends mail to the moderator.  For example,
+is the MODERATED flag is on for net.announce, any attempt to post
+their will instead be sent as mail to mark@cbosgd.att (or whatever).
+Note that it is still possible to "Copy" a note into a MODERATED
+notesfile.  This can be prohibited by (a) turning off write permission
+on the all MODERATED notesfiles, or (b) added some trivial code to
+adnote.c.  I did (a); if anyone wants the code for (b), let me know.
+
+The mapping of notesfile names to moderators is done in a file
+named "moderators" in the notesfile utility directory (default is
+/usr/spool/notes/.utilities).  This file contains lines like:
+    notesfile_name <spaces_or_tabs> mail_address
+Blank lines, or lines starting with '#', are ignored.  Here are
+a couple of lines from my "moderators" file:
+
+Here are a couple of lines from my .utilties/moderator file:
+# This comes from the posting by Gene Spafford
+# Correct addresses for mirror systems by R$, 19aug85.
+mod.map		wjh12!ihnp4!cbosgd!mark
+mod.map.uucp	wjh12!ihnp4!cbosgd!uucpmap
+# Here's handling an ARPA gateway'd list
+fa.laser-lover		furuta%washington@cca
+
+# Here's one that we gateway ourselves
+ms.loops		loops-users%berkeley@cca
+# Any valid address is ok
+ms.prisoner		inmet!masscomp!allegra!sjuvax!ianucci
+
+Enough talk, here are the diffs.
+NOTE:  THE RCS REVISIONS SHOW ARE WRONG.  I BLEW IT!
+
+=======================================================================
+
+By Paul Pomes, CSO, Univ of Illinois (paul@uxc.cso.uiuc.edu)
+Wed Jul  1 14:02:47 CDT 1987
+
+I've applied Rich's changes to the latest edition of notes from the UofI
+CS Dept.  A few changes were made:
+
+  The M,m keys in a moderated notesfile can send mail to arbitrary
+  addresses.  Previously mail went only to the moderator.
+
+  A new note/response must be a non-zero size before the user is prompted
+  for a signature file.
+
+  The nfadmin program has two new flags, M and L, for setting the 
+  moderated and local bits in a notesfile.
+
+  The notes.1 and nfadmin.8 man pages have been updated to mention the
+  new NFSIG environment variable, and the behavior of local/moderated
+  notesfiles.
+
+  The Notesfile Reference manual has been updated as well.
+
+A complete distribution of the virgin sources, plus the RCS recorded changes,
+is available for anonymous FTP from uxc.cso.uiuc.edu:pub/Notes.tar.Z .
+

@@ -1,0 +1,83 @@
+Application	Version
+-----------	-------
+Mail/		4.3
+Makefile/	4.3  (small mods for load type (separate I&D or pure))
+apply.c		4.3
+biff.c		4.3
+checknr.c	4.3
+clear.c		4.3
+colcrt.c	4.3
+colrm.c		4.3
+compress/	4.3  (minor mods to usermem.sh for pdp11 compilation)
+ctags.c		4.3
+dbx/		UNIMPLEMENTED
+error/		4.3
+ex/		4.3
+expand.c	4.3
+finger.c	4.3
+fold.c		4.3
+fp/		UNIMPLEMENTED
+from.c		4.3
+ftp/		4.3+
+gcore.c		2.10 (or maybe V7, or maybe 2.9 - should 4.3 be ported?)
+gprof/		UNIMPLEMENTED (4.3 should be ported (all the hooks are there))
+grep.c		4.3
+groups.c	4.3
+head.c		4.3
+indent/		4.3
+last.c		4.3
+lastcomm.c	4.3
+leave.c		4.3
+lisp/		UNIMPLEMENTED (see ../new/OLD/lisp11.tar.Z)
+lock.c		4.3
+logger.c	4.3
+man.c		4.3
+mkstr.c		4.3
+more/		4.3
+msgs/		4.3
+netstat/	4.3  (many, many long/int fixes)
+pascal/		2.10 (should 4.3 be ported?)
+printenv.c	4.3
+quota.c		4.3
+rdist/		4.3
+rlogin.c	4.3
+rsh.c		4.3
+ruptime.c	4.3
+rwho.c		4.3
+sccs.c		4.3
+script.c	4.3
+sendbug/	4.3
+soelim.c	4.3
+strings.c	4.3  (minor changes for 2.10's a.out format)
+symorder.c	UNIMPLEMENTED (4.3 should be ported)
+sysline/	UNIMPLEMENTED (4.3 should be ported)
+systat/		UNIMPLEMENTED (4.3 should be ported)
+tail.c		4.3
+talk/		4.3
+tcopy.c		4.3
+telnet.c	4.3
+tftp/		4.3
+tn3270/		4.3
+tset/		4.3
+ul.c		4.3
+unexpand.c	4.3
+unifdef.c	4.3
+users.c		4.3
+vacation.c	4.3
+vgrind/		4.3
+vlp/		UNIMPLEMENTED (but possible, I suspect)
+vmstat.c	4.3
+w.c		2.10 (4.3 should be ported)
+wc.c		4.3
+what.c		4.3
+whereis.c	4.3
+which.csh	4.3
+whoami.c	4.3
+whois.c		4.3
+window/		4.3
+xstr.c		4.3
+yes.c		4.3
+
+The directorie PORT is special.  It contains source code from the 4.3
+distribution that should probably be ported to 2.10 as soon as someone
+has the time and inclination to do so.

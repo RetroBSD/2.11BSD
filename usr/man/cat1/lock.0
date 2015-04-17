@@ -1,0 +1,66 @@
+
+
+
+LOCK(1)             UNIX Programmer's Manual		  LOCK(1)
+
+
+
+NAME
+     lock - reserve a terminal
+
+SYNOPSIS
+     lock [ -p ] [ -t timeout ]
+
+DESCRIPTION
+     _L_o_c_k requests a password from the user, reads it again for
+     verification and then will normally not relinquish the ter-
+     minal until the password is repeated.  There are two other
+     conditions under which it will terminate: it will timeout
+     after some interval of time and it may be killed by someone
+     with the appropriate permission.  The default time limit is
+     15 minutes, which may be changed with the -_t option where
+     _t_i_m_e_o_u_t is the time limit in minutes.  The -_p option causes
+     _l_o_c_k to use the user's current password instead of request-
+     ing another one.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	February 23, 1989			1
+
+
+

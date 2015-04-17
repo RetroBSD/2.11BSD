@@ -1,0 +1,66 @@
+
+
+
+IOCTL(2)	    UNIX Programmer's Manual		 IOCTL(2)
+
+
+
+NAME
+     ioctl - control device
+
+SYNOPSIS
+     #include <sys/ioctl.h>
+
+     ioctl(d, request, argp)
+     int d;
+     unsigned long request;
+     char *argp;
+
+DESCRIPTION
+     _I_o_c_t_l performs a variety of functions on open descriptors.
+     In particular, many operating characteristics of character
+     special files (e.g. terminals) may be controlled with _i_o_c_t_l
+     requests.	The writeups of various devices in section 4 dis-
+     cuss how _i_o_c_t_l applies to them.
+
+     An  ioctl _r_e_q_u_e_s_t has encoded in it whether the argument is
+     an "in" parameter or "out" parameter, and the size of the
+     argument _a_r_g_p in bytes.  Macros and defines used in specify-
+     ing an ioctl _r_e_q_u_e_s_t are located in the file <_s_y_s/_i_o_c_t_l._h>.
+
+RETURN VALUE
+     If an error has occurred, a value of -1 is returned and
+     _e_r_r_n_o is set to indicate the error.
+
+ERRORS
+     _I_o_c_t_l will fail if one or more of the following are true:
+
+     [EBADF]	    _D is not a valid descriptor.
+
+     [ENOTTY]	    _D is not associated with a character special
+		    device.
+
+     [ENOTTY]	    The specified request does not apply to the
+		    kind of object that the descriptor _d refer-
+		    ences.
+
+     [EINVAL]	    _R_e_q_u_e_s_t or _a_r_g_p is not valid.
+
+SEE ALSO
+     execve(2), fcntl(2), mt(4), tty(4), intro(4N)
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  March 4, 1986                         1
+
+
+

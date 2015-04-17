@@ -1,0 +1,132 @@
+
+
+
+IL(4)		    UNIX Programmer's Manual		    IL(4)
+
+
+
+NAME
+     il - Interlan NI1010 10 Mb/s Ethernet interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NIL  _i_l__c_o_n_t_r_o_l_l_e_r_s # Interlan Ethernet
+
+DESCRIPTION
+     The _i_l interface provides access to a 10 Mb/s Ethernet net-
+     work through an Interlan 1010 or 1010A controller.
+
+     Each of the host's network addresses is specified at boot
+     time with an SIOCSIFADDR ioctl.  The _i_l interface employs
+     the address resolution protocol described in _a_r_p(4P) to
+     dynamically map between Internet and Ethernet addresses on
+     the local network.
+
+     The interface normally tries to use a ``trailer'' encapsula-
+     tion to minimize copying data on input and output.  The use
+     of trailers is negotiated with ARP.  This negotiation may be
+     disabled, on a per-interface basis, by setting the
+     IFF_NOTRAILERS flag with an SIOCSIFFLAGS ioctl.
+
+DIAGNOSTICS
+     il%d: input error.  The hardware indicated an error in read-
+     ing a packet off the cable or an illegally sized packet.
+
+     il%d: can't handle af%d.  The interface was handed a message
+     with addresses formatted in an unsuitable address family;
+     the packet was dropped.
+
+     il%d: setaddr didn't work.  The interface was unable to
+     reprogram its physical ethernet address.  This may happen
+     with very early models of the interface.  This facility is
+     used only when the controller is not the first network
+     interface configured for XNS.  The oldest interface tested
+     (2.7.1.0.1.45) has never failed in this way.
+
+     The following messages indicate a probable hardware error
+     performing the indicated operation during autoconfiguration
+     or initialization.  The status field in the control and
+     status register (the low-order four bits) should indicate
+     the nature of the failure.  See the hardware manual for
+     details.
+
+     il%d: reset failed, csr=%b.
+
+     il%d: status failed, csr=%b.
+
+     il%d: hardware diag failed, csr=%b.
+
+
+
+
+
+Printed 11/26/99	 August 20, 1987			1
+
+
+
+
+
+
+IL(4)		    UNIX Programmer's Manual		    IL(4)
+
+
+
+     il%d: verifying setaddr, csr=%b.
+
+     il%d: stray xmit interrupt, csr=%b.
+
+     il%d: can't initialize.
+
+SEE ALSO
+     intro(4N), inet(4F), arp(4P)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 20, 1987			2
+
+
+

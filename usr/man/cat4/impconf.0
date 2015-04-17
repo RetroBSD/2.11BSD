@@ -1,0 +1,132 @@
+
+
+
+IMP(4)		    UNIX Programmer's Manual		   IMP(4)
+
+
+
+NAME
+     imp - 1822 network interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NIMP _c_o_u_n_t	 # ARPAnet IMP 1822 interface
+
+DESCRIPTION
+     The _i_m_p interface, as described in BBN Report 1822, provides
+     access to an intelligent message processor normally used
+     when participating in the Department of Defense ARPA net-
+     work.  The network interface communicates through a device
+     controller, usually an ACC LH/DH or HDH or a DEC IMP-11A,
+     with the IMP.  The interface is "reliable" and "flow-
+     controlled" by the host-IMP protocol.
+
+     To configure IMP support, at least one of _a_c_c(4), _c_s_s(4) or
+     _h_d_h(4) must be included.  The _c_o_u_n_t specifies the total
+     number of IMP connections.  The network number on which the
+     interface resides is specified at boot time using the SIOC-
+     SIFADDR ioctl.  The host number is discovered through
+     receipt of NOOP messages from the IMP.
+
+     The network interface is always in one of four states: up,
+     down, initializing, or going down.  When the system is
+     booted, the interface is marked down.  If the hardware con-
+     troller is successfully probed, the interface enters the
+     initializing state and transmits three NOOP messages to the
+     IMP.  It then waits for the IMP to respond with two or more
+     NOOP messages in reply.  When it receives these messages it
+     enters the up state.  The ``going down'' state is entered
+     only when notified by the IMP of an impending shutdown.
+     Packets may be sent through the interface only while it is
+     in the up state.  Outgoing packets are dropped with the
+     error ENETDOWN returned to the caller if the interface is in
+     any other state.
+
+DIAGNOSTICS
+     imp%d: not configured.  A hardware interface could not be
+     attached during autoconfiguration because too few IMP
+     pseudo-devices were configured.
+
+     imp%d: leader error.  The IMP reported an error in a leader
+     (1822 message header).  This causes the interface to be
+     reset and any packets queued up for transmission to be
+     purged.
+
+     imp%d: going down in 30 seconds.
+     imp%d: going down for hardware PM.
+     imp%d: going down for reload software.
+     imp%d: going down for emergency reset.  The Network Control
+     Center (NCC) is manipulating the IMP.  By convention these
+
+
+
+Printed 11/26/99	 August 2, 1987                         1
+
+
+
+
+
+
+IMP(4)		    UNIX Programmer's Manual		   IMP(4)
+
+
+
+     messages are reported to all hosts on an IMP.
+
+     imp?: host %x, lost %d rfnms.  The IMP had messages out-
+     standing to the host listed, but no RFNM (Request for Next
+     Message) messages were received from the IMP in 127 seconds.
+     The software state for that host is reinitialized.
+
+     imp%d: interface reset.  The host has received an interface
+     reset message from the IMP.
+
+     imp%d: address reset to x%x (%d/%d).  The host has received
+     a NOOP message which caused it to reset its notion of its
+     current address.  The Internet address is printed in hexade-
+     cimal, with the host and IMP numbers following.  This indi-
+     cates that the address originally set by _i_f_c_o_n_f_i_g(8) was
+     incorrect, that the IMP has undergone an identity crisis, or
+     that communication between the IMP and the host is being
+     garbled.
+
+     imp%d: data error.  The IMP noted an error in data transmit-
+     ted.  The host-IMP interface is reset and the host enters
+     the init state (awaiting NOOP messages).
+
+     imp%d: interface reset.  The reset process has been com-
+     pleted.
+
+     imp%d: marked down.  After receiving a "going down in 30
+     seconds" message, and waiting 30 seconds, the host has
+     marked the IMP unavailable.  Before packets may be sent to
+     the IMP again, the IMP must notify the host, through a
+     series of NOOP messages, that it is back up.
+
+     imp%d: can't handle af%d.	The interface was handed a mes-
+     sage with addresses formatting in an unsuitable address fam-
+     ily; the packet was dropped.
+
+SEE ALSO
+     intro(4N), inet(4F), acc(4), css(4), hdh(4), implog(8),
+     implogd(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 2, 1987                         2
+
+
+

@@ -1,0 +1,57 @@
+MAIN	= acssort.o adnote.o adresp.o asearch.o check.o compress.o \
+	  control.o cursor.o delete.o dropt.o dsply.o gdate.o gname.o \
+	  gtext.o gtime.o help.o index.o limindx.o lrsp.o mailit.o
+MAIN1	= misc.o miscio.o next.o note.o pagein.o pageout.o pattern.o \
+	  permit.o perms.o preptxt.o prtind.o readem.o
+MAIN2	= access.o savtxt.o startup.o talkto.o times.o tsearch.o \
+	  expand.o datein.o getdate.o ftime.o pagemove.o resp.o recsio.o
+CHECKNOTES = check.o cursor.o gname.o gtime.o lrsp.o misc.o miscio.o \
+	  next.o pattern.o perms.o recsio.o startup.o times.o expand.o
+NFPIPE	= check.o cursor.o gname.o gtime.o misc.o miscio.o note.o \
+	  pagein.o permit.o perms.o recsio.o startup.o
+NFPRINT	= check.o cursor.o gname.o gtime.o lprnote.o lrsp.o \
+	  misc.o miscio.o pageout.o permit.o perms.o recsio.o \
+	  startup.o
+NFSTATS	= check.o cursor.o gname.o gtime.o misc.o miscio.o \
+	  pattern.o perms.o recsio.o startup.o expand.o
+
+#
+#	User programs
+#
+
+main:	main.o $(MAIN) $(MAIN1) $(MAIN2) libnfcom.a
+	@echo loading main
+	@${CC} $(CFLAGS) $(LFLAGS) -o main main.o $(MAIN) -Z $(MAIN1) \
+		-Z $(MAIN2) -Y libnfcom.a $(TERMCAP)
+
+nfpipe:	nfpipe.o $(NFPIPE) libnfcom.a
+	@echo loading nfpipe
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfpipe nfpipe.o $(NFPIPE) \
+		libnfcom.a $(TERMCAP)
+
+nfstats: nfstats.o $(NFSTATS) libnfcom.a
+	@echo loading nfstats
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfstats nfstats.o $(NFSTATS) \
+		libnfcom.a $(TERMCAP)
+
+nfprint: nfprint.o $(NFPRINT) libnfcom.a
+	@echo loading nfprint
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfprint nfprint.o $(NFPRINT) \
+		libnfcom.a $(TERMCAP)
+
+checknotes: checknotes.o $(CHECKNOTES) libnfcom.a
+	@echo loading checknotes
+	@${CC} $(CFLAGS) $(LFLAGS) -o checknotes checknotes.o $(CHECKNOTES) \
+		libnfcom.a $(TERMCAP)
+
+install: main nfpipe nfstats nfprint checknotes
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+			main $(BIN)/notes
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+			nfpipe $(BIN)/nfpipe
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+			nfstats $(BIN)/nfstats
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+			nfprint $(BIN)/nfprint
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+			checknotes $(BIN)/checknotes

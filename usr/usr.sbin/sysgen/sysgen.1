@@ -1,0 +1,28 @@
+.\"	SYSGEN -- an imitation of the CONFIG command of VMS SYSGEN.
+.\"
+.\"	$Id: sysgen.1,v 1.5 1997/06/08 12:11:49 tih Exp $
+.\"
+.TH SYSGEN 1 "June 8, 1997"
+.SH NAME
+sysgen \- assign DEC standard CSR and vector addresses
+.SH SYNOPSIS
+.B sysgen
+.SH DESCRIPTION
+This filter reads DEC Qbus or UNIBUS device names from standard input,
+assigns CSR addresses and interrupt vectors to the devices according
+to the DEC standard algorithm for auto-configuration, and prints the
+resulting list of allocations to standard output.
+.PP
+Floating CSRs and vectors are identified by a trailing asterisk.
+.PP
+.SH COMPATIBILITY
+The program attempts to conform to the CONFIG command of the VMS
+SYSGEN program, but has simplified output.  Specifically, it does
+not print information about VMS device naming and support.
+.SH BUGS
+More device type aliases should be recognized.  There should be a ``help''
+command to list known devices so that cat'ing the \fIdevices.h\fP file 
+is not necessary.
+.\"
+.\"	eof
+.\"

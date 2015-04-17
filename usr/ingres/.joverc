@@ -1,0 +1,2 @@
+bind-to-key pause-jove ^Z
+bind-to-key buffer-position ^X=

@@ -1,0 +1,1 @@
+#define NQT	0

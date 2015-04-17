@@ -1,0 +1,13 @@
+#! /bin/sh
+#
+# Update Moderated flag within each notesfile.  The moderated flag is first
+# turned off in each notesfile, then re-activated for each notesfile listed
+# in /usr/spool/notes/.utilities/moderators.
+#
+# Paul Pomes, CSO, University of Illinois
+# Tue Mar 29 09:59:14 CST 1988
+cd /usr/spool/notes/.utilities
+./nfadmin -M- "*" > /dev/null 2>&1
+./nfadmin -M+ \
+  `/bin/sed -e "/^#/d" -e "/^[ 	]+/d" -e "s/[	 ][ 	].*//" moderators` \
+  > /usr/adm/notes/make.moderated 2>&1

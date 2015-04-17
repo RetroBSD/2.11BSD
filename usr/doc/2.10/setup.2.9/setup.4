@@ -1,0 +1,292 @@
+.nr H1 4
+.nr H2 0
+.ds CF \*(DY
+.ds RH "/usr setup
+.bp
+.LG
+.B
+.ce
+4. SETTING UP THE /usr FILE SYSTEM
+.sp 2
+.R
+.NL
+.PP
+The next step in bringing up the 2.9BSD distribution
+is to read in the binaries and sources on the /usr file system.
+This will also demonstrate how to add new file systems in general,
+and the overall procedure can be repeated to set up additional
+file systems.
+There are two portions of the /usr file system, one on each tape.
+The first tape contains the binary directories, manual pages
+and documentation, as well as skeletal directories such as spool
+and msgs.
+If you have room, it is easiest to extract everything.
+The size of the entire /usr file system image on the distribution tapes
+.\"CHECK
+is 38 megabytes.  It will not fit on a single RK05, RK06/7 or RL01/2.
+In these cases, the /usr file system will have to be extracted in sections
+or split across multiple disks.
+The \fIbin\fP, \fIinclude\fP, \fIlib\fP, and \fIucb\fP
+subdirectories are essential.
+The system sources will also be needed to reconfigure the kernel;
+they are in /usr/src/sys.
+The \fIadm\fP, \fIdict\fP, \fImsgs\fP, \fIpreserve\fP,
+\fIspool\fP, \fIsys\fP and \fItmp\fP directories may also
+be extracted to provide a skeletal system.
+The first part of this section describes how to extract /usr as part
+of a full bootstrap; the second part explains how to install 2.9BSD
+as an upgrade to a 2.8BSD system if you decide not to perform a full
+bootstrap.
+.NH 2
+Full bootstrap procedure
+.PP
+This procedure will create a new file system and extract the /usr
+directory into it.
+First determine the name of the disk on which you plan to place
+the new file system, for example rm0c, and substitute it for
+\fIdisk\fP throughout this section.
+You may want to create a small ``prototype'' file to describe
+the file system (see
+.IR mkfs (8))
+in order to change the size of the inode list.
+This is the same as the maximum number of files that can be created
+on the file system.
+The default is to allow 16 inodes (occupying one block)
+per 24 file system blocks,
+allowing the file system to be completely filled with small files (1-2 blocks).
+This is more than required
+for /usr and other file systems which have larger average file size.
+If you decide to set up a prototype file for
+\fImkfs\fP, use its name for \fIproto\fP below.
+The prototype file needs to contain only the name of the bootstrap,
+the sizes, and the line for the root directory (don't forget the '$' to
+terminate).
+Look up the correct size for this file system in the manual section
+for the disk.
+Note that the size given to \fImkfs\fP is in file system blocks
+of 1024 bytes, and thus the sizes in the manual page will have to be divided
+by 2.
+If not using a prototype file,
+substitute the size for \fIproto\fP in the mkfs command below.
+Finally, recall the interleaving parameters \fIm\fP and \fIn\fP
+that you used in making the root file system.
+They are in the table in section 2.2.
+Comments are enclosed in ( ); don't type these.
+Then execute the following commands (substituting \fIrmt1\fP and \fInrmt1\fP
+for \fIrmt0\fP and \fInrmt0\fP respectively if you have a 1600 bpi tape on an
+ht or tm controller):
+.br
+.ne 5
+.sp
+.ID
+.ta \w"\fB#\fP\ /etc/mkfs\ /dev/r\fIdisk\fP\ \fIproto\fP\ \fIm\fP\ \fIn\fP\ \ \ "u
+.nf
+\fB#\fP /etc/mkfs /dev/r\fIdisk\fP \fIproto\fP \fIm\fP \fIn\fP  	(create empty user file system)
+\fBisize = \fP\fInnnnn\fP  	(the count of available inodes)
+\fBm/n =\fP \fIm n\fP  	(free list interleave parameters)
+	(this takes a few minutes)
+\fB#\fP /etc/mount /dev/\fIdisk\fP /usr  	(mount the usr file system)
+\fB#\fP cd /usr  	(make /usr the current directory)
+	(make sure that the first tape is mounted)
+\fB#\fP mt -t /dev/nrmt0 fsf 7  	(skip first seven tape files)
+\fB#\fP tar xpf /dev/rmt0  	(extract the /usr file system binaries)
+	(this takes about 20 minutes)
+	(now mount the second tape)
+\fB#\fP tar xpf /dev/rmt0   	(extract the /usr file system sources)
+	(this takes another 20 minutes)
+.fi
+.DE
+.PP
+You can now check the consistency of the /usr file system by doing
+.DS
+.TS
+lw(1.5i) l.
+\fB#\fP cd /  	(back to root)
+\fB#\fP /etc/umount /dev/\fIdisk\fP  	(unmount /usr)
+\fB#\fP fsck /dev/r\fIdisk\fP
+.TE
+.DE
+To use the /usr file system, you should now remount it by
+saying
+.DS
+\fB#\fP /etc/mount /dev/\fIdisk\fP /usr
+.DE
+.DT
+.PP
+If you are installing the distribution on a PDP11/44, 11/45, or 11/70
+(machines with separate instruction and data space)
+you should test and install the separate I/D versions
+of csh, ex, etc. in /usr/70.  Note, however, that these binaries assume
+the existence of hardware floating point support.
+.NH 2
+Bootstrap path 2: upgrading 2.8BSD
+.PP
+Begin by reading the other parts of this document to see what
+has changed since the last time you bootstrapped the system.
+Also look at the new manual sections provided to you.
+If you have local system modifications to the kernel to install, look at the
+document ``Changes in the Kernel in 2.9BSD'' to get an idea of how
+the system changes will affect your local mods.
+Disclaimer:  there are a very large number of changes from 2.8BSD to 2.9.
+This section may not be complete, and if a new program fails to work
+after being recompiled, you may find that additional libraries or
+other components may also need to be updated.
+.PP
+There are 6 major areas of changes that you will need to incorporate
+to convert to the new system:
+.IP 1.
+The new kernel and the associated programs that
+implement job control or read kernel memory:
+autoconfig, csh, the jobs library, login, ps, pstat, w, etc.
+.IP 2.
+The programs related to system reboots and shutdowns.
+.IP 3.
+The programs directly related to user text overlays:  adb and ld.
+.IP 4
+The C compiler driver, C preprocessor, and assembler.
+.IP 5
+The new version of the standard I/O library.
+.IP 6.
+Other programs with significant bug fixes, significant
+improvements, or which were previously unavailable because
+they had not been overlaid.
+.PP
+Here is a step-by-step guide to converting.
+Before you begin you should do a full backup of your root and /usr file
+systems as a precaution against irreversible mistakes.
+.IP 1.
+Set the shell variable ``nbsd'' to the name of a directory where
+an empty file system can be mounted and
+.\"CHECK
+a quantity of material from the tape (you should allow for about 38
+megabytes) can be extracted.  Choose a disk of sufficient size
+to hold this quantity of material, make a file system, and mount
+$nbsd on this disk.
+Next, restore (see \fIrestor\fP\|(8)) the root file system
+dump image to this disk.  Finally, change directory to ``$nbsd/usr'', and
+extract the eighth file from the first distribution tape
+and all of the second tape using \fItar\fP (see \fItar\fP\|(1)).
+.IP 2.
+Install the new include files by copying $nbsd/usr/include/*.h
+to /usr/include and
+$nbsd/usr/include/sys/*.h to /usr/include/sys.
+Install the C compiler driver from the new system
+by copying $nbsd/bin/cc to /bin/cc.
+Install the assembler from the new system by copying
+$nbsd/bin/as to /bin/as and $nbsd/lib/as2 to /lib/as2.
+Install the new C preprocessor by copying $nbsd/lib/cpp
+to /lib/cpp.
+Install the new versions of adb and ld by copying $nbsd/bin/adb
+and $nbsd/bin/ld to /bin.
+.IP 3.
+Reconfigure the system in $nbsd/usr/src/sys to correspond to your configuration
+according to the instructions in section 5.
+.IP 4.
+Put in the new versions of the following
+programs:
+.RS
+.IP
+/bin: csh, kill, login, iostat, ps, pstat, vmstat
+.IP
+/etc:
+autoconfig, fsck, init, mount, reboot, savecore, shutdown, umount
+.IP
+/usr/ucb:
+ex, w
+.RE
+.IP
+Merge any local changes to /etc/rc into $nbsd/etc/rc.
+Put the resulting file in /etc/rc.  Create the directory /usr/sys
+and perhaps some files in this directory (read
+\fIsavecore\fP\|(8)).  Make a device description file for \fIautoconfig\fP.
+See \fIdtab\fP\|(5) and \fIautoconfig\fP\|(8).
+.IP 5.
+Try bootstrapping the new system; it should now work.
+Make sure to write new instructions to your operators.
+.IP 6.
+Incorporate some other important bug fixes or enhancements:
+.RS
+.IP a)
+Replace the file tmac.an in the directory /usr/lib/tmac
+with the version from $nbsd/usr/lib/tmac.  Replace the
+file /usr/lib/me/local.me with the version from $nbsd/usr/lib/me;
+copy $nbsd/usr/lib/me/refs.me to /usr/lib/me.
+.IP b)
+Install the new C library source, /usr/src/lib/c,
+rebuild and reinstall /lib/libc.a and /usr/lib/libovc.a.
+.IP c)
+Install the jobs library, /usr/src/lib/jobs and build
+and install /usr/lib/libjobs.a and /usr/lib/libovjobs.a.
+.IP d)
+Replace the directory /usr/src/cmd/refer.  Then rebuild
+and reinstall the programs.
+.IP e)
+Install the new Mail source, /usr/src/ucb/Mail
+and reinstall /usr/ucb/Mail.
+.IP f)
+If the target machine is a nonseparate I/D CPU, install the new
+.I lex
+and
+.I yacc
+directories, compile and install the programs.
+.IP g)
+Install the new version of
+.I tar
+from
+$nbsd/usr/src/cmd/tar.c
+and also the program
+.I mt
+from
+$nbsd/usr/src/ucb/mt.c.
+.IP h)
+Merge your changes to /usr/src/ucb/termcap/reorder and reinstall
+the terminal data base, /etc/termcap.  Install the new terminal
+library, /usr/src/ucb/termlib, remake and reinstall /usr/lib/libtermcap.a
+and /usr/lib/libovtermcap.a.  Then make and install the new version of
+.I ex.
+.IP i)
+If you want the new version of the Pascal system incorporating
+overlays (for nonseparate I/D CPUs), remake the directories
+.I pi
+and
+.I px
+in $nbsd/usr/src/cmd and install the programs.
+.IP j)
+Install the new F77 compiler, /usr/src/cmd/f77, and the new libraries,
+/usr/src/lib/lib*77.  Then remake and reinstall them.
+.IP k)
+Install the new library sources, /usr/src/lib/{ape,curses,m,mp,plot}
+and remake and reinstall the new libraries.
+.IP l)
+Install new versions of as many of the following programs as you choose:
+512dumpdir, 512restor, atrun, cat, catman, ccat,
+compact, checkobj, ctags, df, diff, du, egrep, error, expand,
+fgrep, find, from, grep, hostname, jove, l11, lint, ln, lock, login, lpr, ls,
+m11, make, man, mkfs, more, msgs, mv, ncheck, printenv, pq,
+ranm, rewind, rm, rmdir,
+sed, setquota, size, sort, split, sq, strings, strip, stty, sysline,
+tail, tbl, tset,
+ul, uncompact, unexpand, vsh, wc.
+.IP m)
+Install the modified or new administrative programs:
+ac, getty, last.
+.IP n)
+Install some security fixes in the mail systems by installing new
+sources for berknet (/usr/src/ucb/berknet), delivermail
+(/usr/src/ucb/delivermail), mail (/usr/src/cmd/mail.c),
+and secret mail (/usr/src/cmd/xsend), and remaking and reinstalling
+the new binaries.
+.IP o)
+Install the new version of uucp (/usr/src/cmd/uucp).
+.IP p)
+Install the news (/usr/contrib/news) or notes (/usr/contrib/notes)
+bulletin board system if you wish.
+.IP q)
+Install the new \fIeqn\fP\|(1) symbol macros, /usr/public/eqnSyms.
+.IP r)
+Install manual pages corresponding to the new and changed programs.
+.IP s)
+Remove the old programs /bin/ovas, /bin/ovld, /lib/ovas2, and /bin/ovadb.
+Remove the libucbpath library.
+Remove the old version of reset and link the new version of tset to reset.
+.RE

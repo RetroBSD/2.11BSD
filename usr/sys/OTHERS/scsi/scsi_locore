@@ -1,0 +1,47 @@
+#include	"scsi.h"	/* for NIOM and NIMI */
+
+#if	NIMI > 0
+.globl	_imiintr
+imiio:	jsr	r0,call; jmp _imiintr
+#endif 
+
+#if	NIOM > 0
+.globl	_iomintr
+iomio:	jsr	r0,call; jmp _iomintr
+#endif
+#include	"scsi.h"
+
+#if	NIOM > 0
+int	iomstrategy(), iomread(), iomwrite();
+extern	struct	buf	iomtab;
+#define	iomopen		nulldev
+#define	iomclose	nulldev
+#define	iomprobe	nulldev
+#define	_iomtab		&iomtab
+#else
+#define	iomopen		nodev
+#define	iomclose	nodev
+#define	iomprobe	nulldev
+#define	iomstrategy	nodev
+#define	iomread		nodev
+#define	iomwrite	nodev
+#define	_iomtab		((struct buf *) NULL)
+#endif	NIOM
+
+#if	NIMI > 0
+int	imistrategy(), imiread(), imiwrite();
+extern	struct	buf	imitab;
+#define	imiopen		nulldev
+#define	imiclose	nulldev
+#define	imiprobe	nulldev
+#define	_imitab		&imitab
+#else
+#define	imiopen		nodev
+#define	imiclose	nodev
+#define	imiprobe	nulldev
+#define	imistrategy	nodev
+#define	imiread		nodev
+#define	imiwrite	nodev
+#define	_imitab		((struct buf *) NULL)
+#endif	NIMI
+

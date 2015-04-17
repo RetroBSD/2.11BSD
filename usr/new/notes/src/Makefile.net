@@ -1,0 +1,49 @@
+NEWSINPUT = buildnf.o check.o cursor.o datein.o find.o gname.o gtime.o \
+	  lrsp.o misc.o miscio.o newsgroup.o note.o pagein.o permit.o \
+	  perms.o recsio.o resp.o startup.o tsearch.o acssort.o \
+	  expand.o bnewshead.o pattern.o getdate.o ftime.o parsepath.o
+NEWSOUTPUT = check.o cursor.o gname.o gtime.o lrsp.o misc.o miscio.o \
+	  newsdump.o newsgroup.o newsout.o newspath.o next.o pageout.o \
+	  pattern.o perms.o recsio.o startup.o times.o expand.o \
+	  getnet.o datein.o getdate.o ftime.o
+NFRCV	= buildnf.o check.o cursor.o find.o gname.o gtime.o ldmisc.o \
+	  loadem.o lrsp.o misc.o miscio.o note.o permit.o perms.o \
+	  recsio.o resp.o startup.o acssort.o
+NFXMIT	= check.o cursor.o dmpnote.o dmpresp.o getnet.o gname.o \
+	  gtime.o lrsp.o misc.o miscio.o next.o nfalias.o nfsend.o \
+	  pageout.o pattern.o permit.o perms.o recsio.o \
+	  startup.o times.o expand.o datein.o getdate.o ftime.o
+
+#
+#	Network Transmission and reception
+#
+
+nfxmit:	nfxmit.o $(NFXMIT) libnfcom.a
+	@echo loading nfxmit
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfxmit nfxmit.o $(NFXMIT) \
+		libnfcom.a $(TERMCAP)
+
+nfrcv:	nfrcv.o $(NFRCV) libnfcom.a
+	@echo loading nfrcv
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfrcv nfrcv.o $(NFRCV) \
+		libnfcom.a $(TERMCAP)
+
+newsinput: newsinput.o $(NEWSINPUT) libnfcom.a
+	@echo loading newsinput
+	@${CC} $(CFLAGS) $(LFLAGS) -o newsinput newsinput.o $(NEWSINPUT) \
+		libnfcom.a $(TERMCAP)
+
+newsoutput: newsoutput.o $(NEWSOUTPUT) libnfcom.a
+	@echo loading newsoutput
+	@${CC} $(CFLAGS) $(LFLAGS) -o newsoutput newsoutput.o $(NEWSOUTPUT) \
+		libnfcom.a $(TERMCAP)
+
+install: newsinput newsoutput nfxmit nfrcv
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6755 \
+		newsinput $(UTILITY)/newsinput
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6755 \
+		newsoutput $(UTILITY)/newsoutput
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6750 \
+		nfxmit $(NET)/nfxmit
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6750 \
+		nfrcv $(NET)/nfrcv

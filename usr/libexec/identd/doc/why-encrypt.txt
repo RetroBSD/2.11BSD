@@ -1,0 +1,170 @@
+``Why encrypt ident/TAP replies ?''
+Damien Doligez
+1994.02.22
+
+
+This text is a companion to ``Why TAP?'' by Daniel J. Bernstein.
+I will explain the reasons why your ident server should encrypt its
+replies before sending them.
+
+This is written from the point of view of a system administrator
+who wants to install an ident server.  The local machine is the machine
+running the ident server, and the remote machine any machine on the
+Internet that keeps a log of ident replies from the local machine.
+
+This starts as a structured document and ends in random comments
+and implementation remarks.
+
+
+Problems with ident.
+
+The ident protocol, as implemented by pidentd return a cleartext
+identification of the user.  This approach has the following problems:
+
+1. The remote administrator is tempted to interpret the ident logs
+   without asking the local administrator.  Everybody is supposed
+   to know that ident replies are only meaningful to the local
+   administrator, but in the real world, the remote administrator
+   will forget that, especially if the ident data is mixed with
+   data from his own machines (which is almost always the case).
+
+2. Any user on the remote system can call the local ident server
+   and collect login names for guessing passwords, and usage
+   patterns.
+
+3. The remote administrator might be malevolent and lie to you about
+   the contents of his ident logs.
+
+4. Some network attacks on the ident protocol have been described
+   on Usenet (comp.security.*).  They involve intercepting ident
+   requests and replying with bogus information, from another host
+   on the network, with forged IP packets.
+
+
+The crypto solution.
+
+Dan Bernstein writes:
+>An easy solution to [problems 2 and 3] is to encrypt your usernames
+>(along with a timestamp, perhaps, though this defeats the selective
+>blocking application outlined in the next section) in a secret key.
+
+This also solves problem 1, but it is not a complete solution to
+problems 3 and 4.  If you only encrypt the date and user ID, you
+give to the remote administrator a piece of data that proves
+that the user had some active connection at that date.  The remote
+administrator could still lie about what machines were involved
+and what ports the connection used (was it finger or telnet ?)
+
+And a network hacker could easily acquire such a piece of data
+(e.g. via network sniffing) and use it to spoof your ident server.
+
+And if you only encrypt the user ID (or user name), the situation
+is even worse.  It is quite easy in this case to guess (by simple
+traffic analysis) which user is associated with a given encrypted
+user ID, and then encryption becomes useless.
+
+
+My solution is to encrypt a packet of data that contains:
+- The date
+- The user ID
+- Both machine addresses
+- Both port numbers.
+
+Then the piece of data becomes a proof that that user had an active
+connection at that date, between these machines and with these port
+numbers.
+
+Problem 1 is solved by forcing the remote administrator to ask you
+to decrypt the data.
+
+Problem 2 is solved by making the data unuseable except by yourself.
+
+Problem 3 and 4 are solved by making the piece of data self-contained
+and unforgeable.
+
+The biggest problem with this encryption is that the selective blocking
+described by Dan Bernstein becomes impossible.  An other aspect of
+this problem is that simple measures to counter SMTP forgery (echoing
+his user ID back to the SMTP cracker) is also impossible.  But
+identification of the hacker is still possible, with the help of the
+local administrator.
+
+
+Implementation.
+
+The packet of data is a 24-byte record with the following layout:
+
+block  bytes  contents
+  1      4    checksum
+         2    random
+         2    user ID
+  2      4    date
+         4    local IP address
+  3      4    remote IP address
+         2    local port number
+         2    remote port number
+
+The plaintext is divided in three 8-byte blocks p0, p1, p2 and encrypted
+into three 8-byte blocks of cyphertext c0, c1, c2 as follows:
+
+  c0 = E (p0)
+  c1 = E (p1 ^ c0)
+  c2 = E (p2 ^ c1)
+
+Where E is DES with a secret key.  The secret key is stored in a file
+only readable by root on the local machine.
+
+This is essentially CBC mode, without an initialization vector.
+The block chaining is used to prevent replacement of one block from
+another packet.  Replacing c0 will garble the decrypted p1;
+replacing c1 will garble the decrypted p1 and p2; replacing c2 will
+garble the decrypted p2; replacing c0 and c1 will garble p2;
+replacing c1 and c2 will garble p1; and replacing c0 and c2 will garble
+p1 and p2.  The checksum is here to ensure that the right key was used
+for decrypting and that the packet was not tampered with.
+
+The decryption program is a filter that will read stdin and copy
+it to stdout, replacing any encrypted block with the corresponding
+decrypted information.  The decryption program uses the same key file
+as the encryption.  The file may contain several keys.  The encryption
+will use only the first one, but the decryption program will try each
+key in turn.  This way, you just have to add a new key at the beginning
+of the file whenever you want to change the key (you should change your key
+often enough, depending on the level of confidentiality that you want).
+
+Be aware that a brute-force plaintext attack is very easy to set up
+against this system, and that finding the key for one packet will
+unlock all other packets encrypted with the same key.  Changing
+the key often will force the attacker to redo the brute-force attack
+again and again.
+
+A key is a line of text (maximum 1023 characters) which is hashed into
+a 56-bit DES key.  It might be a good idea to include the date in
+each line of the key file.  The decryption program will only try
+the first 1024 keys from the key file.  Be aware that having many keys
+in this file will slow down the decryption considerably.  If this
+becomes a real problem, I could implement a simple hashing scheme to
+solve it.
+
+There are a number of holes in Unix that allow users to read (parts of)
+any file readable by group kmem.  (The "ps" command is one such hole.)
+My advice is to make the key file only readable by root, and make pidentd
+run as root.  The probability of a hole in pidentd itself is pretty small.
+
+WARNING:  I am not a specialist in cryptology.  It may well be the case
+that the absence of an IV in the CBC encryption weakens the encryption
+considerably.  I do not guarantee any level of confidentiality whatsoever.
+Go ask sci.crypt if you want some serious answers.
+
+The DES implementation and hash function used are from the libdes
+library, written by Eric Young (eay@psych.psy.uq.oz.au) and available
+(among other sites) from ftp.funet.fi.
+
+The code is not too well integrated with the rest of pidentd, and
+somebody should change the man page to document the "-C" option
+for encryption and the format of the key file.
+The code is endian-independent, but I'm not sure it would work on
+a 64-bit machine.
+
+Maybe I should add an option to the decryption program for specifying
+an alternate key file.

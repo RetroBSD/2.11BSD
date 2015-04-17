@@ -1,0 +1,132 @@
+
+
+
+NS(3N)		    UNIX Programmer's Manual		   NS(3N)
+
+
+
+NAME
+     ns_addr, ns_ntoa - Xerox NS(tm)  address conversion routines
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <netns/ns.h>
+
+     struct ns_addr ns_addr(cp)
+     char *cp;
+
+     char *ns_ntoa(ns)
+     struct ns_addr ns;
+
+DESCRIPTION
+     The routine _n_s__a_d_d_r interprets character strings represent-
+     ing XNS addresses, returning binary information suitable for
+     use in system calls.  _n_s__n_t_o_a takes XNS addresses and
+     returns ASCII strings representing the address in a notation
+     in common use in the Xerox Development Environment:
+	  <network number>.<host number>.<port number>
+     Trailing zero fields are suppressed, and each number is
+     printed in hexadecimal, in a format suitable for input to
+     _n_s__a_d_d_r.  Any fields lacking super-decimal digits will have
+     a trailing ``H'' appended.
+
+     Unfortunately, no universal standard exists for representing
+     XNS addresses.  An effort has been made to insure that
+     _n_s__a_d_d_r be compatible with most formats in common use.  It
+     will first separate an address into 1 to 3 fields using a
+     single delimiter chosen from period (``.''), colon (``:'')
+     or pound-sign (``#'').  Each field is then examined for byte
+     separators (colon or period).  If there are byte separators,
+     each subfield separated is taken to be a small hexadecimal
+     number, and the entirety is taken as a network-byte-ordered
+     quantity to be zero extended in the high-network-order
+     bytes.  Next, the field is inspected for hyphens, in which
+     case the field is assumed to be a number in decimal notation
+     with hyphens separating the millenia.  Next, the field is
+     assumed to be a number: It is interpreted as hexadecimal if
+     there is a leading ``0x'' (as in C), a trailing ``H'' (as in
+     Mesa), or there are any super-decimal digits present.  It is
+     interpreted as octal is there is a leading ``0'' and there
+     are no super-octal digits.  Otherwise, it is converted as a
+     decimal number.
+
+SEE ALSO
+     hosts(5), networks(5),
+
+DIAGNOSTICS
+     None (see BUGS).
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+
+
+
+
+NS(3N)		    UNIX Programmer's Manual		   NS(3N)
+
+
+
+BUGS
+     The string returned by _n_s__n_t_o_a resides in a static memory
+     area.
+     _n_s__a_d_d_r should diagnose improperly formed input, and there
+     should be an unambiguous way to recognize this.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				2
+
+
+

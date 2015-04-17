@@ -1,0 +1,66 @@
+
+
+
+WORMS(6)	    UNIX Programmer's Manual		 WORMS(6)
+
+
+
+NAME
+     worms  -  animate worms on a display terminal
+
+SYNOPSIS
+     /usr/games/worms [ -field ] [ -length # ] [ -number # ] [
+     -trail ]
+
+DESCRIPTION
+     Brian Horn (cithep!bdh) showed me a _T_O_P_S-_2_0 program  on  the
+     DEC-2136  machine	called _W_O_R_M, and suggested that I write a
+     similar program that would run under _U_n_i_x.  I  did,  and  no
+     apologies.
+
+     -field makes a "field" for the worm(s) to eat; -trail causes
+     each  worm  to  leave a trail behind it.  You can figure out
+     the rest by yourself.
+
+FILES
+     /etc/termcap
+
+AUTHOR
+     Eric P. Scott
+
+SEE ALSO
+     _S_n_a_i_l_s, by Karl Heuer
+
+BUGS
+     The lower-right-hand character position will not be  updated
+     properly on a terminal that wraps at the right margin.
+
+     Terminal initialization is not performed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1985				1
+
+
+

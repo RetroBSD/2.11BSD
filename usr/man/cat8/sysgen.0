@@ -1,0 +1,66 @@
+
+
+
+SYSGEN(1)	    UNIX Programmer's Manual		SYSGEN(1)
+
+
+
+NAME
+     sysgen - assign DEC standard CSR and vector addresses
+
+SYNOPSIS
+     sysgen
+
+DESCRIPTION
+     This filter reads DEC Qbus or UNIBUS device names from stan-
+     dard input, assigns CSR addresses and interrupt vectors to
+     the devices according to the DEC standard algorithm for
+     auto-configuration, and prints the resulting list of alloca-
+     tions to standard output.
+
+     Floating CSRs and vectors are identified by a trailing
+     asterisk.
+
+COMPATIBILITY
+     The program attempts to conform to the CONFIG command of the
+     VMS SYSGEN program, but has simplified output.  Specifi-
+     cally, it does not print information about VMS device naming
+     and support.
+
+BUGS
+     More device type aliases should be recognized.  There should
+     be a ``help'' command to list known devices so that cat'ing
+     the _d_e_v_i_c_e_s._h file is not necessary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 8, 1997				1
+
+
+

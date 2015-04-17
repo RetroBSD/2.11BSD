@@ -1,0 +1,57 @@
+.TH DDD 1L
+.SH NAME
+ddd \- double-speed data dumper
+.SH SYNOPSIS
+.B ddd [option=value] ...
+.SH DESCRIPTION
+.IR Ddd
+works almost the same way as dd(1), but it has a much better
+throughput, especially when used with slow i/o-devices, such as
+tape drives.  The improvement is achieved mainly by dividing
+the copying process into two processes, one of which reads while
+the other one writes and vice versa.  Also all code conversion
+capabilities are omitted.  There is no additional overhead copying
+data between various conversion buffers.
+
+Ddd was inspired by the vast difference in speed between BSD4.2 and
+BSD4.3 dumps - in BSD4.3 dump(8) uses alternating processes to write
+to raw magnetic tape, thus keeping the tape continuously in motion.
+I wanted to get the same improvement to remote dumps, so this
+filter was needed.  Directing all physical I/O through ddd usually
+increases the throughput of any pipeline of unix commands
+(if you have enough MIPS and RAM to handle two extra processes).
+.SH OPTIONS
+Ddd uses options if, of, ibs and obs exactly as dd(1).  Option bs can
+also be used to specify ibs and obs at once.  One option differs slightly
+in meaning: cbs can be used to specify the size of the internal buffer.
+Input and output processes will swap duties when cbs bytes have been
+transferred.  Default values for all sizes are 512 bytes.
+As with dd(1), letters k (kilobyte), b (block) or w (word) can be
+appended to size values.
+Other options are not provided.
+.SH HINTS
+For best performance, block sizes should be rather large.  For magnetic
+tape, I use obs=100b and cbs=500b or so.  Large block sizes (~100b) are
+also effective for network connections.  However, cbs should be small
+enough for all the data to fit in core, since page faults add
+overhead.
+.SH AUTHOR
+Tapani Lindgren <nispa@cs.hut.fi>
+.br
+Laboratory of Information Processing Science
+.br
+Helsinki University of Technology
+.br
+Finland
+.SH SEE ALSO
+dd(1), tar(1), dump(8)
+.SH BUGS
+Should you find one, let me know!
+.SH WARNING
+(Applies to U.S. residents & citizens only)
+.br
+Do not use this program!  Get rid of it as soon as you can!
+It will probably corrupt all your data, break down your computer
+and cause severe injury to the operators.
+Even reading the source code may give you a headache.
+I warned you!  I will take no responsibility whatsoever!

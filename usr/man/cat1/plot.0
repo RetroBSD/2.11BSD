@@ -1,0 +1,132 @@
+
+
+
+PLOT(1G)	    UNIX Programmer's Manual		 PLOT(1G)
+
+
+
+NAME
+     plot - graphics filters
+
+SYNOPSIS
+     plot [ -Tterminal ] [ -rresolution ] [ files... ]
+
+DESCRIPTION
+     These commands read plotting instructions (see _p_l_o_t(5)) from
+     the standard input or the specified _f_i_l_e_s, and in general
+     produce plotting instructions suitable for a particular _t_e_r_-
+     _m_i_n_a_l on the standard output.  The -r flag may be used to
+     specify the device's output resolution (currently only the
+     Imagen laser printer understands this option).
+
+     If no _t_e_r_m_i_n_a_l type is specified, the environment parameter
+     $TERM (see _e_n_v_i_r_o_n(7)) is used.  Known _t_e_r_m_i_n_a_l_s are:
+
+     4013 Tektronix 4013 storage scope.
+
+     4014 or tek
+	  Tektronix 4014 or 4015 storage scope with Enhanced
+	  Graphics Module.  (Use 4013 for Tektronix 4014 or 4015
+	  without the Enhanced Graphics Module).
+
+     450  DASI Hyterm 450 terminal (Diablo mechanism).
+
+     300  DASI 300 or GSI terminal (Diablo mechanism).
+
+     300S DASI 300S terminal (Diablo mechanism).
+
+     aed  AED 512 color graphics terminal.
+
+     bitgraph or bg
+	  BBN bitgraph graphics terminal.
+
+     imagen or ip
+	  Imagen laser printer (default 240 dots-per-inch resolu-
+	  tion).
+
+     crt  Any crt terminal capable of running _v_i(1).
+
+     dumb Dumb terminals without cursor addressing or line
+	  printers.
+
+     vt125
+	  DEC vt125 terminal.
+
+     hp2648 or hp or hp8
+	  Hewlett Packard 2648 graphics terminal.
+
+     ver  Versatec D1200A printer-plotter.
+
+
+
+
+Printed 11/26/99       September 21, 1985			1
+
+
+
+
+
+
+PLOT(1G)	    UNIX Programmer's Manual		 PLOT(1G)
+
+
+
+     var  Benson Varian printer-plotter.
+
+	  These versions of _p_l_o_t use the -g option of _l_p_r(1) to
+	  send the result directly to the plotter device rather
+	  than to the standard output.
+
+FILES
+     /usr/bin/t4013
+     /usr/bin/tek
+     /usr/bin/t450
+     /usr/bin/t300
+     /usr/bin/t300s
+     /usr/bin/aedplot
+     /usr/bin/bgplot
+     /usr/bin/crtplot
+     /usr/bin/dumbplot
+     /usr/bin/gigiplot
+     /usr/bin/hpplot
+     /usr/bin/implot
+     /usr/ucb/lpr
+
+SEE ALSO
+     plot(3X), plot(3F), plot(5), lpr(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99       September 21, 1985			2
+
+
+

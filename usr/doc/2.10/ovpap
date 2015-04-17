@@ -1,0 +1,581 @@
+.RP
+.TL
+Running Large Text Processes
+.if n .br
+on Small
+.UX
+Systems
+.AU
+Charles Haley
+.AI
+.MH
+.AU
+William Joy
+.AI
+Computer Science Division
+Department of Electrical Engineering and Computer Science
+University of California, Berkeley  94720
+.AU
+William F. Jolitz
+.AI
+U.S. Geological Survey
+345 Middlefield Road
+Menlo Park, California  94025
+.AB
+.PP
+We describe a set of simple modifications to the
+.UX 
+system, which permit larger programs to be run than has previously
+been possible.  In particular, the
+.I f77
+and
+.I a68
+compilers and version 2 of the
+.I ex
+editor,
+which previously would not run on the non-separate I/D machines
+such as the 11/23, 11/34 and 11/40, may be run, without source code
+modification, using this scheme.
+This scheme will also allow processes larger than 65K bytes of instruction
+space to run on all 11/ cpu's with segmentation hardware.
+.PP
+The overlay scheme used has been designed so that it is transparent to
+the C programmer.  Information about which routines are overlayed and in
+which overlay they reside is not needed until load time, and only the
+overlay loader
+.I ovld,
+need deal with this.
+The system mechanism for implementing overlays should function for
+languages other than C (such as
+.I a68)
+but the current
+.I ovld
+implementation deals specifically with creating load modules for C.
+Since 
+.I f77
+actually generates code via the second pass of the C compiler,
+it also can be used to generate code for overlaying.
+.AE
+.SH
+Introduction
+.PP
+The cheap and wide availability of small PDP-11's makes it desirable to have
+all of the programs available on the 11/70's and 11/45's of larger
+.UX
+installations available on the smaller machines such as 11/34's and 11/40's.
+To date, this has not been possible, because the smaller machines do
+not have the separate instruction and data scheme found on 11/45's and
+11/70's which allows 16 bits of instruction space separate from the data
+space.
+.PP
+We have designed and implemented a scheme for running large processes
+on machines without this separate I/D feature.  It may also be used to
+run processes larger than 65K bytes of instruction space on 11/45's and 11/70's.
+.SH
+Strategy
+.PP
+The basic strategy is quite simple.  We resist the complexity of most
+overlay schemes, and opt for the following points:
+.IP 1)
+The overlaying should be (almost) completely invisible to the programmer.
+.IP 2)
+No restrictions should be made on the language features available to
+overlay programs.  In particular, function pointers in C must continue
+to work, with all the same properties (uniqueness, etc.)
+.IP 3)
+The basic system interface should not impose the C runtime organization
+any more than the current system does; in particular, other languages
+such as
+.I a68
+should be usable in an overlay fashion, perhaps using a different loader.
+.IP 4)
+The strategy should be simple to implement.
+.SH
+New executable file formats
+.PP
+We have added two new ``magic numbers'' for executable files:
+0430 and 0431.  The 0430 magic number corresponds to an overlayed
+version of 0410 (shared text) executable files, and the 0431 number
+corresponds to an overlayed version of separate I/D spaces files (which
+normally have magic number 0411).
+.PP
+The
+.I a.out
+file format for these files differs from the normal file format as
+follows:
+.IP \(**
+After the 8 word header and before the text of the program begins
+is placed an 8 word array of overlay information.  The first word
+of information is the maximum size of any of the overlays, and
+the rest of the information gives the sizes of each of the (up to 7)
+overlays.
+.IP \(**
+The text space follows the newly added overlay information, which is
+then followed by the text of each overlay.  The overlay text
+sizes are all multiple of ``core clicks'', i.e. rounded up to a multiple
+of 64 bytes in size.
+.LP
+The rest of the
+.I a.out
+file is in the normal format.
+.SH
+Segmentation register layout
+.PP
+When an 0430 or 0431 process is run, the overlay information and the
+text for all of the overlays are saved by the system.
+At any given point during program execution, only one of the
+(up to) 7 overlays will be mapped into the process address space,
+but the process can request, using a new
+system call, that an overlay of its choice be mapped into a
+portion of its address space shared by the overlays.
+This call actually implemented using the emulator trap instruction
+of the PDP11 to reduce the overlay switching overhead.
+.PP
+Thus, there are conceptually four possible usages for each segmentation
+register:
+.IP 1)
+It may be part of the text segment (as before).
+.IP 2)
+It may be one of the overlay text segment registers, mapping
+address space after the text segment (1) but before the data segment (3).
+.IP 3)
+It may be one of the data segment registers, or
+.IP 4)
+It may be one of the stack segment registers.
+.SH
+System management of 0430 and 0431 processes
+.PP
+There are three major aspects of system handling of the new form
+of processes:
+.IP 1)
+The
+.I exec
+and related system calls must know how to establish such processes,
+and how to detect that they will not fit.
+.IP 2)
+The
+.I estabur
+and
+.I sureg
+mechanisms must know how to set up the segmentation registers for such
+processes.
+This interface must be modifiable by a system call to permit the currently
+chosen overlay to be mapped.
+.IP 3)
+The scheduler and swapping mechanisms must understand these processes
+and allow for enough core space for them (they use more than they
+would appear to from the first 8 word header, e.g.).
+To simplify this, we have chosen, in this implementation,
+to swap the basic text and all overlay text for such processes as one piece.
+.PP
+The considerations here are relatively straightforward, and will
+not be discussed in more detail.
+.SH
+Link editor changes
+.PP
+We have added two new options to the link editor, and made modifications
+as necessary to make the overlay loading as transparent as possible.
+This modified link editor is called
+.I ovld
+and is identical to the normal loader with the addition of the following
+two options:
+.IP \fB\-Z\fR
+marks the beginning of an overlay.  The routines in the files to the
+next
+.B \-Z
+or
+.B \-L
+option are placed in the next overlay (numerically).
+.IP \fB\-L\fR
+marks the end of all overlays.  The rest of the routines go into the
+base segment.\(dg
+.FS
+\(dg \fBL\fR was chosen because it was unused and can be thought
+of as ``library''.  The \fBZ\fR option has no mnemonic value.
+.FE
+.PP
+Here is a sample loader command to
+.I ovld
+which loads the
+.I ex
+editor into a base segment and four overlays:\(dd
+.FS
+\(dd The \fB\-lovc\fR library differs from \fB\-lc\fR in that it is compiled
+with
+.I ovcc
+instead of
+.I cc.  The difference between the source for
+.I ovcc
+and
+.I cc:
+is that
+.I ovcc
+uses a one word larger stack mark (it stacks overlay numbers of return
+addresses in the extra word).  Unfortunately, this requires that the
+library routines also allocate and preserve this extra word if they
+are to live in overlays or call overlaid routines which may cause
+overlay switching.  Thus, for generality, we have them always save
+and restore this number.
+.FE
+.DS
+ovld \-X /lib/crt0.o \-n\e
+    \-Z ex\_addr.o ex\_cmds.o ex\_cmds2.o ex\_cmdsub.o ex\_re.o ex\_set.o ex.o\e
+    \-Z ex\_vadj.o ex\_vmain.o ex\_voperate.o ex\_vwind.o ex\_vops3.o\e
+    \-Z ex\_v.o ex\_vget.o ex\_vops.o ex\_vops2.o ex\_vput.o\e
+    \-Z ex\_get.o ex\_io.o ex\_temp.o ex\_tty.o\e
+    \-L ex\_put.o ex\_subr.o printf.o strings.o doprnt.o\e
+       ex\_data.o termlib/termlib.a \-lovc
+.DE
+and a (modified version of the)
+.I size
+command run on the resulting
+.I a.out
+file yields:
+.nf
+15104+(15808,14784,13696,9152)+2946+7294 = 25344b = 061400b (68544 total text)
+.fi
+.PP
+We have designed this overlay to use two segmentation registers
+(each register maps 8192 bytes) for the root segment, and two registers
+for each overlay.  This leaves four segmentation registers, which could
+map 24K bytes of data and bss and dynamic space, and one register which
+could map 8K bytes of stack.
+.PP
+As normally loaded for an 11/70, this version of the editor uses 64000 bytes
+of text space.  The additional 5K bytes is taken up by interface code
+to handle the overlays, which we will describe shortly.
+.PP
+One other point to be noted is that the namelist (symbol table) format
+for the
+.I a.out
+file has been changed slightly for the overlay loaded
+.I a.out's.
+Previously, there was an unused byte in the format (basically, the high
+byte of the ``type'' field of the namelist), and this field is now used
+to contain the segment number where overlay routines reside.
+Consider the following files:
+.DS
+---x0.c---
+main()
+{
+    foo();
+    foobar();
+}
+base() { }
+.DE
+.DS
+---x1.c---
+foo()
+{
+    base();
+    ov2();
+}
+ov1() { }
+.DE
+.DS
+---x2.c---
+foobar()
+{
+    base();
+    ov1();
+}
+ov2() { }
+.DE
+An appropriately modified
+.I nm
+command on a file loaded via:
+.DS
+ovld -X -n /lib/crt0.o  x0.o -Z x1.o -Z x2.o -L ovcsv.o -lovc
+.DE
+produces the following output:
+.br
+.ne 5
+.ID
+000000 f crt0.o
+000000 a indir
+000000 T start
+000001 a exit
+000001 a exit
+000074 T _main
+000074 f x0.o
+000074 t ~main
+000120 T _base
+000120 t ~base
+000134 T _exit
+000134 f cuexit.o
+000152 T __cleanu
+000152 f fakcu.o
+000154 T ovcsv
+000154 f ovcsv.o
+000172 T csv
+000210 T cret
+000210 T ovcret
+000256 T _etext
+000256 T _foo     1
+000276 T _foobar  2
+000316 T _ov2     2
+000336 T _ov1     1
+020000 f x1.o
+020000 f x2.o
+020000 t ~foo
+020000 t ~foobar
+020024 t ~ov1
+020024 t ~ov2
+040002 D __ovno
+040004 B _environ
+104000 a emt
+.DE
+Note that the addresses for
+.I \_foo
+and
+.I \_foobar
+appear in the base segment.  In fact, the true routines appear in
+the overlaid segment (at
+.I ~foo
+and
+.I ~foobar)
+but the base segment contains an interface routine, which both insures
+that they are mapped into the address space before transferring to them
+and also allows function pointers to exist and work as normal.
+.SH
+Thunks
+.PP
+To interface each routine which is in an overlay to the outside world,
+we add some interface which we (somewhat abusing the terminology) call
+a ``thunk''.  This code has the following form:
+.DS
+\_foo:
+        mov     $foo's\_ovno,r0
+        cmp     r0,*$\_\_ovno
+        beq     1f
+        emt     0
+1:
+        jmp     *$~foo
+.DE
+Thus there is 16 bytes of interface code for each overlaid routine.
+.PP
+This code forces register 0 to be the number of the subroutine's overlay,
+which is then checked against the currently loaded overlays number
+(found in
+.I \_\_ovno
+).  If they are not the same,
+the system is called (via an emulator trap) to make them so. Notice
+that 
+.I \_\_ovno
+is still set to the previous overlay number so that it may be
+preserved on the stack for our ultimate return.
+.PP
+The C save and restore sequences for use with overlayed
+text register programs are coded as follows:
+.br
+.DS
+
+/ C register save and restore -- version 7/75
+/ modified by wnj && cbh 6/79 for overlayed text registers
+/ modified by wf jolitz 2/80 to work and use emt syscall
+/ we define ovcsv and ovcret which overlay routines call
+/ even though ovcret is (currently) the same as cret
+/ the loader finagles the .o files so this happens
+
+.li
+.globl  csv
+.li
+.globl  cret
+.li
+.globl  ovcsv, ovcret
+.li
+.globl  \_\_ovno
+.li
+.globl  \_etext
+.li
+.data
+\_\_ovno: 0
+.li
+.text
+
+emt= 0104000    / overlays switched by emulator trap. ovno in r0.
+
+/ csv for routines in overlays
+/ the previous overlay is in \_\_ovno, which is saved on the stack.
+/ after it is saved, \_\_ovno is set to the current overlay number
+/ which has been put in r0 by the thunk.
+/
+ovcsv:  mov     r5,r1
+        mov     sp,r5
+.DE
+.DS
+        mov     \_\_ovno,-(sp)
+        mov     r0,\_\_ovno
+        jbr     1f
+/
+/ only root segment routines call csv, and when it is called
+/ no overlays have been changed, so we just save the previous overlay
+/ number on the stack. note that r0 is'nt set to the current overlay
+/ because we were'nt called through a thunk.
+/
+csv:    mov     r5,r1
+        mov     sp,r5
+        mov     \_\_ovno,-(sp)    / overlay is extra (first) word in mark
+/ rest is old code common with ovcsv
+/
+1:
+        mov     r4,-(sp)
+        mov     r3,-(sp)
+        mov     r2,-(sp)
+        jsr     pc,(r1)         / jsr part is sub $2,sp
+/
+/ at this point, the stack frame looks like this:
+/
+.ta 2.5i
+/          __________________	
+/          |  return addr	|
+/          |_________________	|
+/ r5->  | old r5	|
+/          |_________________	|
+/          | previous ovnumber	|
+/          |_________________	|
+/          | old r4	|
+/          |_________________	|
+/          | old r3	|
+/          |_________________	|
+/ sp->  | old r2	|
+/          |_________________	|
+/
+
+
+ovcret:         / same as cret, i think
+cret:
+        mov     r5,r2
+/ get the overlay out of the mark, and if it is non-zero
+/ make sure it is the currently loaded one
+        mov     -(r2),r4
+        bne     1f              / zero is easy
+2:
+        mov     -(r2),r4
+        mov     -(r2),r3
+        mov     -(r2),r2
+        mov     r5,sp
+        mov     (sp)+,r5
+        rts     pc
+/ not returning to root segment, so check that the right
+/ overlay is loaded, and if not ask UNIX for help
+1:
+        cmp     r4,\_\_ovno
+        beq     2b              / lucked out!
+/ if return address is in root segment, then nothing to do
+        cmp     2(r5),$\_etext
+        blt     2b
+/ returning to wrong overlay --- do something!
+        mov     r0,r3
+        mov     r4,r0
+        emt
+        mov     r4,\_\_ovno
+        mov     r3,r0
+/ intr. routines may run between these, so should force segment \_\_ovno
+        br      2b
+.DE
+.PP
+One subtle point here is that routines which are in overlays
+are made to call the routines
+.I ovcsv
+and
+.I ovcret
+rather than
+.I csv
+and
+.I cret.
+This allows for slightly faster saving of the previous overlay value in
+this case.
+.SH
+System Implementation
+.PP
+We have modified a Version 7
+.UX
+System to support 0430 and 0431 executable files. This version keeps
+the overlays with the text segement, and uses an emulator trap to
+switch overlays. Here is a description of some of the changes required:
+.IP 1.
+\fIgetxfile\fR,
+in \fIsys1.c\fR, was modified to recognize 0430 and 0431 as legal magic numbers.
+When either of them are encountered, the second 8 word header (containing
+the sizes of the overlays) is read. The base or start of the overlayed area
+of core, and the base of the data space is set into the per-process data area.
+Each overlays size is checked against the maximum size.  A table of offsets is
+computed for the starting location of each of the overlays.  The overlayed text
+is skipped over to allow the data segement to be loaded correctly.
+.IP 2.
+\fIsbreak\fR,
+in \fIsys1.c\fR, was modified to notice that the amount of text space in a
+overlayed process includes the area set aside for (but not necessarly present)
+an overlay.
+.IP 3.
+\fIxalloc\fR,
+in \fItext.c\fR, was changed to allow the loading of each of the overlays from
+the executable file.  Each overlay is loaded into the user's text space after
+it has been mapped in by an
+.I estabur
+call.
+.IP 4.
+\fItrap\fR,
+in \fItrap.c\fR, was changed to allow the use of an emulator trap as a system
+call to switch the overlays of a type 0430 or 0431 p process.  This `call'
+only works if used by an overlay process, it defaults to the normal trap
+sequence if the call is invalid.  If valid, the current overlay number is
+updated, and
+.I estabur
+is called to remap the user text space.
+.IP 5.
+\fIestabur\fR,
+in \fIureg.c\fR, contains the changes that are the heart of the text overlays.
+First, the executable size parameters are checked to see that they are within
+the limits of the PDP-11 segmentation hardware.  The size of the text segment
+is then coerced to include the overlays prepended to the end of the text 
+segment.  Next, the segmentation registers are created, with space in the
+addressing space being reserved even if an overlay is not active.
+If an overlay is active, these registers are set to point at its location
+in core.
+.I estabur
+then is used to map in the i'th overlay, and must be called every place in the
+system when the given overlay must be accessed.
+.IP 6.
+The per-process data structure in \fIuser.h\fR has been changed to include the
+offset table and base locations used by the overlays. They are appended to the
+data structure to minimize system software conversion problems.
+.IP 7.
+The defined constant MAXMEM must be changed to reflect the new memory limit
+per-process. Since this reflects the use of swap area as well, busy systems
+might be advised to increase the size of the swap area as well.
+.RE
+.PP
+Some areas of the system have yet to be changed to support overlays. In order
+to \fIptrace\fR(UA2) them, the current overlay number has to become writeable
+in this call. Profiling should also be changed to support overlayed processes.
+.SH
+Future improvements
+.PP
+If interactive debugging of 0430 and 0431 files is to occur, then
+.I adb
+must be changed to deal with the new format of the 
+.I a.out
+files.  We have not yet made the needed changes.
+.PP
+The mechanism here substantially improves the capability of a large class
+of small 11's.  For machines with small amounts of real memory, it would
+be nice if the text images of these 0430 and 0431 files would not
+have to be completely resident to run.  Thus the individual overlays
+could be swapped rather than being made part of the larger text segment.
+This appears substantially more difficult to implement than the
+present mechanism, for two reasons:
+.IP 1)
+It is a major change to the text mechanism, basically allowing
+more than one text per process, and making the amount of core
+required by a process much more dynamic.  Care must be taken in changing
+the text mechanism of the system to allow this.
+.IP 2)
+Substantially more changes are needed to the scheduling algorithm in
+the system to assign appropriate priorities to a new class of objects:
+overlay text portions which are not currently ``active''.  It
+seems pointless to implement this scheme if they are simply
+abandoned as soon as they become free.  We suggest that they be
+given ``abandon'' priority which keeps them just longer than slow terminal
+i/o waits.

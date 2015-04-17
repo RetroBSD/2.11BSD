@@ -1,0 +1,73 @@
+This daemon has been tested on the following machines/OS (please report
+to me if you've tested a newer version, or if your machine/OS isn't among
+the ones below):
+
+Machine				Operating System	Pidentd  
+------------------------------  ----------------------  ---------
+Sequent Balance 8000		Dynix 3.0.14		2.7.1
+Sun 3/480			SunOS 4.0.3_U1	  	2.7.1
+Sun SS10/412			SunOS 4.1.3		2.7.1
+Sun 4/490			SunOS 5.4		2.7.1
+Sun SS1000/514			SunOS 5.5		2.7.1
+Sun SS10/402	 		SunOS 5.5.1		2.7.1
+Dell 433			Linux 2.0.20		2.7.1
+Dec Vax 6000/420		Ultrix 4.5		2.7.1
+Dec AlphaServer 8200 5/300	Digital UNIX 4.0	2.7.1
+
+
+Old test results:
+
+Machine			Operating System	Pidentd version
+----------------------  ----------------------  --------------------------
+  Sun IPC		  NetBSD 1.1		  2.7b4
+  IBM RS6000/320	  AIX 3.2  	          2.7b4
+  Sequent Balance	  Dynix 3.0.14		  2.4
+  Sequent Symmetry        Dynix 3.1.2		  2.1beta.3
+  Sun 3/50                SunOS 3.5               2.1beta.8.1           (3)
+  Sun 386i	          SunOS 4.0.2		  2.2beta.2
+  Sun 2/120	          SunOS 4.0.3		  2.1beta.10
+  Sun 3/480		  SunOS 4.1.1_U1	  2.4
+  HP 9000/375             HP-UX 7.0		  2.1beta.10.1		(1)
+  HP 9000/340		  HP-UX 8.0		  2.2beta.2
+  HP 9000/720             HP-UX 8.07		  2.1beta.10.1
+  HP 9000/715             HP-UX 9.0               2.2beta.2
+  HP 9000/827             HP-UX 8.02              2.1beta.8.1
+  HP 9000/834 	          HP-UX 7.0		  2.0beta.4
+  HP 9000/835 	          HP-UX 8.00		  2.1beta.10.1
+  HP 9000/847 	          HP-UX 9.0		  2.2beta.2
+  MIPS		          RISC/OS 4.5x            2.1beta.8.1
+  DECstation 2100         Ultrix 4.2-96           2.1beta.2		(2)
+  DECstation 5000/133     Ultrix 4.2              2.1beta.9.1           (2)
+  DEC VAXstation 2000	  Ultrix-32 3.1		  2.2beta.1		(2)
+  DEC VAX vs3520          Ultrix 3.0              2.1beta.9.1           (2)
+  DEC VAX 11/780	  4.3BSD Reno		  2.1beta.12		(2)
+  i486-PC		  UHC SVR4 2.0		  2.0beta.4		(2)
+  i486-PC		  Dell SVR4 2.2		  2.0beta.4		(2)
+  i486-PC		  ESIX SVR4 4.0.4	  2.1beta.2		(2)
+  i486-PC		  386BSD 0.1		  2.1beta.3		(2)
+  i486-PC		  Linux 0.99.13q	  2.2beta.2
+  Cray			  UNICOS 6.0.12	 	  2.1beta.7
+  NeXT                    NeXTSTEP 2.1            2.6.1
+  NeXT                    NeXTSTEP 3.0            2.1beta.9.1		(3)
+  Pyramid 90x		  dualPort OSx 4.1	  2.1beta.12
+  Silicon Graphics	  IRIX 4		  2.1beta.10
+  IBM RS/6000             AIX 3.2.4               2.4
+
+Notes:
+	1) HP-UX 7.0 doesn't support running streams based services from
+	   Inetd with the "wait" option (and the "-w" flag to Pidentd).
+
+	   It also has problems with starting stuff as user "sys" from Inetd.
+	   (It doesn't correctly set the group id to "sys") so I suggest you
+           either starts it as user "root" and use the "-u" and "-g" flags
+           to setuid and setgid itself to user "sys", group "sys", or do a
+	   'chgrp sys in.identd' and then a 'chmod g+s in.identd' and start
+	   it as user "sys" from Inetd.
+
+	2) These systems also doesn't support running streams based
+	   services from Inetd with the "wait" option. 
+	   
+	3) See notes in the READMEs/README.<machine-type> specific files.
+	   
+
+			    - Peter Eriksson <pen@lysator.liu.se>, 14 Oct 1994

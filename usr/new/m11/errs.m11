@@ -1,0 +1,83 @@
+	;
+	; m11 error messages
+	; jim reeds 4 july 1981
+	;
+	.mcall	(at)always
+	always
+
+	.data
+	.dsabl	lc
+	.list	md,me,mc
+
+	.macro	errgen	num,code,text
+ern'num::	.asciz	\text\
+	.endm
+	errgen	1,r,<cannot relocate a register>
+	errgen	2,a,<improper relocation>
+	errgen	3,a,<bad expression>
+	errgen	4,u,<undefined symbol>
+	errgen	5,m,<multiply defined>
+	errgen	6,n,<digit illegal in current radix>
+	errgen	7,t,<number too big>
+	errgen	8,u,<local symbol not defined>	
+	errgen	9,a,<empty floating point number>
+	errgen	10,n,<floating point overflow>		
+	errgen	11,t,<trunctation error>
+	errgen	12,l,<line too long>
+	errgen	13,i,<illegal character>
+	errgen	14,e,<.end not found>	
+	errgen	140,e,<end of input with unterminated macro or repeat>
+	errgen	15,o,<conditional not in progress>	
+	errgen	16,o,<too many nested conditionals>
+	errgen	17,a,<conditional argument not specified>
+	errgen	18,t,<illegal local symbol>	
+	errgen	19,q,<random junk at end of statement ignored>
+	errgen	20,a,<missing title>
+	errgen	0,<>,<user generated error>	
+	errgen	22,a,<missing delimiting character>
+	errgen	23,a,<unknown .list/.nlist argument>
+	errgen	24,o,<opcode out of context>
+	errgen	25,o,<missing macro name>
+	errgen	26,a,<.endm name doesn't match .macro name>
+	errgen	27,a,<illegal arguments>
+	errgen	28,a,<no symbol to assign to>
+	errgen	29,o,<unbalanced .endm>		
+	errgen	30,a,<missing argument in 'if' construction>
+	errgen	31,a,<missing argument>
+	errgen	70,a,<local offset out of range>	
+	errgen	71,a,<illegal register number>
+	errgen	32,p,<phase error in label definition>
+	errgen	33,q,<illegal label>
+	errgen	34,m,<label multiply defined>
+	errgen	35,z,<op code not in standard set>
+	errgen	36,b,<odd addressing error>
+	errgen	37,z,<unpredictable instruction>
+	errgen	38,r,<no such register number>	
+	errgen	39,t,<low order byte only>	
+	errgen	40,q,<questionable expression syntax>
+	errgen	41,r,<illegal use of register>
+	errgen	42,q,<missing right ')'>	
+	errgen	43,a,<missing expression>	
+	errgen	44,r,<illegal register usage>
+	errgen	45,a,<illegal .psect attribute>
+	errgen	90,a,<conflicts with .enabl abs>
+	errgen	46,a,<illegal radix>
+	errgen	47,a,<premature end of line>
+	errgen	48,t,<illegal rad50 character>
+	errgen	49,a,<illegal .enabl/.dsabl argument>
+	errgen	50,a,<illegal use of '.'>
+	errgen	51,a,<comma required>
+	errgen	52,a,<separator required>
+	errgen	53,p,<user generated error>		
+	errgen	54,t,<no generated symbols after 127$>
+	errgen	55,a,<no such cref argument>
+	errgen	56,o,<.endm out of context>
+	errgen	57,o,<.endr out of context>
+	errgen	59,a,<not a symbol>
+	errgen	60,u,<.mcall error>			
+	errgen	61,u,<macro not defined by .mcall>
+	errgen	62,u,<cannot open .mcall file>
+	errgen	63,u,<illegal .macro syntax in .mcall>
+	errgen	80,a,<branch out of current psect>
+	errgen	81,a,<too far to branch>
+	.end

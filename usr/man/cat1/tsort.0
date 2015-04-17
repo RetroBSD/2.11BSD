@@ -1,0 +1,66 @@
+
+
+
+TSORT(1)	    UNIX Programmer's Manual		 TSORT(1)
+
+
+
+NAME
+     tsort - topological sort
+
+SYNOPSIS
+     tsort [ file ]
+
+DESCRIPTION
+     _T_s_o_r_t produces on the standard output a totally ordered list
+     of items consistent with a partial ordering of items men-
+     tioned in the input _f_i_l_e.	If no _f_i_l_e is specified, the
+     standard input is understood.
+
+     The input consists of pairs of items (nonempty strings)
+     separated by blanks.  Pairs of different items indicate ord-
+     ering.  Pairs of identical items indicate presence, but not
+     ordering.
+
+SEE ALSO
+     lorder(1)
+
+DIAGNOSTICS
+     Odd data: there is an odd number of fields in the input
+     file.
+
+BUGS
+     Uses a quadratic algorithm; not worth fixing for the typical
+     use of ordering a library archive file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

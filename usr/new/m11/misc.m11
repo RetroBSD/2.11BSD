@@ -1,0 +1,305 @@
+	.title	atmisc
+
+	.ident	/14dec3/		;
+
+	.globl	..z,sdebug
+	.mcall	(at)sdebug,ndebug
+	.mcall	(at)always,ch.mne,ct.mne,error
+	always
+	ch.mne
+	ct.mne
+
+	.globl	symbol,	chrpnt,	symbeg,	value
+
+	.globl	cpopj,	setwrd,	setbyt,	dnc,	r50unp
+	.globl	getsym,	mulr50,	getr50,	setr50,	tstr50
+	.globl	cvtnum
+	.globl	setsym,	getnb,	setnb,	getchr,	setchr
+	.globl	savreg,	xmit0,	movbyt,	mul,	div
+
+	xitsec			;start in default sector
+setwrd:	mov	r1,-(sp)	;stack reg
+	mov	2(r1),r1	;get actual value
+	movb	#dig.0/2,(r2)	;set primitive
+	asl	r1
+	rolb	(r2)+		;move in bit
+	mov	#5,r0
+	br	setbyx
+
+setbyt:	mov	r1,-(sp)	;stack index
+	movb	2(r1),r1	;get value
+	mov	#space,r0
+	movb	r0,(r2)+	;pad with spaces
+	movb	r0,(r2)+
+	movb	r0,(r2)+
+	swab	r1		;manipulate to left half
+	rorb	r1		;get the last guy
+	clc
+	ror	r1
+	mov	#3,r0
+setbyx:	swab	r0
+	add	#3,r0
+	movb	#dig.0/10,(r2)
+1$:	asl	r1
+	rolb	(r2)
+	decb	r0
+	bgt	1$
+	tstb	(r2)+
+	swab	r0
+	sob	r0,setbyx
+	mov	(sp)+,r1
+	return
+dnc:				;decimal number conversion
+	mov	#10.,r3		;set divisor
+1$:				;entry for other than decimal
+	clr	r0
+	div	r3,r0		;divide r1
+	mov	r1,-(sp)	;save remainder
+	mov	r0,r1		;set for next divide
+	beq	2$		;  unless zero
+	call	1$		;recurse
+2$:	mov	(sp)+,r1	;retrieve number
+	add	#dig.0,r1	;convert to ascii
+	movb	r1,(r2)+	;store
+	return
+
+
+r50unp:				;rad 50 unpack routine
+	mov	r4,-(sp)	;save reg
+	mov	#symbol,r4	;point to symbol storage
+1$:	mov	(r4)+,r1	;get next word
+	mov	#50*50,r3	;set divisor
+	call	10$		;divide and stuff it
+	mov	#50,r3
+	call	10$		;again for next
+	mov	r1,r0
+	call	11$		;finish last guy
+	cmp	r4,#symbol+4	;through?
+	bne	1$		;  no
+	mov	(sp)+,r4	;yes, restore register
+	return
+
+
+10$:	clr	r0
+	div	r3,r0
+11$:	tst	r0		;space?
+	beq	23$		;  yes
+	cmp	r0,#33		;test middle
+	blt	22$		;alpha
+	beq	21$		;dollar
+	add	#22-11,r0	;dot or dollar
+21$:	add	#11-100,r0
+22$:	add	#100-40,r0
+23$:	add	#40,r0
+	movb	r0,(r2)+	;stuff it
+	return
+	.sbttl	symbol/character handlers
+
+getsym:
+	call	savreg
+	mov	chrpnt,symbeg	;save in case of rescan
+	mov	#symbol+4,r1
+	clr	-(r1)
+	clr	-(r1)
+	bitb	cttbl(r5),#ct.alp	;alpha?
+	beq	5$		;  no, exit false
+	mov	#26455,r2
+	call	setr50
+1$:	call	mulr50
+2$:	asr	r2
+	bcs	1$
+	add	r0,(r1)
+3$:	call	getr50
+	ble	4$
+	asr	r2
+	bcs	2$
+	beq	3$
+	tst	(r1)+
+	br	1$
+
+4$:	call	setnb
+5$:	mov	symbol,r0
+	return
+
+
+mulr50:				;multiply r0 * 50
+;	imuli	50,r0
+	mov	r0,-(sp)
+	asl	r0
+	asl	r0
+	add	(sp)+,r0
+	asl	r0
+	asl	r0
+	asl	r0
+	return
+
+	entsec	impure
+chrpnt:	.blkw			;character pointer
+symbeg:	.blkw			;start of current symbol
+	xitsec
+getr50:	call	getchr
+setr50:	mov	r5,r0
+tstr50:	bitb	#ct.lc!ct.alp!ct.num!ct.sp,cttbl(r0)	;alpha, numeric, or space?
+	beq	1$		;  no, exit minus
+	cmp	r0,#ch.dol	;yes, try dollar
+	blo	2$		;space
+	beq	3$		;dollar
+	bitb	#ct.lc,cttbl(r0)
+	beq	10$
+	add	#'A-'a,r0
+10$:
+	cmp	r0,#let.a
+	cmp	r0,#let.a
+	blo	4$		;dot or digit
+	br	5$		;alpha
+
+1$:	mov	#100000+space,r0	;invalid, force minus
+2$:	sub	#space-11,r0	;space
+3$:	sub	#11-22,r0	;dollar
+4$:	sub	#22-100,r0	;dot, digit
+5$:	sub	#100,r0		;alphabetic
+	return
+cvtnum:				;convert text to numeric
+
+				; in  -  r2    radix
+
+				; out -  value result
+				; r0 - high bit  - overflow
+				;    - high byte - character count
+				;    - low  byte - oversize count
+
+
+	call	savreg
+	clr	r0		;result flag register
+	clr	r1		;numeric accumulator
+1$:	mov	r5,r3		;get a copy of the current char
+	sub	#dig.0,r3	;convert to absolute
+	cmp	r3,#9.		;numeric?
+	bhi	9$		;  no, we're through
+	cmp	r3,r2		;yes, less than radix?
+	blo	2$		;  yes
+	inc	r0		;no, bump "n" error count
+2$:
+	.if ndf	pdpv45
+	mov	r2,r4		;copy of current radix
+	clr	-(sp)		;temp ac
+3$:	asr	r4		;shift radix
+	bcc	4$		;branch if no accumulation
+	add	r1,(sp)		;add in
+4$:	tst	r4		;any more bits to process?
+	beq	5$		;  no
+	asl	r1		;yes, shift pattern
+	bcc	3$		;branch if no overflow
+	bis	#100000,r0	;oh, oh.  flag it
+	br	3$
+
+5$:	mov	(sp)+,r1	;set new number
+	.iff
+	mul	r2,r1
+	.endc
+	add	r3,r1		;add in current number
+	call	getchr		;get another character
+	add	#000400,r0	;tally character count
+	br	1$
+
+9$:	mov	r1,value	;return  result in "value"
+	return			;return, testing r0
+;ct.eol=	000		; eol
+;ct.com=	001		; comma
+;ct.tab=	002		; tab
+;ct.sp=	004		; space
+;ct.pcx=	010		; printing character
+;ct.num=	020		; numeric
+;ct.alp=	040		; alpha, dot, dollar
+;ct.lc=	100		;  lower case alpha
+;ct.smc=	200		;  semi-colon  (minus bit)
+;
+;ct.pc=	ct.com!ct.smc!ct.pcx!ct.num!ct.alp	;printing chars
+
+	.macro	genctt	arg	;generate character type table
+	.irp	a,	<arg>
+	.byte	ct.'a
+	.endm
+	.endm
+
+
+	entsec	dpure
+cttbl:				;character type table
+	genctt	<eol, eol, eol, eol, eol, eol, eol, eol>
+	genctt	<eol, tab, eol, eol, eol, eol, eol, eol>
+	genctt	<eol, eol, eol, eol, eol, eol, eol, eol>
+	genctt	<eol, eol, eol, eol, eol, eol, eol, eol>
+
+	genctt	<sp , pcx, pcx, pcx, alp, pcx, pcx, pcx>
+	genctt	<pcx, pcx, pcx, pcx, com, pcx, alp, pcx>
+	genctt	<num, num, num, num, num, num, num, num>
+	genctt	<num, num, pcx, smc, pcx, pcx, pcx, pcx>
+
+	genctt	<pcx, alp, alp, alp, alp, alp, alp, alp>
+	genctt	<alp, alp, alp, alp, alp, alp, alp, alp>
+	genctt	<alp, alp, alp, alp, alp, alp, alp, alp>
+	genctt	<alp, alp, alp, pcx, pcx, pcx, pcx, pcx>
+
+	genctt	<eol, lc , lc , lc , lc , lc , lc , lc >
+	genctt	<lc , lc , lc , lc , lc , lc , lc , lc >
+	genctt	<lc , lc , lc , lc , lc , lc , lc , lc >
+	genctt	<lc , lc , lc , eol, eol, eol, eol, eol>
+
+	xitsec
+setsym:				;set symbol for re-scan
+	mov	symbeg,chrpnt	;set the pointer
+	br	setchr		;set character and flags
+
+getnb:				;get a non-blank character
+	inc	chrpnt		;bump pointer
+setnb:	call	setchr		;set register and flags
+	bitb	#ct.sp!ct.tab,cttbl(r5)	;blank?
+	bne	getnb		;  yes, bypass
+	br	setchr		;exit, setting flags
+
+getchr:				;get the next character
+	inc	chrpnt		;bump pointer
+setchr:	movb	@chrpnt,r5	;set register and flags
+	.if ndf	xedlc
+	cmp	r5,#141		;lower case?
+	blo	1$		;no
+	cmp	r5,#172
+	bhi	1$		;no
+	sub	#40,r5		;convert to upper case
+1$:	tst	r5		;set condition codes
+	.endc
+	;bmi	getchr		;loop if invalid character
+	bpl	2$		;non invalid char, return
+	error	13,i,<illegal character>
+	mov	#'? ,r5
+	movb	#200!'?,@chrpnt	; put the qm into linbuf
+2$:	return
+savreg:				;save registers
+	mov	r3,-(sp)
+	mov	r2,-(sp)
+	mov	r1,-(sp)
+	mov	6.(sp),-(sp)	;place return address on top
+	mov	r4,8.(sp)
+;	call	tststk		;test stack
+	call	@(sp)+		;return the call
+	mov	(sp)+,r1	;restore registers
+	mov	(sp)+,r2
+	mov	(sp)+,r3
+	mov	(sp)+,r4
+	tst	r0		;set condition codes
+cpopj:	return
+
+
+	.rept	20		;generate xmit sequence
+	mov	(r1)+,(r2)+	
+	.endm
+xmit0:	return
+
+movbyt:				;move byte string
+1$:	movb	(r1)+,(r2)+	;move one
+	bne	1$		;loop if non-null
+	tstb	-(r2)		;end, point back to null
+	return
+
+
+	.end

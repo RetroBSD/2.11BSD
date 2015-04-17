@@ -1,0 +1,51 @@
+/in_ckad/
+.,.+1c
+/ 1's comp add.  sum = in_ckadd(a,b);
+mov	(sp)+,r0
+add	(sp),r0
+adc	r0
+.
+/in_ckbu/
+.c
+/ 1's complement checksum routine.  assumes sum on entry is on logical even
+/ byte boundary, even though entry address may be odd.
+/
+/ r2 - 1's complement sum
+/ r3 - number of bytes
+/ r4 - byte address
+
+	clr     -(sp)                   /assume even start address
+	bit     $1,r4
+	beq     1f                      /if even starting address
+	inc     (sp)
+	clr     r0
+	bisb    (r4)+,r0                /get byte at odd address
+	add     r0,r2
+	adc     r2
+	swab    r2
+	dec     r3                      /and adjust byte count
+1:
+	clr     r1                      /assume even byte count
+	asr     r3                      /convert byte to word count
+	adc     r1                      /set r1 if extra trailing odd byte
+	tst     r3
+	beq     4f                      /if no words left
+2:
+	add     (r4)+,r2                /add into checksum
+	adc     r2
+	sob     r3,2b                   /and process all of them
+4:
+	tst     r1                      /extra trailing byte?
+	beq     3f                      /if not, exit
+	clr     r0
+	bisb    (r4)+,r0                /get that extra byte
+	add     r0,r2                   /and include in the checksum
+	adc     r2
+3:
+	tst     (sp)+
+	beq     5f                      /if starting address not odd
+	swab    r2
+5:
+.
+w
+q

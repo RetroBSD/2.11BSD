@@ -1,0 +1,567 @@
+	.title	expr - expression evaluator
+
+	.ident	/16jan4/
+
+	.mcall	(at)always,st.flg,ch.mne,xmit,genedt
+	.mcall	(at)sdebug
+	.mcall	(at)jne,jeq
+	always
+	st.flg
+	ch.mne
+	.mcall	(at)setnz,error,search
+
+	.globl	abserr,	absexp,	abstrm,	abstst,	expr
+	.globl	exprg,	relexp,	reltst
+
+
+	.if df	rsx11d
+	.globl	ed.gbl,	edmask,	cpopj
+	.endc
+
+	.globl	chrpnt,	clcnam,	clcsec,	cradix,	mode
+	.globl	cvtnum,	dmprld,	expflg,	flags,	lsrch
+	.globl	getchr,	getnb,	getsym,	insert
+	.globl	pass,	rellvl,	rolndx,	r50dot,	savreg
+	.globl	setnb,	setrld,	setsec,	setsym,	setxpr
+	.globl	symbeg,	symbol,	symrol,	pstrol,	value
+	.globl	secrol,	objsec
+
+	.globl	crfref
+	.if ndf	oldcod
+cc.opr=	040
+cc.nam=	020
+cc.sec=	010
+cc.val=	004
+cc.dsp=	002
+	.endc
+
+
+	.macro	chscan	table	;character scan
+	mov	#table,r0
+	call	chscan
+	.endm
+
+	.macro	gchtbl	char,	addr	;gen char scan table
+	.word	addr,	char
+	.endm
+	xitsec			;start in default sector
+
+exprg:				;external expression
+	.if ndf	oldcod
+	decb	oprflg+1	;flag "ok for external expression"
+	call	expr		;process
+	incb	oprflg+1	;restore
+	tst	r0		;reset r0 flags
+	return
+	.endc
+
+expr:				;expression evaluation
+	call	savreg		;save registers
+	call	term		;try for a term
+	beq	5$		;exit if null
+	clr	-(sp)		;non-null, set register flag storage
+1$:	call	setxpr		;set expression registers
+	bis	(r3),(sp)	;save register flag
+	chscan	boptbl		;scan the binary operator table
+	beq	2$		;  branch if not found
+	call	10$		;found, call handler
+	br	1$		;test for more
+
+2$:	bic	#-1-regflg,(sp)	;mask all but register flag
+	beq	6$		;branch if not register
+	bit	#177770,(r4)	;in bounds?
+	beq	6$
+	error	70,r,<pdp-11 only has 8 registers>
+	br	77$
+6$:	asr	rellvl		;test relocaton level
+	bne	3$		;branch if not 0 or 1
+	bcc	4$		;branch if 0
+	tst	(sp)		;relocatable, test register flag
+	beq	4$		;branch if not set
+7$:	error	1,r,<cannot relocate a register>
+77$:	clr	(sp)		;clear register bit
+	br	4$
+
+3$:	error	2,a,<improper relocation> 
+4$:	bis	(sp)+,(r3)	;merge register bit
+	setnz	r0		;set true
+5$:	return
+10$:
+	mov	r0,-(sp)	;stack operator address
+	mov	r1,r3		;leave pointer to "symbol" in r3
+	mov	(r1)+,-(sp)	;stack symbol
+	mov	(r1)+,-(sp)
+	mov	(r1)+,-(sp)	;  mode,
+	mov	(r1)+,-(sp)	;  value,
+	mov	(r1)+,-(sp)	;  and rel level
+	call	glbtrm		;evaluate next tern
+	mov	#expbak+^d10,r1	;set to unstack previous
+	mov	(sp)+,-(r1)	;rel level
+	mov	(sp)+,-(r1)	;value
+	mov	r1,r2		;r2 points to previous value
+	mov	(sp)+,-(r1)	;mode
+	mov	(sp)+,-(r1)
+	mov	(sp)+,-(r1)	;r1 points to previous symbol
+	.if ndf	oldcod
+	tst	oprflg
+	bpl	11$
+	tst	pass
+	beq	11$
+	bit	#glbflg!relflg,mode
+	bne	expxxx
+	bit	#glbflg!relflg,expbak+4
+	bne	expxxx
+11$:
+	.endc
+	mov	@(sp)+,-(sp)
+	asr	(sp)		;absolute only?
+	bcs	12$		;  no
+	bis	-(r2),-(r4)	;yes, merge flags
+	call	abstst		;test for absolute
+	cmp	(r2)+,(r4)+	;restore registers
+12$:	asl	(sp)		;even out address
+	jmp	@(sp)+		;exit through handler
+	.if ndf	oldcod
+expxxx:	inc	oprflg
+	mov	#200,r0
+	mov	#expbak,r1
+	call	expyyy
+	mov	(sp)+,r0
+	sub	#boptbl,r0
+	asr	r0
+	asr	r0
+	add	#201,r0
+	mov	#symbol,r1
+	call	expyyy
+	mov	#symbol,r1
+	clr	(r1)+
+	movb	oprflg,(r1)+
+	clrb	(r1)+
+	mov	#glbflg,(r1)+
+	clr	(r1)+
+	return
+
+expyyy:	mov	r0,-(sp)
+	call	setrld
+	mov	r2,-(sp)
+	movb	#cc.opr,(r2)+
+	clr	-(sp)
+	bit	#glbflg!relflg,4(r1)
+	beq	2$
+	bit	#glbflg,4(r1)
+	bne	1$
+	mov	#cc.sec,(sp)
+	cmpb	5(r1),objsec
+	beq	2$
+1$:	bis	#cc.nam,(sp)
+	.rept	4
+	movb	(r1)+,(r2)+
+	.endm
+	cmp	-(r1),-(r1)
+2$:	add	#6,r1
+	tst	(r1)
+	beq	3$
+	bis	#cc.val,(sp)
+	movb	(r1)+,(r2)+
+	movb	(r1)+,(r2)+
+3$:	bisb	(sp)+,@(sp)+
+	movb	(sp)+,(r2)+
+	movb	oprflg,(r2)+
+	jmp	dmprld
+
+	entsec	implin
+oprflg:	.blkw
+	xitsec
+	.endc
+
+	entsec	impure
+expbak:	.blkw	5		;previous term storage
+	xitsec
+	entsec	dpure
+boptbl:				;binary op table
+	gchtbl	ch.add,	bopadd+1	; "+"
+	gchtbl	ch.sub,	bopsub+1	; "-"
+	gchtbl	ch.mul,	bopmul	; "*"
+	gchtbl	ch.div,	bopdiv	; "/"
+	gchtbl	ch.and,	bopand	; "&"
+	gchtbl	ch.ior,	bopior	; "!"
+	.word	0
+	xitsec
+
+bopsub:	call	reltst		;make sure no globals
+	neg	(r4)		; -, negate value
+	neg	rellvl		;  and rellvl
+
+bopadd:	add	(r2)+,(r4)+	; +, add values
+	add	(r2),(r4)	;  and relocation levels
+	cmp	-(r2),-(r4)	;point back to values
+	bit	#glbflg!relflg,-(r2)	;abs * xxx?
+	beq	3$		;  yes, all set
+	bit	#glbflg!relflg,-(r4)	;xxx * abs?
+	beq	4$		;  yes, old flags
+	bitb	#glbflg,(r2)+	;error if either global
+	bne	5$
+	bitb	#glbflg,(r4)+
+	bne	5$
+	cmpb	(r4),(r2)	;rel +- rel, same sector?
+	bne	5$		;  no, error
+	bisb	#relflg,-(r4)
+	tst	rellvl
+	bne	3$
+	bic	#177400!relflg,(r4)
+3$:	return
+
+4$:	mov	(r1)+,(r3)+
+	mov	(r1)+,(r3)+
+	bis	(r1)+,(r3)+
+	return
+
+5$:	jmp	abserr
+
+
+bopand:	com	(r2)
+	bic	(r2),(r4)
+	return
+
+bopior:	bis	(r2),(r4)
+	return
+bopmul:				; *
+	mov	(r2),r0		;fetch first arg
+	mov	r0,-(sp)	;save a copy
+	bpl	1$		;positive?
+	neg	r0		;  no, make it so
+1$:	mov	(r4),r3		;set second arg
+	bpl	2$		;branch if positive
+	neg	r3		;negative, make it +
+	com	(sp)		;toggle result sign
+2$:	mul	r3,r0		;multiply
+	mov	r1,r0		;set for exit
+	br	bopdvx		;exit through divide
+
+bopdiv:				; /
+	mov	(r4),r3		;set divisor
+	mov	r3,-(sp)	;save a copy
+	bpl	1$		;branch if plus
+	neg	r3		;make it thus
+1$:	mov	(r2),r1		;set quotient
+	bpl	2$		;again!!!
+	neg	r1
+	com	(sp)
+2$:	clr	r0		;operate
+	div	r3,r0
+
+bopdvx:	tst	(sp)+		;test result
+	bpl	1$		;  ok as is
+	neg	r0		;no, negate it
+1$:	mov	r0,(r4)		;set result
+	return
+
+				;special entry point to expr
+				;null field causes error
+				;r0 set to value
+
+glbtrm:	call	term
+	beq	abserr
+	br	abserx
+
+glbexp:				;non-null expression
+	call	expr
+	beq	abserr
+	br	abserx
+
+reltrm:	call	glbtrm
+	br	reltst
+
+relexp:
+	call	glbexp
+reltst:	bit	#glbflg,flags
+	beq	abserx
+	br	abserr
+
+abstrm:	call	glbtrm
+	br	abstst
+
+absexp:
+	call	glbexp
+abstst:	bit	#glbflg!relflg,flags
+	beq	abserx
+abserr:	clr	mode
+	clr	rellvl
+abserf:	error	3,a,<bad expression>
+abserx:	mov	value,r0	;return with value in r0
+	return
+	.sbttl	term evaluator
+
+term:				;term evaluator
+	call	savreg		;save registers
+	call	setxpr		;  and set "expression" type
+	clr	(r3)		;clear mode
+	clr	(r4)		;  and value
+	call	term10		;process
+	bic	#defflg!lblflg!mdfflg,(r3)	;clear extraneous
+	clr	rellvl		;assume absolute
+	bit	#relflg,(r3)	;true?
+	beq	1$
+	inc	rellvl		;  no, relocatable
+1$:	inc	expflg		;mark as expression
+	jmp	setnb		;exit with non-blank and r0 set
+
+term10:	call	getsym		;try for a symbol
+	jeq	term20		;branch if not a symbol
+	.if ndf	xcref
+	mov	#symrol,rolndx
+	call	crfref
+	.endc
+	cmp	symbol,r50dot	;location counter?
+	beq	14$		;  yes, treat special
+	search	symrol		;search the symbol table
+	beq	16$		;branch if not found
+	bit	#mdfflg,(r3)	;multiply defined?
+	beq	11$		;  no
+	error	5,m,<multiply defined>
+11$:	bit	#defflg,(r3)	;defined?
+	beq	13$		;  no
+	call	setsec		;refer by sector name
+	br	12$
+
+13$:	bit	#glbflg,(r3)	;no, global?
+	jne	term28		;  yes
+	error	4,u,<undefined symbol>
+	sdebug	<undef 1>
+12$:	bic	#glbflg,(r3)	;clear internal global flag
+	jmp	term28
+
+14$:	mov	#clcnam,r1	;dot, move to working area
+	mov	#symbol,r2
+	xmit	4
+	bicb	#^c<relflg>,(r3)	;clear all but rel flag
+	jmp	term28
+
+16$:	search	pstrol		;not user defined, perhaps an op-code?
+	tst	(r3)		;op code?
+	bmi	17$		;yes
+	search	symrol		;set search pointers
+	.if df	rsx11d
+	bis	#dfgflg!glbflg,(r3)
+	bit	#ed.gbl,edmask
+	beq	20$
+	bic	#dfgflg!glbflg,(r3)
+	.endc
+	error	4,u,<undefined symbol>
+	sdebug	<undef 2>
+20$:	call	insert		;not in table, insert as undefined
+17$:	clr	(r3)		;be sure mode is zero
+	jmp	term28
+
+	.iif df	rsx11d,	genedt	gbl
+
+term20:
+	mov	cradix,r2	;assume number, current radix
+21$:	mov	chrpnt,symbeg	;in case of re-scan
+	call	cvtnum		;convert
+	beq	term30		;  nope, missed again
+	bpl	22$		;number, any overflow?
+	error	7,t,<number too big>
+22$:	cmp	r5,#ch.dot	;number, decimal?
+	beq	24$		;  yes
+	.if ndf	xedlsb
+	cmp	r5,#ch.dol	;no, local symbol?
+	beq	24$		;  yes
+	.endc
+	tstb	r0		;no, any numbers out of range?
+	jeq	term28		;  no
+	error	6,n,<digit illegal in current radix>
+	br	23$
+
+24$:	cmp	r2,#10.		;"." or "$", were we decimal?
+	beq	25$		;  yes
+23$:	call	setsym		;no,
+	mov	#10.,r2		;  try again with decimal radix
+	br	21$
+
+25$:	cmp	r5,#ch.dot	;decimal?
+	beq	term27		;  yes
+	.if ndf	xedlsb
+	call	lsrch		;no, local symbol
+	bne	term27		;branch if found
+	.endc
+term26:	error	8,u,<local symbol not defined>	;  no, flag as undefined
+term27:	call	getchr		;bypass dot or dollar
+term28:	call	setnb		;return pointing to non-blank
+	setnz	r0		;flag as found
+term29:	return
+term30:
+	chscan	uoptbl		;scan unary operator table
+	beq	term29		;  not there
+	clr	r2		;clear for future use
+	call	@(r0)+		;found, go and process
+	jmp	term28		;exit true
+
+
+	entsec	dpure
+uoptbl:
+	gchtbl	ch.add,	glbtrm	; "+"
+	gchtbl	ch.sub,	term42	; "-"
+	gchtbl	ch.qtm,	term44	; """
+	gchtbl	ch.xcl,	term45	; "'"
+	gchtbl	ch.pct,	term46	; "%"
+	gchtbl	ch.lab,	term47	; "<"
+	gchtbl	ch.uar,	term50	; "^"
+	.word	0
+	xitsec
+
+term42:	call	abstrm		;evaluate absolute
+	neg	(r4)		;negate value
+	return
+
+term44:	inc	r2		; """, mark it
+term45:	mov	r4,r1		; "'", set temp store register
+	call	setsym		;point back to operator
+1$:	call	getchr		;get the next character
+	beq	term48		;error if eol
+	.if ndf	xedlc
+	movb	@chrpnt,(r1)	;store absolute char
+	bicb	#200,(r1)+	;clear possible sign bit and index
+	.iff
+	movb	r5,(r1)+
+	.endc
+	dec	r2		;another character
+	beq	1$		;  yes
+	br	term27		;bypass last char
+
+term46:	call	abstrm		;register expression
+	bis	#regflg,(r3)	;flag it
+	return
+
+term47:				; "<"
+	call	glbexp		;process non-null expression
+	cmp	r5,#ch.rab	;">"?
+	beq	term27		;  yes, bypass and exit
+term48:	jmp	abserf		;error, flag it
+term50:				; "^"
+	chscan	uartbl		;scan on next character
+	beq	term48		;  invalid, error
+	jmp	@(r0)+		;call routine
+
+	entsec	dpure
+uartbl:				;up arrow table
+	gchtbl	let.c,	term51	;  ^c
+	gchtbl	let.d,	term52	;  ^d
+	gchtbl	let.o,	term53	;  ^o
+	gchtbl	let.b	term54	;  ^b
+	gchtbl	let.r,	trmr50	;  ^r
+	.if ndf	xfltg
+	gchtbl	let.f,	term55	;  ^f
+	.endc
+	.if ndf	oldcod
+	gchtbl	let.p,	term56	;  ^p
+	.endc
+	.word	0
+	xitsec
+
+term51:	call	abstrm		;process absolute
+	com	(r4)		;complement value
+	return
+
+term52:	add	#2.,r2
+term53:	add	#6.,r2
+term54:	add	#2.,r2
+	mov	cradix,-(sp)	;stack current radix
+	mov	r2,cradix	;replace with local
+	call	glbtrm		;evaluate term
+	mov	(sp)+,cradix	;restore radix
+	return
+
+	.globl	setr50,mulr50
+r50gch:	call	getchr		;get next character
+	cmp	r2,#3		;filled word?
+	beq	r50xit		;  yes
+trmr50:	call	setr50		;test radix 50
+	call	r50prc		;process the character
+	bcc	r50gch		;if cc no terminator seen
+
+1$:	cmp	r2,#3		;filled word?
+	beq	r50xit		;  yes
+	clr	r0		;  no - pad with blanks
+	call	r50prc
+	br	1$
+
+r50xit:	return			;done with argument
+
+r50prc:	cmp	r0,#50		;rad50?
+	bhis	1$		;  no
+	mov	r0,-(sp)	;save current char
+	mov	(r4),r0		;get partial
+	call	mulr50		;multiply
+	add	(sp)+,r0	;add in current
+	mov	r0,(r4)		;save
+	inc	r2		;bump count
+	clc			;no terminator seen
+	return
+
+1$:	sec			;terminator seen
+	return
+
+	.if ndf	xfltg
+	.globl	fltg1w
+term55:	call	fltg1w		;process one word floating
+	beq	term48		;error if null
+	return
+	.endc
+	.if ndf	oldcod
+term56:				;  ^p
+	call	mk.upp		;make upper case
+	cmp	r5,#'l&^c40	;low limit?
+	beq	1$		;  yes
+	cmp	r5,#'h&^c40	;  high?
+	bne	term48		;  no, error
+	inc	r2		;yes, reflect high
+1$:	add	#3,r2		;make 3 or 4
+	mov	r2,-(sp)	;save operator
+	call	setrld		;set up rld
+	movb	#cc.opr,(r2)+	;flag operator
+	movb	(sp)+,(r2)+	;unary type
+	call	getnb		;bypass char
+	call	getsym		;get the argument
+	mov	#secrol,rolndx
+	call	crfref		;cref into proper roll
+	mov	#symbol,r1
+	.rept	4		;move into code buffer
+	movb	(r1)+,(r2)+
+	.endm
+	inc	oprflg		;get unique number
+	movb	oprflg,(r2)+	;stuff it
+	call	dmprld		;dump it
+	mov	#symbol,r1
+	clr	(r1)+		;symbol is zero
+	movb	oprflg,(r1)+	;  followed by unique numbwr
+	clrb	(r1)+
+	mov	#glbflg,(r1)+
+	clr	(r1)+
+	return
+
+	.endc
+chscan:				;character scan routine
+	call	mk.upp		;make char. upper-case
+1$:	tst	(r0)+		;end (zero)?
+	beq	2$		;  yes
+	cmp	(r0)+,r5	;this the one?
+	bne	1$		;  no
+	tst	-(r0)		;yes, move pointer back
+	mov	chrpnt,symbeg	;save current pointer
+	call	getnb		;get next non-blank
+	tst	-(r0)		;move addr or zero into r0
+	return
+
+2$:	clr	r0
+	return
+
+
+mk.upp:	cmp	r5,#141		; between a - z ?
+	blt	1$		;no
+	cmp	r5,#172
+	bgt	1$		;no
+	sub	#40,r5		;yes, make it upper-case
+1$:	return
+
+	.end

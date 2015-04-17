@@ -1,0 +1,66 @@
+
+
+
+SIGSETMASK(2)	    UNIX Programmer's Manual	    SIGSETMASK(2)
+
+
+
+NAME
+     sigsetmask - set current signal mask
+
+SYNOPSIS
+     #include <signal.h>
+
+     omask = sigsetmask(mask);
+     long omask, mask;
+
+     mask = sigmask(signum)
+     long mask;
+     int signum;
+
+DESCRIPTION
+     This interface is made obsolete by:
+
+     _S_i_g_s_e_t_m_a_s_k sets the current signal mask (those signals that
+     are blocked from delivery).  Signals are blocked if the
+     corresponding bit in _m_a_s_k is a 1; the macro _s_i_g_m_a_s_k is pro-
+     vided to construct the mask for a given _s_i_g_n_u_m.
+
+     The system quietly disallows SIGKILL, SIGSTOP, or SIGCONT to
+     be blocked.
+
+RETURN VALUE
+     The previous set of masked signals is returned.
+
+SEE ALSO
+     kill(2), sigvec(2), sigblock(2), sigpause(2)
+
+HISTORY
+     The sigsetmask function call appeared in 4.2BSD and has been
+     deprecated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	September 3, 1997			1
+
+
+

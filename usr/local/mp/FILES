@@ -1,0 +1,48 @@
+This file describes all the files that make up the mp distribution.
+
+Directory mp: the pretty printer for mail, news articles and text files.
+------------------------------------------------------------------------
+
+header.c            - mail and news header manipulation routines.
+io.c                - input/output routines for mp.
+main.c              - includes variable declarations and main().
+misc.c              - miscelaneous routines used by mp.
+print.c             - PostScript printing routines.
+
+extern.h            - External declaractions.
+mp.h                - Macro and constant definitions.
+patchlevel.h        - Current patchlevel for this release of mp.
+
+README              - describes what mp is, and how to get started.
+Makefile.dist       - Master Makefile used to build mp on Unix systems.
+mailp               - a shell script frontend for running mp.
+MANIFEST            - tells you what archive part each file was posted in.
+FILES               - what you're reading now.
+CHANGES             - change history. Will be updated with each new patch.
+TODO                - bugs and suggested enhancements. Volunteers?
+mp.el               - emacs code to print with mp.
+
+mp.common.ps        - mp prologue file containing routines common to all.
+mp.pro.ps           - standard mp prologue file.
+mp.pro.l.ps         - standard mp prologue file for landscape (2 columns).
+mp.pro.alt.ps       - alternative mp prologue file.
+mp.pro.altl.ps      - alternative style for landscape prologue file.
+mp.pro.ff.ps        - mp Filofax prologue file.
+mp.pro.fp.ps        - mp Franklin Planner prologue file.
+mp.pro.tm.ps        - mp Time Manager prologue file.
+mp.pro.ts.ps        - mp Time/System International prologue file.
+mp.pro.old          - previous standard mp prologue file.
+mp.pro.l.old        - previous standard mp prologue file for landscape mode.
+
+mp.man              - the mp manual page (troff/nroff -man format).
+mp.man.text         - plain text version of the mp manual page.
+mailp.man           - the mailp manual page (troff/nroff -man format).
+mailp.man.text       - plain text version of the mailp manual page.
+
+Sub-directory Data: test data files for new versions of mp.
+-----------------------------------------------------------
+Data/Mail           - a mail article.
+Data/MailFolder     - a simple mail folder.
+Data/NewsArticle1   - a news article.
+Data/NewsArticle2   - another news article.
+Data/NewsDigest     - a digest of news articles.

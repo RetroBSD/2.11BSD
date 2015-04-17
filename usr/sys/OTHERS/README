@@ -1,0 +1,394 @@
+	This directory contains a number of network, disk and other
+drivers.  Attached at the end of this document is the original README.
+
+	Believe it or not, you won't have to really understand how a driver
+works in order to install it.  Just follow the bouncing ball ...  Note that
+some of the old `glue' used to patch drivers in this directory can be found
+in the "GLUE" subdirectory.
+
+STEP #1:
+--------
+	Install the source code in the proper directory.  A pdp MASSBUS
+driver would go in pdpmba, a pdp UNIBUS driver would go in pdpuba.  In
+reality (the present system) all drivers are in pdpuba regardless of
+being MASSBUS or UNIBUS.  We'll use the versatec driver as an example.  
+Since it's a UNIBUS driver, we'll move vp.c into pdpuba.  If you're installing 
+a driver from the OTHERS directory, or you've got a local work of art that 
+you wish to use, there are a few things you should check so that it will 
+work correctly with 2.11BSD:
+
+	Note, in the following examples, "XX" is the two or three letter
+	designation that device drivers under UNIX get assigned, e.g. "vp"
+	for the Versatec driver, "vv" for the Pronet driver, etc.
+
+	a) The XXattach routines should return 1 on success, 0 on failure.
+
+	b) If your XXread and XXwrite routines use physio(), make sure that
+	   you're passing the correct number and types of arguments.
+
+	   Between the initial release of 2.11BSD and the present the 
+	   WORD/BYTE argument (added between 2.9 and 2.10) was removed.
+	   If it is important to enforce alignment this can be done in
+	   either the strategy routine or in XXread/XXwrite before calling
+	   physio().
+
+	c) The XXread and XXwrite routines should return 0, if successful,
+	   and the correct errno value (for later assignment to u.u_error)
+	   if they fail.  All the XXread and XXwrite routines which only
+	   called physio() have been removed (the common routines rawread()
+	   and rawwrite() replacing XXread() and XXwrite() in the cdevsw[]
+	   table).
+
+	   Note:  If XXread() and/or XXwrite() only calls physio() then
+	   the XXread and XXwrite entry points can be removed and the common
+	   routines 'rawread', 'rawwrite' used in the cdevsw[] table.  See
+	   the entries for any of the disc or tape drivers for examples of
+	   this.
+
+	d) The XXioctl routine has changed a *lot* between 2.9 and 2.11:
+
+		+ XXioctl() now takes four arguments, (dev, cmd, data,
+		  flags) a device (dev_t), the ioctl command (u_int), a
+		  buffer address (caddr_t), and some flags (int).  Of real
+		  interest is the command, which is the low order 16 bits
+		  of the ioctl command.  Ioctl's in user land are 32 bits.
+		  The low order word contains the ioctl command itself, the
+		  high order describes any necessary argument transfers
+		  between the kernel and user process.  See sys/ioctl.h for
+		  macros IO, IOR, IOW and IORW that implement this.
+		  Sys/mtio.h is a good file to look at for how to add the
+		  correct definitions to your include file.  THIS IS THE
+		  TRICKY PART!!  Look at how other device drivers handle this.
+
+		+ XXioctl() no longer copies anything in or out of user
+		  land.  The new upper word of the ioctl "cmd" allows the
+		  ioctl system call to perform all necessary transfers
+		  between the kernel and the user process.  See the kernel
+		  ioctl() routine for more info.
+
+		+ XXioctl has to return 0 on success, or the correct errno
+		  value for later assignment to u.u_error.
+
+	e) Make sure that you handle buffer allocation correctly.  If you
+	   wish to be portable, there should be allocations of mapping
+	   registers using mapalloc() for UNIBUS mapped machines, ifdef'd
+	   on "UNIBUS_MAP".  You should ifdef *real* 22-bit QBUS addressing
+	   with the define "Q22" (see the comments in conf/GENERIC and
+	   pdp/machdep2.c.)  Buffer cache buffers have to be mapped in to
+	   be accessed in 2.9BSD and 2.11BSD.  I don't really understand
+	   how it worked before then, but some of the drivers in the OTHERS
+	   directory predate that, so be paranoid.
+
+	f) The device addresses and partition table sizes should be
+	   included in the device driver itself, not in ioconf.c (which
+	   is used for an entirely different purpose now.)  See the drivers 
+	   in pdpuba for examples.
+
+	g) You should have an XXopen() routine that validates the unit
+	   number for the read, write, and ioctl system calls.  See the
+	   the drivers in pdpuba for examples.  Normally they will look
+	   something like:
+		XXopen(dev)
+			dev_t	dev;
+		{
+			if (minor(dev) > XXRL || !XXADDR)
+				return (ENXIO);
+			return (0);
+		}
+
+	   If you've already got the driver lying around, the XXstrategy
+	   routine probably already does this.  The read/write/ioctl
+	   routines *MAY* do it, i.e. you can rip it out of them once
+	   you've got the open routine working.  Note, make sure that
+	   you don't assign an absolute address to XXADDR when you declare
+	   it (a lot of old drivers do) as it negates the test of
+	   XXADDR in XXopen().  Also, a lot of old drivers use the minor
+	   numbers in strange and wonderful ways; don't assume that the
+	   above test, "minor(dev) > XXRL", is correct for your device.
+	   Anyway, this is a Very Important Thing.  If you don't do this
+	   fix right, interesting things will happen when someone accesses
+	   a device for which you have a node in /dev, but which doesn't
+	   really exist.
+
+STEP #2:
+--------
+	Write some code that will attempt to "probe" the routine.  See any
+of the other device drivers for examples.  Install this code in the
+"sys/autoconfig" directory, only call it "XXauto.c", where XX is
+the prefix for the driver.  In our example, we'll install it as
+"sys/autoconfig/vpauto.c".  This is the code that is used by the auto 
+configuration program to get to the device.  By convention, this routine 
+must be named "XXprobe()".  It's also useful to check and see if any of 
+the probe routines already written would be identical to your probe routine.
+For example, the "xpauto.c" file contains the probe routine for several 
+flavors of disk drive.  If you're porting a 4BSD driver, it probably 
+already has a probe routine in it which may be close to what you want.  
+Also, in any case, rip the XXprobe stuff out of the main file ... it is never 
+used by the kernel and it just wastes text space.
+	Previously the XXauto.c files were kept in the same directory as
+the device drivers themselves.  This lead to the misleading assumption that 
+'/etc/autoconfig' would automatically be rebuilt if the probe routine in
+the XXauto.c files in sys/pdpuba were modified.  To clarify matters the 
+XXauto.c files were moved into the sys/autoconfig directory.
+
+STEP #3:
+--------
+	Go to the auto configuration directory, "sys/autoconfig" and update
+the "DOBJS" and "SRCS" defines to reflect the existence of the new device
+driver.  Our example would add "vpauto.c" to the "SRCS" define, and
+"vpauto.o" to the "DOBJS" define.  Update the source file
+"sys/autoconfig/uprobe.c" to reflect the existence of the new device
+driver.  Basically, you have to define the "vpprobe" routine and then add a
+new line to the "uprobe" table.  For our example, we'd add:
+
+	int	vpprobe();
+
+at the beginning of the file and:
+
+	"vp",	vpprobe,	/* vp -- Versatec */
+
+in the "uprobe" table.
+
+STEP #4:
+--------
+	Update the "/etc/dtab" table to reflect the new drive.  You may be
+able to simply uncomment an existing line, otherwise, figure out the
+correct values for each field and write a new one.  Our example needs an
+entry of the format:
+
+	# vp	? 177500 174	4	vpintr		# Versatec
+
+Where "vp" is the letter designation, "?" means that we aren't assigning a
+specific unit number (the normal case), 177500 is the address of the
+device, 174 is the interrupt vector, 4 is the interrupt priority level
+(Br), and "vpintr" is the handler(s) as designated in the file "scb.s".
+
+STEP #5:
+--------
+	In scb.s you'll need to add an interrupt interface:
+
+	a) Add an include of "XX.h" to the top so that the presence or
+	   absence of the driver can be determined.
+
+	b) If the driver is for a disk you'll need to add an interrupt
+	   vector definition so that device interrupts can be caught.  In
+	   general this won't have to be done for most devices because
+	   /etc/autoconfig will assign, initialize and probe the device
+	   after the system has booted.  Disks have to have their interrupt
+	   vectors already set up at boot time for obvious reasons.  For
+	   convenience several of the networking drivers are also hardwired
+	   in, but that probably wasn't necessary.  The Versatec, for instance,
+	   does not need an interrupt vector set up at boot time, so its
+	   vector will be set up by /etc/autoconfig.
+
+	   If an interrupt vector is needed, it can be added by determining
+	   the device's interrupt vector address, IADDR, and then adding
+	   lines of the form:
+
+		#if NXX > 0
+			DEVTRAP(IADDR, XXintr, brX)
+		#endif
+
+	   numerically in order with the other sets of lines like the above
+	   already present in scb.s.  "IADDR", as mentioned above, would be
+	   the devices interrupt vector address, "XXintr" is the name of
+	   the interrupt handling routine in the C source of your driver,
+	   and "brX" is the priority level that the device interrupts at.
+	   Note that "XXintr" is the handler name that would be added to
+	   /etc/dtab.  Also note that some devices have more than one
+	   interrupt vector that must be set up.
+
+	   If (and it doesn't!) the versatec needed an interrupt vector
+	   assigned at boot time, it would look like the following:
+
+		#if NVP > 0
+			DEVTRAP(174, vpintr, br4)
+		#endif
+
+	c) Finally, add an interrupt interface thunk in the last half of
+	   scb.s to correspond with the new device's interrupt vector(s).
+	   These small thunks catch the device's interrupts and hand
+	   control off to the the real handler routine after first saving
+	   the machine's current context by (essentially) passing the
+	   address of the real handler to the routine "call" in pdp/mch_trap.s.
+
+	   The following would be added for the Versatec driver:
+
+		#if NVP > 0
+			HANDLER(vpintr)
+		#endif
+
+STEP #6:
+--------
+	Update the conf.c file (it used to be called c.c, in previous
+incarnations).  This file needs to have an include line for the .h file
+that will determine if this driver gets included in the kernel, a set of
+defines so that the kernel can compile correctly whether you not you choose
+to include the driver, and entries in the block and/or character device
+switch tables.  For our example we would add:
+
+#include "vp.h"
+#if NVP > 0
+int	vpopen(), vpclose(), vpwrite(), vpioctl();
+#define	vpstrategy	nulldev
+#else
+#define	vpopen		nodev
+#define	vpclose		nodev
+#define	vpwrite		nodev
+#define	vpioctl		nodev
+#define	vpstrategy	nodev
+#endif	NVP
+
+to the character device definition section of conf.c, and
+
+/* vp = 20 */
+	vpopen,		vpclose,	nodev,		vpwrite,
+	vpioctl,	nulldev,	0,		SELECT(nodev),
+	vpstrategy,
+
+to the character device switch table (cdevsw[]).
+
+The strategy member of the cdevsw[] structure is new since 2.11BSD was 
+released.  Since VP does not have a strategy routine a dummy definition 
+is created.  Other devices (such as disc and tape drivers) do have
+strategy routines and their entries look like:
+
+#include "tms.h"
+#if NTMS > 0
+int	tmscpopen(), tmscpclose(), tmscpstrategy(), tmscpioctl();
+#else
+#define	tmscpopen	nodev
+#define	tmscpclose	nodev
+#define	tmscpioctl	nodev
+#define	tmscpstrategy	nodev
+#endif
+
+/* tmscp = 23 (tu81/tk50) */
+	tmscpopen,	tmscpclose,	rawread,	rawwrite,
+	tmscpioctl,	nulldev,	0,		seltrue,
+	tmscpstrategy,
+};
+
+	Note, in our example, we've been assuming that NVP is the define that
+governs whether or not the device is included, as well as how many of them
+we have.  For example, "#define NVP 5" in the file "vp.h" means that we
+have 5 of the devices, and "#define NVP 0" means that we don't even include
+the driver.  More on "vp.h" a little later.
+
+	Since the versatec is a character device only, it only gets
+included in the character device switch table, "cdevsw[]". (for a disk
+driver, for instance, you would have entries in both the character and
+block device switch tables) The entries in the table correspond to the
+routines that get called when you open a versatec, close a versatec, etc.
+etc.  See the include file "sys/conf.h" for more information on what the
+fields in the block and character switches mean.  The easiest method to
+make a new entry is to find a device that looks like yours and do what it
+does.
+
+	Note, the "major" number that you'll use later when you add the node
+to the "/dev" directory is the offset into this table, or, in the above
+example, 20.
+
+STEP #7:
+--------
+	Next, update the following files: "conf/GENERIC", "conf/config",
+"conf/Make.pdpuba" (or "conf/Make.pdpmba" or "conf/Make.net"), and
+"conf/Makefile".  Basically, add lines of the form:
+
+NVP		0		# Versatec
+VP_TWOSCOMPL	NO		# interface needs two's complement bytecount
+
+in "conf/GENERIC".  These are the lines that get changed when you want to
+configure a new system.  Some drivers may only need a single line to
+describe the number of devices to be configured in, others, like the
+Versatec need auxiliary configuration information.  Change "conf/config"
+to do the intelligent thing with those lines, i.e. something like
+
+echo "#define NVP	$NVP"		> ../$MACHINE/vp.h
+if [ $VP_TWOSCOMPL = YES ] ; then
+	echo "#define VP_TWOSCOMPL"	>> ../$MACHINE/vp.h
+fi
+
+which will place the appropriate defines for the Versatec into vp.h.
+Obviously, the source code for your driver should modify its behavior based
+on the defines found in its include file.
+
+	Note that if you do have additional configuration options for your
+driver they *should* be put into conf/GENERIC with appropriate comments.
+Don't hide them in pdpuba/vpreg.h for instance - that's the way things used
+to be done in 2.9BSD and earlier, making it extremely difficult to
+configure a system.  With all of the relevant options in one place
+(conf/GENERIC) it is very simple for the person configuring a new system
+to just `check off' the items they want.
+
+	Finally, add the resulting object file names for your device
+driver to "conf/Makefile" and "conf/Make.pdpuba" (or "conf/Make.pdpmba"
+or "conf/Make.net").  The former just needs to know the name so it can
+load it; the latter must be able to compile the file.  Be careful where
+you have "conf/Makefile" load your object as certain things have to be
+loaded in special places; in general, just put your object name in an
+overlay or the base segment.
+
+STEP #8:
+--------
+	You should also edit "dev/MAKEDEV.local" to make nodes with the
+correct major/minor numbers in the /dev directory.  The major number for
+character devices is the offset of the device's entry in cdevsw[], and
+the major number for block devices is the similar offset in bdevsw[].
+
+	One final note, we've had fair success with porting 4BSD drivers.
+You just have to rip out all of the stuff that understands about multiple
+UNIBUS's and you're halfway there.  Two things you have to check; it may
+play pretty loose and casual with buffers since it doesn't cost anything to
+have them.  It's EXPENSIVE on the PDP-11, because you have to do a mapin()
+every time you want one, plus, you can only have one at a time!!  Look for
+calls to geteblk(), it's a dead giveaway.  Also, MBUF allocation is
+different in the two systems, if the driver goes for one of them, take a
+long look at it.
+
+	As far as the various device drivers in this directory, note that
+comments like "will probably converted soon" and "should work without
+modification" are probably now specious.  While comments like "is untested",
+"might work with ...", etc. should be taken to mean "it didn't work on
+2.9BSD and you'd probably be better off rewriting it from scratch or buying
+an IBM PC" ...
+
+	Several of the drivers in the OTHERS directory should eventually
+be removed because working versions exist in the pdpuba directory.  These
+are the ts-11 (OTHERS/ts - pdpuba/ts.c), rp04/rp06 (OTHERS/rp04.06 - 
+pdpuba/xp.c), TMSCP (OTHERS/tk - pdpuba/tmscp.c), RX01&RX02 (OTHERS/rx01, 
+OTHERS/rx02 - pdpuba/rx.c), MSCP (OTHERS/ra - pdpuba/ra.c), TU-16 (OTHERS/ht -
+pdpuba/ht.c), rm02/rm03/rm05 (OTHERS/rm02.03.05 - pdpuba/xp.c), Fuji-160
+(OTHERS/fuji_160 - pdpuba/xp.c), dm11 (OTHERS/dm11 - pdpuba/dh.c).
+
+
+Keith Bostic & Casey Leedom (revised by Steven Schultz)
+
+ORIGINAL README:
+----------------
+	The device drivers in this directory are here because they are
+untested, or have not been completely converted to use new ioctl or
+buffering protocols, or because they are of limited interest or use.  Some
+of them have comments at the beginning describing their state.  If you test
+and/or finish any of these drivers, please let the 2BSD project know about it.
+
+	The dc and dj drivers don't have the current ioctl mechanism.  They
+are untested.
+
+	The dmc and du drivers don't know how to handle system buffers,
+since there are no in-address-space buffers any longer.  They could
+probably be made to work with dedicated buffers or mapped-in buffers.  The
+bk driver (berknet line discipline) also has this problem, but will
+probably be converted and tested soon.  It has never worked on PDP11's to
+my knowledge.
+
+	The rx2, rx3 and ml drivers have been modified only slightly from
+working versions received from the authors.  They will probably work
+without modification.
+
+	The multiplexor driver has not been made to work with anything like
+the current system.  It is unmodified (as far as I know); if you try it,
+check the order and types of arguments to the external entry points.
+
+	The cr (card reader) driver is probably flaky, at least with this
+system.

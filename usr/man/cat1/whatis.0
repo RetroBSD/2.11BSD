@@ -1,0 +1,66 @@
+
+
+
+WHATIS(1)	    UNIX Programmer's Manual		WHATIS(1)
+
+
+
+NAME
+     whatis - describe what a command is
+
+SYNOPSIS
+     whatis command ...
+
+DESCRIPTION
+     _W_h_a_t_i_s looks up a given command and gives the header line
+     from the manual section.  You can then run the _m_a_n(1) com-
+     mand to get more information.  If the line starts
+     `name(section) ...' you can do `man section name' to get the
+     documentation for it.  Try `whatis ed' and then you should
+     do `man 1 ed' to get the manual.
+
+     _W_h_a_t_i_s is actually just the -f option to the _m_a_n(1) command.
+
+FILES
+     /usr/man/whatis	 Data base
+
+SEE ALSO
+     man(1), catman(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 7, 1986				1
+
+
+

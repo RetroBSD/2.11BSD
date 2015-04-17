@@ -1,0 +1,61 @@
+README:
+
+This directory contains the files for 'cxref', a C language cross
+referencing program.
+
+The makefile will build the program. Use 'make install' to put a copy in
+the right places.  Cxref is a driver, and goes in DESTDIR, which will be your
+local bin of choice.  LIB is where the programs go that do the work. The
+makefile makes the directory /usr/local/lib/cxref (i.e. LIB) to hold the
+programs.  The cxref driver is dependant on where LIB is.  I have them set to
+use my BIN.  BIN is taken from the environment, since I use the UNIX 4.0 make.
+SORT is the full pathname for the Unix sort program, sometimes /bin/sort,
+other times /usr/bin/sort.  Edit the makefile to set everything up properly.
+
+System III and V users should edit the file 'basename.c' to change the
+call to 'rindex' to 'strrchr'.
+
+The flow of information between programs is shown below.
+I suggest that you run the programs separately, successively adding the next
+program in a particular pipeline, to see how the information is transformed.
+The outline below of the flow of control does not necessarily show all
+the arguments that each program requires; see the source code to
+be sure, when you run the programs by hand.
+
+With some work in the cscan.l and cxref.c files, this program could be
+easily made to cross reference other languages.
+
+Here is a list of the files, and what they contain:
+
+README		--- this file.
+cxref.1		--- man page.
+makefile	--- the makefile.
+
+cxref.c		--- driver, calls all the other programs, does arg handling.
+old.cxref.c	--- old version, used the shell to do the dirty work.
+		    (this file can probably be deleted.)
+
+constdefs.h	--- header file, used by cscan.l and cxrfilt.c.
+
+cscan.l		--- does the work of finding indentifiers and contsants.
+docxref.c	--- main program and some other stuff to drive lex.
+
+cxrfilt.c	--- filters int and floats to their own files.
+		    also puts ints and floats back together after sorting.
+
+fmtxref.c	--- formats output for printing.
+
+SORT[1-3]	--- shell files to save typing during testing and development.
+
+
+For development, the flow of programs is:
+
+	docxref files | SORT1 | cxrfilt | fmtxref
+	SORT2 < tempfile1 | cxrfilt -i | fmtxref
+	SORT3 < tempfile2 | cxrfilt -f | fmtxref
+
+Arnold Robbins, Information and Computer Science, Georgia Tech
+	gatech!arnold
+January 1985.
+Copyright (c) 1985 by Arnold Robbins.
+All rights reserved.

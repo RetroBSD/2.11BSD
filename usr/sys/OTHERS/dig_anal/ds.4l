@@ -1,0 +1,277 @@
+.TH DS 4
+.LOCAL 4
+.SH NAME
+ds \- digital to analog and analog to digital converters
+.SH SYNOPSIS
+device ds0 at uba? csr 0165400 vector dsintr
+.SH DESCRIPTION
+.I ds
+provides the interface to the Digital Systems Corporation
+DSC 200 converters.
+.PP
+The DSC converters are usually used with the programs
+.I play
+or
+.IR record ,
+this description is for those that wish to control the
+converters directly.
+.PP
+The node
+.B /dev/ds?
+is the entry to the device for both the analog to digital
+converters and the digital to analog converters and is
+closely coupled with the disk where the samples are
+stored.
+The ds driver interacts directly with the disk; if the
+node is opened for reading then analog to digital conversion
+is assumed and samples are written on the disk,
+if opened for writing then digital to analog conversion
+is assumed and samples are read from the disk.
+(Disk I/O can be completely disabled; see below.)
+.PP
+After opening the file for the appropriate conversion one
+must do several
+.I ioctl
+calls to set up the converters.
+Some are mandatory, the rest are optional and give
+further control over the converters.
+(Note that some of these may not be implemented yet or
+are no longer implemented.)
+Because some of the
+.IR ioctl
+commands require a
+.I long
+instead of a
+.I short
+there are several structures
+used for the
+.IR ioctl s.
+The first structure is used for setting up various
+parameters; sequence rams, sample rate, etc.,
+the second for file information.
+The appropriate declaration for these structures is in
+the include file
+.IR <sys/ds.h> :
+.PP
+.ta .5i 1i
+.nf
+.ft 3
+struct ds_seq {
+	short conv;
+	short dirt;
+	short reg;
+};
+.sp
+struct ds_fs {
+	daddr_t bnosiz;
+	short fs_unused;
+};
+.ft R
+.fi
+.PP
+First we cover the mandatory
+.IR ioctl s.
+.PP
+For setting up the sequence rams several
+.B DSSEQ
+.I ioctl
+calls must be made, this uses the
+.I ds_seq
+structure where
+.I conv
+specifies a particular converter,
+.I dirt
+specifies the direction (either
+.B AD
+or
+.BR DA ),
+and
+.I reg
+selects one of the sequence ram registers.
+One should consult a local ds oracle to divine
+what are appropriate values for
+.I conv
+as this will vary at each installation,
+in the current incarnation of the DSC 200
+.I reg
+is restricted to be between 0 and 15 inclusive.
+After the sequence ram registers are set a
+.B DSLAST
+.I ioctl
+call must be made, this also uses the
+.I ds_seq
+structure, the
+.I reg
+element contains the number of the last register
+of a sample frame.
+.PP
+To set the sample rate one loads
+.I dirt
+of the
+.I ds_seq
+structure with the appropriate sample rate and uses the
+.B DSRATE
+.I ioctl
+call.
+The other fields are ignored.
+.PP
+To specify which mass storage device to use the
+.B DSDEV
+.I ioctl
+is used with the
+.I ds_seq
+structure with
+.I dirt
+containing the number of the mass storage device.
+Numbers for valid mass storage devices should be
+obtained from the system guru.
+.PP
+Because the
+.I ds
+driver interacts directly with the sound storage disk
+several
+.IR ioctl s
+must be made which set up parameters for both converter
+and disk I/O.
+These specify the size of the file, the starting block
+number of the file and the amount of the file to be
+converted.
+These
+.IR ioctl s
+use the
+.I ds_fs
+structure and in all cases the field
+.I fs_unused
+is ignored.
+To set the amount of the file to be converted one loads
+.I bnosiz
+with the appropriate value and uses the
+.B DSCOUNT
+.IR ioctl .
+To set the starting block number
+one loads
+.I bnosiz
+and uses the
+.BR DSBNO
+.IR ioctl .
+For
+.B DSCOUNT
+the amount
+specified should be in bytes even though the
+converters only deal with short integers.
+.PP
+Once the conversion parameters are set one merely
+issues a single
+.I read
+(for analog to digital conversion)
+or
+.I write
+(for digital to analog conversion)
+and the second argument is a buffer that is used by the
+converters, this buffer is split in half by
+.I ds
+since the converters are double buffered, the third
+argument specifies the total size of the buffer.
+This buffer must be no smaller than
+.B DnMINDSB
+*
+.B NDSB
+where
+.I n
+selects a mass storage device (see DSDEV).
+.PP
+Next we discuss several
+.I ioctl
+calls that give one further control over the converters.
+These
+.I ioctl
+calls change with the weather and can vary at each installation,
+so the include file should be consulted for the
+most up-to-date information.
+.PP
+There are several
+.I ioctl
+calls that control the converters' filters.
+In each of these the pointed-to structure is ignored and can be
+.BR NULL .
+.B DS20KHZ
+specifies that the 20 kHz filters be used,
+.B DS10KHZ
+specifies that the 10 kHz filters be used,
+.B DS5KHZ
+specifies that the 5 kHz filters be used,
+and
+.B DSBYPASS
+specifies that no filters be used.
+.PP
+The
+.B DSNODSK
+.I ioctl
+specifies that no disk I/O be performed.
+.PP
+The
+.B DSBOFF
+.I ioctl
+specifies a byte offset within the first buffer,
+normally the converters take samples from the
+first location within the buffer, this forces them
+to start at some point further in the buffer.
+This only affects the first I/O,
+after the first buffer all I/O is done at
+the beginning of the buffer.
+In an analogous manner one may stop the conversion
+prematurely in the last buffer by specifying a
+short count with the
+.B DSCOUNT
+.BR ioctl .
+.PP
+Finally there is an
+.I ioctl
+that gives one a limited ability to determine
+what went wrong when a conversion is bolixed.
+This uses the structure
+.IR ds_errs :
+.PP
+.ta .5i 1i
+.nf
+.ft 3
+struct ds_err {
+	short dma_csr;
+	short asc_csr;
+	short errors;
+};
+.ft R
+.fi
+.PP
+and the
+.I ioctl
+call is
+.BR DSERRS .
+The
+.I errors
+field has bits set according to particular
+errors, the encoding of these bits is
+in the include file.
+.SH FILES
+/dev/ds?
+.SH "SEE ALSO"
+ioctl(2), play(c), record(c)
+.SH BUGS
+The
+.I ds_fs
+structure is 8 bytes on the VAX because
+of longword alignment, but since the
+.I fs_unused
+field is not used this doesn't
+seem to be a problem.
+.PP
+There is currently no way to have both analog
+to digital and digital to analog conversion at
+the same time.
+.PP
+No check is made for running off the end of the
+file.
+.PP
+On the VAX the buffer must be page aligned or
+you'll get clicking when doing d/a conversions.
+Use valloc(3) to get the buffer.

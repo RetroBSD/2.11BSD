@@ -1,0 +1,77 @@
+	.title	often
+
+	;
+	; these are routines which get called periodically:
+	;
+	;	xctlin		once per line
+	;	xctpas		once per pass
+	;	xctprg		once per program
+	;
+
+	.ident	/sept81/
+
+	.mcall	(at)always,st.flg
+	always
+	st.flg
+	.globl	xctpas, xctlin, xctprg
+	.globl	objsec
+	.globl	macdfn
+
+	.globl	lst.kb,ioftbl,lstchn, lst.lp 
+	.globl	lstflg, u.flag
+	.globl	io.tty
+	.globl	lstdev
+	.globl	cradix,pcrcnt
+	
+	.globl	defttl,chrpnt, setchr,title,endvec
+
+.text
+xctprg:
+	mov	#^pl impure,r0
+1$:	clr	(r0)+
+	cmp	r0,#^ph implin
+	blo	1$
+	call	fixtit
+	inc	endvec+6	;default to no end vector
+
+	;	fall through to
+
+xctpas:
+	mov	#^pl imppas,r0
+1$:	clr	(r0)+
+	cmp	r0,#^ph implin
+	blo	1$
+
+	comb	objsec		;force sequence break
+
+	mov	#lst.kb*400,r0	;set error slot
+	tstb	ioftbl+lstchn	;listing device?
+	beq	2$		;  no
+	bis	#lst.kb!100200,r0	;yes, assume teletype
+	bit	#io.tty,ioftbl+lstchn	;true?
+	bne	2$		;  yes
+	add	#<lst.lp-lst.kb>*401,r0	;no, upgrade to lp
+2$:	mov	r0,lstdev	;set flags
+
+3$:
+	mov	#8.,cradix	;init to octal radix
+	
+	clr	macdfn
+	;	fall through to
+
+xctlin:
+	mov	#^pl implin,r0
+1$:	clr	(r0)+
+	cmp	r0,#^ph implin
+	blo	1$
+
+	dec	pcrcnt
+	return
+
+.globl	fixtit
+fixtit:
+	mov	#defttl,chrpnt
+	call	setchr
+	call	title
+	return
+	.end

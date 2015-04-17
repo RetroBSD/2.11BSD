@@ -1,0 +1,132 @@
+
+
+
+DR(4)		    UNIX Programmer's Manual		    DR(4)
+
+
+
+NAME
+     dr - DR11-W general purpose interface driver
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NDR  _d_r_1_1-_w__u_n_i_t_s   # DR11-W
+
+     /etc/dtab:
+	  #Name Unit# Addr   Vector Br Handler(s)      # Comments
+	  dr	?     172410 124    5  drintr	       # dr11-w (b-bus emulator)
+	  dr	?     172430 130    5  drintr	       # dr11-w (gc-bus emulator)
+	  dr	?     172450 134    5  drintr	       # dr11-w (em-2 interface)
+
+     major device number(s):
+	  raw: 12
+     minor device encoding:
+	  bits 0007 specify DR unit
+
+DESCRIPTION
+     The _D_i_g_i_t_a_l _E_q_u_i_p_m_e_n_t _1_9_8_1-_8_2 _P_e_r_i_p_h_e_r_a_l_s _H_a_n_d_b_o_o_k states
+     the following about the DR11-W:
+
+	  The The DR11-W is a general purpose, direct memory
+	  access (DMA) interface to the PDP-11 UNIBUS or VAX
+	  UNIBUS.  The DR11-W moves data directly between memory
+	  and the UNIBUS to and from the user's peripheral.
+
+	  It features:
+
+	  o+    Word or byte transfers.
+
+	  o+    Programmed or direct memory access (DMA) block
+	       transfers.
+
+	  o+    Burst data transfers.
+
+	  o+    User-controlled transfer rates up to memory speed.
+
+	  The DR11-W is a 53-line direct memory access (DMA)
+	  interface to the PDP-11 UNIBUS or VAX UBA, which allows
+	  the user to control data transfers between the host
+	  processor and a peripheral.  The DR11-W has 32 data
+	  lines (for transferring 16-bit parallel data) and 21
+	  control lines (for transferring control and status
+	  information.
+
+	  When used as an interprocessor buffer (IPB), the DR11-W
+	  allows data transfers between two processors.  Inter-
+	  processor communication is accomplished by attaching
+	  one DR11-W to each processor UNIBUS or UBA and then
+	  cabling the two DR11-Ws together.
+
+
+
+
+Printed 11/26/99	January 27, 1996			1
+
+
+
+
+
+
+DR(4)		    UNIX Programmer's Manual		    DR(4)
+
+
+
+     There.  Now you know as much about it as I do.
+
+     A number of _i_o_c_t_l(2) calls apply to the dr devices, and have
+     the form
+	  #include <pdpuba/drreg.h>
+	  ioctl(fildes, code, arg)
+	  int *arg;
+     The applicable codes are:
+
+     DRGTTY	       Get DR11-W status.
+
+     DRSTTY	       Set flags and function.
+
+     DRSFUN	       Set function.
+
+     DRSFLAG	       Set flags.
+
+     DRGCSR	       Get CSR and WCR.
+
+     DRSSIG	       Set signal for ATTN interrupt.
+
+     DRESET	       Reset DR11-W interface.
+
+     DRSTIME	       Set timeout.
+
+     DRCTIME	       Set timeout inactive.
+
+     DROUTPUT	       Put word in output data register.
+
+     DRINPUT	       Get word from input data register.
+
+     DRITIME	       Don't ignore errors on timeout.
+
+FILES
+     /dev/dr[0-7]	 device special files
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+SEE ALSO
+     dtab(5), autoconfig(8)
+
+DIAGNOSTICS
+     dr%d: error csr=%b, eir=%b
+
+     dr%d: timeout error
+
+BUGS
+     This interface is only available under 2.9BSD and 2.11BSD.
+     No documentation exists on how to use it.
+
+
+
+
+
+
+Printed 11/26/99	January 27, 1996			2
+
+
+

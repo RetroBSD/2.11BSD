@@ -1,0 +1,62 @@
+COPYRIGHT ISSUES:
+
+	This version of 'libident' is hereby released into the
+	Public Domain. It may be distributed for a fee or without
+	a fee. We only ask you not to pretend you wrote it.
+
+If you make any changes, please send sources or a diff of it to
+us (pen@lysator.liu.se or pell@lysator.liu.se), so we can keep
+_one_ unified version of libident available...
+
+COMMENTS:
+
+This is the second stab at a small library to interface to the Ident
+protocol server. Maybe this will work correctly on some machines.. :-)
+ 
+The ident-tester.c file is a small daemon (to be started from Inetd)
+that does an ident lookup on you if you telnet into it. Can be used
+to verify that your Ident server is working correctly.
+ 
+I'm currently running this "ident-tester" on port 114 at lysator.liu.se
+(130.236.254.1) if you wish to test your server.
+ 
+/Peter Eriksson <pen@lysator.liu.se>, 1 Aug 1992
+
+
+This library now contains some higher-level routines, as well as a
+similar test program to test these (lookup-tester).
+
+/Pär Emanuelsson <pell@lysator.liu.se>, 4 April 1993
+
+
+Support for NextStep 3.1 added.
+
+/Michael Kuch <kuch@mailserv.zdv.uni-tuebingen.de>, 13 Aug 1993
+
+
+Updated the ident.h header file to work with Linux, and reorganized the
+Makefile for easier compilation...
+
+/Peter Eriksson, 18 Oct 1994
+
+
+Added the copyright notice at the top.
+
+/Peter Eriksson, 29 Nov 1994
+
+
+For release 0.18:
+
+Added some bug fixes and improvements from Jean-Philippe Martin-Flatin
+(syj@ecmwf.int).
+
+/Peter Eriksson, 5 Oct 1995
+
+
+For release 0.20:
+
+Some cleanup of the distribution, and some bug fixes in the
+ident-tester.c source. Perhaps it should be called 1.0? (Perhaps
+it should use GNU Autoconf...)
+
+/Peter Eriksson, 13 Nov 1996

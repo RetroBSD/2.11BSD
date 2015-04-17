@@ -1,0 +1,66 @@
+
+
+
+PROFIL(2)	    UNIX Programmer's Manual		PROFIL(2)
+
+
+
+NAME
+     profil - execution time profile
+
+SYNOPSIS
+     profil(buff, bufsiz, offset, scale)
+     char *buff;
+     int bufsiz, offset, scale;
+
+DESCRIPTION
+     _B_u_f_f points to an area of core whose length (in bytes) is
+     given by _b_u_f_s_i_z.  After this call, the user's program
+     counter (pc) is examined each clock tick (VAX and TAHOE: 100
+     ticks/second = 10 milliseconds per tick; 60 ticks/second ~=
+     16 milliseconds per tick); _o_f_f_s_e_t is subtracted from it, and
+     the result multiplied by _s_c_a_l_e.  If the resulting number
+     corresponds to a word inside _b_u_f_f, that word is incremented.
+
+     The scale is interpreted as an unsigned, fixed-point frac-
+     tion with 16 bits of fraction: 0xffff gives a 1-1 mapping of
+     pc's to words in _b_u_f_f; 0x7fff maps each pair of instruction
+     words together.
+
+     Profiling is turned off by giving a _s_c_a_l_e of 0 or 1.  It is
+     rendered ineffective by giving a _b_u_f_s_i_z of 0.  Profiling is
+     turned off when an _e_x_e_c_v_e is executed, but remains on in
+     child and parent both after a _f_o_r_k.  Profiling is turned off
+     if an update in _b_u_f_f would cause a memory fault.
+
+RETURN VALUE
+     A 0, indicating success, is always returned.
+
+SEE ALSO
+     gprof(1), prof(1), setitimer(2), monitor(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 6, 1987				1
+
+
+

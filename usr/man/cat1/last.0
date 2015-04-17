@@ -1,0 +1,66 @@
+
+
+
+LAST(1)             UNIX Programmer's Manual		  LAST(1)
+
+
+
+NAME
+     last - indicate last logins of users and teletypes
+
+SYNOPSIS
+     last [ -f filename ] [ -N ] [ name ...  ] [ tty ...  ]
+
+DESCRIPTION
+     _L_a_s_t will look back in the _w_t_m_p file which records all
+     logins and logouts for information about a user, a teletype
+     or any group of users and teletypes.  Arguments specify
+     names of users or teletypes of interest.  Names of teletypes
+     may be given fully or abbreviated.  For example `last 0' is
+     the same as `last tty0'.  If multiple arguments are given,
+     the information which applies to any of the arguments is
+     printed.  For example `last root console' would list all of
+     "root's" sessions as well as all sessions on the console
+     terminal.	_L_a_s_t will print the sessions of the specified
+     users and teletypes, most recent first, indicating the times
+     at which the session began, the duration of the session, and
+     the teletype which the session took place on.  If the ses-
+     sion is still continuing or was cut short by a reboot, _l_a_s_t
+     so indicates.
+
+     The pseudo-user reboot logs in at reboots of the system,
+     thus
+
+	  last reboot
+
+     will give an indication of mean time between reboot.
+
+     _L_a_s_t with no arguments prints a record of all logins and
+     logouts, in reverse order.  The -f filename option allows
+     the user to examine an alternate _w_t_m_p file.  The -N option
+     limits the report to N lines.
+
+     If _l_a_s_t is interrupted, it indicates how far the search has
+     progressed in _w_t_m_p. If interrupted with a quit signal (gen-
+     erated by a control-\) _l_a_s_t indicates how far the search has
+     progressed so far, and the search continues.
+
+FILES
+     /usr/adm/wtmp	 login data base
+     /usr/adm/shutdownlog     which records shutdowns and reasons
+     for same
+
+SEE ALSO
+     wtmp(5), ac(8), lastcomm(1)
+
+AUTHOR
+     Howard Katseff
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+HEAD(1)             UNIX Programmer's Manual		  HEAD(1)
+
+
+
+NAME
+     head - give first few lines
+
+SYNOPSIS
+     head [ -count ] [ file ...  ]
+
+DESCRIPTION
+     This filter gives the first _c_o_u_n_t lines of each of the
+     specified files, or of the standard input.  If _c_o_u_n_t is
+     omitted it defaults to 10.
+
+SEE ALSO
+     tail(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

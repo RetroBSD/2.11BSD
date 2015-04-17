@@ -1,0 +1,800 @@
+From dual!amd!megatest!cadvax.roman Sat Oct 12 18:33:10 1985
+Date: Thu, 10 Oct 85 10:45:25 pdt
+From: dual!amd!megatest!cadvax.roman (Roman Rycerz)
+To: lll-crg!seismo!keith
+Subject: bk driver
+
+here is the bk driver that handles mapped buffers..
+it works and we run berknet here to connect small test stations
+to a central host...
+
+-roman
+
+{lbl-csam,decvax!decwrl![sun|amd|fortune]}!megatest!roman
+
+----------------------- CUT HERE --------------------------------------
+: This is a shar archive.  Extract with sh, not csh.
+: This archive ends with exit, so do not worry about trailing junk.
+echo 'Extracting bk.h'
+sed 's/^X//' > bk.h << '+ END-OF-FILE bk.h'
+X#define	NBK	1
+X/* BK_DEBUG			/* turn on debugging */
++ END-OF-FILE bk.h
+chmod 'u=rw,g=r,o=r' 'bk.h'
+echo '	-rw-r--r-- 1 root       52 Oct  9 22:27 bk.h        (as sent)'
+echo -n '	'
+/bin/ls -l bk.h
+echo 'Extracting dev/bk.c'
+sed 's/^X//' > dev/bk.c << '+ END-OF-FILE dev/bk.c'
+X#include "param.h"
+X#include "bk.h"
+X#if NBK > 0
+X#include <sys/systm.h>
+X#include <sys/seg.h>
+X#include <sys/dir.h>
+X#include <sys/user.h>
+X#include <sys/tty.h>
+X#include <sys/proc.h>
+X#ifdef	MPX_FILS
+X#include <sys/mx.h>
+X#endif
+X#include <sys/inode.h>
+X#include <sys/file.h>
+X#include <sys/conf.h>
+X#include <sys/buf.h>
+X
+X/*
+X *	SCCS id	@(#)bk.c	2.1 (Berkeley)	8/5/83
+X */
+X
+X#ifdef UCB_NTTY
+X#ifdef BK_DEBUG
+Xint bkdbg = 1;
+X#define	DBG_printf	if(bkdbg) printf	/* debugging printf */
+X#else
+X#define	DBG_printf	bknull			/* null routine */
+Xbknull(s,a,b,c,d) char *s;{};
+X#endif
+X
+X/*
+X * When running dz's using only SAE (silo alarm) on input
+X * it is necessary to call dzrint() at clock interrupt time.
+X * This is unsafe unless spl5()s in tty code are changed to
+X * spl6()s to block clock interrupts.  Note that the dh driver
+X * currently in use works the same way as the dz, even though
+X * we could try to more intelligently manage its silo.
+X * Thus don't take this out if you have no dz's unless you
+X * change clock.c and dhtimer().
+X */
+X#define	spl5	spl6
+X
+X/*
+X * Line discipline for Berkeley network.
+X *
+X * This supplies single lines to a user level program
+X * with a minimum of fuss.  Lines are newline terminated.
+X * A later version will implement full 8-bit paths by providing
+X * an escape sequence to include a newline in a record.
+X *
+X * This discipline requires that tty device drivers call
+X * the line specific l_ioctl routine from their ioctl routines,
+X * assigning the result to cmd so that we can refuse most tty specific
+X * ioctls which are unsafe because we have ambushed the
+X * teletype input queues, overlaying them with other information.
+X */
+X
+X/*
+X * Open as networked discipline.  Called when discipline changed
+X * with ioctl, this assigns a buffer to the line for input, and
+X * changing the interpretation of the information in the tty structure.
+X */
+Xbkopen(tp)
+Xregister struct tty *tp;
+X{
+X	register struct buf *bp;
+X
+X	if (u.u_error)
+X		return;		/* paranoia */
+X	/*
+X	 * The suser check was added since once it gets set you can't turn
+X	 * it off, even as root.  Theoretically a setuid root program could
+X	 * be run over the net which opened /dev/tty but this seems farfetched.
+X	 */
+X	if (tp->t_line == NETLDISC && !suser()) {
+X		u.u_error = EBUSY;		/* sometimes the network */
+X		return;				/* ... opens /dev/tty */
+X	}
+X	bp = geteblk();
+X	flushtty(tp,FREAD|FWRITE);
+X	tp->t_bufp = bp;
+X#ifndef NOKA5
+X	tp->t_cp = (char *)mapin(bp);
+X	mapout(bp);
+X#else
+X	tp->t_cp = (char *)tp->t_bufp->b_un.b_addr;
+X#endif
+X	tp->t_inbuf = 0;
+X	tp->t_rec = 0;
+X	DBG_printf("bkop: bp %o cp %o\n",tp->t_bufp,tp->t_cp);
+X}
+X
+X/*
+X * Break down... called when discipline changed or from device
+X * close routine.
+X */
+Xbkclose(tp)
+Xregister struct tty *tp;
+X{
+X	register s;
+X	register struct buf *bp;
+X
+X	DBG_printf("bkcl: bp %o cp %o\n",tp->t_bufp,tp->t_cp);
+X	s = spl5();
+X	wakeup((caddr_t)&tp->t_bufp);
+X	if (tp->t_bufp) {
+X		brelse(tp->t_bufp);
+X		tp->t_bufp = 0;
+X	}
+X	tp->t_cp = 0;
+X	tp->t_inbuf = 0;
+X	tp->t_rec = 0;
+X	tp->t_line = DFLT_LDISC;		/* paranoid: avoid races */
+X	splx(s);
+X}
+X
+X/*
+X * Read from a network line.
+X * Characters have been buffered in a system buffer and are
+X * now dumped back to the user in one fell swoop, and with a
+X * minimum of fuss.  Note that no input is accepted when a record
+X * is waiting.  Our clearing tp->t_rec here allows further input
+X * to accumulate.
+X */
+Xbkread(tp)
+Xregister struct tty *tp;
+X{
+X	register int i;
+X	register s;
+X
+X	if ((tp->t_state&CARR_ON)==0)
+X		return (-1);
+X	DBG_printf("bkrd: bp %o cp %o\n",tp->t_bufp,tp->t_cp);
+X	s = spl5();
+X	while (tp->t_rec == 0 && tp->t_line == NETLDISC)
+X		sleep((caddr_t)&tp->t_bufp, TTIPRI);
+X	splx(s);
+X	if (tp->t_line != NETLDISC)
+X		return (-1);
+X	i = MIN(tp->t_inbuf, (int)u.u_count);
+X#ifndef NOKA5
+X	if (copyout(mapin(tp->t_bufp), u.u_base, (unsigned)i)) {
+X		mapout(tp->t_bufp);
+X		u.u_error = EFAULT;
+X		return (-1);
+X	};
+X		mapout(tp->t_bufp);
+X#else
+X	if (copyout(tp->t_bufp->b_un.b_addr, u.u_base, (unsigned)i)) {
+X		u.u_error = EFAULT;
+X		return (-1);
+X	};
+X#endif
+X	u.u_count -= i;
+X	u.u_base += i;
+X	u.u_offset += i;
+X#ifndef NOKA5
+X	tp->t_cp = (char *)mapin(tp->t_bufp);
+X	mapout(tp->t_bufp);
+X#else
+X	tp->t_cp = (char *)tp->t_bufp->b_un.b_addr;
+X#endif
+X	tp->t_inbuf = 0;
+X	tp->t_rec = 0;
+X	DBG_printf("bkrd: bp %o cp %o\n",tp->t_bufp,tp->t_cp);
+X	return (0);
+X}
+X
+X/*
+X * Low level character input routine.
+X * Stuff the character in the buffer, and wake up the top
+X * half after setting t_rec if this completes the record
+X * or if the buffer is (ick!) full.
+X *
+X * This is where the formatting should get done to allow
+X * 8 character data paths through escapes.
+X *
+X * This routine should be expanded in-line in the receiver
+X * interrupt routine of the dh-11 to make it run as fast as possible.
+X */
+X
+Xbkinput(c, tp)
+Xregister c;
+Xregister struct tty *tp;
+X{
+X#ifndef NOKA5
+X	segm save5;
+X	extern struct buf *hasmap;
+X	struct buf *oldmap;
+X
+X	if (tp->t_rec)
+X		return;
+X	saveseg5(save5);
+X	oldmap = hasmap;
+X	if( hasmap != (struct buf *)NULL)
+X		mapout(hasmap);
+X	mapin(tp->t_bufp);
+X	*tp->t_cp++ = c;
+X	mapout(tp->t_bufp);
+X	if(oldmap != (struct buf *)NULL)
+X		mapin(oldmap);
+X	restorseg5(save5);
+X#else
+X	if (tp->t_rec)
+X		return;
+X	*tp->t_cp++ = c;
+X#endif
+X	if (++tp->t_inbuf == BSIZE || c == '\n') {
+X		DBG_printf("bkip: bp %o cp %o\n",tp->t_bufp,tp->t_cp);
+X		tp->t_rec = 1;
+X		wakeup((caddr_t)&tp->t_bufp);
+X	}
+X}
+X
+X/*
+X * This routine is called whenever a ioctl is about to be performed
+X * and gets a chance to reject the ioctl.  We reject all teletype
+X * oriented ioctl's except those which set the discipline, and
+X * those which get parameters (gtty and get special characters).
+X */
+X/*ARGSUSED*/
+Xbkioctl(tp, cmd, addr)
+Xstruct tty *tp;
+Xcaddr_t addr;
+X{
+X
+X	if ((cmd>>8) != 't')
+X		return (cmd);
+X	switch (cmd) {
+X
+X	case TIOCSETD:
+X	case TIOCGETD:
+X	case TIOCGETP:
+X	case TIOCGETC:
+X	return (cmd);
+X	}
+X	u.u_error = ENOTTY;
+X	return (0);
+X}
+X#endif UCB_NTTY
+X#endif NBK
++ END-OF-FILE dev/bk.c
+chmod 'u=rw,g=r,o=r' 'dev/bk.c'
+echo '	-rw-r--r-- 1 root     5815 Oct  9 22:27 dev/bk.c        (as sent)'
+echo -n '	'
+/bin/ls -l dev/bk.c
+echo 'Extracting c.c'
+sed 's/^X//' > c.c << '+ END-OF-FILE c.c'
+X/*
+X *	SCCS id	%W% (Berkeley)	%G%
+X */
+X
+X#include	"param.h"
+X#include	<sys/systm.h>
+X#include	<sys/buf.h>
+X#include	<sys/tty.h>
+X#include	<sys/conf.h>
+X#include	<sys/proc.h>
+X#include	<sys/text.h>
+X#include	<sys/dir.h>
+X#include	<sys/user.h>
+X#include	<sys/file.h>
+X#include	<sys/inode.h>
+X#include	<sys/acct.h>
+X#include	<sys/map.h>
+X#include	<sys/filsys.h>
+X#include	<sys/mount.h>
+X
+X
+Xint	nulldev();
+Xint	nodev();
+Xint	nullioctl();
+X
+X
+X#include	"dh.h"
+X#if	NDH > 0
+Xint	dhopen(), dhclose(), dhread(), dhwrite(), dhioctl(), dhstop();
+Xextern	struct	tty	dh11[];
+X#else
+X#define	dhopen		nodev
+X#define	dhclose		nodev
+X#define	dhread		nodev
+X#define	dhwrite		nodev
+X#define	dhioctl		nodev
+X#define	dhstop		nodev
+X#define	dh11		((struct tty *) NULL)
+X#endif	NDH
+X
+X#include	"dn.h"
+X#if	NDN > 0
+Xint	dnopen(), dnclose(), dnwrite();
+X#else
+X#define	dnopen		nodev
+X#define	dnclose		nodev
+X#define	dnwrite		nodev
+X#endif	NDN
+X
+X#include	"dz.h"
+X#if	NDZ > 0
+Xint	dzopen(), dzclose(), dzread(), dzwrite(), dzioctl();
+X#ifdef	DZ_PDMA
+Xint	dzstop();
+X#else
+X#define	dzstop		nulldev
+X#endif
+Xextern	struct	tty	dz11[];
+X#else
+X#define	dzopen		nodev
+X#define	dzclose		nodev
+X#define	dzread		nodev
+X#define	dzwrite		nodev
+X#define	dzioctl		nodev
+X#define dzstop		nodev
+X#define	dz11		((struct tty *) NULL)
+X#endif	NDZ
+X
+X#include	"hk.h"
+X#if	NHK > 0
+Xint	hkstrategy(), hkread(), hkwrite(), hkroot();
+Xextern	struct	buf	hktab;
+X#define	hkopen		nulldev
+X#define	hkclose		nulldev
+X#define	_hktab		&hktab
+X#else
+X#define	hkopen		nodev
+X#define	hkclose		nodev
+X#define	hkstrategy	nodev
+X#define	hkread		nodev
+X#define	hkwrite		nodev
+X#define	hkroot		nulldev
+X#define	_hktab		((struct buf *) NULL)
+X#endif	NHK
+X
+X#include	"hp.h"
+X#if	NHP > 0
+Xint	hpstrategy(), hpread(), hpwrite(), hproot();
+Xextern	struct	buf	hptab;
+X#define	hpopen		nulldev
+X#define	hpclose		nulldev
+X#define	_hptab		&hptab
+X#else
+X#define	hpopen		nodev
+X#define	hpclose		nodev
+X#define	hproot		nulldev
+X#define	hpstrategy	nodev
+X#define	hpread		nodev
+X#define	hpwrite		nodev
+X#define	_hptab		((struct buf *) NULL)
+X#endif	NHP
+X
+X#include	"hs.h"
+X#if	NHS > 0
+Xint	hsstrategy(), hsread(), hswrite(), hsroot();
+Xextern	struct	buf	hstab;
+X#define	_hstab		&hstab
+X#define	hsopen		nulldev
+X#define	hsclose		nulldev
+X#else
+X#define	hsopen		nodev
+X#define	hsclose		nodev
+X#define	hsstrategy	nodev
+X#define	hsread		nodev
+X#define	hswrite		nodev
+X#define	hsroot		nulldev
+X#define	_hstab		((struct buf *) NULL)
+X#endif	NHS
+X
+X#include	"ht.h"
+X#if	NHT > 0
+Xint	htopen(), htclose(), htread(), htwrite(), htstrategy();
+X#ifdef	HT_IOCTL
+Xint	htioctl();
+X#else
+X#define	htioctl		nodev
+X#endif
+Xextern	struct	buf	httab;
+X#define	_httab		&httab
+X#else
+X#define	htopen		nodev
+X#define	htclose		nodev
+X#define	htread		nodev
+X#define	htwrite		nodev
+X#define	htioctl		nodev
+X#define	htstrategy	nodev
+X#define	_httab		((struct buf *) NULL)
+X#endif	NHT
+X
+X#include	"lp.h"
+X#if	NLP > 0
+Xint	lpopen(), lpclose(), lpwrite();
+X#else
+X#define	lpopen		nodev
+X#define	lpclose		nodev
+X#define	lpwrite		nodev
+X#endif	NLP
+X
+X#include	"rk.h"
+X#if	NRK > 0
+Xint	rkstrategy(), rkread(), rkwrite();
+Xextern	struct	buf	rktab;
+X#define	rkopen		nulldev
+X#define	rkclose		nulldev
+X#define	_rktab		&rktab
+X#else
+X#define	rkopen		nodev
+X#define	rkclose		nodev
+X#define	rkstrategy	nodev
+X#define	rkread		nodev
+X#define	rkwrite		nodev
+X#define	_rktab		((struct buf *) NULL)
+X#endif	NRK
+X
+X#include	"rl.h"
+X#if	NRL > 0
+Xint	rlstrategy(), rlread(), rlwrite();
+Xextern	struct	buf	rltab;
+X#define	rlopen		nulldev
+X#define	rlclose		nulldev
+X#define	_rltab		&rltab
+X#else
+X#define	rlopen		nodev
+X#define	rlclose		nodev
+X#define	rlstrategy	nodev
+X#define	rlread		nodev
+X#define	rlwrite		nodev
+X#define	_rltab		((struct buf *) NULL)
+X#endif	NRL
+X
+X#include	"rm.h"
+X#if	NRM > 0
+Xint	rmstrategy(), rmread(), rmwrite(), rmroot();
+Xextern	struct	buf	rmtab;
+X#define	rmopen		nulldev
+X#define	rmclose		nulldev
+X#define	_rmtab		&rmtab
+X#else
+X#define	rmopen		nodev
+X#define	rmclose		nodev
+X#define	rmroot		nulldev
+X#define	rmstrategy	nodev
+X#define	rmread		nodev
+X#define	rmwrite		nodev
+X#define	_rmtab		((struct buf *) NULL)
+X#endif	NRM
+X
+X#include	"rp.h"
+X#if	NRP > 0
+Xint	rpstrategy(), rpread(), rpwrite();
+Xextern	struct	buf	rptab;
+X#define	rpopen		nulldev
+X#define	rpclose		nulldev
+X#define	_rptab		&rptab
+X#else
+X#define	rpopen		nodev
+X#define	rpclose		nodev
+X#define	rpstrategy	nodev
+X#define	rpread		nodev
+X#define	rpwrite		nodev
+X#define	_rptab		((struct buf *) NULL)
+X#endif	NRP
+X
+X#include	"tm.h"
+X#if	NTM > 0
+Xint	tmopen(), tmclose(), tmread(), tmwrite(), tmstrategy();
+X#ifdef	TM_IOCTL
+Xint	tmioctl();
+X#else
+X#define	tmioctl		nodev
+X#endif
+Xextern	struct	buf	tmtab;
+X#define	_tmtab		&tmtab
+X#else
+X#define	tmopen		nodev
+X#define	tmclose		nodev
+X#define	tmread		nodev
+X#define	tmwrite		nodev
+X#define	tmioctl		nodev
+X#define	tmstrategy	nodev
+X#define	_tmtab		((struct buf *) NULL)
+X#endif	NTM
+X
+X#include	"ts.h"
+X#if	NTS > 0
+Xint	tsopen(), tsclose(), tsread(), tswrite(), tsstrategy();
+X#ifdef	TS_IOCTL
+Xint	tsioctl();
+X#else
+X#define	tsioctl		nodev
+X#endif
+Xextern	struct	buf	tstab;
+X#define	_tstab		&tstab
+X#else
+X#define	tsopen		nodev
+X#define	tsclose		nodev
+X#define	tsread		nodev
+X#define	tswrite		nodev
+X#define	tsioctl		nodev
+X#define	tsstrategy	nodev
+X#define	_tstab		((struct buf *) NULL)
+X#endif	NTS
+X
+X#include	"vp.h"
+X#if	NVP > 0
+Xint	vpopen(), vpclose(), vpwrite(), vpioctl();
+X#else
+X#define	vpopen		nodev
+X#define	vpclose		nodev
+X#define	vpwrite		nodev
+X#define vpioctl		nodev
+X#endif	NVP
+X
+X#include	"xp.h"
+X#if	NXP > 0
+Xint	xpstrategy(), xpread(), xpwrite(), xproot();
+Xextern	struct	buf	xptab;
+X#define	xpopen		nulldev
+X#define	xpclose		nulldev
+X#define	_xptab		&xptab
+X#else
+X#define	xpopen		nodev
+X#define	xpclose		nodev
+X#define	xproot		nulldev
+X#define	xpstrategy	nodev
+X#define	xpread		nodev
+X#define	xpwrite		nodev
+X#define	_xptab		((struct buf *) NULL)
+X#endif	NXP
+X
+Xstruct	bdevsw	bdevsw[] =
+X{
+X	rkopen,		rkclose,	rkstrategy,
+X	nulldev,	_rktab,		/* rk = 0 */
+X
+X	rpopen,		rpclose,	rpstrategy,
+X	nulldev,	_rptab,		/* rp = 1 */
+X
+X	nodev,		nodev,		nodev,
+X	nulldev,	0,		/* rf = 2 */
+X
+X	tmopen,		tmclose,	tmstrategy,
+X	nulldev,	_tmtab,		/* tm = 3 */
+X
+X	hkopen,		hkclose,	hkstrategy,
+X	hkroot,		_hktab,		/* hk = 4 */
+X
+X	hsopen,		hsclose,	hsstrategy,
+X	hsroot,		_hstab,		/* hs = 5 */
+X
+X#if	NXP > 0
+X	xpopen,		xpclose,	xpstrategy,
+X	xproot,		_xptab,		/* xp = 6 */
+X#else
+X
+X#if	NHP > 0
+X	hpopen,		hpclose,	hpstrategy,
+X	hproot,		_hptab,		/* hp = 6 */
+X#else
+X
+X	rmopen,		rmclose,	rmstrategy,
+X	rmroot,		_rmtab,		/* rm = 6 */
+X#endif
+X#endif
+X
+X	htopen,		htclose,	htstrategy,
+X	nulldev,	_httab,		/* ht = 7 */
+X
+X	rlopen,		rlclose,	rlstrategy,
+X	nulldev,	_rltab,		/* rl = 8 */
+X
+X	tsopen,		tsclose,	tsstrategy,
+X	nulldev,	_tstab,		/* ts = 9 */
+X};
+Xint	nblkdev = sizeof(bdevsw) / sizeof(bdevsw[0]);
+X
+Xint	klopen(), klclose(), klread(), klwrite(), klioctl();
+Xextern	struct	tty	kl11[];
+Xint	mmread(), mmwrite();
+Xint	syopen(), syread(), sywrite(), sysioctl();
+X
+X#include "ft.h"
+X#if NFT > 0
+Xint	ftopen(), ftclose(), ftioctl();
+X#else
+X#define ftopen	nodev
+X#define	ftclose	nodev
+X#define	ftioctl	nodev
+X#endif
+X
+X#include "ib.h"
+X#if NIB > 0
+Xint	ibopen(), ibclose(), ibread(), ibwrite(), ibioctl();
+X#else
+X#define ibopen	nodev
+X#define ibclose	nodev
+X#define ibread	nodev
+X#define ibwrite	nodev
+X#define ibioctl	nodev
+X#endif
+X
+X#include "mq.h"
+X#if NMQ > 0
+Xint	mqopen(), mqclose(), mqread(), mqwrite();
+X#else
+X#define mqopen	nodev
+X#define mqclose	nodev
+X#define mqread	nodev
+X#define mqwrite	nodev
+X#endif
+X
+Xstruct	cdevsw	cdevsw[] =
+X{
+X	klopen,		klclose,	klread,		klwrite,
+X	klioctl,	nulldev,	kl11,		/* kl = 0 */
+X
+X	nodev,		nodev,		nodev,		nodev,
+X	nodev,		nodev,		0,		/* pc = 1 */
+X
+X	vpopen,		vpclose,	nodev,		vpwrite,
+X	vpioctl,	nulldev,	0,		/* vp = 2 */
+X
+X	lpopen,		lpclose,	nodev,		lpwrite,
+X	nodev,		nulldev,	0,		/* lp = 3 */
+X
+X	dhopen,		dhclose,	dhread,		dhwrite,
+X	dhioctl,	dhstop,		dh11,		/* dh = 4 */
+X
+X	nodev,		nodev,		nodev,		nodev,
+X	nodev,		nodev,		0,		/* dp = 5 */
+X
+X	nodev,		nodev,		nodev,		nodev,
+X	nodev,		nodev,		0,		/* dj = 6 */
+X
+X	dnopen,		dnclose,	nodev,		dnwrite,
+X	nodev,		nulldev,	0,		/* dn = 7 */
+X
+X	nulldev,	nulldev,	mmread,		mmwrite,
+X	nodev,		nulldev,	0,		/* mem = 8 */
+X
+X	rkopen,		rkclose,	rkread,		rkwrite,
+X	nodev,		nulldev,	0,		/* rk = 9 */
+X
+X	nodev,		nodev,		nodev,		nodev,
+X	nodev,		nodev,		0,		/* rf = 10 */
+X
+X	rpopen,		rpclose,	rpread,		rpwrite,
+X	nodev,		nulldev,	0,		/* rp = 11 */
+X
+X	tmopen,		tmclose,	tmread,		tmwrite,
+X	tmioctl,	nulldev,	0,		/* tm = 12 */
+X
+X	hsopen,		hsclose,	hsread,		hswrite,
+X	nodev,		nulldev,	0,		/* hs = 13 */
+X
+X#if	NXP > 0
+X	xpopen,		xpclose,	xpread,		xpwrite,
+X	nodev,		nulldev,	0,		/* xp = 14 */
+X#else
+X#if	NHP > 0
+X
+X	hpopen,		hpclose,	hpread,		hpwrite,
+X	nodev,		nulldev,	0,		/* hp = 14 */
+X#else
+X
+X	rmopen,		rmclose,	rmread,		rmwrite,
+X	nodev,		nulldev,	0,		/* rm = 14 */
+X#endif
+X#endif
+X
+X	htopen,		htclose,	htread,		htwrite,
+X	htioctl,	nulldev,	0,		/* ht = 15 */
+X
+X	nodev,		nodev,		nodev,		nodev,
+X	nodev,		nodev,		0,		/* du = 16 */
+X
+X	syopen,		nulldev,	syread,		sywrite,
+X	sysioctl,	nulldev,	0,		/* tty = 17 */
+X
+X	rlopen,		rlclose,	rlread,		rlwrite,
+X	nodev,		nulldev,	0,		/* rl = 18 */
+X
+X	hkopen,		hkclose,	hkread,		hkwrite,
+X	nodev,		nulldev,	0,		/* hk = 19 */
+X
+X	tsopen,		tsclose,	tsread,		tswrite,
+X	tsioctl,	nulldev,	0,		/* ts = 20 */
+X
+X	dzopen,		dzclose,	dzread,		dzwrite,
+X	dzioctl,	dzstop,		dz11,		/* dz = 21 */
+X
+X	ibopen,		ibclose,	ibread,		ibwrite,
+X	ibioctl,	nulldev,	0,		/* ib = 22 */
+X
+X	ftopen,		ftclose,	nodev,		nodev,
+X	ftioctl,	nodev,		0,		/* ft = 23 */
+X
+X	mqopen,		mqclose,	mqread,		mqwrite,
+X	nodev,		nodev,		0		/* mq = 24 */
+X};
+X
+Xint	nchrdev = sizeof(cdevsw) / sizeof(cdevsw[0]);
+X
+X#ifdef	OLDTTY
+Xint	ttread(), ttyinput(), ttyoutput();
+Xcaddr_t	ttwrite();
+X#define	ttopen		nulldev
+X#define	ttclose		nulldev
+X#define	ttioctl		nullioctl
+X#define	ttmodem		nulldev
+X#else
+X#define	ttopen		nodev
+X#define	ttclose		nodev
+X#define	ttread		nodev
+X#define	ttwrite		nodev
+X#define	ttioctl		nodev
+X#define	ttyinput	nodev
+X#define	ttyoutput	nodev
+X#define	ttmodem		nodev
+X#endif
+X
+X
+X#ifdef	UCB_NTTY
+Xint	ntyopen(), ntyclose(), ntread(), ntyinput(), ntyoutput();
+Xcaddr_t	ntwrite();
+X#define	ntyioctl	nullioctl
+X#define	ntymodem	nulldev
+X#else
+X#define	ntyopen		nodev
+X#define	ntyclose	nodev
+X#define	ntread		nodev
+X#define	ntwrite		nodev
+X#define	ntyioctl	nodev
+X#define	ntyinput	nodev
+X#define	ntyoutput	nodev
+X#define	ntymodem	nodev
+X
+X#endif
+X#include	"bk.h"
+X#if	NBK > 0
+Xint	bkopen(), bkclose(), bkread(), bkioctl(), bkinput();
+X#else
+X#define	bkopen		nodev
+X#define	bkclose		nodev
+X#define	bkread		nodev
+X#define	bkioctl		nodev
+X#define	bkinput		nodev
+X#endif	
+X
+Xstruct	linesw linesw[] =
+X{
+X	ttopen,		ttclose,	ttread,		ttwrite,
+X	ttioctl,	ttyinput,	ttyoutput,	ttmodem,	/*0*/
+X
+X	ntyopen,	ntyclose,	ntread,		ntwrite,
+X	ntyioctl,	ntyinput,	ntyoutput,	ntymodem,	/*1*/
+X
+X	bkopen,		bkclose,	bkread,		ntwrite,
+X	bkioctl,	bkinput,	ntyoutput,	ntymodem	/*2*/
+X};
+X
+X#ifndef	MPX_FILS
+Xint	nldisp	= sizeof(linesw) / sizeof(linesw[0]);
+X#else
+Xint	nldisp	= sizeof(linesw) / sizeof(linesw[0]) - 1;
+Xint	mpxchan();
+Xint	(*ldmpx)()	= mpxchan;
+X#endif
++ END-OF-FILE c.c
+chmod 'u=rw,g=r,o=r' 'c.c'
+echo '	-rw-r--r-- 1 root    10672 Oct  9 22:27 c.c        (as sent)'
+echo -n '	'
+/bin/ls -l c.c
+exit 0

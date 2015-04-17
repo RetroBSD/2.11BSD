@@ -1,0 +1,1373 @@
+Please read through the notes in news.announce.newusers before posting
+articles to world-wide newsgroups.
+
+This file (~1400 lines) may be obtained in hardcopy by issuing one
+of following commands at the shell prompt.
+
+	print /usr/spool/notes/.utilities/avail.notes    or
+	print ~notes/avail.notes			 (csh only)
+
+DO NOT send this file to the LaserWriter or Imagen!!
+
+LOCAL ANNOUNCEMENT
+
+The notesfiles below constitute local additions to the comp.*, sci.*, etc,
+notesfiles on UXC.  In most cases they are either UIUC specific, or they
+are targets for ARPA mailing lists.  Notes submitted to the latter are
+automagically sent as mail messages to the list moderator or reflector.
+Most notesfiles are available for transmission to other UIUC sites.  Other
+digests can be obtained as well.  Send mail to "notes@uxc.cso.uiuc.edu"
+with your requests and comments.
+
+
+ai-ed		AI Education, submissions to ai-ed@sumex-aim
+aidigest	AI discussions, submissions to AIList@SRI-STRIPE
+amiga-archive	Wayne Hamilton maintained, amiga (PC clone) discussions
+announce	Seminar announcements, etc
+bind		Discussions related to the Berkeley BIND server.  Submissions
+		to bind@ucbarpa.berkeley.edu
+bookcoop	General discussion of books, bookstores, etc
+brl-cad		Discussions related to the Ballistics Research Lab Solid
+		Modeling CAD system.  Submissions to cad@brl.arpa
+cs-lex		Machine learning, submissions to cs-lex@red.rutgers.edu
+csnetforum	CSNet discussions, submissions to csnet-forum@csnet-sh
+decmgr		UXC-only; forum nf for DEC system managers, restricted
+emacs		Discussions about Emacs editor
+excel		Discussions about the EXCEL project
+firearms	Firearms discussion, submissions to firearms@seismo.css.gov
+gwmon		Gateway monitoring discussions, submissions to gwmon@sh.cs.net
+ibm-rt		UIUC notesfile for discussions of the IBM PC/RT computer.
+hyper-ip	IP nets on Hyperchannel, submissions to hy-people@ames-nasb
+ineng-tf	Internet Engineering Task Force, submissions to
+		ineng-tf@venera.isi.edu
+info-apple	Apple Computer discussions, submissions to info-apple@brl.arpa
+info-cpm	CP/M discussions (also net.micro.cpm), submissions to
+		info-cpm@amsaa
+info-gcc	Discussions relating to the Free Software Foundation (GNU
+		Project) C compiler.  Submissions to info-gcc@prep.ai.mit.edu
+info-ibmpc	Discussions about the IBM PC in digest format.  Don't submit
+		advertisements or anything related to copy protection.
+		Submissions to info-ibmpc@c.isi.edu
+info-isi	Integrated Solutions machines, submissions to info-isi@lownlab
+info-law	Legal discussions (also mod.legal), submissions to
+		info-law@brl.arpa
+info-postscript	PostScript language discussions.  Submissions to
+		info-postscript@sushi.stanford.edu
+info-proteon	Proteon hardware discussions, notesfile distribution within
+		UofI, mailing list distribution outside.  Submissions to
+		info-proteon@uxc.cso.uiuc.edu
+info-sequent	Sequent machine discussions (also comp.sys.sequent),
+		submissions to info-sequent@j.cc.purdue.edu
+internet	ARPA Internet Research Project; private to paul
+maint.mail	UXC-only notesfile of mail statistics and logging.
+maint.net	CSO-only notesfile of network statistics and monitoring info.
+maint.systems	CSO-only notesfile of machine related information.
+mh-users	MH mail discussions, submissions to mh-users@uci
+mhs		MHS & X.400 <--> 822 mail discussions, submissions to
+		arpa-mhs@nrtc.arpa
+nfgripes	Notesfile gripes 
+nfmaint		Notesfile maintenance (per-site)
+nfnotes		Notes about notes
+nfsnet		NSFnet implementation discussions, submissions to
+		nsfnet@SH.CS.NET
+nsfnet-routing	NSFnet routing issues and discussons, submissions to
+		nsfnet-routing@mcr.umich.edu
+parsym		Parallel symbolic computing discussions, submissions to
+		parsym@sumex-aim
+problem		Problem reporting -- UXC and Osiris only
+problems	Symbolic link to above
+prologdigest	Prolog language discussions, submissions to prolog@su-score
+pyr.uibugs	DCS/CSO/Pyramid info exchange
+pyramid		Pyramid machine discussions (also mod.computers.pyramid),
+		submissions to info-pyramid@maryland
+s		Discussion about 'S' software; UXE/UXC only
+sec-list	UNIX specific security discussions, access on "need to know"
+		basis.  Notesfile is UXC-only (archive), individual notes are
+		mailed off-machine.  Submissions to sec-request@isis.uucp
+security	Security discussions, submissions to security@rutgers
+serial-ip	IP over serial lines, submissions to ???
+supercomputer	Supercomputer discussion, submissions to supercomputer@nyu
+tcp-ip		General TCP-IP discussions, submissions to tcp-ip@sri-nic.arpa
+texhax		General TeX discussions, submissions to TeXhax@su-score
+text		General text processing discussions
+theory		Theoretical computer science, submissions to
+		theory@wisc.rsch.edu
+tools		Software tools; UIUC only
+tr-list		Technical report lists, submissions to trlist@smu.csnet
+uiuc.ai		UIUC general discussion about artifical intelligence
+uiuc.explorer	UIUC TI Explorer systems discussions
+uiuc.general	UIUC general discussions; dcs/cso/csl/..
+uiuc.learn	UIUC general machine learning discussions
+uiuc.lisp	UIUC general lisp disucssions
+uiuc.logic	UIUC general symbolic logic discussions
+uiuc.test	Testing local notesfile network
+unix-sw		UNIX software on SIMTEL20
+unix-tex	TeX on UNIX, submissions to unix-tex@washington
+utah-toolkit	Discussions relating to the Utah Raster Toolkit.  Submissions
+		to toolkit@cs.utah.edu
+uucp		UUCP mailbox, UXC only
+video-tech	Video technology, submissions to video-tech@simtel20
+
+
+Written  6:48 am  Jun  1, 1987 by usenet@gatech.edu in news.announce.newusers
+	Note title: List of Active Newsgroups 
+
+[Most recent change: 16 May 1987 by gnu@hoptoad.uucp (John Gilmore)]
+
+The following is a list of currently active USENET newsgroups as of
+1 June 1987.  The groups distributed worldwide are divided 
+into seven broad classifications:  "news", "soc", "talk", "misc",
+"sci", "comp" and "rec".  Each of these classifications is organized
+into groups and subgroups according to topic.
+
+"comp"  Topics of interest to both computer professionals and
+	hobbyists, including topics in computer science, software
+	source, and information on hardware and software systems.
+
+"sci"   Discussions intended as technical in nature and relating
+	to the established sciences.
+
+"misc"  Groups addressing themes not easily classified under any of the
+	other headings or which incorporate themes from multiple
+	categories.
+
+"soc"	Groups primarily addressing social issues and socializing.
+
+"talk"	Groups largely debate-oriented and tending to feature long
+	discussions without resolution and without appreciable amounts
+	of generally useful information.
+
+"news"	Groups concerned with the news network and software themselves.
+
+"rec"	Groups oriented towards hobbies and recreational activities.
+
+These "world" newsgroups are (usually) circulated around the entire
+USENET -- this implies world-wide distribution.  Not all groups
+actually enjoy such wide distribution, however.  The European Usenet
+sites (Eunet) take only a selected subset of the more "technical"
+groups, and controversial "noise" groups are often not carried by many
+sites in the US and Canada (these groups are primarily under the "talk"
+and "soc" classifications).
+
+There are groups in other subcategories, but they are local: to
+institutions, to geographic regions, etc. and they are not listed
+here.  Note that these distribution categories can be used to restrict
+the propagation of news articles.  Currently, distributions include:
+	world		worldwide distribution (default)
+	att		limited to AT&T
+	can		limited to Canada
+	eunet		limited to European sites
+	na		limited to North America
+	usa		limited to the United States
+There may be other regional and local distribution categories available
+at your site.  Most US states have distribution categories named after
+the two letter abbreviation for that state or category (e.g., "ga" for
+Georgia, "nj" for New Jersey). Please use an appropriate distribution
+category if your article is not likely to be of interest to USENET
+readers worldwide.
+
+Some groups are moderated or are monitored mailing lists.  They can
+only be posted to by mailing submissions to the coordinator (provided
+in a companion posting).  Some selected sites provide automatic
+remailing in support of 2.11 news -- posting to one of these groups
+automatically mails the article for the poster. Some of the moderated
+groups are gatewayed to USENET from the ARPA Internet and appear as
+newsgroups to facilitate distribution and posting from the Usenet.
+Other of the "world" groups are bidirectionally gatewayed with ARPA
+Internet mailing lists; items submitted from the ARPA side to the
+digest are split up and submitted to the USENET group, while articles
+submitted on the USENET side are bundled up and submitted to the
+mailing list.  A complete list of moderated newsgroups, submission
+addresses and moderators is given in a companion posting.
+
+The following "world" groups have been gatewayed with the listed
+Arpa Internet lists.  Some of them may not still be gatewayed due to
+broken software and/or gateways; such groups are marked with an
+asterisk ("*") in the list below.  Please contact me if you should know
+of their current status.  Also note that the group "comp.lang.forth" is
+gatewayed with the Bitnet discussion list "umforth@weizmann.bitnet".
+
+	Usenet Group		Arpa Internet list
+	------------		----------------
+	comp.emacs		unix-emacs@cc5.bbn.com
+	*comp.lang.ada		info-ada@ada20.isi.edu
+	comp.lang.c		info-c@brl.arpa
+	comp.lang.modula2	info-modula-2@cs.rochester.edu
+	*comp.lang.pascal	info-pascal@brl.arpa
+	*comp.lang.prolog	prolog@su-score.arpa
+	comp.os.cpm		info-cpm@amsaa.arpa
+	comp.os.minix		info-minix@udel.edu
+	*comp.sys.atari.8bit	info-atari8@su-score.arpa
+	*comp.sys.atari.st	info-atari16@su-score.arpa
+	*comp.sys.misc		info-micro@brl.arpa
+	*comp.terminals		info-terms@mit-mc.arpa
+	comp.unix.questions	info-unix@brl.arpa
+	comp.unix.wizards	unix-wizards@brl.arpa
+	comp.windows.x		xpert@athena.mit.edu
+	rec.music.gdead		dead-flames@ai.ai.mit.edu
+	*sci.astro		sky-fans@mit-xx.arpa
+	sci.physics		physics@sri-unix.arpa
+	*sci.space		space@angband.s1.gov
+	*talk.origins		evolution@kestrel.arpa
+	*rec.ham-radio		info-hams@simtel20.arpa
+	*rec.ham-radio.packet	packet-radio@eddie.mit.edu
+	rec.railroad		railroad@rochester.arpa
+	rec.arts.sf-lovers	sf-lovers@red.rutgers.edu
+	*rec.video		videotech@simtel20.arpa
+	comp.sources.misc	unix-sources@brl.arpa
+
+Please notify me of any errors or changes to this article.
+
+Gene Spafford
+spaf@gatech.EDU
+----------------------------------------------------------------------
+Newsgroup		Description
+----------------------------------------------------------------------
+comp.ai			Artificial intelligence discussions.
+comp.ai.digest		Artificial Intelligence discussions. (Moderated)
+comp.arch		Computer architecture.
+comp.binaries.amiga	Encoded public domain programs in binary. (Moderated)
+comp.binaries.atari.st	Binary-only postings for the Atari ST. (Moderated)
+comp.binaries.mac	Encoded Macintosh programs in binary. (Moderated)
+comp.bugs.2bsd		Reports of UNIX* version 2BSD related bugs.
+comp.bugs.4bsd		Reports of UNIX version 4BSD related bugs.
+comp.bugs.4bsd.ucb-fixes	Bug reports/fixes for BSD Unix. (Moderated)
+comp.bugs.misc		General UNIX bug reports and fixes (incl V7, uucp)
+comp.bugs.sys5		Reports of USG (System III, V, etc.) bugs.
+comp.cog-eng		Cognitive engineering.
+comp.compilers		Compiler construction, theory, etc. (Moderated)
+comp.databases		Database and data management issues and theory.
+comp.dcom.lans		Local area network hardware and software.
+comp.dcom.modems	Data communications hardware and software.
+comp.dcom.telecom	Telecommunications digest. (Moderated)
+comp.doc		Archived public-domain documentation. (Moderated)
+comp.doc.techreports	Lists of technical reports. (Moderated)
+comp.edu		Computer science education.
+comp.emacs		EMACS editors of different flavors.
+comp.graphics		Computer graphics, art, animation, image processing.
+comp.graphics.digest	Graphics software, hardware, theory, etc. (Moderated)
+comp.lang.ada		Discussion about Ada*.
+comp.lang.apl		Discussion about APL.
+comp.lang.c		Discussion about C.
+comp.lang.c++		The object-oriented C++ language.
+comp.lang.forth		Discussion about Forth.
+comp.lang.fortran	Discussion about FORTRAN.
+comp.lang.lisp		Discussion about LISP.
+comp.lang.misc		Different computer languages not specifically listed.
+comp.lang.modula2	Discussion about Modula-2.
+comp.lang.pascal	Discussion about Pascal.
+comp.lang.prolog	Discussion about PROLOG.
+comp.lang.smalltalk	Discussion about Smalltalk 80.
+comp.laser-printers	Laser printers, hardware & software. (Moderated)
+comp.lsi		Large scale integrated circuits.
+comp.mail.elm		Discussion and fixes for ELM mail system.  (Moderated)
+comp.mail.headers	Gatewayed from the ARPA header-people list.
+comp.mail.maps		Various maps, including UUCP maps. (Moderated)
+comp.mail.misc		General discussions about computer mail.
+comp.mail.uucp		Mail in the uucp network environment.
+comp.misc		General topics about computers not covered elsewhere.
+comp.newprod		Announcements of new products of interest. (Moderated)
+comp.org.decus		DEC* Users' Society newsgroup.
+comp.org.fidonet	FidoNews digest, official news of FidoNet Assoc. (Moderated)
+comp.org.usenix		USENIX Association events and announcements.
+comp.os.cpm		Discussion about the CP/M operating system.
+comp.os.eunice		The SRI Eunice system.
+comp.os.minix		Discussion of Tanenbaum's MINIX system.
+comp.os.misc		General OS-oriented discussion not carried elsewhere.
+comp.os.os9		Discussions about the os9 operating system. (Moderated)
+comp.os.research	Operating systems and related areas. (Moderated)
+comp.os.vms		DEC's VAX* line of computers & VMS.
+comp.periphs		Peripheral devices.
+comp.protocols.appletalk	Applebus hardware & software.
+comp.protocols.kermit	Info about the Kermit package. (Moderated)
+comp.protocols.misc	Various forms and types of FTP protocol.
+comp.protocols.tcp-ip	TCP and IP network protocols.
+comp.risks		Risks to the public from computers & users. (Moderated)
+comp.society		The impact of technology on society. (Moderated)
+comp.sources.amiga	Source code-only postings for the Amiga. (Moderated)
+comp.sources.atari.st	Source code-only postings for the Atari ST. (Moderated)
+comp.sources.bugs	Bug reports, fixes, discussion for posted sources
+comp.sources.d		For any discussion of source postings.
+comp.sources.games	Postings of recreational software. (Moderated)
+comp.sources.mac	Software for the Apple Macintosh. (Moderated)
+comp.sources.misc	Posting of software . (Moderated)
+comp.sources.unix	Postings of public-domain sources. (Moderated)
+comp.sources.wanted	Requests for software and fixes.
+comp.std.c		Discussion about C language standards. (Moderated)
+comp.std.internat	Discussion about international standards.
+comp.std.misc		Discussion about various standards. (Moderated)
+comp.std.mumps		Discussion for the X11.1 committee on Mumps. (Moderated)
+comp.std.unix		Discussion for the P1003 committee on UNIX. (Moderated)
+comp.sys.amiga		Commodore Amiga: info&uses, but no programs.
+comp.sys.apollo		Apollo computer systems.
+comp.sys.apple		Discussion about Apple micros.
+comp.sys.atari.8bit	Discussion about 8 bit Atari micros.
+comp.sys.atari.st	Discussion about 16 bit Atari micros.
+comp.sys.att		Discussions about AT&T microcomputers.
+comp.sys.cbm		Discussion about Commodore micros.
+comp.sys.dec		Discussions about DEC computer systems.
+comp.sys.hp		Discussion about Hewlett-Packard equipment.
+comp.sys.ibm.pc		Discussion about IBM personal computers.
+comp.sys.ibm.pc.digest	The IBM PC, PC-XT, and PC-AT. (Moderated)
+comp.sys.intel		Disucussions about Intel systems and parts.
+comp.sys.m6809		Discussion about 6809's.
+comp.sys.m68k		Discussion about 68k's.
+comp.sys.m68k.pc	Discussion about 68k-based PCs. (Moderated)
+comp.sys.mac		Discussions about the Apple Macintosh & Lisa.
+comp.sys.mac.digest	Apple Macintosh: info&uses, but no programs. (Moderated)
+comp.sys.masscomp	The Masscomp line of computers. (Moderated)
+comp.sys.misc		Discussion about computers of all kinds.
+comp.sys.nsc.32k	National Semiconductor 32000 series chips.
+comp.sys.pyramid	Pyramid 90x computers.
+comp.sys.ridge		Ridge 32 computers and ROS. 
+comp.sys.sequent	Sequent systems, (esp. Balance 8000). (Moderated)
+comp.sys.sun		Sun "workstation" computers. (Moderated)
+comp.sys.tandy		Discussion about TRS-80's.
+comp.sys.ti		Discussion about Texas Instruments.
+comp.sys.workstations	Various workstation-type computers. (Moderated)
+comp.terminals		All sorts of terminals.
+comp.text		Text processing issues and methods.
+comp.text.desktop	Technolgy & techniques of desktop publishing. (Moderated)
+comp.unix		Discussion of UNIX* features and bugs. (Moderated)
+comp.unix.questions	UNIX neophytes group.
+comp.unix.wizards	Discussions, bug reports, and fixes on and for UNIX.
+comp.unix.xenix		Discussion about the Xenix OS.
+comp.windows.misc	Various issues about windowing systems.
+comp.windows.news	Sun Microsystems' NewS window system.
+comp.windows.x		Discussion about the X Window System.
+
+misc.consumers		Consumer interests, product reviews, etc.
+misc.consumers.house	Discussion about owning and maintaining a house.
+misc.forsale		Short, tasteful postings about items for sale.
+misc.handicap		Items of interest for/about the handicapped. (Moderated)
+misc.headlines		Current interest: drug testing, terrorism, etc.
+misc.invest		Investments and the handling of money.
+misc.jobs		(defunct -- soon to be removed)
+misc.jobs.misc		Discussion about employment, workplaces, careers.
+misc.jobs.offered	Announcements of positions available.
+misc.jobs.resumes	Postings of resumes and "situation wanted" articles.
+misc.kids		Children, their behavior and activities.
+misc.legal		Legalities and the ethics of law.
+misc.misc		Various discussions not fitting in any other group.
+misc.psi		Paranormal abilities and experiences. (Moderated)
+misc.taxes		Tax laws and advice.
+misc.test		For testing of network software.  Very boring.
+misc.wanted		Requests for things that are needed (NOT software).
+
+news.admin		Comments directed to news administrators.
+news.announce.conferences	Calls for papers and conference announcements. (Moderated)
+news.announce.important	General announcements of interest to all. (Moderated)
+news.announce.newusers	Explanatory postings for new users. (Moderated)
+news.config		Postings of system down times and interruptions.
+news.groups		Discussions and lists of newsgroups.
+news.lists		News-related statistics and lists. (Moderated)
+news.misc		Discussions of USENET itself.
+news.newsites		Postings of new site announcements.
+news.software.b		Discussion about B news software.
+news.software.notes	Notesfile software from the Univ. of Illinois.
+news.stargate		Discussion about satellite transmission of news.
+news.sysadmin		Comments directed to system administrators.
+
+rec.arts.books		Books of all genres, shapes, and sizes.
+rec.arts.comics		The funnies, old and new.
+rec.arts.drwho		Discussion about Dr. Who.
+rec.arts.movies		Discussions of movies and movie making.
+rec.arts.movies.reviews	Reviews of movies. (Moderated)
+rec.arts.poems		For the posting of poems.
+rec.arts.sf-lovers	Science fiction lovers' newsgroup.
+rec.arts.startrek	Star Trek, the TV show and the movies.
+rec.arts.tv		The boob tube, its history, and past and current shows.
+rec.arts.tv.soaps	Postings about soap operas.
+rec.arts.wobegon	"A Prairie Home Companion" radio show discussion.
+rec.audio		High fidelity audio.
+rec.autos		Automobiles, automotive products and laws.
+rec.autos.tech		Technical aspects of automobiles, et. al.
+rec.aviation		Aviation rules, means, and methods.
+rec.bicycles		Bicycles, related products and laws.
+rec.birds		Hobbyists interested in bird watching.
+rec.boats		Hobbyists interested in boating.
+rec.food.cooking	Food, cooking, cookbooks, and recipes.
+rec.food.drink		Wines and spirits.
+rec.food.recipes	Recipes from the USENET Cookbook (troff & text). (Moderated)
+rec.food.veg		Vegetarians.
+rec.games.board		Discussion and hints on board games.
+rec.games.bridge	Hobbyists interested in bridge.
+rec.games.chess		Chess & computer chess.
+rec.games.empire	Discussion and hints about Empire.
+rec.games.frp		Discussion about Fantasy Role Playing games.
+rec.games.go		Discussion about Go.
+rec.games.hack		Discussion, hints, etc. about the Hack game.
+rec.games.misc		Games and computer games.
+rec.games.pbm		Discussion about Play by Mail games.
+rec.games.rogue		Discussion and hints about Rogue.
+rec.games.trivia	Discussion about trivia.
+rec.games.video		Discussion about video games.
+rec.gardens		Gardening, methods and results.
+rec.guns		Discussions about firearms. (Moderated)
+rec.ham-radio		Amateur Radio practices, contests, events, rules, etc.
+rec.ham-radio.packet	Discussion about packet radio setups.
+rec.humor		Jokes and the like.  May be somewhat offensive.
+rec.humor.d		Discussions on the content of rec.humor articles.
+rec.mag			Magazine summaries, tables of contents, etc.
+rec.mag.otherrealms	Edited science fiction & fantasy "magazine". (Moderated)
+rec.misc		General topics about recreational/participant sports.
+rec.motorcycles		Motorcycles and related products and laws.
+rec.music.classical	Discussion about classical music.
+rec.music.folk		Folks discussing folk music of various sorts.
+rec.music.gaffa		Progressive music (e.g., Kate Bush). (Moderated)
+rec.music.gdead		A group for (Grateful) Dead-heads.
+rec.music.makers	For performers and their discussions.
+rec.music.misc		Music lovers' group.
+rec.music.synth		Synthesizers and computer music.
+rec.nude		Hobbyists interested in naturist/nudist activities.
+rec.pets		Pets, pet care, and household animals in general.
+rec.photo		Hobbyists interested in photography.
+rec.puzzles		Puzzles, problems, and quizzes.
+rec.railroad		Real and model train fans' newsgroup.
+rec.scuba		Hobbyists interested in SCUBA diving.
+rec.skiing		Hobbyists interested in skiing.
+rec.skydiving		Hobbyists interested in skydiving.
+rec.sport.baseball	Discussion about baseball.
+rec.sport.basketball	Discussion about basketball.
+rec.sport.football	Discussion about football.
+rec.sport.hockey	Discussion about hockey.
+rec.sport.misc		Spectator sports.
+rec.travel		Traveling all over the world.
+rec.video		Video and video components.
+rec.woodworking		Hobbyists interested in woodworking.
+
+sci.astro		Astronomy discussions and information.
+sci.bio			Biology and related sciences.
+sci.crypt		Different methods of data en/decryption.
+sci.electronics		Circuits, theory, electrons and discussions.
+sci.lang		Natural languages, communication, etc.
+sci.math		Mathematical discussions and pursuits.
+sci.math.stat		Statistics discussion.
+sci.math.symbolic	Symbolic algebra discussion.
+sci.med			Medicine and its related products and regulations.
+sci.misc		Short-lived discussions on subjects in the sciences.
+sci.philosophy.tech	Technical philosophy: math, science, logic, etc. 
+sci.physics		Physical laws, properties, etc.
+sci.research		Research methods, funding, ethics, and whatever.
+sci.space		Space, space programs, space related research, etc.
+sci.space.shuttle	The space shuttle and the STS program.
+
+soc.college		College, college activities, campus life, etc.
+soc.culture.african	Discussions about Africa & things African.
+soc.culture.celtic	Group about Celtics (*not* basketball!).
+soc.culture.greek	Group about Greeks.
+soc.culture.indian	Group for discussion about India & things Indian.
+soc.culture.jewish	Group for discussion about Jewish culture & religion.
+soc.culture.misc	Group for discussion about other cultures.
+soc.human-nets		Computer aided communications digest. (Moderated)
+soc.misc		Socially-oriented topics not in other groups.
+soc.motss		Issues pertaining to homosexuality.
+soc.net-people		Announcements, requests, etc. about people on the net.
+soc.politics		Political problems, systems, solutions. (Moderated)
+soc.politics.arms-d	Arms discussion digest. (Moderated)
+soc.religion.christian	Christianity and related topics. (Moderated)
+soc.roots		Genealogical matters.
+soc.singles		Newsgroup for single people, their activities, etc.
+soc.women		Women's rights, discrimination, etc.
+
+talk.abortion		All sorts of discussions and arguments on abortion.
+talk.bizarre		The unusual, bizarre, curious, and often stupid.
+talk.origins		Evolution versus creationism (sometimes hot!).
+talk.philosophy.misc	Philosophical musings on all topics.
+talk.politics.misc	Political discussions and ravings of all kinds.
+talk.politics.theory	Theory of politics and political systems.
+talk.religion.misc	Religious, ethical, & moral implications.
+talk.religion.newage	Esoteric and minority religions & philosophies.
+talk.rumors		For the posting of rumors.
+
+--------------------
+* UNIX is a registered Trademark of AT&T.
+* DEC is a Trademark of the Digital Equipment Corporation.
+* VAX is a Trademark of the Digital Equipment Corporation.
+* Ada is a registered Trademark of the Ada Joint Program Office of the
+   United States Department of Defense.
+
+Written  6:49 am  Jun  1, 1987 by usenet@gatech.edu in news.announce.newusers
+	Note title: List of Moderators
+
+Original-from: Gene Spafford (spaf@gatech.edu)
+[Most recent change: 31 May 1987 by spaf@gatech.edu]
+
+A number of moderated groups exist on the net.  These are groups which
+usually have one or more individuals (acting as editors and/or
+moderators) who must approve articles before they are published to the
+net.  In general, these groups fall into one of five categories:
+
+1) Groups with postings of an informative nature not suited to
+   discussion and always originating from the same (very small) group
+   of posters.  Groups within this category include news.lists,
+   news.announce.newusers, and comp.mail.maps.
+
+2) Groups derived from regular groups with such a high volume that
+   it is hard for the average reader to keep up.  The moderated
+   versions of these groups are an attempt to provide a lower volume
+   and higher quality version of the same forum.  Examples of
+   this category include news.announce and comp.unix.
+
+3) Groups derived from regular groups which have often been abused.
+   That is, the regular groups often received postings of items which
+   were not germane to the stated topic of the group (or sometimes even
+   within the realm of politeness for the net).  This also includes
+   groups suffering from an annoying number of duplicate postings and
+   innappropriate followups.  Moderated groups in this category include
+   comp.sources.unix.
+
+4) Groups designed to serve also as direct feedback to an off-the-net
+   group.  The discussions in comp.std.mumps and comp.std.c fall into this
+   category.
+
+5) Groups which are gatewayed into the Usenet from an Arpa Internet
+   mailing list.  These groups are moderated by someone on the Internet
+   side but are shared with the Usenet population.  Submissions mailed
+   to the proper addresses, given below, will appear in both the group
+   on Usenet, and the Internet list.  
+
+To post to a moderated group, write your article and mail it to the
+listed SUBMISSION address.  The moderator will then do the actual
+posting of the article.  The news software on the Usenet will not allow
+direct posting to moderated newsgroups, nor will it forward
+unauthorized articles to other sites.  The only way to post to a
+moderated group is to mail it to the moderator.  If you are running
+2.11 news or later, your news software will automatically mail your
+article to the moderator if you attempt to post it.  Thus, posting to a
+moderated newsgroup should appear the same as posting to any other
+group (except you don't see the posting right away).
+
+Depending on the newsgroup involved, if the moderator feels that your
+article is inappropriate for the group, s/he will return the article to
+you with a suggestion for other newsgroups in which to post it, and/or
+an explanation of why it is not appropriate for the moderated group.
+You may still post such articles to the regular groups as you currently
+do, if such groups exist.
+
+If you have questions or complaints about the way a moderated group is
+run, contact the moderator by mail.  Alternatively, you can send mail
+to the mailing list "moderators@cbosgd.att.COM" and it will be rebroadcast
+to all of the current Usenet-only newsgroup moderators.
+
+Below is a list of the current moderated groups and the moderators of
+those groups. Included in that list are the addresses to use if you
+have questions of comments about the groups. After that is given a list
+of addresses for submissions of articles to those groups. If your site
+is running 2.10.2 or 2.10.3 news, these addresses can be used to build
+the "moderators" file so that "postnews" can automatically mail an
+article to the correct moderator. 
+
+If your system is running 2.11 news, posting to moderated newsgroups
+is done by mailing your submission to well-defined aliases at a nearby
+backbone site.  The mail path to that backbone site should be in your
+news library, in the file "mailpaths" -- there is no need to update
+a moderators file.  Information on how to construct the paths in the
+"mailpaths" file are posted monthly in a companion article.
+
+If you are NOT running 2.11 news, you are *STRONGLY* advised to upgrade
+to it so as to take advantage of this feature, as well as the numerous
+bug fixes and other enhancements.
+
+The addresses below are given in Internet/domain form.  If a site has
+an Internet address, that is given in the list, otherwise a UUCP
+address is given.  Sites reachable via other direct addresses are given
+in the correspondence list just below.  If you are a UUCP-only site,
+you can mail to an ARPA (EDU, GOV, etc.)-only site by mailing through
+the gateways (seismo and ucbvax) using a uucp-style path, e.g.:
+	...!{seismo,ucbvax}!site.arpa!address
+
+For those of you not currently using the UUCP map data, the following
+can be used to derive uucp mail paths:
+	...!{akgua,ihnp4}!abnji
+	...!{decvax,philabs}!bunker
+	...!{akgua,gatech,ihnp4,ulysses}!cbosgd
+	...!{seismo,topaz}!columbia!cucca!cu20b
+	...!{decvax,ihnp4}!decwrl
+	...!hplabs!felix
+	...!{akgua,cbosgd,decvax,hplabs,ihnp4,linus,seismo}!gatech
+	...!{decvax,gatech,ihnp4,mcnc,seismo,ucbvax}!hplabs
+	...!{ihnp4,lll-crg,qantel}!hoptoad
+	...!{allegra,cbosgd,decvax,ihnp4,yale}!ima
+	...!{decwrl,sun,ucbvax}!imagen
+	...!{ihnp4,qantel,seismo,topaz}!lll-crg
+	...!ut-sally!im4u!milano
+	...!{cbosgd,ihnp4,mit-eddie,seismo}!mirror
+	...!{gatech,harvard,ihnp4}!mit-eddie
+	...!{akgua,cbosgd,decvax,gatech,linus,seismo}!philabs!nyit
+	...!decvax!genrad!panda  --or--  ...!seismo!harvard!wjh12!panda
+	...!{cbosgd,ihnp4,seismo}!plus5
+	...!{decvax,ihnp4}!pur-ee!pucc-j
+	...!{harvard,ihnp4,seismo}!ut-sally!rice
+	...!{cbosgd,decvax,gatech,ihnp4,ucbvax}!sdcsvax
+	...!{cbosgd,decvax,gatech,ihnp4,ulysses}!seismo
+	...!{allegra,mcnc,uiucdcs}!convex!smu
+	...!harvard!spdcc
+	...!seismo!soma --or-- ...!cbosgd!rice!soma
+	...!{cbosgd,decvax,hplabs,seismo}!sun
+	...!{caip,cmcl2,hplabs,seismo}!topaz
+	...!{apollo,masscomp,wanginst}!ulowell
+	...!{harvard,ihnp4,seismo}!ut-sally
+	...!ucbvax!ucbopal
+	...!{allegra,decvax,harvard}!yale
+
+Address correspondences:
+	cbosgd.att.com		==	cbosgd.uucp
+	cu20b.columbia.edu	==	cu20b.uucp
+	decwrl.dec.com		==	decwrl.uucp
+	eddie.mit.edu		==	mit-eddie.uucp
+	gatech.edu		==	gatech.uucp
+	hplabs.hp.com		==	hplabs.uucp
+	j.cc.purdue.edu		==	pucc-j.uucp
+	lll-crg.arpa		==	lll-crg.uucp
+	mtgzy.att.com		==	mtgzy.uucp
+	mirror.tmc.com		==	mirror.uucp
+	opal.berkeley.edu	==	ucbopal.uucp
+	plus5.com		==	plus5.uucp
+	red.rutgers.edu		==	rutgers.uucp
+	rice.edu		==	rice.uucp
+	sally.utexas.edu	==	ut-sally.uucp
+	sdcsvax.ucsd.edu	==	sdcsvax.uucp
+	seismo.css.gov		==	seismo.uucp
+	sun.com			==	sun.uucp
+	topaz.rutgers.edu	==	topaz.uucp
+	ulowell.edu		==	ulowell.uucp
+	yale.arpa		==	yale.uucp
+	yale.arpa		==	yalecs.bitnet
+
+
+Gene Spafford 
+1 June 1987
+------------------------------------------------------------------
+Group			
+	Moderator or Coordinator	Requests, Comments, etc.
+------------------------------------------------------------------
+comp.ai.digest 
+	Kenneth Laws		ailist-request@stripe.sri.com
+comp.binaries.amiga 
+	Craig Norborg		amiga-binaries-request@j.cc.purdue.edu
+comp.binaries.atari.st 
+	Jim Turner		atari-sources-request@imagen.uucp
+comp.binaries.mac 
+	Roger Long		macintosh-request@felix.uucp
+comp.bugs.4bsd.ucb-fixes 
+	Keith Bostic		ucb-fixes-request@okeeffe.berkeley.edu
+comp.compilers 
+	John Levine		compilers-request@ima.uucp
+comp.dcom.telecom 
+	Eliot Moore		telecom-request@xx.lcs.mit.edu
+	Jon Solomon
+comp.doc 
+	Ron Natalie		archive-request@brl.arpa
+comp.doc.techreports 
+	Lawrence Leff		trlist-request@smu.uucp
+comp.graphics.digest 
+	Andy Cromarty		info-graphics-request@ads.arpa
+comp.laser-printers 
+	Richard Furuta		laser-lovers-request@brillig.umd.edu
+comp.mail.elm 
+	Dave Taylor		elm-info-request@hplabs.hp.com
+comp.mail.maps
+	Mark Horton		postmap@cbosgd.att.com
+comp.newprod 
+	Ron Heiby		newprod-request@cbosgd.att.com
+comp.org.fidonet 
+	Tim Pozar		pozar@hoptoad.uucp
+comp.os.os9 
+	John Daleske		os9-request@cbosgd.att.com
+comp.os.research 
+	Darrell Long		darrell@sdcsvax.ucsd.edu
+comp.protocols.kermit 
+	Frank da Cruz		info-kermit-request@cu20b.columbia.edu
+comp.risks 
+	Peter Neumann		risks-request@csl.sri.com
+comp.society 
+	Dave Taylor		comp-soc-request@hplabs.hp.com
+comp.sources.amiga 
+	Craig Norborg		amiga-sources-request@j.cc.purdue.edu
+comp.sources.atari.st 
+	Jim Turner		atari-sources-request@imagen.uucp
+comp.sources.games 
+	Bill Randle		games-request@tekred.tek.com
+comp.sources.mac 
+	Roger Long		macintosh-request@felix.uucp
+comp.sources.misc
+	Brandon S. Allbery	sources-misc-request@ncoast.uucp
+comp.sources.unix 
+	Rich Salz		rsalz@pineapple.bbn.com
+comp.std.c 
+	Orlando Sotomayor-Diaz	std-c@cbosgd.att.com
+comp.std.misc 
+	Mark Horton		mark@cbosgd.att.com
+comp.std.mumps 
+	Hokey			std-mumps-request@plus5.com
+comp.std.unix 
+	John Quarterman		std-unix-request@sally.utexas.edu
+comp.sys.ibm.pc.digest 
+	(various)		info-ibmpc-request@c.isi.edu
+comp.sys.m68k.pc
+	Mike Meyer		info-68k-request@ucbvax.berkeley.edu
+comp.sys.mac.digest 
+	John M. Agosta		info-mac-request@sumex-aim.stanford.edu
+comp.sys.masscomp 
+	Stan Barber		masscomp-request@soma.uucp
+comp.sys.sequent 
+	Rich Kulawiec		info-sequent-request@j.cc.purdue.edu
+comp.sys.sun 
+	Vicky Riffle		sun-spots-request@rice.edu
+comp.sys.workstations 
+	Dave Steiner		works-request@red.rutgers.edu
+comp.text.desktop
+	Chuq von Rospach	desktop-request@plaid.sun.com
+comp.unix 
+	Ron Heiby		unix-request@cbosgd.att.com
+misc.handicap 
+	Bill McGarry		wtm@bunker.uucp
+misc.psi 
+	Erich Rickheit		mod-psi-request@ulowell.edu
+news.announce.conferences 
+	Dave Taylor		taylor@hplabs.hp.com
+news.announce.important 
+	Mark Horton		mark@cbosgd.att.com
+news.announce.newusers 
+	Gene Spafford		spaf@gatech.edu
+news.lists 
+	Gene Spafford		spaf@gatech.edu 
+	Rick Adams		rick@seismo.css.gov
+rec.arts.movies.reviews 
+	Evelyn C. Leeper	movies-request@mtgzy.att.com
+rec.food.recipes 
+	Brian Reid		mod-recipes@decwrl.dec.com
+rec.guns 
+	Jordan K. Hubbard	jkh@opal.berkeley.edu
+rec.mag.otherrealms 
+	Chuq Von Rospach	fanzine@plaid.sun.com
+rec.music.gaffa 
+	Doug Alan		love-hounds-request@eddie.mit.edu
+soc.human-nets 
+	Charles McGrew		human-nets-request@rutgers.edu
+soc.politics
+	JoSH Hall		poli-sci-request@rutgers.edu
+soc.politics.arms-d
+	Herb Lin		arms-d-request@xx.lcs.mit.edu
+soc.religion.christian 
+	Charles Hedrick		christian-request@topaz.rutgers.edu
+
+------------------------------------------------------------------
+Group				Submissions
+:-----------------------------------------------------------------
+comp.ai.digest 			ailist@stripe.sri.com
+comp.binaries.amiga		amiga-binaries-request@j.cc.purdue.edu
+comp.binaries.atari.st		atari-sources@imagen.uucp
+comp.binaries.mac 		macintosh@felix.uucp
+comp.bugs.4bsd.ucb-fixes	ucb-fixes@okeeffe.berkeley.edu
+comp.compilers 			compilers@ima.uucp
+comp.dcom.telecom 		telecom@xx.lcs.mit.edu
+comp.doc 			archive@brl.arpa
+comp.doc.techreports 		trlist@smu.uucp
+comp.graphics.digest 		info-graphics@ads.arpa
+comp.laser-printers		laser-lovers@brillig.umd.edu
+comp.mail.elm			elm-info@hplabs.hp.com
+comp.mail.maps 			postmap@cbosgd.att.com
+comp.newprod 			newprod@cbosgd.att.com
+comp.org.fidonet 		pozar@hoptoad.uucp
+comp.os.os9 			os9@cbosgd.att.com
+comp.os.research 		mod-os@sdcsvax.ucsd.edu
+comp.protocols.kermit 		info-kermit@cu20b.columbia.edu
+comp.risks 			risks@csl.sri.com
+comp.society 			comp-soc@hplabs.hp.com
+comp.sources.amiga		amiga-sources-request@j.cc.purdue.edu
+comp.sources.atari.st		atari-sources@imagen.uucp
+comp.sources.games 		games@tekred.tek.com
+comp.sources.mac 		macintosh@felix.uucp
+comp.sources.misc		sources-misc@ncoast.uucp
+comp.sources.unix 		sources@uunet.uu.net
+comp.std.c 			std-c@cbosgd.att.com
+comp.std.misc 			mark@cbosgd.att.com
+comp.std.mumps 			std-mumps@plus5.com
+comp.std.unix			std-unix@sally.utexas.edu
+comp.sys.ibm.pc.digest 		info-ibmpc@c.isi.edu
+comp.sys.mac.digest 		info-mac@sumex-aim.stanford.edu
+comp.sys.masscomp 		masscomp@soma.uucp
+comp.sys.m68k.pc		info-68k@ucbvax.berkeley.edu
+comp.sys.sequent		info-sequent@j.cc.purdue.edu
+comp.sys.sun 			sun-spots@rice.edu
+comp.sys.workstations		works@red.rutgers.edu
+comp.text.desktop		desktop@plaid.sun.com
+comp.unix 			modunix@cbosgd.att.com
+misc.handicap			handicap@bunker.uucp
+misc.psi 			mod-psi@ulowell.edu
+news.announce.conferences	conferences@hplabs.hp.com
+news.announce.important 	announce@cbosgd.att.com
+news.announce.newusers 		usenet@gatech.edu
+news.lists			usenet@gatech.edu,rick@seismo.css.gov
+rec.arts.movies.reviews		movies@mtgzy.att.com
+rec.food.recipes 		mod-recipes@decwrl.dec.com
+rec.guns 			jkh@opal.berkeley.edu
+rec.mag.otherrealms 		fanzine@plaid.sun.com
+rec.music.gaffa 		gaffa-post@eddie.mit.edu
+soc.human-nets 			human-nets@red.rutgers.edu
+soc.politics			poli-sci@rutgers.edu
+soc.politics.arms-d		arms-d@xx.lcs.mit.edu
+soc.religion.christian 		christian@topaz.rutgers.edu
+
+Written  6:49 am  Jun  1, 1987 by usenet@gatech.edu in news.announce.newusers
+	Note title: Publicly Accessible Mailing Lists
+
+Original-from: chuq@sun.COM (Chuq Von Rospach)
+[Most recent change: 31 May 1987 by spaf@gatech.edu]
+
+This is a list of mailing lists available primarily on the UUCP
+network. A mailing list is different from a newsgroup because you do
+not receive anything unless you specifically request it. To be added to
+a mailing list, please mail a note to the contact for that list, listed
+below.
+
+Some of the lists mentioned may be available as limited-distribution
+newsgroups.  Contact the administrator for exact details.
+
+Please note the following caveats: publication of a list here does not
+guarantee that you will be allowed to join as a member.  That is up to
+the moderator and readers, and they have the right to restrict access
+to their list as they see fit. Mailing lists use MUCH less system
+overhead on a world-wide basis but do tend to increase loading on the
+moderators' machines so the number of people that can be added to a list
+may be limited by machine resources as well.
+
+If you have a list that you want added to this posting or are interested in
+starting a list but don't know how, drop me a note at spaf@gatech.edu
+
+
+			Groups listed in this posting
+
+	mail.12step
+	mail.alternates
+	mail.amiga-minix
+	mail.anime
+	mail.auto
+	mail.blues
+	mail.christian
+	mail.clu
+	mail.compress
+	mail.desktop
+	mail.elm
+	mail.esperanto
+	mail.feminists
+	mail.firearms
+	mail.gnu-manual
+	mail.handicapped
+	mail.horse
+	mail.info-encore
+	mail.info-gnu
+	mail.info-sendmail
+	mail.info-futures
+	mail.info-tahoe
+	mail.interleaf
+	mail.isi
+	mail.jazz
+	mail.jewish
+	mail.kites
+	mail.larn
+	mail.lucid
+	mail.martial-arts
+	mail.medphys
+	mail.men
+	mail.mtxinu-users
+	mail.new-age
+	mail.ocean.policy
+	mail.OtherRealms
+	mail.pro-video
+	mail.sco-xenix
+	mail.scribe
+	mail.security
+	mail.supercomputers
+	mail.sysops
+	mail.tartan-c
+	mail.teehee
+	mail.transputer
+	mail.VMEbus
+	mail.whitewater
+	mail.wildnet
+	mail.wobegon
+	mail.zilog
+
+	ug.bizarre
+
+		    Specific Information on Groups
+
+mail.12step
+    Contact {decvax,ihnp4,ucbvax,sdcrdcf}!trwrb!suhre  (Maurice Suhre)
+
+    Purpose: To discuss/share experiences about 12 step programs
+    such as Alcoholics Anonymous, Overeaters Anonymous, Alanon,
+    ACA, etc.  Questions will also be answered.
+
+mail.alternates
+    Contact: alternates@tekla.tek.com	-or-
+		tektronix!tekla!alternates	(Hank Buurman)
+
+    Purpose: Mail.alternates is an e-mail group of people who
+    advocate, and/or practice an open sexual lifestyle. Its members
+    are primarily bisexual men and women, and their SO's.
+    Mail.alternates is intended as a forum and support group for adult
+    men and women who espouse their freedom of choice and imagination
+    in human sexual relations. Those who are offended by frank and
+    uninhibited discussions relating to sexual issues should not
+    subscribe.
+
+mail.amiga-minix
+    Contact:  amiga-minix-request@ulowell.edu	-or-
+		...{apollo,masscomp,wanginst}!ulowell!amiga-minix-request
+
+    Purpose: Discussions on porting the MINIX operating system to the
+    Commodore Amiga.  
+
+mail.anime
+    Contact: ihnp4!oliveb!long (Dave Long)
+
+    Purpose: To provide information exchange for Japanese animation fen.
+
+mail.auto
+    Contact: {allegra,decvax,talcott}!encore!munsell!special-auto-request
+	       (Paul Czarnecki)
+
+    Purpose: The special-interest-auto mailing list is intended as a
+    forum on the joys and sorrows of owning, maintaining, and restoring
+    an antique, classic, collectible, or special-interest automobile.
+
+    Submissions will be subject to spelling, format, and editorial
+    modification.
+
+mail.blues
+    Contact: ...!{decvax,ihnp4}!pur-ee!rsk -or- rsk@j.cc.purdue.ee
+
+    Purpose: Similar to the jazz mailing list, only oriented towards
+    blues.  
+
+mail.christian
+    Contact: mimsy.umd.edu!brillig!mailjc-request
+	     mailjc-request@brillig.umd.EDU
+
+    Purpose: To provide a non-hostile environment for discussion among
+    christians; not to hide our discussions from non-christians.
+    Non-christians may join the list and "listen-in", but full blown
+    debates between Christians and non-Christians are best carried out
+    in talk.religion.misc.
+
+mail.clu
+    Contact: clu-sw-request@cs.utu.fi    -or-
+             mcvax!tucos!clu-sw-request  (Matti Jokinen)
+
+    Purpose:  Exchange of CLU software and technical discussion of
+    related topics.
+
+mail.compress
+    Contact: {decvax,ucbvax,ihnp4}!vax135!petsd!joe
+
+    Purpose: discussions about file compression, especially Lempel-Ziv
+    algorithms.
+
+mail.desktop
+    Contact: sun!plaid!desktop-request (chuq Von Rospach)
+
+    Purpose:  To discuss desktop publishing techniques and new
+    technologies involved in small publishing projects.
+
+mail.elm
+    Contact:   ...!hplabs!taylor    --or--    taylor@hplabs.hp.com
+		(Dave Taylor)
+
+    Purpose:  A mailing list for the explicit purpose of allowing
+    people to get bug reports/fixes, enhancements, porting information,
+    and so on quickly for the ELM mail system.
+
+mail.esperanto
+    Contact: ...!{decvax,ihnp4,ucbvax}!trwrb!trwspp!urban (Mike Urban)
+
+    Purpose: This list is a forum for people interested in the neutral
+    international language Esperanto.  Discussions about the language
+    itself, the Esperanto movement, publications, and news are
+    encouraged; of course, discussion *in* the language itself are
+    especially encouraged, although English translations may be
+    advisable when the material is of interest to beginners or
+    non-Esperantists.
+
+mail.feminists
+    Contact: allegra!rayssd!hxe  -or-  linus!raybed2!rayssd!hxe
+
+    Purpose: The feminist mailing list is intended to provide a forum
+    for discussion of issues of interest to women, in a friendly
+    atmosphere. The basic tenets of feminism and the day to day
+    experiences of women do not have to be explained or defended.
+
+    Men and women can join, but everyone requesting to be added to the
+    mailing list MUST provide the moderator with: 1) a full name; 2) a
+    complete uucp path to a well-known host or a fully specified
+    Internet address; 3) the correspondant's gender.  NO exceptions.
+
+mail.firearms
+    Contact: {ihnp4,cbosgd}!cbrma!firearms-request  --or--
+	     firearms-request@cbrma.att.com
+
+    Purpose: The mailing list mail.firearms has been created to provide
+    an environment in which sportsmen can discuss issues of concern to
+    them.  Topics include but are not limited to hunting, firearms
+    safety, legal issues, reloading tips, maintenance suggestions,
+    target shooting, and dissemination of general info. Anyone is
+    welcome to join -- note that we do NOT intend to discuss the merits
+    of gun control.
+
+mail.gnu-manual
+    Contact:
+    	internet: gnu-manual-request@a.cs.uiuc.edu
+    	csnet:    gnu-manual@uiuc.csnet
+    	usenet:   ihnp4!uiucdcs!gnu-manual
+    
+    Purpose: "gnu-manual" members are volunteers who write, proofread,
+    and comment on documents for a GNU Emacs Lisp programmers' manual.
+
+mail.handicapped
+    Contact: ...!{decvax,philabs}!bunker!wtm
+
+    Purpose: To provide an information/discussion exchange for issues
+    dealing with the physically/mentally handicapped.  Topics include,
+    but are not limited to: medical, education, legal, technological
+    aids.
+
+mail.info-gnu
+    Contact:
+    	internet: info-gnu-request@prep.ai.mit.edu
+    	usenet:   ucbvax!prep.ai.mit.edu!info-gnu-request
+
+    Purpose: to distribute progress reports on the GNU Project headed
+    by Richard Stallman, and to ask members for various kinds of help.
+    Project GNU has additional mailing lists to distribute information
+    about specific GNU programs, and to report bugs in them.  Contact us
+    at the above address for details.
+
+mail.horse
+    Contact: {decvax,harvard,ihnp4,seismo}!ccv.bbn.com!horse-request
+             horse-request@ccp.bbn.COM    (Ken Rossen)
+
+    Purpose: Discussion of things equestrian.  Horse enthusiasts of
+    all disciplines and levels of experience are welcome.  Articles
+    are distributed periodically in digest format.
+
+mail.info-encore
+    Contact: info-encore-request@cs-gw.D.UMN.EDU	--or--
+	     info-encore-request@umnd-cs.UUCP	  (Dan Burrows)
+
+    Purpose: Mailing list for discussion of issues involving hardware
+    and software issues of Encore computers and ethernet terminal
+    servers.
+
+mail.info-futures
+    Contact: harvard!bu-cs!info-futures-request		-or-
+	     info-futures-request%bu-cs@relay.cs.net
+
+    Purpose: To provide a speculative forum for analyzing current and 
+    likely events in technology as they will affect our near future in
+    computing and related areas.
+
+mail.info-sendmail
+    Contact: info-sendmail-request@ulowell.{edu,uucp,csnet}
+
+    Purpose:  Discussions on all facets of sendmail: tutorials,
+    configuration packages, etc.  Open to both novices and gurus alike,
+    with most readers someplace in the middle.
+
+mail.info-tahoe
+    Contact:	info-tahoe-request@csd1.milw.wisc.edu  --or--
+		ihnp4!uwmcsd1!info-tahoe-request   (Jim Lowe)
+
+    Purpose: Discussions pertaining to the Tahoe type of CPU.  These
+    include the CCI Power 6/32, the Harris HCX/7, and the Sperry 7000
+    series computers.
+
+    The info-tahoe mailing list is set up as a mail reflector.
+    Archives are available to Internet hosts from csd1.milw.wisc.edu
+    (192.12.221.1), using ftp with the anonymous login convention.
+
+mail.interleaf
+    Contact:  leaf-request@teksce.SCE.TEK.COM (Pete Lancashire)
+              ...!tektronix!tekgen!teksce!leaf-request
+
+    Purpose: Discussions on all aspects related to the Interleaf
+    publishing environment, including (but not restricted to) the
+    Interleaf language, user environment, implementations on new
+    platforms, user written enhancements, and filters, and bug
+    reports.
+
+mail.isi
+    Contact: ...!harvard!lownlab!info-isi-request
+
+    Purpose: discussions about Integrated Solutions computers, both
+    equipment and software.
+
+mail.jazz
+    Contact: {ihnp4,decvax,allegra,utzoo}!watmath!watbun!kgdykes
+
+    Purpose: discussions of various flavors of Jazz Music
+
+mail.jewish
+    Contact: {cbatt,ihnp4,princeton}!pruxc!ayf (Avi Feldblum)
+
+    Purpose: The mailing list provides a non-abusive forum for
+    discussion of Jewish topics with an emphasis on Jewish law.
+    Debates between Jews and non-Jews or between various factions of
+    Judaism should be posted to rec.religion.misc.
+
+mail.kites
+    Contact: 
+    (USA/Canada/Europe):
+	kites-request@harvard.harvard.edu    seismo!harvard!kites-request
+    (Japan):
+	koscvax.keio.junet!kites-request
+
+    Purpose: This mailing list is for people interested in making,
+    flying, or just talking about all kinds of kites.  Topics will (I
+    hope) include kite plans and construction techniques, reviews of
+    commercially available kites and plans, timely (or otherwise) human
+    interest notes, and talk about flying.
+
+mail.larn
+    Contact: ..{ihnp4,sdcsvax}!jack!wolf!malice
+    Submissions: ..{ihnp4,sdcsvax}!jack!wolf!larn
+
+    Purpose: To provide an orderly forum to all the larn-addicts that have
+    been keeping rec.games and net.sources.bugs busy recently. I will try
+    to send out a digest as often as I can, or as the submission load warrants.
+
+mail.lang-lucid
+    Contact:   lang-lucid-request@mercury.csl.sri.com  (Rosanna Lee)
+
+    Purpose: Discussions on all aspects related to the language Lucid,
+    including (but not restricted to) language design issues,
+    implementations for personal computers, implementations for
+    parallel machines, language extensions, programming environments,
+    products, bug reports, bug fixes/workarounds.
+
+mail.martial-arts
+    Contact: seismo!brillig.umd.edu!martial-arts-request
+	     martial-arts-request@brillig.umd.edu (Bruce Israel)
+
+    Purpose: The martial arts mailing list is for discussion on
+    various aspects of the martial arts.  This includes teaching and
+    training techniques, martial arts philosophy, self-defense,
+    traditional and non-traditional styles, among others.
+
+mail.medphys
+    Contact: ...!mcnc!godot!medphys-request
+    Submissions: ...!mcnc!godot!medphys
+
+    Purpose:  An attempt to foster electronic communication between
+    medical physicists, open to interested others.  Medical physics is
+    a somewhat opaque but widely used synonym for radiological physics
+    -- the physics of the diagnostic and therapeutic use of radiation
+    in medicine.  At present most of the subscribers are involved in
+    radiotherapy.
+
+mail.men
+    Contact: {ames,cca,mit-eddie,rochester}!garp!mail-men-request
+	     ...!mit-eddie!mit-athena!mail-men-request
+	     mail-men-request@garp.mit.edu
+	     mail-men-request@athena.mit.edu
+
+    Purpose: This digested mailing list discusses "men's issues" just
+    as mail.feminists discusses those of women.  Both women and men may
+    join.
+
+mail.mtxinu-users
+    Contact: {akgua,gatech}!emory!mtxinu-users-request (Arnold Robbins)
+
+    Purpose: Discussion and bug fixes for users of the 4.3+NFS release
+    from the Mt. Xinu folks.  
+
+mail.new-age
+    Contact: ...!{ihnp4,sun}!hoptoad!tim
+
+    **DEFUNCT** Replaced by the "talk.religion.newage" group.
+
+mail.ocean.policy
+    Contact: {ihnp4,dual,vortex}!islenet!scott
+
+    Purpose: Discussions of the legal, economic, and military aspects
+    of ocean use policies. Specific issues include the "law of the
+    sea", pending treaties, economic implications of EEZs and the
+    military use of the sea. Coordinated by Dr. Scott Allen, Associate
+    Director, International Law of the Sea Institute, University of
+    Hawaii.
+
+mail.OtherRealms
+    Contact: ...!{cbosgd,ihnp4,seismo}!sun!plaid!fanzine
+	     plaid!fanzine@sun.COM
+
+    Purpose: An experimental alternative to sf-lovers, this is the
+    mailing list to OtherRealms, an attempt at a traditional fanzine
+    on an electronic medium. 
+
+    Note: this list is also available as the Usenet moderated group
+    "rec.mag.otherrealms" but will also continue as a mailing list
+    for those individuals unable to receive that group.
+
+mail.pro-video
+    Contact: ...tektronix!reed!provideo		(Marc Visnick)
+
+    Purpose: This mailing list is concerned with professional and semi-
+    professional video.  Topics of discussion will include switchers,
+    cameras, DVE's, field and studio techniques, post production, and
+    so on.
+
+mail.sco-xenix
+    Contact:  ...!ihnp4!mb2c!edsdrd!ahxenix!bob  (Bob Leffler)
+
+    Purpose:  A non-SCO sponsered group of SCO Xenix Users.  Topics
+    include general Xenix problems, porting Unix applications to Xenix,
+    and problems with SCO Support.
+
+mail.scribe
+    Contact: scribe-hacks-request@cs.utah.edu -or-
+	     ...!seismo!utah-cs!scribe-hacks-request
+    Submissions: scribe-hacks@cs.utah.edu  -or-
+	     ...!seismo!utah-cs!scribe-hacks
+
+    Purpose: This list is designed for persons who perform the role of
+    Scribe Database Administrator at their installation.  Discussion
+    will be about Scribe features, bugs, enhancements, performance,
+    support, and other topics of interest to Scribe DBAs.  The list
+    will NOT be moderated, but will simply consist of a mail
+    "reflector" - ie. if you send a message to the list, it will be
+    rebroadcast to everyone on the list.  Discussion at the level of
+    "How do I get a paragraph to indent 5 spaces instead of 3?" is
+    specifically discouraged.
+
+mail.security
+    Contact: {hao,nbires,pyramid,udenva}!isis!sec-request  (Andrew Burt)
+
+    Purpose: Discussion and comment (and sometimes bug fixes) which
+    touch on the security aspects of the UNIX operating system.  This
+    mailing list is joined at the pleasure of the applicant's System
+    Administrator and/or the list administrator.
+
+    Requests to join must be mailed from the root account and must
+    specify (1) the full name of the recipient; (2) the address to send
+    the list to; (3) the address of the contact person for that site
+    (if different from (2)).
+
+mail.supercomputers
+    Contact: supercomputer-request@nyu.ARPA  -or-  cmcl2!supercomputer-request
+    Submissions: supercomputer@nyu.ARPA, cmcl2!supercomputer
+
+    Purpose: To discuss "supercomputers" and related technology.
+    Contact the list administrators for more information.
+
+mail.sysops
+    Contact: {harpo,bellcore,cmcl2}!cucard!dasys1!sysops-request
+			-or-
+	     {allegra,cmcl2,philabs}!phri!dasys1!sysops-request
+
+    Purpose: The purpose of this list is to facilitate communication
+    among operators of computerized bulletin-board systems.  Topics
+    will include, but are certainly not limited to: applications,
+    security, legal issues, and software.  
+
+mail.tartan-c
+    Contact: astrovax!tartan-c-requests
+
+    Purpose: Discussion related to the Tartan C compiler for the vax.
+    This can include bug reports, benchmarks, C quirks handled
+    differently by tcc, experiences compiling system source with tcc,
+    etc.
+
+mail.teehee
+    Contact: ...!{clyde,decwrl,hplabs}!amdcad!teehee-request
+		teehee-request@amdcad.amd.com
+
+    Purpose:  A "best of rec.humor" mailing list.  Other amusing articles
+    from other sources will be included from time to time. There will be
+    *NO* run-on puns.
+
+    All material mailed in this list is sent as cleartext and not
+    rotated.  As such, there may be material not suitable for the
+    faint of heart.
+
+    Addition to a separate list of nonoffensive material is possible
+    upon request.
+
+mail.transputer
+    Submissions:  transputer@tcgould.tn.cornell.edu	-or-
+		  ...{cmcl2,decvax,uw-beaver}!cornell!batcomputer!transputer
+    Contact:  transputer-request (at the above address)
+
+    Purpose: The Transputer mailing list was created to enhance the
+    communication among those who are interested in the Transputer and
+    Transputer based systems.
+
+    Submissions should be of non-proprietary nature and be concerned
+    with, but not limited to:
+    
+    	o  Algorithms
+    	o  Current development efforts (hardware and software)
+    	o  INMOS and third party systems (Meiko, FPS, etc.)
+    	o  Interfaces
+    	o  Dedicated computational resources
+    	o  Occam and Non-Occam language development
+    
+    Archives of submissions are available by anonymous ftp from the
+    host tcgould.tn.cornell.edu (userid "anonymous", password is of the
+    form "user@host") and through uucp on a per-request basis.
+
+    The list is maintained as a mail reflector.  Submissions are
+    therefore sent out as they are received.
+
+mail.whitewater
+    Contact: seismo!iuvax!cdaf 	--or--
+		cdaf@iuvax.cs.indiana.edu	(Charles Daffinger)
+
+    Purpose:  To discuss WhiteWater sports, experiences, and information.
+    Includes kayak and canoeing enthusiasts.
+
+mail.VMEbus
+    Contact: {akgua,ihnp4,ulysses}!houxl!mlh   (Marc Harrison)
+
+    Purpose: A user's group for the AT&T VMEbus products to provide a
+    two-way USENET conduit for the open exchange of information, both
+    within and outside of AT&T.  There's very little data that's
+    proprietary about the products (other than the source code for UNIX
+    System V/VME), so the list is open to suggestions as to items of
+    interest.
+
+    If you're interested, please send your name, e-mail path (via ihnp4
+    preferred), affiliation, and use of WE 321SB (if you have one).
+    Suggestions for items of interest are also encouraged.
+
+mail.wildnet
+    Contact:   ...alberta!sask!wildnet-request		--or--
+		wildreq@sask.bitnet		(Eric Woodsworth)
+
+    Purpose: This list is concerned with computing and statistics in
+    fisheries and wildlife biology.
+
+mail.wobegon
+    Contact: ....!{decuac,seismo}!hadron!wobegon-request (Joe Yao)
+
+    Purpose:  A place for shy people to meet over bisquits.
+
+mail.zilog
+    Contact: ...!{caip,ihnp4,caip}!cbmvax!mail-zilog-request
+
+    Purpose:  A self-help group to provide communications among Zilog
+    users.  Topics include problems with Zeus, fixes, portability
+    problems, availability of ported software and exchange of programs
+    on Zilog compatible media.  Open to both end users and systems
+    houses, but all should be able to cope with the phrase Zilog Brain
+    Damage with some degree of equanimity.
+
+ug.bizarre
+    Contact: mit-eddie!frog!john (John Woods)
+
+    Purpose: This is a limited distribution newsgroup
+    intended to take the place of the net.bizarre former newsgroup.
+    It is not a mailing list in the true sense of the word, but
+    a newsgroup with a selected distribution.  Contact John for
+    further details.

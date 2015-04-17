@@ -1,0 +1,66 @@
+
+
+
+PWD(1)		    UNIX Programmer's Manual		   PWD(1)
+
+
+
+NAME
+     pwd - working directory name
+
+SYNOPSIS
+     pwd
+
+DESCRIPTION
+     _P_w_d prints the pathname of the working (current) directory.
+
+SEE ALSO
+     cd(1), csh(1), getwd(3)
+
+BUGS
+     In _c_s_h(1) the command _d_i_r_s is always faster (although it can
+     give a different answer in the rare case that the current
+     directory or a containing directory was moved after the
+     shell descended into it).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

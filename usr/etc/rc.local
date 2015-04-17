@@ -1,0 +1,23 @@
+#! /bin/sh -
+# site-specific startup actions, daemons
+
+strings /vmunix | grep UNIX >/tmp/t1
+tail +2 /etc/motd >>/tmp/t1
+mv /tmp/t1 /etc/motd
+chmod 666 /etc/motd
+
+echo -n			starting local daemons:			>/dev/console 2>&1
+#if [ $INET = YES -a -f /usr/sbin/timed ]; then
+#	timed &				echo -n ' timed'	>/dev/console 2>&1
+#fi
+if [ -f /usr/sbin/sendmail ]; then
+	(cd /usr/spool/mqueue; rm -f lf*)
+	if [ $INET = YES ]; then
+		/usr/sbin/sendmail -bd -q1h; echo -n ' sendmail'>/dev/console 2>&1
+	else
+		/usr/sbin/sendmail -q1h; echo -n ' sendmail'	>/dev/console 2>&1
+	fi
+fi
+				echo '.'			>/dev/console 2>&1
+
+ntpd

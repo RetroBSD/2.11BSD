@@ -1,0 +1,10 @@
+./"p_nxt"8t"p_prev"8t"p_pptr"n3on
++/"p_flag"8t"p_uid"8t"p_pid"8t"p_ppid"nx3dn
++/"p_sig"16t"p_stat"nXb+n
++/"p_pri"8t"p_cpu"8t"p_time"8t"p_nice"8t"p_slptime"8t"p_cursig"n5b8tbn
++/"p_idhash"non
++/"p_sigmask"16t"p_sigignore"8t"p_sigcatch"n3Xn
++/"p_pgrp"8t"p_link"ndon
++/"p_addr"8t"p_daddr"8t"p_saddr"8t"p_dsize"8t"p_ssize"n5o
++/"p_wchan"8t"p_textp"n2on
++/"p_realtimer"n2Dn

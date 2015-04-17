@@ -1,0 +1,66 @@
+
+
+
+EXIT(3)             UNIX Programmer's Manual		  EXIT(3)
+
+
+
+NAME
+     exit - terminate a process after flushing any pending output
+
+SYNOPSIS
+     exit(status)
+     int status;
+
+DESCRIPTION
+     _E_x_i_t terminates a process after calling the Standard I/O
+     library function __c_l_e_a_n_u_p to flush any buffered output.
+     _E_x_i_t never returns.
+
+SEE ALSO
+     exit(2), intro(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

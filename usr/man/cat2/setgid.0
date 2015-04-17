@@ -1,0 +1,132 @@
+
+
+
+SETUID(2)	    UNIX Programmer's Manual		SETUID(2)
+
+
+
+NAME
+     setuid, seteuid,setgid,setegid - set user and group ID
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <unistd.h>
+
+     _i_n_t
+     setuid(uid)
+	 uid_t uid
+
+     _i_n_t
+     seteuid(euid)
+	 uid_t euid
+
+     _i_n_t
+     setgid(gid)
+	 gid_t gid
+
+     _i_n_t
+     setegid(egid)
+	 gid_t egid
+
+DESCRIPTION
+     The setuid function sets the real and effective user IDs and
+     the saved set-user-ID of the current process to the speci-
+     fied value.  The setuid function is permitted if the speci-
+     fied ID is equal to the real user ID of the process, or if
+     the effective user ID is that of the super user.
+
+     The setgid function sets the real and effective group IDs
+     and the saved set-group-ID of the current process to the
+     specified value.  The setgid function is permitted if the
+     specified ID is equal to the real group ID of the process,
+     or if the effective user ID is that of the super user.
+
+     The seteuid function (setegid) sets the effective user ID
+     (group ID) of the current process.  The effective user ID
+     may be set to the value of the real user ID or the saved
+     set-user-ID (see intro(2) and execve(2); in this way, the
+     effective user ID of a set-user-ID executable may be toggled
+     by switching to the real user ID, then re-enabled by revert-
+     ing to the set-user-ID value.  Similarly, the effective
+     group ID may be set to the value of the real group ID or the
+     saved set-user-ID.
+
+RETURN VALUES
+     Upon success, these functions return 0; otherwise -1 is
+     returned.
+
+     If the user is not the super user, or the uid specified is
+     not the real, effective ID, or saved ID, these functions
+
+
+
+Printed 11/26/99	December 3, 1997			1
+
+
+
+
+
+
+SETUID(2)	    UNIX Programmer's Manual		SETUID(2)
+
+
+
+     return -1.
+
+SEE ALSO
+     getuid(2), getgid(2)
+
+STANDARDS
+     The setuid and setgid functions are compliant with the IEEE
+     Std 1003.1-1988 (``POSIX'') specification with
+     _POSIX_SAVED_IDS not defined.  The seteuid and setegid func-
+     tions are extensions based on the POSIX concept of
+     _POSIX_SAVED_IDS , and have been proposed for a future revi-
+     sion of the standard.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 3, 1997			2
+
+
+

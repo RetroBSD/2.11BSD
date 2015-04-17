@@ -1,0 +1,132 @@
+
+
+
+SHAR(1net)		 Wang Institute                SHAR(1net)
+
+
+
+NAME
+     shar - create file storage archive for extraction by /bin/sh
+
+SYNOPSIS
+     shar [-abcmsuv] [-p prefix] [-d delim] files > archive
+
+DESCRIPTION
+     _s_h_a_r prints its input files with special command lines
+     around them to be used by the shell, /_b_i_n/_s_h , to extract
+     the files later.  The output can be filtered through the
+     shell to recreate copies of the original files.
+
+     _s_h_a_r allows directories to be named, and _s_h_a_r prints the
+     necessary commands (_m_k_d_i_r & _c_d) to create new directories
+     and fill them.  _s_h_a_r will not allow existing files to be
+     over-written; such files must be removed by the user
+     extracting the files.
+
+OPTIONS
+     -a   All the options.  The options: -v -c -b -p <tab>X are
+	  implied.
+
+     -b   Extract files into basenames so that files with abso-
+	  lute path names are put into the current directory.
+	  This option has strange effects when directories are
+	  archived.
+
+     -c   Check file size on extraction by counting characters.
+	  An error message is reported to the person doing the
+	  extraction if the sizes don't match.	One reason why
+	  the sizes may not match is that _s_h_a_r will append a new-
+	  line to complete incomplete last lines; _s_h_a_r prints a
+	  message that mentions added newlines.  Another reason
+	  why the sizes may not match is that some network mail
+	  programs remove non-whitespace control characters.
+	  _s_h_a_r prints a message that mentions control characters
+	  to the extractor.
+
+     -d   Use this as the ``end of file'' delimiter instead of
+	  the default.	The only reason to change it is if you
+	  suspect a file contains the default delimiter:
+	  SHAR_EOF.
+
+     -m   Reset the exact protection modes of files when they are
+	  extracted (using the _c_h_m_o_d program).	By default, the
+	  extractor's default file modes are used, and executable
+	  files (e.g., shell scripts) are made executable.
+
+     -p   Use this as the prefix to each line of the archived
+	  files.  This is to make sure that special characters at
+	  the start of lines are not eaten up by programs like
+	  mailers.  If this option is used, the files will be
+
+
+
+Printed 11/26/99	  March 4, 1986                         1
+
+
+
+
+
+
+SHAR(1net)		 Wang Institute                SHAR(1net)
+
+
+
+	  extracted with the stream editor sed rather than cat so
+	  it is more efficient and portable to avoid setting the
+	  prefix, though perhaps less safe if you don't know what
+	  is in the files.
+
+     -s   Silent running.  All checking and extra output is inhi-
+	  bited.
+
+     -u   Archive the input files with the _u_u_e_n_c_o_d_e format for
+	  later extraction with _u_u_d_e_c_o_d_e. This will allow you to
+	  send files with control characters in them, but will
+	  slow down the extracting.  You must be sure that the
+	  receiving party has access to uudecode.
+
+     -v   Print verbose feedback messages about what _s_h_a_r is
+	  doing to be printed during extraction.  Sizes of plain
+	  files are echoed to allow a simple validity check.
+
+SEE ALSO
+     sh(1), tar(1), cpio(1), tp(1), uuencode(1), uudecode(1)
+     fpack(1) is a plain-file packer useful for UNIX and MSDOS
+
+AUTHOR
+     Gary Perlman (based on a shell version by James Gosling,
+     with additions motivated by many people on the UNIX network:
+     Derek Zahn, Michael Thompson, H. Morrow Long, Fred Avolio,
+     Gran Uddeborg, Chuck Wegrzyn, nucleus!randy@TORONTO, & Bill
+     McKeeman)
+
+LIMITATIONS
+     _s_h_a_r does not know anything about links between files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  March 4, 1986                         2
+
+
+

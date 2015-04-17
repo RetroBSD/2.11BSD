@@ -1,0 +1,132 @@
+
+
+
+MT(1)		    UNIX Programmer's Manual		    MT(1)
+
+
+
+NAME
+     mt - magnetic tape manipulating program
+
+SYNOPSIS
+     mt [ -f _t_a_p_e_n_a_m_e ] _c_o_m_m_a_n_d [ _c_o_u_n_t ]
+
+DESCRIPTION
+     _M_t is used to give commands to a magnetic tape drive.  If a
+     tape name is not specified, the environment variable TAPE is
+     used;  if TAPE does not exist, _m_t uses the device
+     /_d_e_v/_r_m_t_1_2.  Note that _t_a_p_e_n_a_m_e must reference a raw (not
+     block) tape device.  By default _m_t performs the requested
+     operation once.  Operations may be performed multiple times
+     by specifying _c_o_u_n_t.
+
+     The available commands are listed below.  Only as many char-
+     acters as are required to uniquely identify a command need
+     be specified.
+
+     eof, weof
+	  Write _c_o_u_n_t end-of-file marks at the current position
+	  on the tape.
+
+     fsf  Forward space _c_o_u_n_t files.
+
+     fsr  Forward space _c_o_u_n_t records.
+
+     bsf  Back space _c_o_u_n_t files.
+
+     bsr  Back space _c_o_u_n_t records.
+
+     rewind
+	  Rewind the tape (_C_o_u_n_t is ignored).
+
+     offline, rewoffl
+	  Rewind the tape and place the tape unit off-line (_C_o_u_n_t
+	  is ignored).
+
+     status
+	  Print status information about the tape unit.
+
+     cacheon
+	  Enable the readahead/writebehind cache on the tape
+	  unit.
+
+     cacheoff
+	  Turn off the readahead/writebehind cache on the tape
+	  unit.
+
+     _M_t returns a 0 exit status when the operation(s) were suc-
+     cessful, 1 if the command was unrecognized, and 2 if an
+     operation failed.
+
+
+
+Printed 11/26/99	December 22, 1995			1
+
+
+
+
+
+
+MT(1)		    UNIX Programmer's Manual		    MT(1)
+
+
+
+     The cacheon and cacheoff commands currently only apply to
+     the TMSCP driver and then only for certain drives such as
+     the TU81+.  No error is produced by the TMSCP driver if the
+     cache commands are used.  Other drivers will return an error
+     code since they do not recognize the MTCACHE and MTNOCACHE
+     functions codes.  See mtio(4).
+
+FILES
+     /dev/rmt* Raw magnetic tape interface
+
+SEE ALSO
+     mtio(4), tmscp(4), dd(1), ioctl(2), environ(7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 22, 1995			2
+
+
+

@@ -1,0 +1,66 @@
+#
+# Copyright (c) 1988 Regents of the University of California.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms are permitted
+# provided that this notice is preserved and that due credit is given
+# to the University of California at Berkeley. The name of the University
+# may not be used to endorse or promote products derived from this
+# software without specific prior written permission. This software
+# is provided ``as is'' without express or implied warranty.
+#
+#	2.6 (2.11BSD GTE) 1997/11/28
+#
+S=	../sys
+VPATH=	../sys
+
+CFILES=	${S}/init_main.c ${S}/init_sysent.c ${S}/kern_acct.c		\
+	${S}/kern_clock.c ${S}/kern_descrip.c ${S}/kern_exec.c		\
+	${S}/kern_exit.c ${S}/kern_fork.c ${S}/kern_mman.c		\
+	${S}/kern_proc.c ${S}/kern_prot.c ${S}/kern_resource.c		\
+	${S}/kern_prot2.c						\
+	${S}/kern_sig.c ${S}/kern_subr.c ${S}/kern_sysctl.c		\
+	${S}/kern_sig2.c						\
+	${S}/kern_synch.c ${S}/kern_time.c ${S}/kern_xxx.c		\
+	${S}/quota_sys.c ${S}/quota_kern.c ${S}/quota_ufs.c		\
+	${S}/quota_subr.c ${S}/subr_log.c ${S}/subr_prf.c ${S}/subr_rmap.c \
+	${S}/subr_xxx.c ${S}/sys_generic.c ${S}/sys_inode.c		\
+	${S}/sys_kern.c ${S}/sys_pipe.c					\
+	${S}/ingreslock.c						\
+	${S}/sys_process.c ${S}/syscalls.c ${S}/tty.c ${S}/tty_conf.c	\
+	${S}/tty_pty.c ${S}/tty_subr.c ${S}/tty_tb.c ${S}/tty_tty.c	\
+	${S}/ufs_alloc.c ${S}/ufs_bio.c ${S}/ufs_bmap.c			\
+	${S}/ufs_dsort.c ${S}/ufs_fio.c ${S}/ufs_inode.c		\
+	${S}/ufs_mount.c ${S}/ufs_namei.c ${S}/ufs_subr.c		\
+	${S}/ufs_disksubr.c ${S}/ufs_syscalls2.c			\
+	${S}/ufs_syscalls.c ${S}/uipc_syscalls.c ${S}/vm_proc.c		\
+	${S}/vfs_vnops.c \
+	${S}/vm_sched.c ${S}/vm_swap.c ${S}/vm_swp.c ${S}/vm_text.c
+OBJS=	init_main.o init_sysent.o kern_acct.o kern_clock.o		\
+	kern_descrip.o kern_exec.o kern_exit.o kern_fork.o kern_mman.o	\
+	kern_proc.o kern_prot.o kern_resource.o kern_sig.o kern_sysctl.o \
+	kern_prot2.o kern_sig2.o					\
+	kern_subr.o kern_synch.o kern_time.o kern_xxx.o quota_sys.o	\
+       quota_kern.o quota_ufs.o quota_subr.o subr_log.o subr_prf.o subr_rmap.o \
+	ingreslock.o							\
+	subr_xxx.o sys_generic.o sys_inode.o sys_kern.o			\
+	sys_pipe.o sys_process.o syscalls.o tty.o tty_conf.o tty_pty.o	\
+	tty_subr.o tty_tb.o tty_tty.o ufs_alloc.o ufs_bio.o ufs_bmap.o	\
+	ufs_dsort.o ufs_fio.o ufs_inode.o ufs_mount.o ufs_namei.o	\
+	ufs_subr.o ufs_syscalls.o uipc_syscalls.o vm_proc.o vm_sched.o	\
+	ufs_disksubr.o ufs_syscalls2.o					\
+	vfs_vnops.o \
+	vm_swap.o vm_swp.o vm_text.o
+
+.c.o:
+	${CC} ${CFLAGS} -S $*.c
+	${SED} -f SPLFIX $*.s | ${AS} -u -o $*.o
+	rm -f $*.s
+
+all: ${OBJS}
+
+depend: 
+	mkdep -f Make.sys ${CFLAGS} ${CFILES}
+
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

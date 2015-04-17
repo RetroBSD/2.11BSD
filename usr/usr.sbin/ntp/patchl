@@ -1,0 +1,191 @@
+From wlbr!daemon Fri May 19 10:40:53 PDT 1989
+Article 749 of fa.ntp:
+Path: wlbr!daemon
+>From: Alexander Dupuy <dupuy@cs.columbia.edu>
+Newsgroups: fa.ntp
+Subject: ntpdc terse display
+Message-ID: <31184@wlbr.EATON.COM>
+Date: 19 May 89 17:08:25 GMT
+Sender: daemon@wlbr.EATON.COM
+Distribution: local
+Organization: fa.ntp
+Lines: 176
+
+At one time, the ntpdc terse display listed the reference clocks for all the
+peers of a host.  This disappeared, replaced with the local address, which is
+useful if you have multi-homed hosts and weird connections to BARRnet, but is
+pretty useless for us, who have only one multi-homed host.  (Since there are
+no off-network machines which actively peer with it, it only uses its primary
+address anyhow).
+
+So I hacked a "-t" flag into ntpdc to provide an alternate terse display, which
+replaces the local address information with the reference clock information.
+
+@alex
+-- 
+inet: dupuy@cs.columbia.edu
+uucp: ...!rutgers!cs.columbia.edu!dupuy
+______________________________________________________________________________
+
+Here are the patches to the latest version on trantor:
+
+RCS file: RCS/ntpdc.8,v
+retrieving revision 1.3
+diff -c -r1.3 ntpdc.8
+*** /tmp/,RCSt1a03872	Fri May 19 12:42:48 1989
+--- ntpdc.8	Fri May 19 12:40:54 1989
+***************
+*** 12,17 ****
+--- 12,18 ----
+  The \fB-n\fP switch disables this, printing only internet addresses.
+  .PP
+  Default is a terse, table-style report.
++ The \fB-t\fP switch generates an alternate form of the terse report.
+  The \fB-v\fP switch generates a verbose report.
+  
+  .SH TERSE REPORT
+***************
+*** 29,34 ****
+--- 30,48 ----
+  
+  .fi
+  .PP
++ The alternate form is only slightly different; it looks like:
++ 
++ .nf
++     Address      Reference     Strat Poll Reach    Delay   Offset    Disp
++ ==========================================================================
++ -umd1		 WWVB              1   64  266       3.0    -65.0      0.0
++ *DCN1.ARPA	 WWVB              1  256  332     155.0     -4.0      0.0
++  128.8.251.92	 umd1              2   64  367     -16.0    -61.0      0.0
++  idunno.Prince trantor           3   64  252      60.0    -53.0      0.0
++  leo		 umd1              2   64  275       4.0   -273.0   1536.2
++ 
++ .fi
++ .PP
+  Fields are interpreted as follows:
+  .TP
+  - or *:
+***************
+*** 42,47 ****
+--- 56,64 ----
+  (lcl) address:
+  The "local" host as specified as an argument to
+  \fIntpdc\fP.
++ .TP
++ Reference:
++ The reference time source being used for synchronization by the peer.
+  .TP
+  Strat:
+  The stratum level of the peer (as perceived by the local host).
+RCS file: RCS/ntpdc.c,v
+retrieving revision 1.3
+diff -c -r1.3 ntpdc.c
+*** /tmp/,RCSt1a03885	Fri May 19 12:43:03 1989
+--- ntpdc.c	Fri May 19 12:31:57 1989
+***************
+*** 1,9 ****
+  #ifndef	lint
+! static char *RCSid = "$Source: /usr/local/src/ntp/RCS/ntpdc.c,v $ $Revision: 1.3 $ $Date: 89/05/19 12:07:46 $";
+  #endif
+  
+  /*
+   * $Log:	ntpdc.c,v $
+   * Revision 1.3  89/05/19  12:07:46  dupuy
+   * ntp-3.4 patchlevel 13
+   * 
+--- 1,12 ----
+  #ifndef	lint
+! static char *RCSid = "$Source: /usr/local/src/ntp/RCS/ntpdc.c,v $ $Revision: 1.3.1.1 $ $Date: 89/05/19 12:31:48 $";
+  #endif
+  
+  /*
+   * $Log:	ntpdc.c,v $
++  * Revision 1.3.1.1  89/05/19  12:31:48  dupuy
++  * add alternate -t flag
++  * 
+   * Revision 1.3  89/05/19  12:07:46  dupuy
+   * ntp-3.4 patchlevel 13
+   * 
+***************
+*** 99,105 ****
+  int debug;
+  int s;
+  int timedout, timeout();
+! int nflag, vflag;
+  
+  struct sockaddr_in sin = {AF_INET};
+  
+--- 102,108 ----
+  int debug;
+  int s;
+  int timedout, timeout();
+! int nflag, vflag, tflag;
+  
+  struct sockaddr_in sin = {AF_INET};
+  
+***************
+*** 138,143 ****
+--- 141,149 ----
+  		case 'n':
+  			nflag++;
+  			break;
++ 		case 't':
++ 			tflag++;
++ 			break;
+  		case 'v':
+  			vflag++;
+  			break;
+***************
+*** 226,232 ****
+  			first = 0;
+  			replies = (1L << msg->npkts) - 1;
+  			if (!vflag) {
+! 				printf("   (rem)  Address   (lcl)      Strat Poll Reach    Delay   Offset    Disp\n");
+  				printf("==========================================================================\n");
+  			}
+  		}
+--- 232,241 ----
+  			first = 0;
+  			replies = (1L << msg->npkts) - 1;
+  			if (!vflag) {
+! 				if (tflag)
+! 					printf("    Address      Reference     Strat Poll Reach    Delay   Offset    Disp\n");
+! 				else
+! 					printf("   (rem)  Address   (lcl)      Strat Poll Reach    Delay   Offset    Disp\n");
+  				printf("==========================================================================\n");
+  			}
+  		}
+***************
+*** 321,329 ****
+  		c = '*';		/* mark peer selection */
+  	sin.sin_addr.s_addr = n->net_address;
+  	printf("%c%-15.15s ", c, cvthname(&sin));
+! 	sin.sin_addr.s_addr = n->my_address;
+! 	printf("%-16.16s %2d %4d  %03o  %8.1f %8.1f %8.1f\n",
+! 	       sin.sin_addr.s_addr ? inet_ntoa(sin.sin_addr) : "wildcard", 
+  	       n->stratum, (int)ntohl((u_long)n->timer), 
+  	       ntohs(n->reach) & SHIFT_MASK, del, off, dsp);
+  }	
+--- 330,348 ----
+  		c = '*';		/* mark peer selection */
+  	sin.sin_addr.s_addr = n->net_address;
+  	printf("%c%-15.15s ", c, cvthname(&sin));
+! 	if (tflag) {
+! 		if (n->stratum == 1 || n->stratum == 0) {
+! 			printf("%-4.4s             ", (char *) &n->refid);
+! 		} else {
+! 			sin.sin_addr.s_addr = (u_long) n->refid;
+! 			printf("%-16.16s ", cvthname(&sin));
+! 		}
+! 	} else {
+! 		sin.sin_addr.s_addr = n->my_address;
+! 		printf("%-16.16s ", sin.sin_addr.s_addr ?
+! 		       inet_ntoa(sin.sin_addr) : "wildcard");
+! 	}
+! 	printf("%2d %4d  %03o  %8.1f %8.1f %8.1f\n",
+  	       n->stratum, (int)ntohl((u_long)n->timer), 
+  	       ntohs(n->reach) & SHIFT_MASK, del, off, dsp);
+  }	
+
+

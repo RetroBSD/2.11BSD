@@ -1,0 +1,66 @@
+
+
+
+UULOG(1C)	    UNIX Programmer's Manual		UULOG(1C)
+
+
+
+NAME
+     uulog - display UUCP log files
+
+SYNOPSIS
+     uulog [ -s _s_y_s ] [ -u _u_s_e_r ]
+
+DESCRIPTION
+     _U_u_l_o_g queries a log of _u_u_c_p(1C) and _u_u_x(1C) transactions in
+     the file /usr/spool/uucp/LOGFILE.
+
+     The options command _u_u_l_o_g to print logging information:
+
+     -s_s_y_s   Print information about work involving system _s_y_s.
+
+     -u_u_s_e_r  Print information about work done for the specified
+	     _u_s_e_r.
+
+FILES
+     /usr/spool/uucp/LOGFILE
+
+SEE ALSO
+     uucp(1C), uux(1C).
+
+NOTES
+     Very early releases of UUCP used separate log files for each
+     of the UUCP utilities; _u_u_l_o_g was used to merge the indivi-
+     dual logs into a master file.  This capability has not been
+     necessary for some time and is no longer supported.
+
+BUGS
+     UUCP's recording of which user issued a request is unreli-
+     able.
+
+     _U_u_l_o_g is little more than an overspecialized version of
+     _g_r_e_p(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 24, 1986                         1
+
+
+

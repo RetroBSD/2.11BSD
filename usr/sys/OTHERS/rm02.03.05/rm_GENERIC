@@ -1,0 +1,4 @@
+# Use NXP rather than NRM if possible.
+NRM		0		# RJM02/RWM03, RM02/03/05
+RM_DKN		0		# drive # for iostat disk monitoring
+RM_RM05		YES		# drive type is RM05, not RM02/3

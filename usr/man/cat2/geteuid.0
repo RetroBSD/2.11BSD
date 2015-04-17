@@ -1,0 +1,66 @@
+
+
+
+GETUID(2)	    UNIX Programmer's Manual		GETUID(2)
+
+
+
+NAME
+     getuid, geteuid - get user identification
+
+SYNOPSIS
+     #include <unistd.h>
+     #include <sys/types.h>
+
+     _u_i_d__t
+     getuid()
+
+     _u_i_d__t
+     geteuid()
+
+DESCRIPTION
+     The getuid function returns the real user ID of the calling
+     process.  The geteuid function returns the effective user ID
+     of the calling process.
+
+     The real user ID is that of the user who has invoked the
+     program.  As the effective user ID gives the process addi-
+     tional permissions during execution of ``_s_e_t-_u_s_e_r-_I_D'' mode
+     processes, getuid is used to determine the real-user-id of
+     the calling process.
+
+ERRORS
+     The getuid and geteuid functions are always successful, and
+     no return value is reserved to indicate an error.
+
+SEE ALSO
+     getgid(2), setreuid(2)
+
+STANDARDS
+     Geteuid and getuid conform to IEEE Std 1003.1-1988
+     (``POSIX'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 2, 1997			1
+
+
+

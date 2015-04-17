@@ -1,0 +1,66 @@
+
+
+
+ASINH(3M)	    UNIX Programmer's Manual		ASINH(3M)
+
+
+
+NAME
+     asinh, acosh, atanh - inverse hyperbolic functions
+
+SYNOPSIS
+     #include <math.h>
+
+     double asinh(x)
+     double x;
+
+     double acosh(x)
+     double x;
+
+     double atanh(x)
+     double x;
+
+DESCRIPTION
+     These functions compute the designated inverse hyperbolic
+     functions for real arguments.
+
+ERROR (due to Roundoff etc.)
+     These functions inherit much of their error from log1p
+     described in exp(3M).  On a VAX, acosh is accurate to about
+     3 _u_l_ps, asinh and atanh to about 2 _u_l_ps.  An _u_l_p is one _Unit
+     in the _Last _Place carried.
+
+DIAGNOSTICS
+     Acosh returns the reserved operand on a VAX if the argument
+     is less than 1.
+
+     Atanh returns the reserved operand on a VAX if the argument
+     has absolute value bigger than or equal to 1.
+
+SEE ALSO
+     math(3M), exp(3M), infnan(3M)
+
+AUTHOR
+     W. Kahan, Kwok-Choi Ng
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

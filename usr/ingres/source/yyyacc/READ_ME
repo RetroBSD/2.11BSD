@@ -1,0 +1,4 @@
+This module is a highly hacked version of a version five (yes,
+you heard correctly) yacc.  We installed some ad hoc error
+correction for our personal use.  Try not to deal with this
+code if at all possible.

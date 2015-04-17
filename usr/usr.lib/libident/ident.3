@@ -1,0 +1,276 @@
+.\" Pdr Emanuelsson <pell@lysator.liu.se> 1993-03-28
+.ds : \h'\w'u'u/5'\z"\h'-\w'e'u/5'
+.TH IDENT 3 "4 April 1993" "Lysator ACS"
+.SH NAME
+ident_lookup, ident_id, ident_free, id_open, id_close, id_query, id_parse,
+id_fileno \- query remote IDENT server
+.SH SYNOPSIS
+.nf
+.B #include <ident.h>
+.LP
+.I High-level calls
+.LP
+.B IDENT *ident_lookup(int fd, int timeout)
+.LP
+.B char *ident_id(int fd, int timeout)
+.LP
+.B void ident_free(IDENT *id)
+.LP
+.I Low-level calls
+.LP
+.B id_t *id_open(laddr, faddr, timeout)
+.B struct in_addr *laddr, *faddr;
+.B struct timeval *timeout;
+.LP
+.B int id_close(id)
+.B id_t *id;
+.LP
+.B id_query(id, lport, fport, timeout)
+.B id_t *id;
+.B int lport, fport;
+.B struct timeval *timeout;
+.LP
+.B int id_parse(id, timeout, lport, fport, identifier,
+.B		opsys, charset)
+.B id_t *id;
+.B struct timeval *timeout;
+.B int *lport, *fport;
+.B char **identifier, **opsys, **charset;
+.LP
+.B int id_fileno(id)
+.B id_t *id;
+.fi
+.SH DESCRIPTION
+.LP
+.B ident_lookup
+tries to connect to a remote
+.B IDENT
+server to establish the identity of the peer connected on
+.I fd,
+which should be a socket file descriptor.
+.I timeout
+is the longest permissible time to block waiting for an answer, and is
+given in seconds. A value of 0 (zero) means wait indefinitely (which in the
+most extreme case will normally be until the underlying network times out).
+.B ident_lookup
+returns a pointer to an
+.I IDENT
+struct, which has the following contents:
+.RS
+.LP
+.nf
+.ft B
+typedef struct {
+	int lport;		/* Local port */
+	int fport;		/* Far (remote) port */
+	char *identifier;	/* Normally user name */
+	char *opsys;		/* OS */
+	char *charset;		/* Charset (what did you expect?) */
+} IDENT;
+.ft R
+.fi
+.RE
+.LP
+For a full description of the different fields, refer to
+.I RFC-1413.
+.LP
+All data returned by
+.B ident_lookup
+(including the
+.SM IDENT
+struct) points to malloc'd data, which can be freed with a call to
+.B ident_free.
+.B ident_lookup
+returns 0 on error or timeout. Presently, this should normally be taken to
+mean that the remote site is not running an
+.SM IDENT
+server, but it might naturally be caused by other network related problems
+as well.
+.B Note that
+all fields of the
+.SM IDENT
+struct need not necessarily be set.
+.LP
+.B ident_id
+takes the same parameters as
+.B ident_lookup
+but only returns a pointer to a malloc'd area containing the
+.I identifier
+string, which is probably the most wanted data from the
+.SM IDENT
+query.
+.LP
+.B ident_free
+frees all data areas associated with the
+.SM IDENT
+struct pointed to by
+.I id,
+including the struct itself.
+.LP
+.ce
+.I Low-level calls
+.LP
+The low-level calls can be used when greater flexibility is needed. For
+example, if non-blocking I/O is needed, or multiple queries to the
+same host are to be made.
+.LP
+.B id_open
+opens a connection to the remote
+.SM IDENT
+server referred to by
+.I faddr.
+The timeout is specified by
+.I timeout.
+A null-pointer means wait indefinitely, while a pointer to a
+zero-valued
+.I timeval
+struct sets non-blocking I/O, in the same way as for
+.B select(2).
+.B id_open
+returns a pointer to an
+.B id_t
+datum, which is an opaque structure to be used as future reference
+to the opened connection. When using non-blocking I/O it might however
+be useful to access the underlying socket file descriptior, which
+can be gotten at through the
+.B id_fileno
+macro described below.
+.LP
+.B id_close
+closes the connection opened with
+.B id_open
+and frees all data associated with
+.I id.
+.LP
+.B id_query
+sends off a query to a remote
+.SM IDENT
+server.
+.I lport
+and
+.I fport
+are sent to the server to identify the connection for which
+identification is needed.
+.I timeout
+is given as for
+.B id_open.
+If successful,
+.B id_query
+returns the number of bytes sent to the remote server. If not, -1 is
+returned and
+.B errno
+is set.
+.LP
+.B id_parse
+parses the reply to a query sent off by
+.B id_query
+and returns information to the locations pointed to by
+.I lport, fport, identifier, opsys
+and
+.I charset.
+For string data
+.I (identifier, opsys
+and
+.I charset)
+pointers to malloc'd space are returned.
+.LP
+.B id_parse
+returns:
+.RS
+.TP
+ 1
+If completely successful.
+.TP
+-3
+Illegal reply type from remote server.
+.I identifier
+is set to the illegal reply.
+.TP
+-2
+Cannot parse the reply from the server.
+.I identifier
+is normally set to the illegal reply.
+.TP
+-1
+On general errors or timeout.
+.TP
+ 0
+When non-blocking mode is set and
+.B id_parse
+has not finished parsing the reply from the remote server.
+.TP
+ 2
+Indicates the query/reply were successful, but the remote server
+experienced some error.
+.I identifier
+is set to the error message from the remote server.
+.RE
+.LP
+For all errors,
+.I errno
+is set as appropriate.
+.LP
+.B id_fileno
+is a macro that takes an
+.B id_t
+handle and returns the actual socket file descriptor used for
+the connection to the remote server.
+.SH ERRORS
+.TP 15
+ETIMEDOUT
+The call timed out and non-blocking I/O was not set.
+.SH EXAMPLES
+.LP
+Here's an example how to handle the reply from id_reply() in
+the case that non-blocking I/O is set. Note that id_reply() will
+return 0 as long as it's not finished parsing a reply.
+.LP
+.RS
+.nf
+.nj
+int rcode;
+
+ ...
+
+idp = id_open(...)
+
+ ...
+
+while ((rcode = id_parse(idp, timeout,
+			 &lport, &fport, &id, &op, &cs)) == 0)
+	;
+
+if (rcode < 0)
+{
+  if (errno == ETIMEDOUT)
+    foo();	/* Lookup timed out */
+  else
+    bar();      /* Fatal error */
+}
+else if (rcode == 1)
+{
+  /* Valid USERID protocol reply */
+}
+else if (rcode == 2)
+{
+  /* Protocol ERROR reply */
+}
+.fi
+.RE
+.SH SEE ALSO
+RFC-1413, socket(2), select(2)
+.SH AUTHORS
+Peter Eriksson
+.I <pen@lysator.liu.se>
+.br
+P\*:ar Emanuelsson
+.I <pell@lysator.liu.se>
+.SH BUGS
+For
+.B ident_lookup
+and
+.B ident_id
+the blocking time in extreme cases might be as much as three times
+the value given in the
+.I timeout
+parameter.

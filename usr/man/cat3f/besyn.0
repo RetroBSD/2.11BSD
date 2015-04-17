@@ -1,0 +1,66 @@
+
+
+
+BESSEL(3F)	    UNIX Programmer's Manual	       BESSEL(3F)
+
+
+
+NAME
+     bessel functions - of two kinds for integer orders
+
+SYNOPSIS
+     function besj0 (x)
+
+     function besj1 (x)
+
+     function besjn (n, x)
+
+     function besy0 (x)
+
+     function besy1 (x)
+
+     function besyn (n, x)
+
+     double precision function dbesj0 (x)
+     double precision x
+
+     double precision function dbesj1 (x)
+     double precision x
+
+     double precision function dbesjn (n, x)
+     double precision x
+
+     double precision function dbesy0 (x)
+     double precision x
+
+     double precision function dbesy1 (x)
+     double precision x
+
+     double precision function dbesyn (n, x)
+     double precision x
+
+DESCRIPTION
+     These functions calculate Bessel functions of the first and
+     second kinds for real arguments and integer orders.
+
+DIAGNOSTICS
+     Negative arguments cause _b_e_s_y_0, _b_e_s_y_1, and _b_e_s_y_n to return a
+     huge negative value. The system error code will be set to
+     EDOM (33).
+
+FILES
+     /usr/lib/libF77.a
+
+SEE ALSO
+     j0(3M), perror(3F)
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,563 @@
+:
+# Installation script for less.
+# This script prompts the operator for various information
+# and constructs a makefile.
+
+echo "This script will build a makefile for less."
+echo "If you already have a file called \"makefile\" it will be overwritten."
+echo "Press RETURN to continue."
+read ans
+
+echo "I will ask you some questions about your system."
+echo "If you do not know the answer to any question,"
+echo "just press RETURN and I will choose a default for you."
+echo "Press RETURN now."
+read ans
+
+echo "Most Unix systems are derived from either System V"
+echo "or Berkeley BSD 4.1, 4.2, 4.3, etc."
+echo ""
+echo "Is your system closest to:"
+echo "  1. System V"
+echo "  2. BSD 2.11 or later"
+echo "  3. BSD 4.1"
+echo "  4. BSD 4.2 or later"
+echo "  5. Xenix"
+echo "Enter a number, or just RETURN if you don't know: \c"
+read ans
+xenix=0
+case "X$ans" in
+X1) sys=sys5; sysname="System V" ;;
+X2) sys=bsd; bsd41=0; bsd2=1; sysname="BSD 2.11" ;;
+X3) sys=bsd; bsd41=1; bsd2=0; sysname="BSD 4.1" ;;
+X4) sys=bsd; bsd41=0; bsd2=0; sysname="BSD 4.2" ;;
+X5) sys=sys5; xenix=1; sysname="Xenix" ;;
+*) sys=unknown ;;
+esac
+echo ""
+
+cat >makefile <<"EOF"
+# Makefile for "less"
+#
+# Invoked as:
+#	make all
+#   or	make install
+# Plain "make" is equivalent to "make all".
+#
+# If you add or delete functions, remake funcs.h by doing:
+#	make newfuncs
+# This depends on the coding convention of function headers looking like:
+#	" \t public <function-type> \n <function-name> ( ... ) "
+#
+# Also provided:
+#	make lint	# Runs "lint" on all the sources.
+#	make clean	# Removes "less" and the .o files.
+#	make clobber	# Pretty much the same as make "clean".
+
+
+##########################################################################
+# System-specific parameters
+##########################################################################
+
+EOF
+
+cat >>makefile <<EOF
+# Define XENIX if running under XENIX 3.0
+XENIX = $xenix
+
+EOF
+echo ""
+
+
+
+if [ "X$sys" = "Xunknown" ]
+then
+	alldefault=0
+else
+	def=yes
+	alldefault=1
+	echo "Do you want to use ALL the defaults for $sysname?"
+	echo "  Enter \"yes\" if you have a STANDARD $sysname."
+	echo "  Enter \"no\" if you want to change any of the defaults. [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) alldefault=1 ;;
+	X[nN]*) alldefault=0 ;;
+	esac
+	echo ""
+fi
+
+
+
+def=yes
+x=1
+if [ $alldefault = 0 ]
+then
+	echo "Does your C compiler support the \"void\" type? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# VOID is 1 if your C compiler supports the "void" type,
+# 0 if it does not.
+VOID = $x
+
+EOF
+
+
+
+def=long
+if [ $alldefault = 0 ]
+then
+	echo "What type is the \"offset\" argument to lseek? [$def] \c"
+	read ans
+	if [ "X$ans" != "X" ]
+	then
+		def=$ans
+	fi
+	echo ""
+fi
+cat >>makefile <<EOF
+# off_t is the type which lseek() returns.
+# It is also the type of lseek()'s second argument.
+off_t = $def
+
+EOF
+
+
+
+
+if [ "$sys" = "bsd" ]
+then
+	def=no; x=0
+else
+	def=yes; x=1
+fi
+if [ $alldefault = 0 ]
+then
+	echo "Most System V systems have termio.h, while most"
+	echo "Berkeley-derived systems have sgtty.h."
+	echo "Does your system have termio.h? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# TERMIO is 1 if your system has /usr/include/termio.h.
+# This is normally the case for System 5.
+# If TERMIO is 0 your system must have /usr/include/sgtty.h.
+# This is normally the case for BSD.
+TERMIO = $x
+
+EOF
+
+
+
+
+if [ "$sys" = "bsd" -a "$bsd41" = "0" ]
+then
+	def=yes; x=1
+else
+	def=no; x=0
+fi
+if [ $alldefault = 0 ]
+then
+	echo "Most BSD 4.2 and 4.3 systems have the sigsetmask() call."
+	echo "Most System V and BSD 4.1 systems do not."
+	echo "Does your system have sigsetmask()? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# SIGSETMASK is 1 if your system has the sigsetmask() call.
+# This is normally the case only for BSD 4.2,
+# not for BSD 4.1 or System 5.
+SIGSETMASK = $x
+
+EOF
+
+cat >>makefile <<EOF
+##########################################################################
+# Optional and semi-optional features
+##########################################################################
+
+EOF
+
+
+
+
+if [ "$sys" = "bsd" ]
+then
+	def=2; REGCMP=0;RECOMP=1
+else
+	def=1; REGCMP=1;RECOMP=0
+fi
+if [ $alldefault = 0 ]
+then
+	echo "Most System V systems have the regcmp() function."
+	echo "Most Berkeley-derived systems have the re_comp() function."
+	echo "Does your system have:"
+	echo "  1. regcmp"
+	echo "  2. re_comp"
+	echo "  3. neither   [$def] \c"
+	read ans
+	case "X$ans" in
+	X1) REGCMP=1;RECOMP=0 ;;
+	X2) REGCMP=0;RECOMP=1 ;;
+	X3) REGCMP=0;RECOMP=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# REGCMP is 1 if your system has the regcmp() function.
+# This is normally the case for System 5.
+# RECOMP is 1 if your system has the re_comp() function.
+# This is normally the case for BSD.
+# If neither is 1, pattern matching is supported, but without metacharacters.
+REGCMP = $REGCMP
+RECOMP = $RECOMP
+
+EOF
+
+
+
+
+def=yes
+x=1
+if [ $alldefault = 0 ]
+then
+	echo "Do you wish to allow shell escapes? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# SHELL_ESCAPE is 1 if you wish to allow shell escapes.
+# (This is possible only if your system supplies the system() function.)
+SHELL_ESCAPE = $x
+
+EOF
+
+
+
+def=yes
+x=1
+edname="vi"
+if [ $alldefault = 0 ]
+then
+	echo "Do you wish to allow editor escapes? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[nN]*) x=0; edname="" ;;
+	X[yY]*) x=1
+		echo "What is the pathname of the default editor? [$edname] \c"
+		read ans 
+		if [ "x$ans" != "x" ]
+		then
+			edname=$ans
+		fi
+		;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# EDITOR is 1 if you wish to allow editor invocation (the "v" command).
+# (This is possible only if your system supplies the system() function.)
+# EDIT_PGM is the name of the (default) editor to be invoked.
+EDITOR = $x
+EDIT_PGM = $edname
+
+EOF
+
+
+
+def=yes
+x=1
+if [ $alldefault = 0 ]
+then
+	echo "If your system provides the popen() function and"
+	echo "the \"echo\" shell command, you may allow shell metacharacters" 
+	echo "to be expanded in filenames."
+	echo "Do you wish to allow shell metacharacters in filenames? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# GLOB is 1 if you wish to have shell metacharacters expanded in filenames.
+# This will generally work if your system provides the "popen" function
+# and the "echo" shell command.
+GLOB = $x
+
+EOF
+
+
+
+def=yes
+x=1
+if [ $alldefault = 0 ]
+then
+	echo "Do you wish to allow log files (-l option)? [$def] \c"
+	read ans
+	case "X$ans" in
+	X[yY]*) x=1 ;;
+	X[nN]*) x=0 ;;
+	esac
+	echo ""
+fi
+cat >>makefile <<EOF
+# LOGFILE is 1 if you wish to allow the -l option (to create log files).
+LOGFILE = $x
+
+EOF
+
+cat >>makefile <<EOF
+# ONLY_RETURN is 1 if you want RETURN to be the only input which
+# will continue past an error message.
+# Otherwise, any key will continue past an error message.
+ONLY_RETURN = 0
+
+
+##########################################################################
+# Compilation environment.
+##########################################################################
+
+EOF
+
+
+
+if [ "$xenix" = "1" ]
+then
+	LIBS="-ltermlib"
+elif [ "$sys" = "bsd" ]
+then
+	LIBS="-ltermcap"
+else
+	LIBS="-lcurses -ltermcap -lPW"
+fi
+if [ $alldefault = 0 ]
+then
+	echo "To build \"less\", you must link with libraries supplied by your system."
+	echo "(If this needs to be changed later, edit the makefile"
+	echo "and change the definition of LIBS.)"
+	echo "What libraries should be used [$LIBS] \c"
+	read ans
+	if [ "X$ans" != "X" ]
+	then
+		LIBS="$ans"
+	fi
+	echo ""
+fi
+cat >>makefile <<EOF
+# LIBS is the list of libraries needed.
+LIBS = $LIBS
+
+EOF
+
+
+if [ "$sys" = "bsd" -a "$bsd2" = "1" ]
+then
+	INSTALL_LESS="/usr/local/less"
+	INSTALL_HELP="/usr/local/lib/less.help"
+	INSTALL_MAN="/usr/local/man/cat1/less.0"
+	MANUAL="less.nro"
+else
+	INSTALL_LESS="/usr/local/bin/less"
+	INSTALL_HELP="/usr/local/bin/less.help"
+	INSTALL_MAN="/usr/man/man1/less.1"
+	MANUAL="less.nro"
+fi
+
+if [ $alldefault = 0 ]
+then
+	echo "What is the name of the \"public\" (installed) version of less?"
+	echo " [$INSTALL_LESS] \c"
+	read ans
+	if [ "X$ans" != "X" ]
+	then
+		INSTALL_LESS="$ans"
+	fi
+	echo "What is the name of the \"public\" (installed) version of the help file?"
+	echo " [$INSTALL_HELP] \c"
+	read ans
+	if [ "X$ans" != "X" ]
+	then
+		INSTALL_HELP="$ans"
+	fi
+	echo "What is the name of the \"public\" (installed) version of the manual page?"
+	echo " [$INSTALL_MAN] \c"
+	read ans
+	if [ "X$ans" != "X" ]
+	then
+		INSTALL_MAN="$ans"
+	fi
+	echo ""
+fi
+cat >>makefile <<EOF
+# INSTALL_LESS is a list of the public versions of less.
+# INSTALL_HELP is a list of the public version of the help file.
+# INSTALL_MAN is a list of the public versions of the manual page.
+INSTALL_LESS =	$INSTALL_LESS
+INSTALL_HELP =	$INSTALL_HELP
+INSTALL_MAN =	$INSTALL_MAN
+MANUAL =	$MANUAL
+HELPFILE =	$INSTALL_HELP
+
+
+EOF
+
+
+
+if [ "$sys" = "bsd" -a "$bsd2" = "1" ]
+then
+cat >>makefile <<"EOF"
+# OPTIM is passed to the compiler and the loader.
+# It is normally "-O" but may be, for example, "-g".
+OPTIM = -O -i
+EOF
+
+else
+cat >>makefile <<"EOF"
+# OPTIM is passed to the compiler and the loader.
+# It is normally "-O" but may be, for example, "-g".
+OPTIM = -O
+EOF
+
+fi
+
+
+cat >>makefile <<"EOF"
+
+
+##########################################################################
+# Files
+##########################################################################
+
+SRC1 =	main.c option.c prim.c ch.c position.c input.c output.c 
+SRC2 =	screen.c prompt.c line.c signal.c help.c ttyin.c command.c version.c
+SRC =	$(SRC1) $(SRC2)
+OBJ =	main.o option.o prim.o ch.o position.o input.o output.o screen.o \
+	prompt.o line.o signal.o help.o ttyin.o command.o version.o
+
+
+##########################################################################
+# Rules
+##########################################################################
+
+DEFS =	"-DTERMIO=$(TERMIO)" \
+	"-DSIGSETMASK=$(SIGSETMASK)" \
+	"-Doff_t=$(off_t)" "-DVOID=$(VOID)" \
+	"-DREGCMP=$(REGCMP)" "-DRECOMP=$(RECOMP)" \
+	"-DSHELL_ESCAPE=$(SHELL_ESCAPE)" \
+	"-DEDITOR=$(EDITOR)" "-DEDIT_PGM=\"$(EDIT_PGM)\"" \
+	"-DHELPFILE=\"$(HELPFILE)\"" \
+	"-DLOGFILE=$(LOGFILE)" \
+	"-DONLY_RETURN=$(ONLY_RETURN)" \
+	"-DGLOB=$(GLOB)" \
+	"-DXENIX=$(XENIX)"
+
+CFLAGS = $(OPTIM) $(DEFS)
+
+
+all: less
+
+less: $(OBJ)
+	cc $(OPTIM) -o less $(OBJ) $(LIBS)
+
+install: install_man install_less install_help
+
+install_less: less
+	for f in $(INSTALL_LESS); do  rm -f $$f; cp less $$f;  done
+	touch install_less
+
+install_help: less.help
+	for f in $(INSTALL_HELP); do  rm -f $$f; cp less.help $$f;  done
+	touch install_help
+
+EOF
+
+if [ "$sys" = "bsd" -a "$bsd2" = "1" ]
+then
+cat >>makefile <<"EOF"
+install_man: $(MANUAL)
+	rm -f $(INSTALL_MAN)
+	/usr/man/manroff $(MANUAL) > $(INSTALL_MAN)
+	chmod 444 $(INSTALL_MAN)
+	chown bin.bin $(INSTALL_MAN)
+	touch install_man
+
+EOF
+
+else
+cat >>makefile <<"EOF"
+install_man: $(MANUAL)
+	for f in $(INSTALL_MAN); do  rm -f $$f; cp $(MANUAL) $$f;  done
+	touch install_man
+
+EOF
+fi
+
+cat >>makefile <<"EOF"
+$(OBJ): less.h funcs.h
+
+# help.o depends on makefile for the definition of HELPFILE.
+help.o: makefile
+
+lint:
+	lint -hp $(DEFS) $(SRC)
+
+newfuncs:
+	mv funcs.h funcs.h.OLD
+	awk -f mkfuncs.awk $(SRC) >funcs.h
+
+EOF
+
+
+if [ "$sys" = "bsd" -a "$bsd2" = "1" ]
+then
+cat >>makefile <<"EOF"
+clean:
+	rm -f $(OBJ) less install_help install_less install_man core
+
+EOF
+
+else
+cat >>makefile <<"EOF"
+clean:
+	rm -f $(OBJ) less
+
+EOF
+fi
+
+cat >>makefile <<"EOF"
+clobber:
+	rm -f *.o less install_less install_man
+
+shar:
+	shar -v README install less.help makefile.* *.h *.awk > less.shar.a
+	shar -v less.nro $(SRC1) > less.shar.b
+	shar -v $(SRC2) > less.shar.c
+EOF
+echo ""
+
+echo "The makefile has been built."
+echo "You should check it to make sure everything is as you want it to be."
+echo "When you are satisfied with the makefile, just type \"make\""
+echo "and \"less\" will be built."

@@ -1,0 +1,36 @@
+cc  -c af.c
+af.c:47: warning: sign extension in bitwise logical operation
+cc  -c if.c
+cc  -c input.c
+cc  -c main.c
+main.c:103: warning: sign extension in bitwise logical operation
+main.c:103: warning: sign extension in bitwise logical operation
+cc  -c output.c
+cc  -c startup.c
+startup.c:45: warning: sign extension in bitwise logical operation
+startup.c:45: warning: sign extension in bitwise logical operation
+startup.c:56: warning: sign extension in bitwise logical operation
+startup.c:56: warning: sign extension in bitwise logical operation
+startup.c:76: warning: sign extension in bitwise logical operation
+startup.c:76: warning: sign extension in bitwise logical operation
+startup.c:83: warning: sign extension in bitwise logical operation
+startup.c:83: warning: sign extension in bitwise logical operation
+startup.c:89: warning: sign extension in bitwise logical operation
+startup.c:89: warning: sign extension in bitwise logical operation
+startup.c:93: warning: sign extension in bitwise logical operation
+startup.c:93: warning: sign extension in bitwise logical operation
+startup.c:263: warning: sign extension in bitwise logical operation
+startup.c:263: warning: sign extension in bitwise logical operation
+cc  -c tables.c
+tables.c:153: warning: sign extension in bitwise logical operation
+tables.c:153: warning: sign extension in bitwise logical operation
+tables.c:199: warning: sign extension in bitwise logical operation
+tables.c:199: warning: sign extension in bitwise logical operation
+tables.c:201: warning: sign extension in bitwise logical operation
+tables.c:201: warning: sign extension in bitwise logical operation
+tables.c:215: warning: sign extension in bitwise logical operation
+tables.c:215: warning: sign extension in bitwise logical operation
+23: Illegal initialization
+*** Exit 1
+
+Stop.

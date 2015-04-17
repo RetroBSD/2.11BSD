@@ -1,0 +1,6 @@
+/dev/ra0a	/	ufs	rw		1	1
+/dev/ra0b	none	swap	sw		0	0
+/dev/ra0d	/usr	ufs	rw		1	2
+/dev/ra0e	/tmp	ufs	rw,async	1	3
+/dev/ra0f	/user	ufs	rw,quotas	1	4
+/dev/ra0g	/xxx	ufs	rw		1	5

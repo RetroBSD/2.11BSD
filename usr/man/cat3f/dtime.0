@@ -1,0 +1,66 @@
+
+
+
+ETIME(3F)	    UNIX Programmer's Manual		ETIME(3F)
+
+
+
+NAME
+     etime, dtime - return elapsed execution time
+
+SYNOPSIS
+     function etime (tarray)
+     real tarray(2)
+
+     function dtime (tarray)
+     real tarray(2)
+
+DESCRIPTION
+     These two routines return elapsed runtime in seconds for the
+     calling process.  _D_t_i_m_e returns the elapsed time since the
+     last call to _d_t_i_m_e, or the start of execution on the first
+     call.
+
+     The argument array returns user time in the first element
+     and system time in the second element.  The function value
+     is the sum of user and system time.
+
+     The resolution of all timing is 1/HZ sec. where HZ is
+     currently 60.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     times(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,68 @@
+Application	Version
+-----------	-------
+Makefile	4.3  (small mods for load type (separate I&D or pure))
+adb/		2.10 (impossible to convert - PDP11 specific)
+ar.c		2.10 (see PORT; unclear it's worth the effort)
+as/		2.10 (impossible to convert - PDP11 specific)
+awk/		4.3  (small mods to Makefile for sep/nonsep loading)
+cat.c		4.3
+cc.c		4.3
+chgrp.c		4.3
+chmod.c		4.3
+cmp.c		4.4
+cp.c		4.3
+csh/		4.3  (2.10BSD malloc & doprnt, long/int fixes, shorter names)
+date.c		4.4  (timed code disabled for now)
+dd.c		4.3
+df.c		4.3  (small mods for 2.10BSD super block format)
+diff/		4.3  (small mods to Makefile and shorter names in diffreg.c)
+du.c		4.3
+echo.c		4.3
+ed.c		4.3
+expr.y		4.3
+false.sh	4.3
+grep.c		4.3
+hostid.c	4.3  (some long/int fixes, fix lack of %#x in 2.10BSD printf)
+hostname.c	4.3  (small mods for shorter names)
+kill.c		4.3
+ld.c		2.10 (not convertible, but fairly close to 4.3's)
+ln.c		4.3
+login.c		4.3+ (minor mods for shorter names)
+ls.c		4.3  (minor long/int fixes and shorter names)
+mail.c		4.3+ (minor long/int fixes, include short_name.h.
+make/		4.3  (small mods to Makefile and smaller sizes in defs)
+mkdir.c		4.3
+mt.c		4.3
+mv.c		4.3
+nice.c		4.3
+nm.c		2.10 (see PORT; but not clear worth the effort)
+od.c		4.3
+pagesize.c	4.3
+passwd.c	4.3  (small mods for shorter names)
+pr.c		4.3
+ps.c		2.10 (too hard to convert now)
+pwd.c		4.3
+rcp.c		4.3
+rm.c		4.3
+rmail.c		4.3
+rmdir.c		4.3
+sed/		4.3  (small mods to Makefile for sep/nonsep loading)
+sh/		4.3  (small mods to Makefile for sep/nonsep loading)
+size.c		4.3  (small mods for 2.10BSD a.out format)
+strip.c		4.3  (small mods for 2.10BSD a.out format)
+stty.c		4.3
+su.c		4.3
+sync.c		4.3
+tar.c		4.3
+tee.c		4.3
+test.c		4.3
+time.c		4.3
+true.sh		4.3
+tp/		4.3  (small mods to Makefile for sep/nonsep loading)
+wall.c		4.3  (small mods for shorter names)
+who.c		4.3  (small mods for shorter names)
+write.c		4.3  (small mods for shorter names)
+
+	The directory PORT is special.  It contains source code from the
+4.3BSD distribution that should probably be ported to 2.10 as soon as
+someone has the time and inclination to do so.

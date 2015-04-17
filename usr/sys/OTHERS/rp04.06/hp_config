@@ -1,0 +1,6 @@
+echo "#define NHP	$NHP"		> ../$MACHINE/hp.h
+echo "#define HP_DKN	$HP_DKN"	>> ../$MACHINE/hp.h
+if [ $DUMPROUTINE = hpdump ]; then
+	echo "#define HP_DUMP"		>> ../$MACHINE/hp.h
+fi
+

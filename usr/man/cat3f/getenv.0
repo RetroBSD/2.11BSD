@@ -1,0 +1,66 @@
+
+
+
+GETENV(3F)	    UNIX Programmer's Manual	       GETENV(3F)
+
+
+
+NAME
+     getenv - get value of environment variables
+
+SYNOPSIS
+     subroutine getenv (ename, evalue)
+     character*(*) ename, evalue
+
+DESCRIPTION
+     _G_e_t_e_n_v searches the environment list (see _e_n_v_i_r_o_n(7)) for a
+     string of the form _e_n_a_m_e=_v_a_l_u_e and returns _v_a_l_u_e in _e_v_a_l_u_e
+     if such a string is present, otherwise fills _e_v_a_l_u_e with
+     blanks.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     environ(7), execve(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

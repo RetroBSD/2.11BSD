@@ -1,0 +1,66 @@
+
+
+
+LINK(3F)	    UNIX Programmer's Manual		 LINK(3F)
+
+
+
+NAME
+     link - make a link to an existing file
+
+SYNOPSIS
+     function link (name1, name2)
+     character*(*) name1, name2
+
+     integer function symlnk (name1, name2)
+     character*(*) name1, name2
+
+DESCRIPTION
+     _N_a_m_e_1 must be the pathname of an existing file.  _N_a_m_e_2 is a
+     pathname to be linked to file _n_a_m_e_1.  _N_a_m_e_2 must not already
+     exist.  The returned value will be 0 if successful; a system
+     error code otherwise.
+
+     _S_y_m_l_n_k creates a symbolic link to _n_a_m_e_1.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     link(2), symlink(2), perror(3F), unlink(3F)
+
+BUGS
+     Pathnames can be no longer than MAXPATHLEN as defined in
+     <_s_y_s/_p_a_r_a_m._h>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

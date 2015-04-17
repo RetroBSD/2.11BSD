@@ -1,0 +1,129 @@
+.TH VMSBACKUP 1 
+.SH NAME
+vmsbackup \- read a VMS backup tape
+.SH SYNOPSIS
+.B vmsbackup
+.B \-{tx}[cdenvw][s setnumber][f tapefile] 
+[ name ... ]
+.SH DESCRIPTION
+.I vmsbackup 
+reads a VMS generated backup tape, converting the files
+to Unix format and writing the files to disc.
+The default operation of the program is to go through an entire
+tape, extracting every file and writing it to disc.
+This may be modified by the following options.
+.TP 8
+.B c
+Use complete filenames, including the version number.
+A colon and the octal version number will be appended to all filenames.
+A colon, rather than a semicolon, is used since the Unix Shell
+uses the semicolon as the line separator.
+Using a colon prevents the user from having to escape the semicolon
+when referencing the filename.
+This option is useful only when multiple versions of the same file
+are on a single tape or when a file of the same name already
+exists in the destination directory.
+The default is to ignore version numbers.
+.TP 8
+.B d
+use the directory structure from VMS, the default value is off.
+.TP 8
+.B e
+Process all filename extensions.
+Since this program is mainly intended to move source code and possibly
+data from a DEC system to a Unix system, the default is to ignore
+all files whose filename extension specifies system dependent data.
+The file types which will be ignored, unless the
+.B e
+option is specified, are
+.IP "" 10
+exe     VMS executable file
+.br
+lib     VMS object library file
+.br
+obj     RSX object file
+.br
+odl     RSX overlay description file
+.br
+olb     RSX object library file
+.br
+pmd     RSX post mortem dump file
+.br
+stb     RSX task symbol table file
+.br
+sys     RSX bootable system file
+.br
+tsk     RSX executable task file
+.PP
+.TP 8
+.B f
+Use the next argument in the command line as the tape device to
+be used, rather than the default.
+.sp
+If vmsbackup is compiled with the remote tape option
+and the file name has the form
+.IR system [. user ]:/dev/???
+.I vmsbackup
+will use the tape drive /dev/??? on the remote system
+.IR system ,
+via
+.IR rsh (1),
+and
+.IR rmt (8).
+The optional
+.I user
+portion of the pathname specifies the login name to use on the
+remote system.
+If it is not supplied, the current user's login name will be used.
+In all the cases, the user must have the appropriate
+permissions on the remote machine, in order to use this facility.
+The default is
+.I /dev/rmt8
+(drive 0, raw mode, 1600 bpi).
+This must be a raw mode tape device.
+.TP 8
+.B n
+If the tape has a variable-length record format, then
+do not append a newline onto the end of the records.
+This option does not affect stream or FORTRAN files.
+.TP 8
+.B s saveset
+Process only the given saveset number.
+.TP 8
+.B t
+Produce a table of contents (a directory listing) on the standard output
+of the files on tape.
+.TP 8
+.B v
+Verbose output.
+Normally
+.I vmsbackup 
+does its work silently.
+The verbose option will cause the filenames of the files being read from
+tape to disk to be output on the standard output.
+.TP 8
+.B w
+.I vmsbackup
+prints the action to be taken followed by file name, then
+wait for user confirmation. If a word beginning with `y'
+is given, the action is done. Any other input means don't do it.
+.TP 8
+.B x
+extract the named files from the tape.
+.TP 8
+The optional 
+.I name
+argument specifies one or more filenames to be
+searched for specifically on the tape and only those files are to be processed.
+The name may contain the usal sh(1) meta-characters *?![] \nnn.
+.SH FILES
+/dev/rmt\fIx\fP
+.SH SEE ALSO
+rmtops(3)
+.SH BUGS
+The filename match uses the complete VMS file names.
+
+.SH AUTHOR
+John Douglas Carey
+.br
+Sven-Ove Westberg

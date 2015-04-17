@@ -1,0 +1,66 @@
+
+
+
+MESG(1)             UNIX Programmer's Manual		  MESG(1)
+
+
+
+NAME
+     mesg - permit or deny messages
+
+SYNOPSIS
+     mesg [ n ] [ y ]
+
+DESCRIPTION
+     _M_e_s_g with argument n forbids messages via _w_r_i_t_e and _t_a_l_k(1)
+     by revoking non-user write permission on the user's termi-
+     nal.  _M_e_s_g with argument y reinstates permission.	All by
+     itself, _m_e_s_g reports the current state without changing it.
+
+FILES
+     /dev/tty*
+
+SEE ALSO
+     write(1), talk(1)
+
+DIAGNOSTICS
+     Exit status is 0 if messages are receivable, 1 if not, 2 on
+     error.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

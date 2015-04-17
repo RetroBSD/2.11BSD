@@ -1,0 +1,132 @@
+
+
+
+TCPDCHK(8)	    UNIX Programmer's Manual	       TCPDCHK(8)
+
+
+
+NAME
+     tcpdchk - tcp wrapper configuration checker
+
+SYNOPSYS
+     tcpdchk [-a] [-d] [-i inet_conf] [-v]
+
+DESCRIPTION
+     _t_c_p_d_c_h_k examines your tcp wrapper configuration and reports
+     all potential and real problems it can find. The program
+     examines the _t_c_p_d access control files (by default, these
+     are /_e_t_c/_h_o_s_t_s._a_l_l_o_w and /_e_t_c/_h_o_s_t_s._d_e_n_y), and compares the
+     entries in these files against entries in the _i_n_e_t_d or _t_l_i_d
+     network configuration files.
+
+     _t_c_p_d_c_h_k reports problems such as non-existent pathnames;
+     services that appear in _t_c_p_d access control rules, but are
+     not controlled by _t_c_p_d; services that should not be wrapped;
+     non-existent host names or non-internet address forms;
+     occurrences of host aliases instead of official host names;
+     hosts with a name/address conflict; inappropriate use of
+     wildcard patterns; inappropriate use of NIS netgroups or
+     references to non-existent NIS netgroups; references to
+     non-existent options; invalid arguments to options; and so
+     on.
+
+     Where possible, _t_c_p_d_c_h_k provides a helpful suggestion to fix
+     the problem.
+
+OPTIONS
+     -a   Report access control rules that permit access without
+	  an explicit ALLOW keyword. This applies only when the
+	  extended access control language is enabled (build with
+	  -DPROCESS_OPTIONS).
+
+     -d   Examine _h_o_s_t_s._a_l_l_o_w and _h_o_s_t_s._d_e_n_y files in the current
+	  directory instead of the default ones.
+
+     -i inet_conf
+	  Specify this option when _t_c_p_d_c_h_k is unable to find your
+	  _i_n_e_t_d._c_o_n_f or _t_l_i_d._c_o_n_f network configuration file, or
+	  when you suspect that the program uses the wrong one.
+
+     -v   Display the contents of each access control rule.  Dae-
+	  mon lists, client lists, shell commands and options are
+	  shown in a pretty-printed format; this makes it easier
+	  for you to spot any discrepancies between what you want
+	  and what the program understands.
+
+FILES
+     The default locations of the _t_c_p_d access control tables are:
+
+
+
+
+
+Printed 11/24/99						1
+
+
+
+
+
+
+TCPDCHK(8)	    UNIX Programmer's Manual	       TCPDCHK(8)
+
+
+
+     /etc/hosts.allow
+     /etc/hosts.deny
+
+SEE ALSO
+     tcpdmatch(8), explain what tcpd would do in specific cases.
+     hosts_access(5), format of the tcpd access control tables.
+     hosts_options(5), format of the language extensions.
+     inetd.conf(5), format of the inetd control file.
+     tlid.conf(5), format of the tlid control file.
+
+AUTHORS
+     Wietse Venema (wietse@wzv.win.tue.nl),
+     Department of Mathematics and Computing Science,
+     Eindhoven University of Technology
+     Den Dolech 2, P.O. Box 513,
+     5600 MB Eindhoven, The Netherlands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						2
+
+
+

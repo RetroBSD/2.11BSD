@@ -1,0 +1,66 @@
+
+
+
+RDUMP(8)	    UNIX Programmer's Manual		 RDUMP(8)
+
+
+
+NAME
+     rdump - file system dump across the network
+
+SYNOPSIS
+     rdump [ key [ _a_r_g_u_m_e_n_t ... ] filesystem ]
+
+DESCRIPTION
+     _R_d_u_m_p copies to magnetic tape all files changed after a cer-
+     tain date in the _f_i_l_e_s_y_s_t_e_m. The command is identical in
+     operation to _d_u_m_p(8) except the _f key should be specified
+     and the file supplied should be of the form _m_a_c_h_i_n_e:_d_e_v_i_c_e.
+
+     _R_d_u_m_p creates a remote server, /_u_s_r/_s_b_i_n/_r_m_t, on the client
+     machine to access the tape device.
+
+SEE ALSO
+     dump(8), rmt(8)
+
+DIAGNOSTICS
+     Same as _d_u_m_p(8) with a few extra related to the network.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 17, 1996			1
+
+
+

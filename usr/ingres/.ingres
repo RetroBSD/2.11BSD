@@ -1,0 +1,4 @@
+{define; {shell}; /bin/tcsh}
+{define; {editor}; /usr/new/jove}
+\eval
+\reset

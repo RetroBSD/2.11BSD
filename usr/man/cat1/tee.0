@@ -1,0 +1,66 @@
+
+
+
+TEE(1)		    UNIX Programmer's Manual		   TEE(1)
+
+
+
+NAME
+     tee - pipe fitting
+
+SYNOPSIS
+     tee [ -i ] [ -a ] [ file ] ...
+
+DESCRIPTION
+     _T_e_e transcribes the standard input to the standard output
+     and makes copies in the _f_i_l_e_s. Option -i ignores interrupts;
+     option -a causes the output to be appended to the _f_i_l_e_s
+     rather than overwriting them.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

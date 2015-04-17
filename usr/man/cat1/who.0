@@ -1,0 +1,66 @@
+
+
+
+WHO(1)		    UNIX Programmer's Manual		   WHO(1)
+
+
+
+NAME
+     who - who is on the system
+
+SYNOPSIS
+     who [ who-file ] [ am I ]
+
+DESCRIPTION
+     _W_h_o, without an argument, lists the login name, terminal
+     name, and login time for each current UNIX user.
+
+     Without an argument, _w_h_o examines the /_v_a_r/_r_u_n/_u_t_m_p file to
+     obtain its information.  If a file is given, that file is
+     examined.	Typically the given file will be /usr/adm/wtmp,
+     which contains a record of all the logins since it was
+     created.  Then _w_h_o lists logins, logouts, and crashes since
+     the creation of the wtmp file.  Each login is listed with
+     user name, terminal name (with `/dev/' suppressed), and date
+     and time.	When an argument is given, logouts produce a
+     similar line without a user name.	Reboots produce a line
+     with `x' in the place of the device name, and a fossil time
+     indicative of when the system went down.
+
+     With two arguments, as in `who am I' (and also `who are
+     you'), _w_h_o tells who you are logged in as.
+
+FILES
+     /var/run/utmp
+
+SEE ALSO
+     getuid(2), utmp(5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			1
+
+
+

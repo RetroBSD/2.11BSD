@@ -1,0 +1,109 @@
+#! /bin/sh
+#
+#  @(#)mailp 1.3 92/02/17
+#
+#  mailp, newsp, filep, digestp, filofaxp, timemanp and timesysp
+#  shell script de lancement de mp
+#  (mail/news/file/digest/filofax/time-manager/time-system pretty printer)
+#
+#  Original:   Bruno Pillard      - October 1988.
+#  Modified:   Rich Burridge      - June 1989.
+#  Revisited:  Larry W. Virden    - August, September 1990.
+#  Revisited:  Bruno Pillard      - September 1990.
+#  Revisited:  David W. Sanderson - August 1991.
+
+BIN=BINDIR
+
+#  NOTE: Banner printing is disabled below, by the inclusion of the -h
+#        switch to the lpr command. Most of the information that typically
+#        appears on the banner sheet, is output in the mp banners. If you
+#        wish to enable banner printing, then you should remove the -h switch.
+
+PROG=mp
+case $BIN in
+/*)	PROG=$BIN/mp;;
+esac
+FLAGS=
+STDIN=
+LPARGS=
+
+case $0 in
+*mailp)	    ;;
+*newsp)     FLAGS=-a  ;;
+*digestp)   FLAGS=-d  ;;
+*filep)	    FLAGS=-o; STDIN=-sstdin ;;
+*filofaxp)  FLAGS=-ff ;;
+*franklinp) FLAGS=-fp ;;
+*timemanp)  FLAGS=-tm ;;
+*timesysp)  FLAGS=-ts ;;
+*)     	    echo Unknown pretty printer: $0
+	    exit ;;
+esac
+
+# avoid using test - slow in v7 /bin/sh
+# while	[ $# -gt 0 ]
+for DUMMY in ${1+"$@"}
+do
+	case $1 in
+	# flags to pass through to mp
+	-F | -l)
+		FLAGS="$FLAGS $1"
+		shift
+		;;
+	-s)	FLAGS="$FLAGS -s\"$2\""
+		STDIN=
+		shift;shift
+		;;
+	-s*)	FLAGS="$FLAGS \"$1\""
+		STDIN=
+		shift
+		;;
+
+	# allow both -d and -P to specify the printer name
+	-d|-P)	LPDEST="$2"
+		PRINTER="$LPDEST"
+		shift;shift
+		;;
+	-d*|-P*)LPDEST=`echo "$1"|sed 's/^-.//'`
+		PRINTER="$LPDEST"
+		shift
+		;;
+	-h)	LPARGS=-h
+		shift
+		;;
+
+	# explicit end of arguments
+	--)	shift; break
+		;;
+	-*)	echo bad flag: $1
+		shift
+		;;
+	# stop processing arguments with the first nondash argument
+	*)	break
+		;;
+	esac
+done
+
+# If LPDEST or PRINTER is already set in the environment, and no -d or -P
+# argument was given, then the appropriate variable will still affect the
+# appropriate printing command.
+if	[ -d /usr/spool/lp ]
+then	PRINT_CMD="lp  ${LPDEST+-d${LPDEST}}   -t"
+else	PRINT_CMD="lpr ${PRINTER+-P${PRINTER}} -J"
+fi
+
+# for v in '*' '#' PROG STDIN FLAGS PRINT_CMD LPARGS
+# do	eval echo "\"$v\"" = \"\'\$$v\'\"
+# done
+# exit 0
+
+case $# in
+0)	eval $PROG $STDIN $FLAGS '|' ${PRINT_CMD}stdin $LPARGS
+	;;
+*)	for FILE
+	do	eval $PROG $FLAGS $FILE '|' $PRINT_CMD$FILE $LPARGS
+	done
+	;;
+esac
+
+exit 0

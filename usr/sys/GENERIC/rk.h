@@ -1,0 +1,1 @@
+#define NRK	8

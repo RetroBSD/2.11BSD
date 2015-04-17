@@ -1,0 +1,4 @@
+tftpd: LOCAL
+rshd: LOCAL
+zyncd: LOCAL
+popper: LOCAL

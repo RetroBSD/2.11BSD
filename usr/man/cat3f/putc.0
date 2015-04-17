@@ -1,0 +1,66 @@
+
+
+
+PUTC(3F)	    UNIX Programmer's Manual		 PUTC(3F)
+
+
+
+NAME
+     putc, fputc - write a character to a fortran logical unit
+
+SYNOPSIS
+     integer function putc (char)
+     character char
+
+     integer function fputc (lunit, char)
+     character char
+
+DESCRIPTION
+     These funtions write a character to the file associated with
+     a fortran logical unit bypassing normal fortran I/O.  _P_u_t_c
+     writes to logical unit 6, normally connected to the control
+     terminal output.
+
+     The value of each function will be zero unless some error
+     occurred; a system error code otherwise. See perror(3F).
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     putc(3S), intro(2), perror(3F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

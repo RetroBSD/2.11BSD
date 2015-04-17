@@ -1,0 +1,264 @@
+
+
+
+FSCK(8)             UNIX Programmer's Manual		  FSCK(8)
+
+
+
+NAME
+     fsck - file system consistency check and interactive repair
+
+SYNOPSIS
+     fsck -p[ # ] [ filesystem ...  ]
+     fsck [ -y ] [ -n ] [ -sX ] [ -SX ] [ -t filename ] [
+     filesystem ] ...
+
+DESCRIPTION
+     The first form of _f_s_c_k preens a standard set of file systems
+     or the specified file systems.  It is normally used in the
+     script /_e_t_c/_r_c during automatic reboot.  In this case _f_s_c_k
+     reads the table /_e_t_c/_f_s_t_a_b to determine which file systems
+     to check.	It uses the information there to inspect groups
+     of disks in parallel taking maximum advantage of i/o overlap
+     to check the file systems as quickly as possible.	Normally,
+     the root file system will be checked on pass 1, other
+     ``root'' (``a'' partition) file systems on pass 2, other
+     small file systems on separate passes (e.g. the ``d'' file
+     systems on pass 3 and the ``e'' file systems on pass 4), and
+     finally the large user file systems on the last pass, e.g.
+     pass 5.  Only one file system from each disk should be
+     checked in each pass.  A pass number of 0 in fstab causes a
+     disk to not be checked; similarly partitions which are not
+     shown as to be mounted ``rw'' or ``ro'' are not checked.  A
+     number or range of numbers may be given after the -p to
+     start or end the check at a specified pass number.  A single
+     number specifies the starting pass (e.g. -p2 or -p2-); a
+     range specifies the starting and endig passes (-p2-4).  A
+     missing start means to start with pass 1 (-p-2).  These can
+     be used to stop fsck to mount a temporary file system before
+     continuing the check on larger file systems requiring
+     scratch files.
+
+     The system normally takes care that only a restricted class
+     of innocuous inconsistencies can happen unless hardware or
+     software failures intervene.  These are limited to the fol-
+     lowing:
+
+	  Unreferenced inodes
+
+	  Link counts in inodes too large
+
+	  Missing blocks in the free list
+
+	  Blocks in the free list also in files
+
+	  Counts in the superblock wrong
+
+	  Allocated inodes in the free inode list
+
+
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+FSCK(8)             UNIX Programmer's Manual		  FSCK(8)
+
+
+
+     These are the only inconsistencies which _f_s_c_k with the -p
+     option will correct; if it encounters other inconsistencies,
+     it exits with an abnormal return status and an automatic
+     reboot will then fail.  For each corrected inconsistency one
+     or more lines will be printed identifying the file system on
+     which the correction will take place, and the nature of the
+     correction.  After successfully correcting a file system,
+     _f_s_c_k will print the number of files on that file system and
+     the number of used and free blocks.  Warning: kernel changes
+     are required to limit the types of inconsistencies, and fsck
+     -p makes assumptions about the kernel's actions in repairing
+     these.  Vmunix, PDP-11 2.9BSD with the UCB_FSFIX option and
+     PDP-11 2.10BSD Unix kernels have the appropriate modifica-
+     tions; the -p option should not be used on other systems.
+
+     Without the -p option, _f_s_c_k audits and interactively repairs
+     inconsistent conditions for file systems. If the file system
+     is inconsistent the operator is prompted for concurrence
+     before each correction is attempted.  It should be noted
+     that a number of the corrective actions which are not fix-
+     able under the -p option will result in some loss of data.
+     The amount and severity of data lost may be determined from
+     the diagnostic output.  The default action for each con-
+     sistency correction is to wait for the operator to respond
+     yes or no.  If the operator does not have write permission
+     _f_s_c_k will default to a -n action.
+
+     _F_s_c_k has more consistency checks than its predecessors
+     _c_h_e_c_k, _d_c_h_e_c_k, _f_c_h_e_c_k, and _i_c_h_e_c_k combined.
+
+     The following flags are interpreted by _f_s_c_k.
+
+     -y    Assume a yes response to all questions asked by _f_s_c_k;
+	   this should be used with great caution as this is a
+	   free license to continue after essentially unlimited
+	   trouble has been encountered.
+
+     -n    Assume a no response to all questions asked by _f_s_c_k;
+	   do not open the file system for writing.
+
+     -s_X   Ignore the actual free list and (unconditionally)
+	   reconstruct a new one by rewriting the superblock of
+	   the file system. The file system should be unmounted
+	   while this is done; if this is not possible, care
+	   should be taken that the system is quiescent and that
+	   it is rebooted immediately afterwards.  This precau-
+	   tion is necessary so that the old, bad, in-core copy
+	   of the superblock will not continue to be used, or
+	   written on the file system.
+
+	   The -s_X option allows for creating an optimal free
+	   list organization.  The following forms of _X are
+
+
+
+Printed 11/26/99						2
+
+
+
+
+
+
+FSCK(8)             UNIX Programmer's Manual		  FSCK(8)
+
+
+
+	   supported for the following devices:
+
+		-s3 (RP03)
+		-s4 (RP04, RP05, RP06)
+		-sBlocks-per-cylinder:Blocks-to-skip (for anything else)
+
+	   If _X is not given, the values used when the file sys-
+	   tem was created are used.  If these values were not
+	   specified, then the value _4_0_0:_9 is used.
+
+     -S_X   Conditionally reconstruct the free list. This option
+	   is like -s_X above except that the free list is rebuilt
+	   only if there were no discrepancies discovered in the
+	   file system. Using -S will force a no response to all
+	   questions asked by _f_s_c_k. This option is useful for
+	   forcing free list reorganization on uncontaminated
+	   file systems.
+
+     -t    If _f_s_c_k cannot obtain enough memory to keep its
+	   tables, it uses a scratch file. If the -t option is
+	   specified, the file named in the next argument is used
+	   as the scratch file, if needed. Without the -t flag,
+	   _f_s_c_k will prompt the operator for the name of the
+	   scratch file. The file chosen should not be on the
+	   file system being checked, and if it is not a special
+	   file or did not already exist, it is removed when _f_s_c_k
+	   completes.
+
+     If no file systems are given to _f_s_c_k then a default list of
+     file systems is read from the file /_e_t_c/_f_s_t_a_b.
+
+     Inconsistencies checked are as follows:
+
+     1.    Blocks claimed by more than one inode or the free
+	   list.
+     2.    Blocks claimed by an inode or the free list outside
+	   the range of the file system.
+     3.    Incorrect link counts.
+     4.    Size checks:
+		 Directory size not 16-byte aligned.
+     5.    Bad inode format.
+     6.    Blocks not accounted for anywhere.
+     7.    Directory checks:
+		 File pointing to unallocated inode.
+		 Inode number out of range.
+     8.    Super Block checks:
+		 More than 65536 inodes.
+		 More blocks for inodes than there are in the
+		 file system.
+     9.    Bad free block list format.
+     10.   Total free block and/or free inode count incorrect.
+     11.   Allocated inodes on the free inode list in the
+
+
+
+Printed 11/26/99						3
+
+
+
+
+
+
+FSCK(8)             UNIX Programmer's Manual		  FSCK(8)
+
+
+
+	   superblock.
+
+     Orphaned files and directories (allocated but unreferenced)
+     are, with the operator's concurrence, reconnected by placing
+     them in the _l_o_s_t+_f_o_u_n_d directory.	The name assigned is the
+     inode number. The only restriction is that the directory
+     _l_o_s_t+_f_o_u_n_d must preexist in the root of the file system
+     being checked and must have empty slots in which entries can
+     be made.  This can be accomplished manually by making
+     _l_o_s_t+_f_o_u_n_d, copying a number of files to the directory, and
+     then removing them (before _f_s_c_k is executed).  _M_k_f_s(8) will
+     automatically create a _l_o_s_t+_f_o_u_n_d directory.
+
+     Checking the raw device is almost always faster.  The root
+     device should not be checked using the raw device, however,
+     since it cannot be unmounted.
+
+FILES
+     /etc/fstab          default list of file systems to check
+
+DIAGNOSTICS
+     The diagnostics produced by _f_s_c_k are intended to be self-
+     explanatory.  The exit codes with the -p option are 0 (no
+     problems that weren't fixed), 4 (root file system was modi-
+     fied), 8 (problems that couldn't be fixed) and 12 (_f_s_c_k was
+     interrupted).
+
+SEE ALSO
+     filsys(5), fstab(5), crash(8), mkfs(8), mklost+found(8),
+     reboot(8)
+     T. J. Kowalski, _F_S_C_K - _T_h_e _U_N_I_X _F_i_l_e _S_y_s_t_e_m _C_h_e_c_k _P_r_o_g_r_a_m
+
+BUGS
+     Inode numbers for .  and ..  in each directory should be
+     checked for validity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						4
+
+
+

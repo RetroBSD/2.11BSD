@@ -1,0 +1,132 @@
+
+
+
+LOGIN(1)	    UNIX Programmer's Manual		 LOGIN(1)
+
+
+
+NAME
+     login - sign on
+
+SYNOPSIS
+     login [ -p ] [ username ]
+
+DESCRIPTION
+     The _l_o_g_i_n command is used when a user initially signs on, or
+     it may be used at any time to change from one user to
+     another.  The latter case is the one summarized above and
+     described here.  See "How to Get Started" for how to dial up
+     initially.
+
+     If _l_o_g_i_n is invoked without an argument, it asks for a user
+     name, and, if appropriate, a password.  Echoing is turned
+     off (if possible) during the typing of the password, so it
+     will not appear on the written record of the session.
+
+     After a successful login, accounting files are updated and
+     the user is informed of the existence of mail.  The message
+     of the day is printed, as is the time of his last login.
+     Both are suppressed if he has a ".hushlogin" file in his
+     home directory; this is mostly used to make life easier for
+     non-human users, such as _u_u_c_p.
+
+     _L_o_g_i_n initializes the user and group IDs and the working
+     directory, then executes a command interpreter (usually
+     _c_s_h(1)) according to specifications found in a password
+     file.  Argument 0 of the command interpreter is the name of
+     the command interpreter with a leading dash ("-").
+
+     Login also modifies the environment _e_n_v_i_r_o_n(7) with informa-
+     tion specifying home directory, command interpreter, termi-
+     nal type (if available) and user name.  The `-p' argument
+     causes the remainder of the environment to be preserved,
+     otherwise any previous environment is discarded.
+
+     If the file /etc/nologin exists, _l_o_g_i_n prints its contents
+     on the user's terminal and exits. This is used by _s_h_u_t_-
+     _d_o_w_n(8) to stop users logging in when the system is about to
+     go down.
+
+     Login is recognized by _s_h(1) and _c_s_h(1) and executed
+     directly (without forking).
+
+FILES
+     /var/run/utmp	accounting
+     /usr/adm/wtmp	accounting
+     /usr/spool/mail/*	mail
+     /etc/motd		message-of-the-day
+     /etc/passwd	password file
+     /etc/nologin	stops logins
+
+
+
+Printed 11/26/99	November 27, 1996			1
+
+
+
+
+
+
+LOGIN(1)	    UNIX Programmer's Manual		 LOGIN(1)
+
+
+
+     .hushlogin         makes login quieter
+
+SEE ALSO
+     init(8), getty(8), mail(1), passwd(1), passwd(5),
+     environ(7), shutdown(8), rlogin(1c)
+
+DIAGNOSTICS
+     "Login incorrect," if the name or the password is bad.
+     "No Shell", "cannot open password file", "no directory":
+     consult a programming counselor.
+
+BUGS
+     An undocumented option, -r is used by the remote login
+     server, _r_l_o_g_i_n_d(8C) to force _l_o_g_i_n to enter into an initial
+     connection protocol.  -h is used by _t_e_l_n_e_t_d(8C) and other
+     servers to list the host from which the connection was
+     received.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			2
+
+
+

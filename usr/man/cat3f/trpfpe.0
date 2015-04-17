@@ -1,0 +1,66 @@
+
+
+
+TRPFPE(3F)	    UNIX Programmer's Manual	       TRPFPE(3F)
+
+
+
+NAME
+     trpfpe, fpecnt - trap and repair floating point faults
+
+SYNOPSIS
+     subroutine trpfpe (numesg, rtnval)
+     double precision rtnval
+
+     integer function fpecnt ()
+
+     common /fpeflt/ fperr
+     logical fperr
+
+DESCRIPTION
+     NOTE: This routine applies only to Vax computers.	It is a
+     null routine on the PDP11.
+
+     _T_r_p_f_p_e sets up a signal handler to trap arithmetic excep-
+     tions.  If the exception is due to a floating point arith-
+     metic fault, the result of the operation is replaced with
+     the _r_t_n_v_a_l specified.  _R_t_n_v_a_l must be a double precision
+     value. For example, ``0d0'' or ``dflmax()''.
+
+     The first _n_u_m_e_s_g occurrences of a floating point arithmetic
+     error will cause a message to be written to the standard
+     error file.  Any exception that can't be repaired will
+     result in the default action, typically an abort with core
+     image.
+
+     _F_p_e_c_n_t returns the number of faults since the last call to
+     _t_r_p_f_p_e.
+
+     The logical value in the common block labelled _f_p_e_f_l_t will
+     be set to .true. each time a fault occurs.
+
+FILES
+     /usr/lib/libF77.a
+
+SEE ALSO
+     signal(3F), range(3F)
+
+BUGS
+     This routine works only for _f_a_u_l_t_s, not _t_r_a_p_s.  This is pri-
+     marily due to the Vax architecture.
+
+     If the operation involves changing the stack pointer, it
+     can't be repaired.  This seldom should be a problem with the
+     f77 compiler, but such an operation might be produced by the
+     optimizer.
+
+     The POLY and EMOD opcodes are not dealt with.
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

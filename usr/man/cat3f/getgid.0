@@ -1,0 +1,66 @@
+
+
+
+GETUID(3F)	    UNIX Programmer's Manual	       GETUID(3F)
+
+
+
+NAME
+     getuid, getgid - get user or group ID of the caller
+
+SYNOPSIS
+     integer function getuid()
+
+     integer function getgid()
+
+DESCRIPTION
+     These functions return the real user or group ID of the user
+     of the process.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     getuid(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

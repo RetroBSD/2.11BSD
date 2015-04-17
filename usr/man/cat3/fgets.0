@@ -1,0 +1,66 @@
+
+
+
+GETS(3S)	    UNIX Programmer's Manual		 GETS(3S)
+
+
+
+NAME
+     gets, fgets - get a string from a stream
+
+SYNOPSIS
+     #include <stdio.h>
+
+     char *gets(s)
+     char *s;
+
+     char *fgets(s, n, stream)
+     char *s;
+     FILE *stream;
+
+DESCRIPTION
+     _G_e_t_s reads a string into _s from the standard input stream
+     stdin.  The string is terminated by a newline character,
+     which is replaced in _s by a null character.  _G_e_t_s returns
+     its argument.
+
+     _F_g_e_t_s reads _n-1 characters, or up through a newline charac-
+     ter, whichever comes first, from the _s_t_r_e_a_m into the string
+     _s.  The last character read into _s is followed by a null
+     character.  _F_g_e_t_s returns its first argument.
+
+SEE ALSO
+     puts(3S), getc(3S), scanf(3S), fread(3S), ferror(3S)
+
+DIAGNOSTICS
+     _G_e_t_s and _f_g_e_t_s return the constant pointer NULL upon end of
+     file or error.
+
+BUGS
+     _G_e_t_s deletes a newline, _f_g_e_t_s keeps it, all in the name of
+     backward compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

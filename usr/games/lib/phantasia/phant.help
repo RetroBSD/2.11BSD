@@ -1,0 +1,990 @@
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+NAME
+     phantasia - an interterminal fantasy game
+
+SYNOPSIS
+     phantasia [ -s ] [ -m ] [ -a ] [ -x ] [ -h ] [ -H ] [ -p ]
+
+DESCRIPTION
+     _P_h_a_n_t_a_s_i_a is a role playing game vaguely similar to dungeons
+     and dragons.  It allows players to roll up characters of
+     various types to fight monsters and other players.  Progres-
+     sion of characters is based upon gaining experience from
+     fighting monsters (and other players).
+
+     Most of the game is menu driven and self-explanatory (more
+     or less).  The screen is cursor updated, so be sure to set
+     up the TERM variable in your environment.
+
+     The options provide for a variety of functions to support
+     the game.  They are:
+
+     -s   Invokes _p_h_a_n_t_a_s_i_a without header information.
+
+     -m   Get a monster listing.
+
+     -a   Get a listing of all character names on file.
+
+     -x   Examine/change a particular character on file.
+
+     -h   Get a help listing (this message).
+
+     -H   Get header listing only.
+
+     -p   Purge old characters.
+
+     The characters are saved on a common file, in order to make
+     the game interactive between players.  The characters are
+     given a password in order to retrieve them later.  Only
+     characters above level zero are saved.  Characters unused
+     for more than nine days will be purged.
+
+AUTHOR
+     Edward Estes, AT&T Teletype Corp.
+
+PARTICULARS
+     Playing in General
+
+     Certain of the player's more important statistics are almost
+     always displyed on the screen, with maximums (where applica-
+     ble) in parentheses.
+
+     The character is placed randomly near the center of a carte-
+     sian system.  One may move by hitting E, W, N, or S (lower
+
+
+
+Printed 11/24/99              GAMES                             1
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     case may also be used, at no time is the game case depen-
+     dent).  To move to a particular (x,y) coordinate, use the
+     move ('1') command. The distance a character can move is
+     calculated by 1 plus 1.5 per level. Moving in a particular
+     compass direction will move the player the maximum allowed
+     distance in that direction.
+
+     A player may at any time see who else is playing with a
+     players ('2') option.  One may see only those who are the
+     same distance or closer to the origin as he/she.  Kings, and
+     council of the wise can see and can be seen by everyone.  A
+     palantir removes these retrictions.
+
+     One can talk to other players with the talk ('3') option.
+     In general, this is a line or so of text.  To remove a
+     current message, just type <return> when prompted for a mes-
+     sage.
+
+     The stats ('4') option shows a players characteristics in
+     more detail.
+
+     One may leave the game either with the quit ('5') option, or
+     by hitting interrupt.  Quitting during battle results in
+     death for obvious reasons.
+
+     One may rest by default.  Resting lets one regain maximum
+     energy level, and also lets one find manna (more is found
+     for larger levels and further distances from the origin).
+
+     One may call a monster by hitting '9'.
+
+     Several other options become available as the player pro-
+     gress in level and magic, or to other positions in the game
+     ( valar, council of the wise, king ).  These are described
+     elsewhere.  In general, a control-L will force the redrawing
+     of the screen.
+
+     Other things which may happen are more or less self-
+     explanatory.
+
+     Fighting Monsters
+
+     A player has several options while fighting monsters.  They
+     are as follows:
+
+     melee          Inflicts damage on the monster, based upon
+                    strength. Also decreases the monster's
+                    strength some.
+
+     skirmish       Inflicts a little less damage than melee, but
+                    decreases the monster's quickness instead.
+
+
+
+
+Printed 11/24/99              GAMES                             2
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     evade          Attempt to run away.  Success is based upon
+                    both the player's and the monster's brains
+                    and quickness.
+
+     spell          Several options for throwing spells
+                    (described elsewhere).
+
+     nick           Hits the monster one plus the player's sword,
+                    and gives the player 10% of the monster's
+                    experience. Decreases the monster's experi-
+                    ence an amount proportional to the amount
+                    granted.  This also increases the monster's
+                    quickness.  Paralyzed monsters wake up very
+                    fast when nicked.
+
+     luckout        This is essentially a battle of wits with the
+                    monster. Success is based upon the player's
+                    and the monster's brains. The player gets
+                    credit for slaying the monster if he/she
+                    succeeds.  Otherwise, nothing happens, and
+                    the chance to luckout is lost.
+
+     Character Statistics
+
+     strength       determines how much damage a character can
+                    inflict.
+
+     quickness      determines how many chances a character gets
+                    to make decisions while fighting.
+
+     energy level   specifies how much damage a character may
+                    endure before dying.
+
+     magic level    determines which spells a character may
+                    throw, and how effective those spells will
+                    be.
+
+     brains         basically, the character's intelligence; used
+                    for various fighting options and spells.
+
+     manna          used as a power source for throwing spells.
+
+     experience     gained by fighting monsters and other charac-
+                    ters.
+
+     level          indicative of how much experience a character
+                    has accumulated; progresses geometrically as
+                    experience increases.
+
+     poison         sickness which degrades a character's perfor-
+                    mance (affects energy level and strength ).
+
+
+
+
+Printed 11/24/99              GAMES                             3
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     sin            accumulated as a character does certain nasty
+                    things; used only rarely in normal play of
+                    the game.
+
+     age            number of seconds of playing time for the
+                    character.  As age increases, many personal
+                    statistics degenerate.
+
+     Character Types
+
+     Character statistics are rolled randomly from the above
+     list, according to character type.  The types are as fol-
+     lows:
+
+     magic user     strong in magic level and brains , weak in
+                    other areas.   Must rely on wits and magic to
+                    survive.
+
+     fighter        good in strength and energy level , fairly
+                    good in other areas.  This adds up to a
+                    well-equipped fighter.
+
+     elf            very high quickness and above average magic
+                    level are elves selling points.
+
+     dwarf          very high strength and energy level , but
+                    with a tendency to be rather slow and not too
+                    bright.
+
+     halfling       rather quick and smart, with high energy
+                    level , but poor in magic and strength. Born
+                    with some experience.
+
+     experimento    very mediocre in all areas.  However, the
+                    experimento may be placed almost anywhere
+                    within the playing grid.
+
+     The possible ranges for starting statistics are summarized
+     in the following table.
+
+     Type          Strength   Quick   Manna    Energy   Brains   Magic
+     _________________________________________________________________
+     Mag. User      20-25     30-35   50-100   30-45    60-85     5-9
+     Fighter        40-55     30-35   30-50    45-70    25-45     3-6
+     Elf            35-45     28-38   45-90    30-50    40-65     4-7
+     Dwarf          50-70     25-30   25-45    60-100   20-40     2-5
+     Halfling       20-25      34     25-45    55-90    40-75     1-4
+     Experimento      25       27      100       35       25       2
+
+     Not only are the starting characteristics different for the
+     different character types, the characteristics progress at
+     different rates for the different types as the character
+
+
+
+Printed 11/24/99              GAMES                             4
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     goes up in level. Experimentoes' characteristics progress
+     randomly as one of the other types.  The progression as
+     characters increase in level is summarized in the following
+     table.
+
+     Type        Strength   Manna   Energy   Brains   Magic
+     ______________________________________________________
+     Mag. User     2.0       75       20      6       2.75
+     Fighter       3.0       40       30      3.0     1.5
+     Elf           2.5       65       25      4.0     2.0
+     Dwarf         5         30       35      2.5     1
+     Halfling      2.0       30       30      4.5     1
+
+     Character types are identified by certain numeric values as
+     follows:
+     1: Magic User 2: Fighter 3: Elf 4: Dwarf 5: Halfling 6:
+     Experimento
+
+     Characters with one or more crowns are designated as a nega-
+     tive type.  Kings have ten added to their type; members of
+     the council of the wise have twenty added to their type.
+     Valar are type 99, and ex-valar are type 90.
+
+     Spells
+
+     During the course of the game, the player may exercise
+     his/her particular magic powers.  These cases are described
+     below.
+
+     cloak          _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 15 (plus level 5)
+                    _m_a_n_n_a _u_s_e_d: 35 plus 3 per rest period
+                    Used during normal play.  Prevents monsters
+                    from finding the character, as well as hiding
+                    the player from other players.  His/her coor-
+                    dinates show up as '?' in the players option.
+                    Players cannot collect manna, find trading
+                    posts, or discover the grail while
+                    cloaked. Calling a monster uncloaks, as well
+                    as choosing this option while cloaked.
+
+     teleport       _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 25 (plus level 10)
+                    _m_a_n_n_a _u_s_e_d: 20 per 75 moved
+                    Used during normal play.  Allows the player
+                    too move with much more freedom than with the
+                    move option, at the price of expending manna.
+                    The maximum distance possible to move is
+                    based upon level and magic level.
+
+     power blast    _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: none
+                    _m_a_n_n_a _u_s_e_d: 5 times level
+                    Used during inter-terminal battle.  Damage is
+                    based upon magic level and strength. Hits
+
+
+
+Printed 11/24/99              GAMES                             5
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    much harder than a normal hit.
+
+     all or nothing _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: none
+                    _m_a_n_n_a _u_s_e_d: 1
+                    Used while combatting monsters.  Has a 25%
+                    chance of working.  If it works it hits the
+                    monster just enough to kill it.  If it fails,
+                    it doesn't hit the monster, and doubles the
+                    monster's quickness and strength. Paralyzed
+                    monsters wake up much quicker as a result of
+                    this spell.
+
+     magic bolt     _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 3
+                    _m_a_n_n_a _u_s_e_d: variable
+                    Used while combatting monsters.  Hits the
+                    monster based upon the amount of manna
+                    expended and magic level. Guaranteed to hit
+                    at least 10 per manna.
+
+     force field    _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 7
+                    _m_a_n_n_a _u_s_e_d: 20
+                    Used during monster combat.  Throws up a
+                    shield to protect from damage.  The shield is
+                    added to actual energy level, and is a fixed
+                    number, based upon maximum energy.  Normally,
+                    damage occurs first to the shield, and then
+                    to the players actual energy level.
+
+     transform      _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 10
+                    _m_a_n_n_a _u_s_e_d: 35
+                    Used during monster combat.  Transforms the
+                    monster randomly into one of the other 100
+                    monsters from the monster file.
+
+     increase might _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 15
+                    _m_a_n_n_a _u_s_e_d: 55
+                    Used during combat with monsters.  Increases
+                    strength up to a certain maximum.
+
+     invisibility   _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 20
+                    _m_a_n_n_a _u_s_e_d: 45
+                    Used while fighting monsters.  Makes it
+                    harder for the monster to hit, by temporarily
+                    increasing the player's quickness. This spell
+                    may be thrown several times, but a maximum
+                    level will be reached.
+
+     transport      _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 25
+                    _m_a_n_n_a _u_s_e_d: 50
+                    Used during monster combat.  Transports the
+                    monster away from the player.  Success is
+                    base upon player's magic and brains, and the
+
+
+
+Printed 11/24/99              GAMES                             6
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    monster's experience. If it fails the player
+                    is transported instead.    60% of the time,
+                    the monster will drop any treasure it was
+                    carrying.
+
+     paralyze       _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: 30
+                    _m_a_n_n_a _u_s_e_d: 60
+                    Used during monster combat.  "Freezes" the
+                    monster by putting its quickness slightly
+                    negative.  The monster will slowly wake up.
+                    Success is based upon player's magic and the
+                    monster's experience. If it fails, nothing
+                    happens.
+
+     specify        _m_a_g_i_c _l_e_v_e_l _n_e_c_e_s_s_a_r_y: none
+                    _m_a_n_n_a _u_s_e_d: 1000
+                    Used during monster combat only by valar or
+                    council of the wise. Allows the player to
+                    pick which monster to fight.
+
+     Monsters
+
+     Monsters get bigger as one moves farther from the origin
+     (0,0).  Rings of distance 125 from the origin determine the
+     size.  A monster's experience, energy level, and brains are
+     multiplied by the size.  Strength is increase 50% per size
+     over one, and quickness remains the same, regardless of
+     size.
+
+     Also, meaner monsters are to be found as one progress
+     farther out from the origin.  Monsters also may flock.  The
+     percent chance of that happening is designated as flock% in
+     the monster listing.  Monsters outside the first ring may
+     carry treasure, as determined by their treasure type.
+     Flocking monsters, and bigger monsters increase the chances
+     of treasure.
+
+     Certain monsters have special abilities; they are as fol-
+     lows:
+
+     Unicorn        can only be subdued if the player is in pos-
+                    session of a virgin.
+
+     Modnar         has random characteristics, including treas-
+                    ure type.
+
+     Mimic          will pick another name from the list of mon-
+                    sters in order to confuse.
+
+     Dark Lord      very nasty person.  Does not like to be hit
+                    (especially nicked), and many spells do not
+                    work well against him.  One can always evade
+
+
+
+Printed 11/24/99              GAMES                             7
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    from the Dark Lord.
+
+     Leanan-Sidhe   also a very nasty person.  She will per-
+                    manently sap strength from someone.
+
+     Saruman        wanders around with Wormtongue , who can
+                    steal a palantir. Also, Saruman may turn a
+                    player's gems into gold pieces, or scramble
+                    her/his stats.
+
+     Thaumaturgist  can transport a player.
+
+     Balrog         inflicts damage by taking away experience ,
+                    not energy.
+
+     Vortex         may take some manna.
+
+     Nazgul         may try to steal a ring or neutralize part of
+                    one's brains.
+
+     Tiamat         may take half a players gold and gems and
+                    escape.
+
+     Kobold         may get nasty and steal one gold piece and
+                    run away.
+
+     Shelob         may bite, inflicting the equivalent of one
+                    poison.
+
+     Assorted Faeries
+                    These are killed if attacking someone carry-
+                    ing holy water. These are Cluricaun, Fir Dar-
+                    rig, Fachan, Ghille Dhu, Bogle, Killmoulis,
+                    and Bwca.
+
+     Lamprey        may bite, inflicting 1/2 of a poison.
+
+     Shrieker       will call one of its (much bigger) buddies if
+                    picked upon.
+
+     Bonnacon       will become bored with battle, fart, and run
+                    off.
+
+     Smeagol        will try to steal a ring from a player, if
+                    given the chance.
+
+     Succubus       may inflict damage through a force field.
+                    This subtracts from energy level instead of
+                    any shield the player may have thrown up.
+                    This is a very easy way to die.
+
+     Cerberus       loves metal and will steal all the metal
+
+
+
+Printed 11/24/99              GAMES                             8
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    treasures from a player if able.
+
+     Ungoliant      can bite and poison.  This inflicts five
+                    poisons , and also takes one from the
+                    player's quickness.
+
+     Jabberwock     may tire of battle, and leave after calling
+                    one of his friends ( Jubjub Bird or Ban-
+                    dersnatch ).
+
+     Morgoth        actually Modnar , but reserved for council of
+                    the wise, valar, and ex-valar. Fights with
+                    Morgoth end when either he or the player
+                    dies.    His characteristics are calculated
+                    based upon the player's.  The player is given
+                    the chance to ally with him.  No magic,
+                    except force field works when battling Mor-
+                    goth.
+
+     Troll          may regenerate its energy and strength while
+                    in battle.
+
+     Wraith         may make a player blind.
+
+     Treasures
+
+     Various treasure types are as follows:
+
+     Type zero      _n_o_n_e
+
+     Type one       _p_o_w_e_r _b_o_o_s_t_e_r - adds manna.
+                    _d_r_u_i_d - adds experience.
+                    _h_o_l_y _o_r_b - subtracts 0.25 sin.
+
+     Type two       _a_m_u_l_e_t - protects from cursed treasure.
+                    _h_o_l_y _w_a_t_e_r - kills assorted faeries.
+                    _h_e_r_m_i_t - reduces sin by 25% and adds some
+                    manna.
+
+     Type three     _s_h_i_e_l_d - adds to maximum energy level
+                    _v_i_r_g_i_n - used to subdue a unicorn , or to
+                    give much experience (and some sin ).
+                    _a_t_h_e_l_a_s - subtracts one poison.
+
+     Type four (scrolls)
+                    _s_h_i_e_l_d * - throws a bigger than normal force
+                    field.
+                    _i_n_v_i_s_i_b_l_e * - puts the finder's quickness to
+                    one million.
+                    _t_e_n _f_o_l_d _s_t_r_e_n_g_t_h * - multiplies finder's
+                    strength by ten.
+                    _p_i_c_k _m_o_n_s_t_e_r - allows finder to pick next
+
+
+
+Printed 11/24/99              GAMES                             9
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    monster to battle.
+                    _g_e_n_e_r_a_l _k_n_o_w_l_e_d_g_e - adds to finder's brains
+                    and magic level.
+
+     All the scrolls except general knowledge automatically call
+     a monster.  Those that are marked with a * preserve any
+     spells that were already in effect.  Those that call mon-
+     sters are only in effect while in battle.
+
+     Type five      _d_a_g_g_e_r - adds to strength.
+                    _a_r_m_o_u_r - same as a shield, but bigger.
+                    _t_a_b_l_e_t - adds brains.
+
+     Type six       _p_r_i_e_s_t - rests to maximum; adds manna,
+                    brains; and halves sin.
+                    _R_o_b_i_n _H_o_o_d - increases shield and adds per-
+                    manently to strength.
+                    _a_x_e - like dagger, but bigger.
+
+     Type seven     _c_h_a_r_m - protects from cursed treasure (used
+                    before amulet ); used in conjunction with
+                    blessing to battle Dark Lord.
+                    _M_e_r_l_y_n - adds brains, magic, and manna.
+                    _w_a_r _h_a_m_m_e_r - like an axe, but bigger.
+
+     Type eight     _h_e_a_l_i_n_g _p_o_t_i_o_n - sets poison to -2, or sub-
+                    tracts two from poison, whichever is better.
+                    _t_r_a_n_s_p_o_r_t_e_r - allows finder to move anywhere.
+                    _s_w_o_r_d - like a war hammer , but bigger.
+
+     Type nine      _g_o_l_d_e_n _c_r_o_w_n - allows the player to become
+                    king, by going to (0,0).
+                    _b_l_e_s_s_i_n_g - cuts sin to 1/3, adds manna, rests
+                    to max., and kills Dark Lord with a charm.
+                    _q_u_i_c_k_s_i_l_v_e_r - adds to quickness.
+
+     Type ten       _e_l_v_e_n _b_o_o_t_s - adds permanently to quickness.
+
+     Type eleven    _p_a_l_a_n_t_i_r - allows one to see all the other
+                    players; used by council of the wise to seek
+                    the grail.
+
+     Type twelve/thirteen
+                    _r_i_n_g - allows one to hit much harder in bat-
+                    tle, etc.
+
+     Any treasure type 10-13 monsters may instead carry a type
+     nine treasure.
+
+     A monster may also be carrying gold or gems. These are used
+     at trading posts to buy things. A gem is worth 1000 gold
+     pieces.  Too much gold will slow a player down.  One may
+
+
+
+Printed 11/24/99              GAMES                            10
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     carry 1000 plus 200 per level of gold. A gem weighs one half
+     a gold piece.  Monsters of treasure type 7 or higher may
+     carry gems.
+
+     The chance of a cursed treasure is based upon treasure type.
+     The more valuable treasures have a greater chance of being
+     cursed.  A cursed treasure knocks energy level very low, and
+     adds 0.25 poison.
+
+     Rings
+
+     Rings are only carried by nazguls and Dark Lord. They come
+     in four different flavors.  All rings rest the player to
+     maximum and cause him/her to hit much harder in battle with
+     monsters (assuming one has chosen to use the ring for bat-
+     tle.)
+
+     Two types of rings are cursed and come either from nazguls
+     or Dark Lord. After a few times of using these types, the
+     player falls under the control of the ring, and strange,
+     random things will occur.  Eventually, the player dies, and
+     gives his/her name to a monster on the file.  Dying before
+     the ring is used up also renames the monster.
+
+     The two remaining types of rings are much more benign.  The
+     one from a nazgul is good for a limited number of battle
+     rounds, and will save the player from death if it was being
+     used when he/she died.  The one from Dark Lord is the same,
+     except that it never is used up.  rings disappear after sav-
+     ing someone from death.  In general, cursed rings occur much
+     more often than normal ones.  It is usually not a good idea
+     to pick one up.  The only way to get rid of a ring is to
+     have a monster steal it.
+
+     King
+
+     A player may become king by finding a _c_r_o_w_n and going to
+     (0,0).  Players must have a level in the range of 10 to 1000
+     to be able to find a _c_r_o_w_n.
+
+     Once a player is king, he/she may do certain things while in
+     the Lord's Chamber (0,0).  These fall under the decree ('0')
+     option.
+
+     _t_r_a_n_s_p_o_r_t      This is done to another player.  It randomly
+                    moves the affected player about.  A charm
+                    protects from transports.
+
+     _c_u_r_s_e          This is done to another player.  It is analo-
+                    gous to cursed treasure, but worse.  It
+                    inflicts two poison, knocks energy level very
+                    low, and degrades the maximum energy.  It
+
+
+
+Printed 11/24/99              GAMES                            11
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+                    also removes a cloak. A blessing protects
+                    from king's curses.
+
+     _e_n_e_r_g_y _v_o_i_d    The king may put as many of these (within
+                    reason) scattered about his/her kingdom as
+                    he/she pleases.  If a player hits one, he/she
+                    loses manna, energy, and gold. The energy
+                    void disappears after being hit.
+
+     _b_e_s_t_o_w         This is also done to another player.  The
+                    king may wish to reward one or more loyal
+                    subjects by sharing his/her riches ( gold ).
+                    Or it is a convenient way to dispose of some
+                    unwanted deadweight.
+
+     _c_o_l_l_e_c_t _t_a_x_e_s  Everyone pays 10% tax on all gold collected,
+                    regardless of the existence of a king. The
+                    king may collect this amount with this
+                    option.
+
+     The king may also teleport anywhere for free by using the
+     origin as a starting place.
+
+     Special Places
+
+     Certain regions of the playing grid have different names.
+     In general, this is only to give the player some idea of
+     his/her present location.  Some special places do exist.
+
+     _T_r_a_d_i_n_g _P_o_s_t_s  These are located at |x| == |y| == n*n*100
+                    for n = 1, 2...1000.  Trading posts farther
+                    out have more things for sale.  Be careful
+                    about cheating merchants there, as they have
+                    short tempers.  Merchants are dishonest about
+                    5% of the time.
+
+     _L_o_r_d'_s _C_h_a_m_b_e_r This is located at (0,0).  Only players with
+                    crowns may enter.
+
+     _P_o_i_n_t _o_f _N_o _R_e_t_u_r_n
+                    This is located beyond 1.2e+6 in any direc-
+                    tion.  The only way to return from here is a
+                    transporter or to have a valar relocate the
+                    player.
+
+     _D_e_a_d _M_a_r_s_h_e_s   This is a band located fairly distant from
+                    the origin.The first fourteen monsters (water
+                    monsters) can normally only be found here.
+
+     _V_a_l_h_a_l_a        This place is where the valar resides.  It is
+                    associated with no particular coordinate on
+                    the playing grid.
+
+
+
+Printed 11/24/99              GAMES                            12
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     _W_o_r_m_h_o_l_e_s      At fixed locations on the grid are several
+                    holes to underground defects in the playing
+                    area.  Sixty-four chambers exist; sixteen of
+                    which open to the outside world.  While in
+                    the wormholes, one move by going forward,
+                    backward, left, or right.  One can always
+                    undo a move by going in the opposite direc-
+                    tion.  The wormholes are mappable.  For exam-
+                    ple, to move from the first wormhole {at (-
+                    400,0)} to the second wormhole, type 'LL'.
+
+     Miscellaneous
+
+     There are several bits of trivial knowledge which fall under
+     this category.
+
+     A _g_u_r_u will never be disgusted with your sins if they are
+     less than one.
+
+     A _m_e_d_i_c wants half of a player's gold to be happy.  Offering
+     more than one has, or a negative amount will anger the
+     _m_e_d_i_c, who will make the player worse (add one poison ).
+
+     The Holy Grail does little for those who are not ready to
+     behold it.  Whenever anyone finds it, it moves.  It is
+     always located within 1e+6 in any compass direction of the
+     origin.
+
+     There is a maximum amount of manna and charms a player may
+     posses, based upon level. _Q_u_i_c_k_s_i_l_v_e_r is always limited to
+     to a maximum of 99.
+
+     _B_o_o_k_s bought at a trading post increase brains, based upon
+     the number bought.  It is unwise, however to buy more than
+     1/10 of one's level in books at a time.
+
+     Players over level 10000 are automatically retired.
+
+     A _b_l_i_n_d_n_e_s_s goes away in random time.
+
+     Inter-terminal Battle
+
+     When two player's coordinates correspond, they may engage in
+     battle.  In general, the player with the highest quickness
+     gets the first hit.  If the two players are severely mis-
+     matched, the stronger player is drastically handicapped for
+     the battle.  In order to protect from being stuck in an
+     infinite loop, the player waiting for response may time out.
+     Options for battle are:
+
+     _f_i_g_h_t          Inflicts damage upon other person.
+
+
+
+
+Printed 11/24/99              GAMES                            13
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     _r_u_n _a_w_a_y       Escape from battle.  Has a 75% chance of
+                    working.
+
+     _p_o_w_e_r _b_l_a_s_t    Battle spell.
+
+     _l_u_c_k_o_u_t        One-time chance to try to win against the
+                    foe.    Has a 10% chance of working.
+
+     Sometimes waits for the other player may be excessive,
+     because he/she may be battling a monster.  Upon slaying a
+     player in battle the winner gets the other's experience and
+     treasures.  Rings do not work for inter-terminal battle.
+
+     Council of the Wise, Valar
+
+     A player automatically becomes a member of the council of
+     the wise upon reaching level 3000.  Members of the council
+     cannot have rings. Members of the council have a few extra
+     options which they can exercise.  These fall under the
+     intervention ('8') option.  One is to _h_e_a_l another player.
+     This is just a quick way for that player to be rested to
+     maximum and lose a little poison. The main purpose in life
+     for members of the council is to seek the Holy Grail. This
+     is done with a palantir under the _s_e_e_k _g_r_a_i_l option.  The
+     distance cited by the seek is accurate within 10%, in order
+     not to make it too easy to find the grail.  Seeking costs
+     1000 manna. A player must have infintesimally small sin, or
+     else it's all over upon finding the grail.  In order to help
+     members of the council on their quest, they may _t_e_l_e_p_o_r_t
+     with greater ease.
+
+     Upon finding the grail, the player advance to position of
+     valar. He/she may then exercise more and niftier options
+     under _i_n_t_e_r_v_e_n_t_i_o_n. These include all of the council
+     members' option plus the ability to move other players
+     about, bless them, and throw monsters at them.  Valar are
+     essentially immortal, but are actually given five lives.  If
+     these are used up, the player is left to die, and becomes an
+     ex-valar. Valar cannot _m_o_v_e, _t_e_l_e_p_o_r_t, or call monsters.
+     Any monsters which a valar encounters are based upon his/her
+     size.  Only one valar may exists at a time.  A player
+     replaces the exiting valar upon finding the grail.  The
+     valar is then bumped back to the council of the wise.
+
+BUGS
+     Many.  The whole program is a hack.  The handling of
+     incorrectly exitted characters is a kludge.  The screen is
+     set up assuming a 24 by 80 character screen; no attempt was
+     made to provide otherwise.  If the program is not set uid,
+     it crashes on the first attempt to open a data file.  If any
+     of the data items get too big for the allotted space on the
+     screen, no guarantees are made about what will happen.
+
+
+
+Printed 11/24/99              GAMES                            14
+
+
+
+
+
+
+PHANTASIA(6)        UNIX Programmer's Manual         PHANTASIA(6)
+
+
+
+     There should be a way to change a character's name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              GAMES                            15
+
+
+

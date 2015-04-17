@@ -1,0 +1,198 @@
+
+
+
+DUMP(5)             UNIX Programmer's Manual		  DUMP(5)
+
+
+
+NAME
+     dump, ddate - incremental dump format
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <sys/ino.h>
+     #include <dumprestor.h>
+
+DESCRIPTION
+     Tapes used by _d_u_m_p and _r_e_s_t_o_r(8) contain:
+
+	  a header record
+	  two groups of bit map records
+	  a group of records describing directories
+	  a group of records describing files
+
+     The format of the header record and of the first record of
+     each description as given in the include file <_d_u_m_p_r_e_s_t_o_r._h>
+     is:
+
+     #if  UCB_NKB == 1
+     #define NTREC    10
+     #endif
+     #ifndef	      UCB_NKB
+     #define NTREC    20
+     #endif
+     #define MLEN     16
+     #define MSIZ     4096
+
+     #define TS_TAPE  1
+     #define TS_INODE 2
+     #define TS_BITS  3
+     #define TS_ADDR  4
+     #define TS_END   5
+     #define TS_CLRI  6
+     #define MAGIC    (int)60011
+     #define CHECKSUM (int)84446
+     struct	      spcl
+     {
+	  int	      c_type;
+	  time_t      c_date;
+	  time_t      c_ddate;
+	  int	      c_volume;
+	  daddr_t     c_tapea;
+	  ino_t       c_inumber;
+	  int	      c_magic;
+	  int	      c_checksum;
+	  struct      dinodec_dinode;
+	  int	      c_count;
+	  char	      c_addr[BSIZE];
+     } spcl;
+
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+DUMP(5)             UNIX Programmer's Manual		  DUMP(5)
+
+
+
+     struct	      idates
+     {
+	  char	      id_name[16];
+	  char	      id_incno;
+	  time_t      id_ddate;
+     };
+
+     _N_T_R_E_C is the number of BSIZE (sys/param.h) byte records in a
+     physical tape block.  _M_L_E_N is the number of bits in a bit
+     map word.	_M_S_I_Z is the number of bit map words.
+
+     The _T_S_ entries are used in the _c__t_y_p_e field to indicate
+     what sort of header this is.  The types and their meanings
+     are as follows:
+
+     TS_TAPE Tape volume label
+     TS_INODE
+	     A file or directory follows.  The _c__d_i_n_o_d_e field is
+	     a copy of the disk inode and contains bits telling
+	     what sort of file this is.
+     TS_BITS A bit map follows.  This bit map has a one bit for
+	     each inode that was dumped.
+     TS_ADDR A subrecord of a file description.  See _c__a_d_d_r
+	     below.
+     TS_END  End of tape record.
+     TS_CLRI A bit map follows.  This bit map contains a zero bit
+	     for all inodes that were empty on the file system
+	     when dumped.
+     MAGIC   All header records have this number in _c__m_a_g_i_c.
+     CHECKSUM
+	     Header records checksum to this value.
+
+     The fields of the header structure are as follows:
+
+     c_type   The type of the header.
+     c_date   The date the dump was taken.
+     c_ddate  The date the file system was dumped from.
+     c_volume The current volume number of the dump.
+     c_tapea  The current number of this (512-byte) record.
+     c_inumber
+	      The number of the inode being dumped if this is of
+	      type _T_S__I_N_O_D_E.
+     c_magic  This contains the value _M_A_G_I_C above, truncated as
+	      needed.
+     c_checksum
+	      This contains whatever value is needed to make the
+	      record sum to _C_H_E_C_K_S_U_M.
+     c_dinode This is a copy of the inode as it appears on the
+	      file system; see _f_i_l_s_y_s(5).
+     c_count  The count of characters in _c__a_d_d_r.
+     c_addr   An array of characters describing the blocks of the
+	      dumped file.  A character is zero if the block
+
+
+
+Printed 11/26/99						2
+
+
+
+
+
+
+DUMP(5)             UNIX Programmer's Manual		  DUMP(5)
+
+
+
+	      associated with that character was not present on
+	      the file system, otherwise the character is non-
+	      zero.  If the block was not present on the file
+	      system, no block was dumped; the block will be
+	      restored as a hole in the file.  If there is not
+	      sufficient space in this record to describe all of
+	      the blocks in a file, _T_S__A_D_D_R records will be scat-
+	      tered through the file, each one picking up where
+	      the last left off.
+
+     Each volume except the last ends with a tapemark (read as an
+     end of file).  The last volume ends with a _T_S__E_N_D record and
+     then the tapemark.
+
+     The structure _i_d_a_t_e_s describes an entry of the file
+     /_e_t_c/_d_d_a_t_e where dump history is kept.  The fields of the
+     structure are:
+
+     id_name  The dumped file system is `/dev/_i_d__n_a_m'.
+     id_incno The level number of the dump tape; see _d_u_m_p(8).
+     id_ddate The date of the incremental dump in system format
+	      see _t_y_p_e_s(5).
+
+FILES
+     /etc/ddate
+
+SEE ALSO
+     filsys(5), types(5), dump(8), dumpdir(8), restor(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						3
+
+
+

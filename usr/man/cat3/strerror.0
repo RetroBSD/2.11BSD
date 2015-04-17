@@ -1,0 +1,66 @@
+
+
+
+PERROR(3)	    UNIX Programmer's Manual		PERROR(3)
+
+
+
+NAME
+     perror, strerror - system error messages
+
+SYNOPSIS
+     perror(s)
+     char *s;
+
+     #include <string.h>
+
+     _c_h_a_r *
+     strerror(errnum)
+     int errnum;
+
+DESCRIPTION
+     The strerror() and perror() functions look up the error mes-
+     sage string corresponding to an error number.
+
+     The strerror() function accepts an error number argument
+     _e_r_r_n_u_m and returns a pointer to the corresponding message
+     string.
+
+     The perror() function finds the error message corresponding
+     to the current value of the global variable _e_r_r_n_o (intro(2))
+     and writes it, followed by a newline, to the standard error
+     file descriptor.  If the argument _s_t_r_i_n_g is non-NULL, it is
+     prepended to the message string and separated from it by a
+     colon and space (`: ').  If _s_t_r_i_n_g is NULL, only the error
+     message string is printed.
+
+     If _e_r_r_n_u_m is not a recognized error number, the error mes-
+     sage string will contain ``Unknown error: '' followed by the
+     error number in decimal.
+
+     The error messages are stored in a data file now rather than
+     an in memory array.  See syserror(5).
+
+SEE ALSO
+     mkerrlst(1), intro(2), psignal(3), strerror(3), syserror(3),
+     syserror(5)
+
+BUGS
+     The strerror() function returns its result in a static
+     buffer which may be overwritten by subsequent calls.
+
+     The array sys_errlist[] and the global sys_nerr are obsolete
+     and should not be used.  They have, for the time being, been
+     placed in an object library liberrlst.a.
+
+
+
+
+
+
+
+
+Printed 11/26/99	 March 21, 1996                         1
+
+
+

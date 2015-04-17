@@ -1,0 +1,132 @@
+
+
+
+RCMD(3)             UNIX Programmer's Manual		  RCMD(3)
+
+
+
+NAME
+     rcmd, rresvport, ruserok - routines for returning a stream
+     to a remote command
+
+SYNOPSIS
+     rem = rcmd(ahost, inport, locuser, remuser, cmd, fd2p);
+     char **ahost;
+     int inport;
+     char *locuser, *remuser, *cmd;
+     int *fd2p;
+
+     s = rresvport(port);
+     int *port;
+
+     ruserok(rhost, superuser, ruser, luser);
+     char *rhost;
+     int superuser;
+     char *ruser, *luser;
+
+DESCRIPTION
+     _R_c_m_d is a routine used by the super-user to execute a com-
+     mand on a remote machine using an authentication scheme
+     based on reserved port numbers.  _R_r_e_s_v_p_o_r_t is a routine
+     which returns a descriptor to a socket with an address in
+     the privileged port space.  _R_u_s_e_r_o_k is a routine used by
+     servers to authenticate clients requesting service with
+     _r_c_m_d.  All three functions are present in the same file and
+     are used by the _r_s_h_d(8C) server (among others).
+
+     _R_c_m_d looks up the host *_a_h_o_s_t using _g_e_t_h_o_s_t_b_y_n_a_m_e(3N),
+     returning -1 if the host does not exist.  Otherwise *_a_h_o_s_t
+     is set to the standard name of the host and a connection is
+     established to a server residing at the well-known Internet
+     port _i_n_p_o_r_t.
+
+     If the connection succeeds, a socket in the Internet domain
+     of type SOCK_STREAM is returned to the caller, and given to
+     the remote command as stdin and stdout.  If _f_d_2_p is non-
+     zero, then an auxiliary channel to a control process will be
+     set up, and a descriptor for it will be placed in *_f_d_2_p.
+     The control process will return diagnostic output from the
+     command (unit 2) on this channel, and will also accept bytes
+     on this channel as being UNIX signal numbers, to be for-
+     warded to the process group of the command.  If _f_d_2_p is 0,
+     then the stderr (unit 2 of the remote command) will be made
+     the same as the stdout and no provision is made for sending
+     arbitrary signals to the remote process, although you may be
+     able to get its attention by using out-of-band data.
+
+     The protocol is described in detail in _r_s_h_d(8C).
+
+
+
+
+
+Printed 11/26/99	  May 14, 1986				1
+
+
+
+
+
+
+RCMD(3)             UNIX Programmer's Manual		  RCMD(3)
+
+
+
+     The _r_r_e_s_v_p_o_r_t routine is used to obtain a socket with a
+     privileged address bound to it.  This socket is suitable for
+     use by _r_c_m_d and several other routines.  Privileged Internet
+     ports are those in the range 0 to 1023.  Only the super-user
+     is allowed to bind an address of this sort to a socket.
+
+     _R_u_s_e_r_o_k takes a remote host's name, as returned by a
+     _g_e_t_h_o_s_t_b_y_a_d_d_r(3N) routine, two user names and a flag indi-
+     cating whether the local user's name is that of the super-
+     user.  It then checks the files /_e_t_c/_h_o_s_t_s._e_q_u_i_v and, possi-
+     bly, ._r_h_o_s_t_s in the current working directory (normally the
+     local user's home directory) to see if the request for ser-
+     vice is allowed.  A 0 is returned if the machine name is
+     listed in the ``hosts.equiv'' file, or the host and remote
+     user name are found in the ``.rhosts'' file; otherwise
+     _r_u_s_e_r_o_k returns -1.  If the _s_u_p_e_r_u_s_e_r flag is 1, the check-
+     ing of the ``host.equiv'' file is bypassed.  If the local
+     domain (as obtained from _g_e_t_h_o_s_t_n_a_m_e(2)) is the same as the
+     remote domain, only the machine name need be specified.
+
+SEE ALSO
+     rlogin(1C), rsh(1C), intro(2), rexec(3), rexecd(8C),
+     rlogind(8C), rshd(8C)
+
+DIAGNOSTICS
+     _R_c_m_d returns a valid socket descriptor on success.  It
+     returns -1 on error and prints a diagnostic message on the
+     standard error.
+
+     _R_r_e_s_v_p_o_r_t returns a valid, bound socket descriptor on suc-
+     cess.  It returns -1 on error with the global value _e_r_r_n_o
+     set according to the reason for failure.  The error code
+     EAGAIN is overloaded to mean ``All network ports in use.''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 14, 1986				2
+
+
+

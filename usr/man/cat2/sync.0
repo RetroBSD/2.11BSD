@@ -1,0 +1,66 @@
+
+
+
+SYNC(2)             UNIX Programmer's Manual		  SYNC(2)
+
+
+
+NAME
+     sync - update super-block
+
+SYNOPSIS
+     sync()
+
+DESCRIPTION
+     _S_y_n_c causes all information in core memory that should be on
+     disk to be written out.  This includes modified super
+     blocks, modified i-nodes, and delayed block I/O.
+
+     _S_y_n_c should be used by programs that examine a file system,
+     for example _f_s_c_k, _d_f, etc.  _S_y_n_c is mandatory before a boot.
+
+SEE ALSO
+     fsync(2), sync(8), update(8)
+
+BUGS
+     The writing, although scheduled, is not necessarily complete
+     upon return from _s_y_n_c.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 30, 1985                         1
+
+
+

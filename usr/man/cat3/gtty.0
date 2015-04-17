@@ -1,0 +1,66 @@
+
+
+
+STTY(3C)	    UNIX Programmer's Manual		 STTY(3C)
+
+
+
+NAME
+     stty, gtty - set and get terminal state (defunct)
+
+SYNOPSIS
+     #include <sgtty.h>
+
+     stty(fd, buf)
+     int fd;
+     struct sgttyb *buf;
+
+     gtty(fd, buf)
+     int fd;
+     struct sgttyb *buf;
+
+DESCRIPTION
+     This interface is obsoleted by ioctl(2).
+
+     _S_t_t_y sets the state of the terminal associated with _f_d.
+     _G_t_t_y retrieves the state of the terminal associated with _f_d.
+     To set the state of a terminal the call must have write per-
+     mission.
+
+     The _s_t_t_y call is actually ``ioctl(fd, TIOCSETP, buf)'',
+     while the _g_t_t_y call is ``ioctl(fd, TIOCGETP, buf)''.  See
+     _i_o_c_t_l(2) and _t_t_y(4) for an explanation.
+
+DIAGNOSTICS
+     If the call is successful 0 is returned, otherwise -1 is
+     returned and the global variable _e_r_r_n_o contains the reason
+     for the failure.
+
+SEE ALSO
+     ioctl(2), tty(4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,17 @@
+This differs from the standard old l11 in several ways:
+
+1.	A global absolute symbol may be defined several times, if it
+	has the same value.
+2.	If a psect is declared with differing attributes, the first
+	declaration is believed.
+
+	Both of the above generate warning messages.
+
+
+3.	The listing shows the psect attributes.
+
+4.	l11 does not expect a local symbol table.  Hence the 'rsx-11d'
+	.enabl reg feature will not make the loader croak.
+
+jim reeds
+22 sept 81

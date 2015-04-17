@@ -1,0 +1,17 @@
+kl.c	modified kl driver to support dlv11-e/f cards and dialin/dialout
+	on same line.  To enable modem-controll, define MIN_MODEM and
+	MAX_MODEM in kl.h to be the minimum (maximum) minor device number
+	that should support modem control.  Note that if these refer to
+	non-modem control lines you will not be able to access those lines
+	as you will wait (perpetually) for carrier.  To enable speed
+	selection, define MIN_SPEED and MAX_SPEED similarly.
+
+klreg.h	a new version of /usr/include/sys/klreg.h.  It includes the
+	definitions for the extended capapbilities of the e and f cards.
+
+		Keith Packard
+		5440 SE 41st
+		Portland, OR 97202
+		...!tektronix!azure!keithp
+		...!tektronix!reed!motel6!keith
+

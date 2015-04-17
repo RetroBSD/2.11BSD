@@ -1,0 +1,66 @@
+
+
+
+NUMBER(6)	    UNIX Programmer's Manual		NUMBER(6)
+
+
+
+NAME
+     number - convert Arabic numerals to English
+
+SYNOPSIS
+     /usr/games/number
+
+DESCRIPTION
+     _N_u_m_b_e_r copies the standard input to the standard output,
+     changing each decimal number to a fully spelled out version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1985				1
+
+
+

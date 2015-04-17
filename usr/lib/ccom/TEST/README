@@ -1,0 +1,197 @@
+	This compiler is obviously based on a Ritchie compiler, roughly dated
+1982, that was slipped under the door by an unnamed benefactor.  It came here
+with void, u_char, many cosmetic changes (use of += vs =+), table.s replaced
+by "optable", and cvopt.c writing a ".c" file, rather than an ".s" file.
+There are also many changes to the way code is generated.
+	Various files begining with "tst" test various bugs/enhancements that
+have been seen in some versions of the Ritchie compiler.  You can see some
+of the bugs that have been fixed by running these test programs.  These test
+programs are far from being complete test suites.  Just because you can get
+one in particular to run doesn't necessarily mean that every case of that
+feature will work.  Other shakedown measures should be taken, for example,
+recompiling & testing every program you can get your hands on.
+
+	Stephen Uitti, Casey Leedom & Keith Bostic
+
+tst_adec.c
+	This bug is where a long is used as an index for an array, that gets
+	decremented.  The bug is that only half of the long gets decremented,
+	corrupting its value.  0 goes to 65535 rather than -1.  The stock
+	2.9 BSD compiler had this bug.  The bug was reported on USENET, with
+	no fix.  This compiler fixes this bug, but 'causes' another - see
+	tstlgm.c, tstlgmgood.c.
+
+tst_pntint.c
+	The new compiler didn't allow assignment of pointers to integers
+	and vice-versa under any circumstances.  This was changed to allow
+	the assignment, but warn the user, a la 4.3.
+
+tst_assign.c
+	The new compiler doesn't handle the old assignment operators at all.
+	It will object to *some* of the old operators, but since "foo =- 8"
+	can be translated "foo = (-8)", a lot of them slip by.  Use the
+	program old-assn and a find to remove all instances of the old
+	operators from your source code.  For example...
+
+	find /usr/src -type f -name '*.[cl]' \
+		-exec /usr/src/lib/ccom/TEST/old-assn {} \; >& old_list&
+
+tst_rhh.c and tst_rhh-g.c
+	This compiler fixes the "tstadec.c" bug, but in doing so creates this
+	other bug.  The symptom is that the compiler runs out of registers
+	while trying to compile this code.  The stock 2.9 BSD compiler
+	compiles this code correctly, but uses a "div" rather than an "ashc"
+	instruction at one point.  "movreg" in c10.c gets called to move
+	values to an appropriate even/odd place, but there aren't enough
+	registers left to do this.  It's unclear why r0 isn't used early on in
+	the developed code, since the stock 2.9 BSD compiler does, and thus
+	doesn't get into trouble.  "tst_rhh-g.c" declares one less register,
+	and thus allows a compiler with the bug to compile the code.
+
+tst_asm.c
+	This tests (and shows how to use) the "asm" feature.  These mods
+	were taken from in a version of the Ritchie compiler found on a
+	VAX at Purdue CS that had been converted into a cross C compiler.
+	These mods were done in c0.h, c1.h, c00.c, c02.c, c11.c, c0.h and
+	c1.h.
+
+tst_longsym.c
+	Mods (mostly to error messages) to allow the parameter NCPS (in both
+	c0.h and c1.h) to be changed to (for example) larger values.  Normally,
+	a standard compiler will give you a message something like:
+
+		tstlongsym.c:3: foobarby redeclared
+
+	So, change NCPS to 16, try again, and it should actually run.  It turns
+	out that "auto" symbol names never get used by the assembler, so it's
+	still happy.  For globals, though, you need an assembler, linker, new
+	a.out format (for the symbol table), ar etc. that can deal with longer
+	names.  These changes took place in c00.c, c01.c c02.c, c03.c, and
+	c11.c.
+
+tst_lgm.c and tst_lgm-g.c
+	These show a bug in union initialization.  Both the stock 2.9 compiler
+	and this compiler allowed the initializations, but compiled incorrect
+	code.  The bugfix allows them and does them correctly but warns that
+	they are non-portable.  This bugfix still won't compile tstlgm.c,
+	since it is not syntactically correct.  tstlgmgood.c is, and this fix
+	allows this code to be compiled.  Note, this compiler will not allow
+	initialization of a union unless the type of the value is the type
+	of the first entry in the union; the stock 2.9 compiler didn't have
+	that limitation.  This fix was applied to c02.c, and is attributed
+	to Doug Gwyn.
+
+tst_sgncmp.c
+	Both the stock 2.9 compiler & this compiler compare large (almost
+	negative) signed int's incorrectly.  The bugfix allows this program
+	to say "true" always.  These changes were made in c10.c, c11.c, c13.c,
+	c2.h, and c20.c.  The bugfix is attributed to George Rosenberg,
+	whose "README" was as follows:
+
+		There seems to be an anomaly in the code generation of
+	some pdp-11 C compilers.  In certain contexts the wrong type of
+	conditional branch instruction is generated.  Instructions such
+	as "jge" may occur rather than instructions such as "jpl".  I
+	have observed the problem with a Whitesmith compiler and both
+	of the compilers distributed with UNIX version 7, Dennis M.
+	Ritchie's compiler and Stephen C. Johnson's compiler.  The
+	expression,
+		"(j-i < 0) == (j-i < zero)",
+
+	evaluates to zero (i.e. false) in the accompanying program,
+	"bug.c", as compiled with the UNIX compilers.  The expression
+	evaluates as one (i.e. true), in the Whitesmith compiler, only
+	because it also incorrectly evaluates a previous expression in
+	the program.  I suggest trying this program with your compiler
+	even if it isn't one of the above.
+
+	In making the changes, the original sources were examined only
+	superficially (e.g. grep jlt), to find the offending code.
+	This code was then patched up.  Programs compiled with the
+	modified compiler seem to work.  By "seem to work", I mean that
+	as far as I know the coding anomalies described here are fixed
+	and no new bugs are introduced.  Due to my ignorance of the
+	global workings of the compiler, there may be a possibility of
+	some unknown global effect coming back to haunt you.  Here is a
+	summary of coding changes applicable in certain contexts.
+
+			Old Coding		New Coding
+	1.		jlt L001		jmi L001
+	2.		jge L002		jpl L002
+	3.		jle L003		jmi L003
+						jeq L003
+	4.		jgt L004		jmi L005
+						jne L004
+					L005:
+
+c11.c (stock 2.9 BSD compiler only)
+	An improvement to the optimizer, c21.c, does a little better at using
+	values which have been put into registers.  To test the diff the
+	assembly output "cc -O -S c11.c".  Of course c11.c is also useful as
+	part of the compiler.
+
+Other bugs (but no test files):
+
+====	An assignment bug fix - the code is in c01.c.  The bugfix code claims
+	that t = (t, t) + 1; code was broken, now fixed.  It didn't seem
+	broken to me, but I installed the fix anyway.
+
+====	A new type clash error is trapped for in c03.c.  This fix attributed
+	to "IIASA (from MIT)" (whoever/whatever that is).
+
+====	A bug fix for "when there are unitialized static variables in the
+	middle of a routine".  This fix is also attributed to "IIASA (from
+	MIT)", and is applied to c20.c.
+
+====	A bug fix for a typo in c10.c, attributed to ken@ukma.  Search
+	for "typo".
+
+====	The pdp-11 compiler clears a little too much information when
+	it leaves certain scopes.  The place you find this is in the
+	code:
+		f1() { extern int foo; }
+
+		f2() { foo = 1; }
+
+	According to sections 10 & 11.1 of K&R, this is legal, and, in fact,
+	the 4.3 compiler allows this.  2.10's doesn't.  Because of the way
+	that 2.10's compiler handles its stack, this one will be *very* tough.
+
+====	Forward references are a bit paranoid in the 2.10 compiler, for
+	instance, the following code produces an error message that
+
+		struct A {
+			struct B	*bp;
+		} a = 0;
+
+		struct B {
+			struct A	*ap;
+		};
+
+	the line "a = 0" causes a reference to an "Undefined structure."
+	This isn't really a bug, and it can be easily worked around, but
+	it's certainly unreasonable.
+
+====	Also, something which isn't a bug in our compiler, but is in the
+	4.3BSD compiler may cause you some problems when porting programs
+	from 4.3.  The 4.3 compiler compares unsigned and signed ints
+	incorrectly (K&R, p. 184, 6.5 and p. 189, 7.6).  Instead of
+	performing an unsigned comparison, it performs a signed comparison.
+	To get a feel for the degree of subtlety that this can lead to in
+	the way of bugs consider the following line from the original source
+	to the 4.3 ndbm standard library source:
+
+	if (i1 <= (i2+3) * sizeof(short))
+
+	I1 and i2 are integers, but because sizeof has type unsigned the
+	entire right hand side of the comparison is converted to unsigned.
+	At this point our compiler and the 4.3 compiler diverge in their
+	treatment of the comparison: ours converts the left hand side of the
+	comparison to unsigned and performs an unsigned comparison.  The
+	4.3 compiler converts the right hand side to signed and performs a
+	signed comparison.  In the particular case above, since i1 had been
+	(essentially) computed as i2 - <exp> with the possibility of a
+	negative result, this caused a problem ...  The corrected code for
+	the above is:
+
+	if (i1 <= (int)((i2+3) * sizeof(short)))

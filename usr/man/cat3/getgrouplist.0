@@ -1,0 +1,66 @@
+
+
+
+GETGROUPLIST(3)     UNIX Programmer's Manual	  GETGROUPLIST(3)
+
+
+
+NAME
+     getgrouplist - calculate group access list
+
+SYNOPSIS
+     #include <unistd.h>
+     int
+     getgrouplist(_n_a_m_e, _b_a_s_e_g_i_d, _g_r_o_u_p_s, _n_g_r_o_u_p_s)
+		  char	*name;
+		  gid_t basegid;
+		  gid_t *groups;
+		  int	*ngroups;
+
+DESCRIPTION
+     The getgrouplist function reads through the group file and
+     calculates the group access list for the user specified in
+     _n_a_m_e.  The _b_a_s_e_g_i_d is automatically included in the groups
+     list.  Typically this value is given as the group number
+     from the password file.
+
+     The resulting group list is returned in the integer array
+     pointed to by _g_r_o_u_p_s.  The caller specifies the size of the
+     _g_r_o_u_p_s array in the integer pointed to by _n_g_r_o_u_p_s; the
+     actual number of groups found is returned in _n_g_r_o_u_p_s.
+
+RETURN VALUES
+     The getgrouplist function returns -1 if the size of the
+     group list is too small to hold all the user's groups.
+     Here, the group array will be filled with as many groups as
+     will fit.
+
+FILES
+     /etc/group  group membership list
+
+SEE ALSO
+     setgroups(2), initgroups(3)
+
+HISTORY
+     The getgrouplist function first appeared in 4.4BSD.
+
+BUGS
+     The getgrouplist function uses the routines based on get-
+     grent(3).	If the invoking program uses any of these rou-
+     tines, the group structure will be overwritten in the call
+     to getgrouplist.
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 25, 1997                         1
+
+
+

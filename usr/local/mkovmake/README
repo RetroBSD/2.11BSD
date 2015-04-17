@@ -1,0 +1,19 @@
+ 
+ Mkovmake is an optimizing overlay makefile generator--
+ in other words, you use it in the Makefile of a large
+ program that you are trying to make, and it generates
+ base and overlay definitions and an ld command that
+ would correctly load the object modules.  This avoids
+ incessant calculations of module sizes each time sources
+ are changed, and allows large programs to be easily put
+ together on a PDP-11.  It is designed to allow varying
+ levels of user participation in case the user can 
+ optimize better than mkovmake's static algorithm.
+ 
+ Try it out; the man page even has examples.
+ 
+ 
+ --
+ Dennis Flaherty              dennisf@ndcvx.cc.nd.edu
+ U of Notre Dame      Dept. of Electrical Engineering
+   Notre Dame *tells* me what opinions to have.

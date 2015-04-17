@@ -1,0 +1,20 @@
+Machine Type:		Silicon Graphics IRIX 4.*
+
+Make using:		make irix4
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" irix4
+
+Person(s) porting:	Simon Leinen <simon@lia.di.epfl.ch>
+Port date:		A long time ago...
+Verified working:	OS version(s)	Pident vers	Person
+			4		2.1beta.10	<simon@lia.di.epfl.ch>
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Works as daemon or from inetd with wait/nowait
+
+Known bugs:		It returns the <uid> of the process owning the
+			socket in question instead of the <ruid>. Ie,
+			it returns "root" instead of the actual user
+			when the user runs a setuid-root program like rsh..

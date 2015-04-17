@@ -1,0 +1,66 @@
+
+
+
+STRSTR(3)	    UNIX Programmer's Manual		STRSTR(3)
+
+
+
+NAME
+     strstr - locate a substring in a string
+
+SYNOPSIS
+     #include <string.h>
+
+     char *
+     strstr(big, little)
+     _c_h_a_r *_b_i_g, *_l_i_t_t_l_e;
+
+DESCRIPTION
+     The strstr() function locates the first occurrence of the
+     null-terminated string _l_i_t_t_l_e in the null-terminated string
+     _b_i_g.  If _l_i_t_t_l_e is the empty string, strstr() returns _b_i_g;
+     if _l_i_t_t_l_e occurs nowhere in _b_i_g, strstr() returns NULL; oth-
+     erwise strstr() returns a pointer to the first character of
+     the first occurrence of _l_i_t_t_l_e.
+
+SEE ALSO
+     index(3), memchr(3), rindex(3), strchr(3), strcspn(3),
+     strpbrk(3), strrchr(3), strsep(3), strspn(3), strtok(3)
+
+STANDARDS
+     The strstr() function conforms to ANSI C X3/159-1989 (``ANSI
+     C'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 15, 1996			1
+
+
+

@@ -1,0 +1,28 @@
+#if NDE > 0
+. = ZERO+300
+	dein; br4+0.
+	deou; br4+0.
+	klin; br4+5.
+	klou; br4+5.
+#endif
+
+#if	NDE > 0
+.globl	_derint
+dein:	jsr	r0,call; jmp _derint
+.globl	_dexint
+deou:	jsr	r0,call; jmp _dexint
+#endif
+
+#include	"de.h"
+#if	NDE > 0
+int	deopen(), declose(), deread(), dewrite(), deioctl();
+extern	struct	tty	de11[];
+#else
+#define	deopen		nodev
+#define	declose		nodev
+#define	deread		nodev
+#define	dewrite		nodev
+#define	deioctl		nodev
+#define	de11		((struct tty *) NULL)
+#endif	NDE
+

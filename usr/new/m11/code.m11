@@ -1,0 +1,473 @@
+	.title	code
+
+	.ident	/10may4/
+
+	.mcall	(at)always,st.flg,xmit,zwrite
+	always
+	st.flg
+
+	.mcall	(at)genedt,setnz,next,append,zap,error
+
+	.globl	objchn,	objlen
+	.globl	savreg,	ioftbl,	buftbl,	cnttbl
+
+	.globl	dmprld,	endp1c,	endp2c,	pcroll,	prgttl
+	.globl	setdsp,	setimm,	setrld,	stcode
+
+	.globl	abserr,	clcloc,	clcnam,	clcsec
+	.globl	codrol,	endvec,	mode,	objsec
+	;.globl	pass,	psaflg,	rolupd,	secrol
+	.globl	pass,	rolupd,	secrol
+	.globl	sector,	setpf0,	setpf1,	setsec,	setxpr
+	.globl	symbol,	symrol,	value
+	.globl	edmask,	ed.abs,	ed.pnc
+	.globl	dflgbm,	opclas
+cc.opr	=	040
+cc.nam	=	020
+cc.sec	=	010
+cc.val	=	004
+cc.dsp	=	002
+
+
+gsdt00=	00*400		; object module name
+gsdt01=	01*400		; program section name
+gsdt02=	02*400		; internal symbol table
+gsdt03=	03*400		; transfer address
+gsdt04=	04*400		; symbol declaration
+gsdt05=	05*400		; local section name
+gsdt06=	06*400		; version identification
+
+blkt01=	01		; gsd
+blkt02=	02		; gsd end
+blkt03=	03		; text block
+blkt04=	04		; rld block
+blkt05=	05		; isd
+blkt06=	06		; module end
+blkt17=	17
+	.sbttl	expression to code-roll conversions
+
+	xitsec			;start in default psect
+
+setimm:				;
+	call	savreg
+	call	setxpr
+	clr	-(sp)
+	bitb	#glbflg,(r3)
+	bne	setds3
+	bit	#relflg,(r3)
+	beq	setdsx
+	cmpb	(r2),clcsec
+	bne	setds1
+	bis	#cc.sec,(sp)
+	br	setdsx
+
+setdsp:
+	call	savreg
+	call	setxpr
+	mov	#cc.dsp,-(sp)
+	bit	#glbflg,(r3)
+	bne	setds3
+	cmpb	(r2),clcsec
+	beq	setds2
+	bit	#relflg,(r3)
+	beq	setdsx
+setds1:	call	setsec
+	bis	#cc.sec!cc.nam,(sp)
+	br	setdsx
+
+setds2:	clr	(r3)
+	clr	(sp)
+	movb	<^pl rolsiz>+codrol+1,r0
+	;movb	@(pc)+,r0
+	; .word	<^pl rolsiz>+codrol+1
+	inc	r0
+	asl	r0
+	add	clcloc,r0
+	sub	r0,(r4)
+	br	setdsx
+
+setds3:	bis	#cc.nam,(sp)
+setdsx:	bit	#dflgbm,opclas
+	beq	4$
+	tstb	(r4)+
+	movb	(r4),r0
+	beq	1$
+	inc	r0
+	bne	2$
+1$:	bit	#cc.sec,(sp)
+	beq	3$
+2$:	call	abserr
+3$:	clrb	(r4)
+	bis	#200,(sp)
+4$:	movb	(sp)+,(r2)
+	return
+	.globl	limit
+
+limit:
+	call	setrld
+1$:	inc	r3
+	movb	#cc.opr,(r2)+
+	movb	r3,(r2)+
+	movb	r3,(r2)+
+	call	dmprld
+	mov	#symbol,r0
+	clr	(r0)+
+	mov	r3,(r0)+
+	mov	#cc.nam*400,(r0)+
+	clr	(r0)+
+	call	stcode
+	cmp	r3,#2
+	blo	1$
+	return
+
+	.globl	ident,	rad50
+ident:				;"ident" directive
+	call	rad50		;treat as rad 50
+	clr	rolupd		;point to start of code roll
+	mov	#prgidn,r2	;  and to ident block
+1$:	next	codrol		;get the next entry
+	mov	value,(r2)+	;stuff it
+	cmp	r2,#prgidn+4	;two words?
+	blo	1$		;  no
+	mov	#gsdt06,(r2)+	;yes, set gsd type
+	zap	codrol		;clear code
+	return
+
+
+	entsec	impure
+prgttl:	.blkw	4		;title block
+prgidn:	.blkw	4		;ident   "
+	xitsec
+	.sbttl	object code handlers
+
+endp1c:				;end pass1 code init
+	tstb	ioftbl+objchn	;any obj file?
+	beq	9$		;  no
+	call	objini		;init output
+	mov	#blkt01,@buftbl+objchn	;set block type 1
+	mov	#prgttl,r1	;set "from" index
+	call	gsddmp		;output gsd block
+	mov	#prgidn,r1	;point to sub-ttl buffer
+	tst	4(r1)		;set?
+	beq	1$		;  no
+	call	gsddmp		;yes, stuff it
+1$:	clr	-(sp)		;init for sector scan
+2$:	mov	(sp)+,rolupd	;set scan marker
+	next	secrol		;get the next sector
+	beq	6$		;branch if through
+	mov	rolupd,-(sp)	;save marker
+	mov	#value+2,r1
+	mov	(r1),-(r1)
+	clr	r5
+	bisb	-(r1),r5
+	movb	#gsdt05/400,(r1)
+	;tst	psaflg				; who cares?  a .csect is a 
+	;bne	3$				;special kind of .psect
+	;movb	#gsdt01/400,(r1)		; so dont need this code
+	;bicb	#^c<defflg!relflg>,-(r1)	;	j reeds sept 81.
+3$:	clr	rolupd		;set for inner scan
+4$:	mov	#symbol,r1
+	call	gsddmp		;output this block
+5$:	next	symrol		;fetch the next symbol
+	beq	2$		;  finished with this guy
+	bit	#glbflg,mode	;global?
+	beq	5$		;  no
+	bit	#regflg,mode	;is register (prevent god's wrath)
+	bne	5$		;no global registers with ==*
+	cmpb	sector,r5	;yes, proper sector?
+	bne	5$		;  no
+	bic	#^c<defflg!200!relflg!glbflg>,mode	;clear most (leave hk up)
+	bis	#gsdt04,mode	;set type 4
+	br	4$		;output it
+
+
+6$:	bic	#^c<relflg>,endvec+4	;clear all but rel flag
+	bis	#gsdt03+defflg,endvec+4
+	mov	#endvec,r1
+	call	gsddmp		;output end block
+	call	objdmp		;dump it
+	mov	#blkt02,@buftbl+objchn	;set "end of gsd"
+	call	objdmf
+	mov	#blkt17,@buftbl+objchn	;init for text blocks
+9$:
+	inc	pass		;set for pass 2
+	return
+
+
+gsddmp:				;dump a gsd block
+	call	setrld
+	xmit	4
+	jmp	dmprld
+endp2c:
+	tst	objpnt		;any object output?
+	beq	1$		;  no
+	call	objdmp		;yes, dump it
+.if	ne,mk.symbol
+	tst	out$ym
+	beq	22$
+.endc
+32$:	mov	#blkt06,@buftbl+objchn	;set end
+	call	objdmf		;dump it
+	.if ndf	xedabs
+	bit	#ed.abs,edmask	;abs output?
+	bne	1$		;  no
+	mov	objpnt,r0
+	mov	endvec+6,(r0)+	;set end vector
+	mov	r0,objpnt
+	call	objdmp
+	.endc
+1$:	return
+
+.if	ne,mk.symbol
+22$:	mov	#blkssym,@buftbl+objchn
+	clr	rolupd
+3$:	next	symrol
+	beq	31$
+	bit	#glbflg,mode
+	bne	3$
+	mov	#symbol,r1
+	call	gsddmp
+	br	3$
+
+31$:	tst	objpnt
+	beq	30$
+	call	objdmp
+30$:
+	call	locdmp
+	mov	#blksye,@buftbl+objchn
+	tst	objpnt
+	beq	32$
+	call	objdmf
+	br	32$
+
+	entsec	impure
+out$ym:	.blkw	1
+	xitsec
+
+blksye=21
+blkssys=22
+
+.globl	out$ym
+.endc
+
+	.sbttl	code roll handlers
+
+stcode:	append	codrol		;append to codrol
+	return
+
+	.globl	pcrcnt
+pcroll:				;
+	next	codrol
+	beq	9$
+	call	savreg
+	movb	sector,r4
+	tst	pass
+	beq	7$
+	inc	pcrcnt
+	bne	1$
+	call	setpf0
+1$:	call	setpf1
+	tst	objpnt
+	beq	7$
+	.if ndf	xedpnc
+	bit	#ed.pnc,edmask
+	bne	7$
+	.endc
+	call	setrld
+	mov	r4,-(sp)
+	mov	#cc.sec!cc.nam!cc.opr,r4
+	cmpb	clcsec,objsec
+	bne	2$
+	cmp	clcloc,objloc
+	beq	3$
+	bic	#cc.nam,r4
+2$:	mov	#clcnam,r1
+	call	pcrolx
+	clrb	(r2)+
+	call	dmprld
+3$:	mov	(sp)+,r4
+	mov	#symbol,r1
+	call	pcrolx
+	call	dmprld
+7$:	inc	clcloc
+	tstb	r4
+	bmi	8$
+	inc	clcloc
+8$:	movb	clcsec,objsec
+	mov	clcloc,objloc
+	setnz	r0
+9$:	return
+pcrolx:
+	movb	r4,(r2)+
+	bit	#cc.nam,r4
+	beq	3$
+	.rept	4
+	movb	(r1)+,(r2)+
+	.endm
+	cmp	-(r1),-(r1)
+3$:	add	#6,r1
+	tst	(r1)
+	beq	4$
+	movb	(r1)+,(r2)+
+	bisb	#cc.val,rldtmp
+	tstb	r4
+	bmi	4$
+	movb	(r1)+,(r2)+
+4$:	return
+
+	entsec	implin
+pcrcnt:	.blkw			;extension line flag
+	entsec	imppas
+	.odd
+objsec:	.blkb	1		;object file sector
+objloc:	.blkw	1		;object file location
+
+
+
+
+
+	.if ndf	xedpnc
+	genedt	pnc,pncset	;punch control
+
+pncset:	movb	#377,objsec	;force sequence break
+	return
+	.endc
+objdmp:				;dump the object buffer
+	tst	objpnt
+	beq	objinx		;exit if not pre-set
+	mov	buftbl+objchn,r0
+	tst	(r0)+		;ignore first word
+	cmp	objpnt,r0	;anything in rld?
+	blos	objini		;  no, just init
+objdmf:
+	mov	objpnt,@cnttbl+objchn
+	sub	buftbl+objchn,@cnttbl+objchn	;compute byte count
+	zwrite	obj
+
+objini:	mov	buftbl+objchn,objpnt
+	add	#2,objpnt	;reserve word for block type
+objinx:	return
+
+dmprld:	tst	objpnt
+	beq	setrld
+	mov	r1,-(sp)	;save byte count
+	mov	#rldtmp,r1
+	mov	r2,r0
+	sub	r1,r0
+	beq	9$
+	add	objpnt,r0
+	sub	buftbl+objchn,r0
+	cmp	r0,#objlen	;room to store?
+	blos	1$		;  yes
+	call	objdmp		;no, dump current
+1$:	mov	objpnt,r0	;return with pointer in r2
+2$:	movb	(r1)+,(r0)+
+	cmp	r1,r2
+	blo	2$
+	mov	r0,objpnt
+9$:	mov	(sp)+,r1
+setrld:	mov	#rldtmp,r2
+	return
+
+	entsec	impure
+objpnt:	.blkw
+rldtmp:	.blkb	100.
+	xitsec
+
+
+	xitsec
+	.globl	sx.flg ,lsyrol
+locdmp:
+	call	savreg
+	mov	r0,-(sp)
+	tst	sx.flg
+	beq	9$
+	clr	rolupd
+1$:
+	next	lsyrol
+	beq	2$
+	bit	#glbflg,mode
+	bne	1$
+	call	unlocl
+	mov	#symbol,r1
+	call	gsddmp
+	br	1$
+2$:
+	tst	objpnt
+	beq	9$
+	call	objdmp
+9$:
+	mov	(sp)+,r0
+	return
+
+.globl	dnc ,chrpnt,	getsym,..z
+unlocl:
+	call	savreg
+	mov	r0,-(sp)
+	mov	#work.x,r2
+	mov	symbol+2,r1
+	call	dnc
+	movb	#'$,(r2)+
+	movb	#0,(r2)+		
+	call	tor50
+	mov	(sp)+,r0
+	return
+	entsec	mixed
+work.x:	.blkw	5
+	xitsec
+tor50:
+	call	savreg
+	mov	#work.x,r4
+	call	1$
+	mov	r0,symbol
+	mov	#3+work.x,r4
+	call	1$
+	mov	r0,2+symbol
+	return
+1$:
+	clr	r3
+	tstb	(r4)
+	beq	10$
+	movb	(r4)+,r0
+	br	20$
+10$:	movb	(r4),r0
+20$:	mov	r0,r2
+	call	40$
+	mov	r0,r3
+	mov	r3,r1
+	mul	#50,r1
+	mov	r1,r3
+	tstb	(r4)
+	beq	12$
+	movb	(r4)+,r0
+	br	21$
+12$:	movb	(r4),r0
+21$:	mov	r0,r2
+	call	40$
+	add	r0,r3
+	mov	r3,r1
+	mul	#50,r1
+	mov	r1,r3
+	movb	(r4),r0
+	mov	r0,r2
+	call	40$
+	add	r0,r3
+	mov	r3,r0
+	return
+40$:
+	cmpb	#44,r2
+	bne	30$
+	mov	#33,r0
+	br	9$
+14$:	clr	r0
+9$:	return
+30$:	tstb	r2
+	beq	14$
+	cmpb	#40,r2
+	beq	14$
+	movb	r2,r0
+	add	#-22,r0
+	br	9$
+	.end
+
+	.end

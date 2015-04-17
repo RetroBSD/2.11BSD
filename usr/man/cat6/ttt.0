@@ -1,0 +1,66 @@
+
+
+
+TTT(6)		    UNIX Programmer's Manual		   TTT(6)
+
+
+
+NAME
+     ttt - tic-tac-toe
+
+SYNOPSIS
+     /usr/games/ttt
+
+DESCRIPTION
+     _T_t_t is the X and O game popular in the first grade.  This is
+     a learning program that never makes the same mistake twice.
+
+     Although it learns, it learns slowly.  It must lose nearly
+     80 games to completely know the game.
+
+FILES
+     /usr/games/ttt.k	 learning file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						1
+
+
+

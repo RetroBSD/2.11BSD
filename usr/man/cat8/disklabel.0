@@ -1,0 +1,264 @@
+
+
+
+DISKLABEL(8)	    UNIX Programmer's Manual	     DISKLABEL(8)
+
+
+
+NAME
+     disklabel - read and write disk pack label
+
+SYNOPSIS
+     disklabel -r _d_i_s_k
+     disklabel -w [ -r ] _d_i_s_k _d_i_s_k_t_y_p_e [ _p_a_c_k_i_d ]
+     disklabel -e [ -r ] _d_i_s_k
+     disklabel -R [ -r ] _d_i_s_k _p_r_o_t_o_f_i_l_e
+     disklabel [ -NW ] _d_i_s_k
+
+     disklabel -B [ -b _b_o_o_t ] _d_i_s_k [ _d_i_s_k_t_y_p_e ]
+     disklabel -w -B [ -b _b_o_o_t ] _d_i_s_k _d_i_s_k_t_y_p_e [ _p_a_c_k_i_d ]
+     disklabel -R -B [ -b _b_o_o_t ] _d_i_s_k _p_r_o_t_o_f_i_l_e [ _d_i_s_k_t_y_p_e ]
+
+DESCRIPTION
+     Disklabel can be used to install, examine or modify the
+     label on a disk drive or pack.  When writing the label, it
+     can be used to change the drive identification, the disk
+     partitions on the drive, or to replace a damaged label.  On
+     some systems, disklabel can be used to install bootstrap
+     code as well.  There are several forms of the command that
+     read (display), install or edit the label on a disk.  Each
+     form has an additional option, -r, which causes the label to
+     be read from or written to the disk directly, rather than
+     going through the system's in-core copy of the label.  This
+     option may allow a label to be installed on a disk without
+     kernel support for a label, such as when labels are first
+     installed on a system; it must be used when first installing
+     a label on a disk.  The specific effect of -r is described
+     under each command.  The read and install forms also support
+     the -B option to install bootstrap code.  These variants are
+     described later.
+
+     The first form of the command (read) is used to examine the
+     label on the named disk drive (e.g. ra0 or /dev/rra0a).  It
+     will display all of the parameters associated with the drive
+     and its partition layout.	Unless the -r flag is given, the
+     kernel's in-core copy of the label is displayed; if the disk
+     has no label, or the partition types on the disk are
+     incorrect, the kernel may have constructed or modified the
+     label.  If the -r flag is given, the label from the raw disk
+     will be displayed rather than the in-core label.
+
+     The second form of the command, with the -w flag, is used to
+     write a standard label on the designated drive.  The
+     required arguments to disklabel are the drive to be labelled
+     (e.g. sd0), and the drive type as described in the _d_i_s_k_-
+     _t_a_b(5) file.  The drive parameters and partitions are taken
+     from that file.  If different disks of the same physical
+     type are to have different partitions, it will be necessary
+     to have separate disktab entries describing each, or to edit
+     the label after installation as described below.  The
+
+
+
+Printed 11/24/99	 April 21, 1995                         1
+
+
+
+
+
+
+DISKLABEL(8)	    UNIX Programmer's Manual	     DISKLABEL(8)
+
+
+
+     optional argument is a pack identification string, up to 16
+     characters long.  The pack id must be quoted if it contains
+     blanks.  If the -r flag is given, the disk sectors contain-
+     ing the label and bootstrap will be written directly.  A
+     side-effect of this is that any existing bootstrap code will
+     be overwritten and the disk rendered unbootable.  If -r is
+     not specified, the existing label will be updated via the
+     in-core copy and any bootstrap code will be unaffected.  If
+     the disk does not already have a label, the -r flag must be
+     used.  In either case, the kernel's in-core label is
+     replaced.
+
+     An existing disk label may be edited by using the -e flag.
+     The label is read from the in-core kernel copy, or directly
+     from the disk if the -r flag is also given.  The label is
+     formatted and then supplied to an editor for changes.  If no
+     editor is specified in an EDITOR environment variable, _v_i(1)
+     is used.  When the editor terminates, the formatted label is
+     reread and used to rewrite the disk label.  Existing
+     bootstrap code is unchanged regardless of whether -r was
+     specified.
+
+     With the -R flag, disklabel is capable of restoring a disk
+     label that was formatted in a prior operation and saved in
+     an ascii file.  The prototype file used to create the label
+     should be in the same format as that produced when reading
+     or editing a label.  Comments are delimited by # and new-
+     line.  As with -w , any existing bootstrap code will be
+     clobbered if -r is specified and will be unaffected other-
+     wise.
+
+     The -NW flags for disklabel explicitly disallow and allow,
+     respectively, writing of the pack label area on the selected
+     disk.
+
+     The final three forms of disklabel are used to install
+     bootstrap code on machines where the bootstrap is part of
+     the label.  The bootstrap code is comprised of one or two
+     boot programs depending on the machine.  The -B option is
+     used to denote that bootstrap code is to be installed.  The
+     -r flag is implied by -B and never needs to be specified.
+     The name of the boot program(s) to be installed can be
+     selected in a variety of ways.  First, the names can be
+     specified explicitly via the -b flag.  If the name is not
+     explicitly given, standard boot blocks will be used.  The
+     boot programs are located in /_m_d_e_c.  The names of the pro-
+     gram is taken from the ``b0'' parameter of the _d_i_s_k_t_a_b(5)
+     entry for the disk if _d_i_s_k_t_y_p_e was given and its disktab
+     entry exists and includes that parameter.	Otherwise, the
+     boot program name is derived from the name of the disk.
+     These name is of the form _b_a_s_e_n_a_m_euboot ; for example,
+     /_u_s_r/_m_d_e_c/_r_a_u_b_o_o_t if the disk device is _r_a_0.
+
+
+
+Printed 11/24/99	 April 21, 1995                         2
+
+
+
+
+
+
+DISKLABEL(8)	    UNIX Programmer's Manual	     DISKLABEL(8)
+
+
+
+     The first of the three boot-installation forms is used to
+     install bootstrap code without changing the existing label.
+     It is essentially a read command with respect to the disk
+     label itself and all options are related to the specifica-
+     tion of the boot program as described previously.	The final
+     two forms are analogous to the basic write and restore ver-
+     sions except that they will install bootstrap code in addi-
+     tion to a new label.
+
+FILES
+     /etc/disktab
+     /mdec/_x_xuboot
+
+EXAMPLES
+	  disklabel sd0
+
+     Display the in-core label for ra0 as obtained via
+     /_d_e_v/_r_r_a_0_a.
+
+	  disklabel -w -r /dev/rra0a ra81x foo
+
+     Create a label for sd0 based on information for ``ra81x''
+     found in /_e_t_c/_d_i_s_k_t_a_b.  Any existing bootstrap code will be
+     clobbered.
+
+	  disklabel -e -r ra0
+
+     Read the on-disk label for ra0, edit it and reinstall in-
+     core as well as on-disk.  Existing bootstrap code is unaf-
+     fected.
+
+	  disklabel -R ra0 mylabel
+
+     Restore the on-disk and in-core label for sd0 from informa-
+     tion in _m_y_l_a_b_e_l.  Existing bootstrap code is unaffected.
+
+	  disklabel -B ra0
+
+     Install a new bootstrap on ra0.  The boot code comes from
+     /_m_d_e_c/_r_a_u_b_o_o_t.  On-disk and in-core labels are unchanged.
+
+	  disklabel -w -B /dev/rra0a -b newboot ra81x
+
+     Install a new label and bootstrap.  The label is derived
+     from disktab information for ``ra81x'' and installed both
+     in-core and on-disk.  The bootstrap code comes from the file
+     /_m_d_e_c/_n_e_w_b_o_o_t.
+
+SEE ALSO
+     disktab(5), disklabel(5)
+
+
+
+
+
+Printed 11/24/99	 April 21, 1995                         3
+
+
+
+
+
+
+DISKLABEL(8)	    UNIX Programmer's Manual	     DISKLABEL(8)
+
+
+
+DIAGNOSTICS
+     The kernel device drivers will not allow the size of a disk
+     partition to be decreased or the offset of a partition to be
+     changed while it is open.	Some device drivers create a
+     label containing only a single large partition if a disk is
+     unlabeled; thus, the label must be written to the ``a'' par-
+     tition of the disk while it is open.  This sometimes
+     requires the desired label to be set in two steps, the first
+     one creating at least one other partition, and the second
+     setting the label on the new partition while shrinking the
+     ``a'' partition.
+
+BUGS
+     When a disk name is given without a full pathname, the con-
+     structed device name uses the ``a'' partition on the tahoe
+     and pdp-11 the ``c'' partition on all others.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	 April 21, 1995                         4
+
+
+

@@ -1,0 +1,330 @@
+
+
+
+MP(1)		    UNIX Programmer's Manual		    MP(1)
+
+
+
+NAME
+     mp - POSTSCRIPT pretty printer
+
+SYNOPSIS
+     mp [-A4] [-C] [-F] [-PS] [-US] [-a] [-d] [-e] [-ff] [-fp]
+     [-l] [-m] [-o] [-p _p_r_o_l_o_g_u_e] [-s _s_u_b_j_e_c_t] [-tm] [-ts] [-v]
+     [-?] [_f_i_l_e_n_a_m_e...]
+
+DESCRIPTION
+     The _m_p program reads each _f_i_l_e_n_a_m_e in sequence and generates
+     a prettified version of the contents in POSTSCRIPT format,
+     sent to standard output.  If no filename argument is pro-
+     vided, _m_p reads the standard input.  If the standard input
+     is a terminal, input is terminated by an EOF signal, usually
+     Ctrl-D.
+
+     Mail items, news articles, ordinary ASCII files, complete
+     mail folders, and digests are all acceptable input formats
+     for _m_p.  The output format includes grayscale lozenges con-
+     taining banner information at the top and bottom of every
+     page.
+
+     The program is conveniently used in conjunction with the
+     print button of the SunView/_x_n_e_w_s(1) _m_a_i_l_t_o_o_l(1) programs,
+     or the _p_i_p_e command provided by _m_a_i_l(1).  Add the following
+     two lines to your ._m_a_i_l_r_c file:
+	       set printmail='mp | lpr'
+	       set cmd="mp | lpr &"
+
+     Source the ._m_a_i_l_r_c file, and you are ready to use _m_p.  For
+     printing ordinary ASCII files, the following alias (to be
+     placed in your ._c_s_h_r_c file) may also prove useful:
+	       alias print 'mp -o -s "\!*" <\!* | lpr'
+
+OPTIONS
+     -A4  Use A4 paper size (8.5 x 11.4 inches).
+
+     -C   Instead of using "\nFrom" to denote the start of new
+	  mail messages, mp will look for (and use) the value of
+	  the Content-Length: mail header. If the Content-Length
+	  doesn't take you to the next "\nFrom", then it's wrong,
+	  and mp falls back to looking for the next "\nFrom" in
+	  the mail folder.
+
+     -F   Instead of printing who the mail article is for, the
+	  top header will contain who the mail article is from. A
+	  useful option for people with their own personal
+	  printer.
+
+     -PS  If the mail or digest message just has PostScript as
+	  the text of the message, then this is normally just
+	  passed straight through. Specifying this option, causes
+
+
+
+Printed 11/26/99	17 February 1992			1
+
+
+
+
+
+
+MP(1)		    UNIX Programmer's Manual		    MP(1)
+
+
+
+	  PostScript to be printed as text.
+
+     -US  Use US paper size (8.5 x 11 inches).
+
+     -a   Format the file as a news article.  The top banner con-
+	  tains the text: "Article from _n_e_w_s_g_r_o_u_p ", where _n_e_w_s_-
+	  _g_r_o_u_p is the first news group found on the Newsgroups:
+	  line.
+
+     -d   Format the file as a digest.
+
+     -e   Assume the ELM mail frontend intermediate file format.
+	  Used when printing messages from within ELM (using the
+	  "p" command), especially for printing tagged messages.
+	  This option must be specified in your ELM option setup.
+
+     -ff  Format the file for use with a Filofax personal
+	  organiser.
+
+     -fp  Format the file for use with a Franklin Planner per-
+	  sonal organiser.
+
+     -l   Format output in landscape mode.  Two pages of text
+	  will be printed per sheet of paper.
+
+     -m   Format the file as a mail folder, printing multiple
+	  messages.
+
+     -o   Format the file as an ordinary ASCII file.
+
+     -p _p_r_o_l_o_g_u_e
+	  Employ the file _p_r_o_l_o_g_u_e as the POSTSCRIPT prologue
+	  file, overriding any previously defined file names.
+
+     -s _s_u_b_j_e_c_t
+	  Use  _s_u_b_j_e_c_t as the new subject for the printout. If
+	  you are printing ordinary ASCII files which have been
+	  specified on the command line, the the subject will
+	  default to the name of each of these files.
+
+     -tm  Format the file for use with the Time Manager personal
+	  organiser.
+
+     -ts  format the file for use with the Time/System Interna-
+	  tional personal organiser.
+
+     -v   Print the version number of this release of _m_p.
+
+     -?   Print the usage line for _m_p (note that the ? character
+	  must be escaped if using _c_s_h(1)).
+
+
+
+
+
+Printed 11/26/99	17 February 1992			2
+
+
+
+
+
+
+MP(1)		    UNIX Programmer's Manual		    MP(1)
+
+
+
+ENVIRONMENT VARIABLES
+     The _m_p prologue file is determined by first looking for the
+     environment variable _M_P__P_R_O_L_O_G_U_E, which specifies the direc-
+     tory where _m_p prologue files are to be found.  If
+     _M_P__P_R_O_L_O_G_U_E is not found, then the default directory is
+     assumed (/_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._p_s).
+
+SUPPLIED PROLOGUE FILES
+     The following prologue files are provided:
+
+	  _m_p._p_r_o._p_s
+	       Used by default
+
+	  _m_p._p_r_o._l._p_s
+	       Used by the -l landscape mode option
+
+	  _m_p._p_r_o._f_f._p_s
+	       Used if the -ff option is in effect
+
+	  _m_p._p_r_o._f_p._p_s
+	       Used if the -fp option is in effect
+
+	  _m_p._p_r_o._t_m._p_s
+	       Used if the -tm option is in effect
+
+	  _m_p._p_r_o._t_s._p_s
+	       Used if the -ts option is in effect
+
+	  _m_p._p_r_o._a_l_t._p_s
+	       An alternative modification of the default prolo-
+	       gue file which outputs the page number in the
+	       right corner of the bottom banner.
+
+	  _m_p._p_r_o._a_l_t_l._p_s
+	       An alternative landscape option mode prologue
+	       file.
+
+FILES
+     ._c_s_h_r_c
+	  initialization file for _c_s_h(1)
+
+     ._m_a_i_l_r_c
+	  initialization file for _m_a_i_l(1)
+
+     /_u_s_r/_l_o_c_a_l/_m_p
+	  executable
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._p_s
+	  POSTSCRIPT prologue for mail printing
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._l._p_s
+	  POSTSCRIPT prologue for landscape format
+
+
+
+Printed 11/26/99	17 February 1992			3
+
+
+
+
+
+
+MP(1)		    UNIX Programmer's Manual		    MP(1)
+
+
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._a_l_t._p_s
+	  alternative "default" POSTSCRIPT prologue, inserts page
+	  numbers in the bottom right corner of each page
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._a_l_t_l._p_s
+	  alternative "landscape" POSTSCRIPT prologue.
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._f_f._p_s
+	  POSTSCRIPT prologue for Filofax format
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._f_p._p_s
+	  POSTSCRIPT prologue for Franklin Planner format.
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._t_m._p_s
+	  POSTSCRIPT prologue for Time Manager format
+
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_m_p/_m_p._p_r_o._t_s._p_s
+	  POSTSCRIPT prologue for Time/System International for-
+	  mat.
+
+SEE ALSO
+     _m_a_i_l(1), _m_a_i_l_t_o_o_l(1), _x_n_e_w_s(1)
+
+AUTHORS
+     Original version by Steve Holden.
+
+     Converted to C, modified and maintained by Rich Burridge,
+     Sun Microsystems, Australia.
+
+     Original modified to handle net news articles and MH mail by
+     Bruno Pillard, Chorus Systemes, France.
+
+     Handling of mail digests added by Dave Glowacki of Public
+     Works Computer Services, St Paul, MN.
+
+     Manual page revised by Rick Rodgers, UCSF School of Phar-
+     macy, San Francicso.
+
+     Support for Personal Organiser printing style added by Doug-
+     las Buchanan, Sun Microsystems Europe.
+
+     Substantial modifications to header parsing by Jeremy
+     Webber, Computer Science Department, University of Adelaide,
+     Australia.
+
+     Support for printing multiple files and subject line
+     filename print for ordinary ASCII files added by Sam
+     Manoharan, Edinburgh University.
+
+     Support for landscape mode written by Michael Tuchiarone.
+
+
+
+
+
+Printed 11/26/99	17 February 1992			4
+
+
+
+
+
+
+MP(1)		    UNIX Programmer's Manual		    MP(1)
+
+
+
+     Revision of the POSTSCRIPT structuring and the way that the
+     prologue files are handled was included by Johan Vromans.
+
+     New style POSTSCRIPT prologue files by John Macdonald.
+
+     Support for the ISO8859 character set by Bertrand DeCouty.
+
+     Rich Burridge.  PHONE: +61 2 413 2666  MAIL: richb@Aus.Sun.COM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	17 February 1992			5
+
+
+

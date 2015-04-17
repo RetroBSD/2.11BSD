@@ -1,0 +1,30 @@
+[This is from Stan Barber, <sob@tmc.edu>.  Thanks, Stan. --Phil]
+
+To make nntp run on SYSV, do the following:
+
+1. Get the Berkeley Directory Library emulation package. You can get it
+from your nearest comp.sources.unix archive. This is the so-called NDIR 
+package. Install it. (If you don't know if you have it, look for the
+file ndir.h in /usr/include. If it is there, you have the NDIR library
+and can move on the step 2.)
+
+2. Edit common/conf.h. Make sure you define USG and look at all the
+other stuff in there to be sure you have defined all the other things
+you need. (You will most likely need to define U_LONG, ALONE, vfork,
+and FAKESYSLOG. You will most likely need to undefine FASTFORK, BSD_42,
+DBM, SUBNET, NETMASK, DAMAGED_NETMASK, and DECNET.) You will probably need to
+undefine SYSLOG if you don't define FAKESYSLOG.
+
+3. Edit server/Makefile. Make sure to add -lndir to the LIBS line.
+If you have EXCELAN, you will probably need to add a -lsocket here as
+well. If the networking include files are not in the "standard location"
+(i.e. /usr/include), be sure to add -Ilocation_of_the_network_include_files
+to the CFLAGS line.
+
+4. Now, you can cd to the server directory and type make.
+
+If you have problems, send mail to sob@tmc.edu and he will help if he
+can.
+
+Stan Barber
+

@@ -1,0 +1,34 @@
+     The program "nntpxmit" is an active trnamission client
+(see the comment in nntpxmit.c for a description of the
+difference between active and passive clients) written by Erik Fair
+<fair@ucbvax.berkeley.edu, ...!ucbvax!fair>.  A larger comment on
+its inner workings can be found by looking at nntpxmit.c
+
+     To use nntpxmit, you should edit your news sys file to have
+an entry like this:
+
+#
+# NASA Ames Research Center
+#
+nike:ucb,uc,mod,to.nike:F:/usr/spool/news/batch/ames-titan.arpa
+
+This will place names of news articles in the ucb, uc, and mod newsgroups
+in the file "/usr/spool/news/batch/ames-titan.arpa".  This is because
+we assume the output batch file will be the machine's internet name.
+
+Periodically, you should have crontab run "nntpsend" to transmit
+the news.  A good choice for "periodically" is every 10 minutes.
+nntpsend depends on the program "shlock", which make should have
+made already.  Also, nntpsend will need to be customized for your system.
+Fortunately, it's pretty straightforward.
+
+     nntpxmit has an option "-s" which *supresses* statistic
+logging via syslog.  Additionally, the "-d" option is availible
+for debugging.
+
+     Please forward comments/suggestions for improvement/bugs to
+Erik Fair, <fair@ucbvax.berkeley.edu>.
+
+     [My thanks extended to Erik for writing nntpxmit, shlock,
+and the stats scripts.  My thanks also to Mel Pleasant
+<pleasant@topaz.rutgers.edu> for the nntpsend script.  --Phil]

@@ -1,0 +1,66 @@
+
+
+
+UPTIME(1)	    UNIX Programmer's Manual		UPTIME(1)
+
+
+
+NAME
+     uptime - show how long system has been up
+
+SYNOPSIS
+     uptime
+
+DESCRIPTION
+     Uptime prints the current time, the length of time the sys-
+     tem has been up, and the average number of jobs in the run
+     queue over the last 1, 5 and 15 minutes.  It is, essen-
+     tially, the first line of a _w(1) command.
+
+FILES
+     /vmunix   system name list
+
+SEE ALSO
+     w(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

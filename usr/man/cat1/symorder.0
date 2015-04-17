@@ -1,0 +1,66 @@
+
+
+
+SYMORDER(1)	    UNIX Programmer's Manual	      SYMORDER(1)
+
+
+
+NAME
+     symorder - rearrange name list
+
+SYNOPSIS
+     symorder symlist file
+
+DESCRIPTION
+     The file _s_y_m_l_i_s_t contains a list of symbols to be found in
+     _f_i_l_e, one symbol per line.
+
+     The symbol table of _f_i_l_e is updated in place; symbols read
+     from _s_y_m_l_i_s_t are relocated to the beginning of the table and
+     in the order given.
+
+     This program was specifically designed to cut down on the
+     overhead of getting symbols from the kernel name list.
+
+DIAGNOSTICS
+     The _s_y_m_o_r_d_e_r(1) utility exits 0 on success, non zero if an
+     error occurs.
+
+SEE ALSO
+     nm(1), nlist(3), strip(1)
+
+HISTORY
+     The symorder command appeared in 3.0BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 22, 1994			1
+
+
+

@@ -1,0 +1,645 @@
+
+The following are diffs from an slightly earlier version of the 4.3BSD
+Excelan driver found in /sys/vaxif.  The work was done by:
+
+	Kenichi Katsumi
+	Engineering Computing Management Division.
+	SONY/TEKTRONIX Corp.
+	...kddlab!muse!katsumi
+
+*** if_ex.c	Fri Oct 14 17:06:14 1988
+--- /sys/vaxif/if_ex.c	Tue Sep 27 17:16:42 1988
+***************
+*** 1,9 ****
+! /*
+!  * Copyright (c) 1982, 1986 Regents of the University of California.
+   * All rights reserved.  The Berkeley software License Agreement
+   * specifies the terms and conditions for redistribution.
+   *
+!  *	@(#)if_ex.c	7.1 (Berkeley) 6/5/86
+   */
+  
+  
+--- 1,8 ----
+! /* Copyright (c) 1982, 1986 Regents of the University of California.
+   * All rights reserved.  The Berkeley software License Agreement
+   * specifies the terms and conditions for redistribution.
+   *
+!  *	@(#)if_ex.c	7.2 (Berkeley) 10/13/86
+   */
+  
+  
+***************
+*** 17,63 ****
+   *	Excelan Inc.
+   */
+  
+! #include "../machine/pte.h"
+  
+  #include "param.h"
+! #include "systm.h"
+  #include "mbuf.h"
+- #include "buf.h"
+  #include "protosw.h"
+  #include "socket.h"
+- #include "vmmac.h"
+  #include "ioctl.h"
+  #include "errno.h"
+  
+  #include "../net/if.h"
+  #include "../net/netisr.h"
+  #include "../net/route.h"
+  
+- #ifdef	INET
+- #include "../netinet/in.h"
+  #include "../netinet/in_systm.h"
+  #include "../netinet/in_var.h"
+  #include "../netinet/ip.h"
+  #include "../netinet/if_ether.h"
+- #endif
+- 
+- #ifdef NS
+  #include "../netns/ns.h"
+  #include "../netns/ns_if.h"
+- #endif
+  
+! #include "../vax/cpu.h"
+! #include "../vax/mtpr.h"
+! #include "if_exreg.h"
+! #include "if_uba.h"
+! #include "../vaxuba/ubareg.h"
+! #include "../vaxuba/ubavar.h"
+  
+  #define DEBUG			/* check for "impossible" events */
+  
+  #define	NH2X 4			/* a sufficient number is critical */
+  #define	NX2H 4			/* this is pretty arbitrary */
+! #define	EXWATCHINTVL 10		/* call exwatch() every 10 seconds */
+  
+  int	exprobe(), exattach(), excdint();
+  struct	uba_device *exinfo[NEX];
+--- 16,66 ----
+   *	Excelan Inc.
+   */
+  
+! /*
+!  * Modification from Berkeley 4.3BSD
+!  *	for PDP11/44 2.10BSD
+!  *
+!  *	Kenichi Katsumi
+!  *	SONY/TEKTRONIX Corp.
+!  *				88/09/20
+!  */
+  
+  #include "param.h"
+! #include "../machine/seg.h"
+! 
+! #include "short_names.h"
+  #include "mbuf.h"
+  #include "protosw.h"
+  #include "socket.h"
+  #include "ioctl.h"
+  #include "errno.h"
+  
++ #ifdef BSD2_10
++ # include "buf.h"
++ #endif
++ 
++ #include "pdpuba/ubavar.h"
++ 
+  #include "../net/if.h"
+  #include "../net/netisr.h"
+  #include "../net/route.h"
+  
+  #include "../netinet/in_systm.h"
++ #include "../netinet/in.h"
+  #include "../netinet/in_var.h"
+  #include "../netinet/ip.h"
+  #include "../netinet/if_ether.h"
+  #include "../netns/ns.h"
+  #include "../netns/ns_if.h"
+  
+! #include "../vaxif/if_uba.h"
+! #include "../vaxif/if_exreg.h"
+  
+  #define DEBUG			/* check for "impossible" events */
+  
+  #define	NH2X 4			/* a sufficient number is critical */
+  #define	NX2H 4			/* this is pretty arbitrary */
+! #define	EXWATCHINTVL 60		/* call exwatch() every 60 seconds */
+  
+  int	exprobe(), exattach(), excdint();
+  struct	uba_device *exinfo[NEX];
+***************
+*** 94,102 ****
+  #define EX_SETADDR	(1<<3)		/* physaddr has been changed */
+  	struct	ex_msg *xs_h2xnext;	/* host pointer to request queue */
+  	struct	ex_msg *xs_x2hnext;	/* host pointer to reply queue */
+! 	int	xs_ubaddr;		/* map info for structs below */
+! #define	UNIADDR(x)	((u_long)(x)&0x3FFFF)
+! #define	P_UNIADDR(x)	((u_long)(x)&0x3FFF0)
+  	/* the following structures are always mapped in */
+  	u_short	xs_h2xhdr;		/* EXOS's request queue header */
+  	u_short	xs_x2hhdr;		/* EXOS's reply queue header */
+--- 97,105 ----
+  #define EX_SETADDR	(1<<3)		/* physaddr has been changed */
+  	struct	ex_msg *xs_h2xnext;	/* host pointer to request queue */
+  	struct	ex_msg *xs_x2hnext;	/* host pointer to reply queue */
+! 	ubadr_t	xs_ubaddr;		/* map info for structs below */
+! #define	UNIADDR(x)	((u_long)(x)&0x3FFFFL)
+! #define	P_UNIADDR(x)	((u_long)(x)&0x3FFF0L)
+  	/* the following structures are always mapped in */
+  	u_short	xs_h2xhdr;		/* EXOS's request queue header */
+  	u_short	xs_x2hhdr;		/* EXOS's reply queue header */
+***************
+*** 105,111 ****
+  	struct	confmsg xs_cm;		/* configuration message */
+  	struct	stat_array xs_xsa;	/* EXOS writes stats here */
+  	/* end mapped area */
+! #define	INCORE_BASE(p)	((caddr_t)((u_long)(&(p)->xs_h2xhdr) & 0xFFFFFFF0))
+  #define	RVAL_OFF(unit, n) \
+  	((caddr_t)(&(ex_softc[unit].n)) - INCORE_BASE(&ex_softc[unit]))
+  #define	LVAL_OFF(unit, n) \
+--- 108,114 ----
+  	struct	confmsg xs_cm;		/* configuration message */
+  	struct	stat_array xs_xsa;	/* EXOS writes stats here */
+  	/* end mapped area */
+! #define	INCORE_BASE(p)	((caddr_t)((u_long)(&(p)->xs_h2xhdr) & 0xFFFFFFF0L))
+  #define	RVAL_OFF(unit, n) \
+  	((caddr_t)(&(ex_softc[unit].n)) - INCORE_BASE(&ex_softc[unit]))
+  #define	LVAL_OFF(unit, n) \
+***************
+*** 142,148 ****
+  	 * We program the EXOS interrupt vector, like dmf device.
+  	 */
+  	br = 0x15;
+! 	cvec = (uba_hd[numuba].uh_lastiv -= 4);
+  	ex_cvecs[ex_ncall].xc_csraddr = addr;
+  	ex_cvecs[ex_ncall].xc_cvec = cvec;
+  	/*
+--- 145,151 ----
+  	 * We program the EXOS interrupt vector, like dmf device.
+  	 */
+  	br = 0x15;
+! 	cvec = 0770;
+  	ex_cvecs[ex_ncall].xc_csraddr = addr;
+  	ex_cvecs[ex_ncall].xc_cvec = cvec;
+  	/*
+***************
+*** 162,168 ****
+  	excdint(0);
+  #endif
+  	ex_ncall++;
+! 	return (sizeof(struct exdevice));
+  }
+  
+  /*
+--- 165,171 ----
+  	excdint(0);
+  #endif
+  	ex_ncall++;
+! 	return (1);
+  }
+  
+  /*
+***************
+*** 179,184 ****
+--- 182,190 ----
+  	register struct exdevice *addr = (struct exdevice *)ui->ui_addr;
+  	register struct ex_msg *bp;
+  	int unit = ui->ui_unit;
++ 
++ 	if (ex_ncall == 0)
++ 		exinfo[unit] = ui;
+  	ifp->if_unit = ui->ui_unit;
+  	ifp->if_name = "ex";
+  	ifp->if_mtu = ETHERMTU;
+***************
+*** 318,323 ****
+--- 324,331 ----
+  	int i;
+  	u_long shiftreg;
+  
++ 	if (ex_ncall == 0)
++ 		exprobe(addr);
+  	xs->xs_flags = 0;
+  	/*
+  	 * Reset EXOS, wait for self-test to complete
+***************
+*** 331,340 ****
+  	cm->cm_1rsrv = 1;
+  	cm->cm_cc = 0xFF;
+  	cm->cm_opmode = 0;		/* link-level controller mode */
+! 	cm->cm_dfo = 0x0101;		/* enable host data order conversion */
+  	cm->cm_dcn1 = 1;
+! 	cm->cm_2rsrv[0] =
+! 		cm->cm_2rsrv[1] = 0;
+  	cm->cm_ham = 3;			/* absolute address mode */
+  	cm->cm_3rsrv = 0;
+  	cm->cm_mapsiz = 0;
+--- 339,348 ----
+  	cm->cm_1rsrv = 1;
+  	cm->cm_cc = 0xFF;
+  	cm->cm_opmode = 0;		/* link-level controller mode */
+! 	cm->cm_dfo = 0x0101L;		/* enable host data order conversion */
+  	cm->cm_dcn1 = 1;
+! 	cm->cm_2rsrv[0] = 0;
+! 	cm->cm_2rsrv[1] = 0;
+  	cm->cm_ham = 3;			/* absolute address mode */
+  	cm->cm_3rsrv = 0;
+  	cm->cm_mapsiz = 0;
+***************
+*** 342,352 ****
+  	cm->cm_byteptrn[1] = 0x03;	/*  by looking at this pattern */
+  	cm->cm_byteptrn[2] = 0x07;
+  	cm->cm_byteptrn[3] = 0x0F;
+! 	cm->cm_wordptrn[0] = 0x0103;
+! 	cm->cm_wordptrn[1] = 0x070F;
+! 	cm->cm_lwordptrn = 0x0103070F;
+  	for (i=0; i<20; i++) cm->cm_rsrvd[i] = 0;
+! 	cm->cm_mba = 0xFFFFFFFF;
+  	cm->cm_nproc = 0xFF;
+  	cm->cm_nmbox = 0xFF;
+  	cm->cm_nmcast = 0xFF;
+--- 350,360 ----
+  	cm->cm_byteptrn[1] = 0x03;	/*  by looking at this pattern */
+  	cm->cm_byteptrn[2] = 0x07;
+  	cm->cm_byteptrn[3] = 0x0F;
+! 	cm->cm_wordptrn[0] = 0x0103L;
+! 	cm->cm_wordptrn[1] = 0x070FL;
+! 	cm->cm_lwordptrn = 0x0103070FL;
+  	for (i=0; i<20; i++) cm->cm_rsrvd[i] = 0;
+! 	cm->cm_mba = 0xFFFFFFFFL;
+  	cm->cm_nproc = 0xFF;
+  	cm->cm_nmbox = 0xFF;
+  	cm->cm_nmcast = 0xFF;
+***************
+*** 402,408 ****
+  	 * configuration to complete (guaranteed response
+  	 * within 2 seconds).
+  	 */
+! 	shiftreg = (u_long)0x0000FFFF;
+  	for (i = 0; i < 8; i++) {
+  		if (i == 4)
+  			shiftreg = P_UNIADDR(xs->xs_ubaddr) + CM_OFFSET(unit);
+--- 410,416 ----
+  	 * configuration to complete (guaranteed response
+  	 * within 2 seconds).
+  	 */
+! 	shiftreg = (u_long)0x0000FFFFL;
+  	for (i = 0; i < 8; i++) {
+  		if (i == 4)
+  			shiftreg = P_UNIADDR(xs->xs_ubaddr) + CM_OFFSET(unit);
+***************
+*** 411,417 ****
+--- 419,428 ----
+  		addr->xd_portb = (u_char)(shiftreg & 0xFF);
+  		shiftreg >>= 8;
+  	}
++ 	{
++ 	long i;
+  	for (i = 1000000; (cm->cm_cc == 0xFF) && i; --i);
++ 	}
+  	if (cm->cm_cc)
+  		printf("ex%d: configuration failed; cc = %x\n",
+  			unit, cm->cm_cc);
+***************
+*** 555,561 ****
+--- 566,575 ----
+      	struct mbuf *m;
+  	register int len, off, resid;
+  	register struct ifqueue *inq;
++ 	int s;
++ 	mapinfo map;
+  
++ 	savemap(map);
+  	xs->xs_if.if_ipackets++;
+  	len = bp->mb_er.er_blks[0].bb_len - sizeof(struct ether_header) - 4;
+  	if (bp->mb_rply != LL_OK) {
+***************
+*** 562,570 ****
+  		xs->xs_if.if_ierrors++;
+  		printf("ex%d: receive error=%b\n",
+  			unit, bp->mb_rply, RECV_BITS);
+  		return;
+  	}
+! 	eh = (struct ether_header *)(xs->xs_ifuba.ifu_r.ifrw_addr);
+  
+  	/*
+  	 * Deal with trailer protocol: if type is trailer
+--- 576,586 ----
+  		xs->xs_if.if_ierrors++;
+  		printf("ex%d: receive error=%b\n",
+  			unit, bp->mb_rply, RECV_BITS);
++ 		restormap(map);
+  		return;
+  	}
+! 	mapseg5(xs->xs_ifuba.ifu_r.ifrw_click, MBMAPSIZE);
+! 	eh = (struct ether_header *)MBX;
+  
+  	/*
+  	 * Deal with trailer protocol: if type is trailer
+***************
+*** 576,592 ****
+  	if (eh->ether_type >= ETHERTYPE_TRAIL &&
+  	    eh->ether_type < ETHERTYPE_TRAIL+ETHERTYPE_NTRAILER) {
+  		off = (eh->ether_type - ETHERTYPE_TRAIL) * 512;
+! 		if (off >= ETHERMTU)
+  			return;		/* sanity */
+  		eh->ether_type = ntohs(*exdataaddr(eh, off, u_short *));
+  		resid = ntohs(*(exdataaddr(eh, off+2, u_short *)));
+! 		if (off + resid > len)
+  			return;		/* sanity */
+  		len = off + resid;
+  	} else
+  		off = 0;
+! 	if (len == 0)
+  		return;
+  
+  	/*
+  	 * Pull packet off interface.  Off is nonzero if packet
+--- 592,614 ----
+  	if (eh->ether_type >= ETHERTYPE_TRAIL &&
+  	    eh->ether_type < ETHERTYPE_TRAIL+ETHERTYPE_NTRAILER) {
+  		off = (eh->ether_type - ETHERTYPE_TRAIL) * 512;
+! 		if (off >= ETHERMTU) {
+! 			restormap(map);
+  			return;		/* sanity */
++ 		}
+  		eh->ether_type = ntohs(*exdataaddr(eh, off, u_short *));
+  		resid = ntohs(*(exdataaddr(eh, off+2, u_short *)));
+! 		if (off + resid > len) {
+! 			restormap(map);
+  			return;		/* sanity */
++ 		}
+  		len = off + resid;
+  	} else
+  		off = 0;
+! 	if (len == 0) {
+! 		restormap(map);
+  		return;
++ 	}
+  
+  	/*
+  	 * Pull packet off interface.  Off is nonzero if packet
+***************
+*** 595,602 ****
+  	 * the type and length which are at the front of any trailer data.
+  	 */
+  	m = if_rubaget(&xs->xs_ifuba, len, off, &xs->xs_if);
+! 	if (m == 0)
+  		return;
+  	if (off) {
+  		struct ifnet *ifp;
+  
+--- 617,626 ----
+  	 * the type and length which are at the front of any trailer data.
+  	 */
+  	m = if_rubaget(&xs->xs_ifuba, len, off, &xs->xs_if);
+! 	if (m == 0) {
+! 		restormap(map);
+  		return;
++ 	}
+  	if (off) {
+  		struct ifnet *ifp;
+  
+***************
+*** 615,620 ****
+--- 639,645 ----
+  
+  	case ETHERTYPE_ARP:
+  		arpinput(&xs->xs_ac, m);
++ 		restormap(map);
+  		return;
+  #endif
+  #ifdef NS
+***************
+*** 626,640 ****
+  #endif
+  	default:
+  		m_freem(m);
+  		return;
+  	}
+  
+  	if (IF_QFULL(inq)) {
+  		IF_DROP(inq);
+  		m_freem(m);
+! 		return;
+! 	}
+! 	IF_ENQUEUE(inq, m);
+  }
+  
+  /*
+--- 651,668 ----
+  #endif
+  	default:
+  		m_freem(m);
++ 		restormap(map);
+  		return;
+  	}
+  
++ 	s = splimp();
+  	if (IF_QFULL(inq)) {
+  		IF_DROP(inq);
+  		m_freem(m);
+! 	} else
+! 		IF_ENQUEUE(inq, m);
+! 	splx(s);
+! 	restormap(map);
+  }
+  
+  /*
+***************
+*** 677,683 ****
+--- 705,713 ----
+  	register struct ether_header *eh;
+  	register int off;
+  	int usetrailers;
++ 	segm save5;
+  
++ 	saveseg5(save5);
+  	if ((ifp->if_flags & (IFF_UP|IFF_RUNNING)) != (IFF_UP|IFF_RUNNING)) {
+  		error = ENETDOWN;
+  		goto bad;
+***************
+*** 687,694 ****
+  #ifdef INET
+  	case AF_INET:
+  		idst = ((struct sockaddr_in *)dst)->sin_addr;
+! 		if (!arpresolve(&xs->xs_ac, m, &idst, edst, &usetrailers))
+  			return (0);	/* if not yet resolved */
+  		off = ntohs((u_short)mtod(m, struct ip *)->ip_len) - m->m_len;
+  		if (usetrailers && off > 0 && (off & 0x1ff) == 0 &&
+  		    m->m_off >= MMINOFF + 2 * sizeof (u_short)) {
+--- 717,726 ----
+  #ifdef INET
+  	case AF_INET:
+  		idst = ((struct sockaddr_in *)dst)->sin_addr;
+! 		if (!arpresolve(&xs->xs_ac, m, &idst, edst, &usetrailers)) {
+! 			restorseg5(save5);
+  			return (0);	/* if not yet resolved */
++ 		}
+  		off = ntohs((u_short)mtod(m, struct ip *)->ip_len) - m->m_len;
+  		if (usetrailers && off > 0 && (off & 0x1ff) == 0 &&
+  		    m->m_off >= MMINOFF + 2 * sizeof (u_short)) {
+***************
+*** 786,795 ****
+--- 818,829 ----
+  	}
+  #endif
+  	splx(s);
++ 	restorseg5(save5);
+  	return (0);
+  
+  bad:
+  	m_freem(m0);
++ 	restorseg5(save5);
+  	return (error);
+  }
+  
+***************
+*** 897,903 ****
+  	
+  	if (physaddr) {
+  		xs->xs_flags |= EX_SETADDR;
+! 		bcopy((caddr_t)physaddr, (caddr_t)xs->xs_addr, 6);
+  	}
+  	if (! (xs->xs_flags & EX_RUNNING))
+  		return;
+--- 931,937 ----
+  	
+  	if (physaddr) {
+  		xs->xs_flags |= EX_SETADDR;
+! 		bcopy(physaddr, xs->xs_addr, 6);
+  	}
+  	if (! (xs->xs_flags & EX_RUNNING))
+  		return;
+***************
+*** 905,911 ****
+  	bp->mb_rqst = LLNET_ADDRS;
+  	bp->mb_na.na_mask = READ_OBJ|WRITE_OBJ;
+  	bp->mb_na.na_slot = PHYSSLOT;
+! 	bcopy((caddr_t)xs->xs_addr, (caddr_t)bp->mb_na.na_addrs, 6);
+  	bp->mb_status |= MH_EXOS;
+  	addr->xd_portb = EX_NTRUPT;
+  	bp = xs->xs_x2hnext;
+--- 939,945 ----
+  	bp->mb_rqst = LLNET_ADDRS;
+  	bp->mb_na.na_mask = READ_OBJ|WRITE_OBJ;
+  	bp->mb_na.na_slot = PHYSSLOT;
+! 	bcopy(xs->xs_addr, bp->mb_na.na_addrs, 6);
+  	bp->mb_status |= MH_EXOS;
+  	addr->xd_portb = EX_NTRUPT;
+  	bp = xs->xs_x2hnext;
+***************
+*** 928,931 ****
+  	while ((bp->mb_status & MH_OWNER) == MH_EXOS)	/* poll for reply */
+  		;
+  }
+! #endif
+--- 962,965 ----
+  	while ((bp->mb_status & MH_OWNER) == MH_EXOS)	/* poll for reply */
+  		;
+  }
+! #endif NEX
+
+*** if_exreg.h	Fri Oct 14 17:06:19 1988
+--- /sys/vaxif/if_exreg.h	Tue Sep 27 17:16:55 1988
+***************
+*** 6,11 ****
+--- 6,18 ----
+   *	@(#)if_exreg.h	7.1 (Berkeley) 6/5/86
+   */
+  
++ /*
++  * Modification from Berkeley 4.3BSD
++  *
++  *	Kenichi Katsumi
++  *	SONY/TEKTRONIX Corp.
++  *				88/09/20
++  */
+  
+  struct	exdevice {
+  	char	xd_porta;	/* write on porta resets EXOS */
+***************
+*** 193,200 ****
+--- 200,212 ----
+  		struct	net_addrs	mb_net_addrs;
+  		struct	net_recv	mb_net_recv;
+  		struct	net_ststcs	mb_net_ststcs;
++ #ifndef pdp11
+  		struct	enet_xmit	mb_enet_xmit;
+  		struct	enet_recv	mb_enet_recv;
++ #else
++ 		struct	enet_xmit	mbenet_xmit;
++ 		struct	enet_recv	mbenet_recv;
++ #endif
+  	} mb_all;
+  /* following field is used only by host, not read by board */
+  	struct	ex_msg *mb_next;	/* host's pointer to next message */
+***************
+*** 203,210 ****
+--- 215,227 ----
+  #define	mb_na	mb_all.mb_net_addrs
+  #define	mb_nr	mb_all.mb_net_recv
+  #define	mb_ns	mb_all.mb_net_ststcs
++ #ifndef pdp11
+  #define	mb_et	mb_all.mb_enet_xmit
+  #define	mb_er	mb_all.mb_enet_recv
++ #else
++ #define	mb_et	mb_all.mbenet_xmit
++ #define	mb_er	mb_all.mbenet_recv
++ #endif
+  #define	mb_rqst	mb_nm.nm_rqst
+  #define	mb_rply	mb_nm.nm_rply
+  #define	MBDATALEN (sizeof(union mb_all)+6)
+
+*** scb.s	Fri Oct 14 17:12:59 1988
+--- /sys/machine/scb.s	Tue Sep 13 00:09:16 1988
+***************
+*** 11,16 ****
+--- 11,17 ----
+  #include "../machine/mch_iopage.h"
+  #include "../machine/koverlay.h"	/* for OVLY_TABLE_BASE */
+  
++ #include "ex.h"
+  #include "de.h"
+  #include "dh.h"
+  #include "dhu.h"
+***************
+*** 192,197 ****
+--- 193,202 ----
+  #endif
+  
+  
++ #if NEX > 0				/* EXOS 204 */
++ 	DEVTRAP(770,	excdint, br5+0.)
++ #endif
++ 
+  /*
+   * End of floating vectors.  Endvec should be past vector space if NONSEP,
+   * should be at least 450.
+***************
+*** 388,391 ****
+--- 393,400 ----
+  
+  #if NDZ > 0				/* DZ */
+  	HANDLER(dzrint)
++ #endif
++ 
++ #if NEX > 0
++ 	HANDLER(excdint)		/* EXOS204 */
+  #endif
+
+*** dtab	Fri Oct 14 17:15:24 1988
+--- /etc/dtab	Wed Sep 28 16:18:28 1988
+***************
+*** 36,38 ****
+--- 36,39 ----
+  # kw	? 172540 100	6	hardclock	# kw11-p clock
+  # sr	?        500	5	srirint	srixint	# sri dr11-c arpanet imp
+  # vv	? 161000 350	5	vvrint	vvxint	# pronet
++ # ex	? 164100 770	5	excdint		# excelan exos204
+
+
+

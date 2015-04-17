@@ -1,0 +1,66 @@
+
+
+
+CHESS(6)	    UNIX Programmer's Manual		 CHESS(6)
+
+
+
+NAME
+     chess - the game of chess
+
+SYNOPSIS
+     /usr/games/chess
+
+DESCRIPTION
+     _C_h_e_s_s is a computer program that plays class D chess.  Moves
+     may be given either in standard (descriptive) notation or in
+     algebraic notation.  The symbol `+' is used to specify
+     check; `o-o' and `o-o-o' specify castling.  To play black,
+     type `first'; to print the board, type an empty line.
+
+     Each move is echoed in the appropriate notation followed by
+     the program's reply.
+
+FILES
+     /usr/games/lib/book opening `book'
+
+DIAGNOSTICS
+     The most cryptic diagnostic is `eh?' which means that the
+     input was syntactically incorrect.
+
+WARNING
+     Over-use of this program will cause it to go away.
+
+BUGS
+     Pawns may be promoted only to queens.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						1
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+STRTOK(3)	    UNIX Programmer's Manual		STRTOK(3)
+
+
+
+NAME
+     strtok - string tokens
+
+SYNOPSIS
+     #include <string.h>
+
+     char *
+     strtok(str, sep)
+     _c_h_a_r *_s_t_r;
+     _c_h_a_r *_s_e_p;
+
+DESCRIPTION
+     This interface is obsoleted by strsep(3).
+
+     The strtok() function is used to isolate sequential tokens
+     in a null-terminated string, _s_t_r . These tokens are
+     separated in the string by at least one of the characters in
+     _s_e_p . The first time that strtok() is called, _s_t_r should be
+     specified; subsequent calls, wishing to obtain further
+     tokens from the same string, should pass a null pointer
+     instead.  The separator string, _s_e_p , must be supplied each
+     time, and may change between calls.
+
+     The strtok() function returns a pointer to the beginning of
+     each subsequent token in the string, after replacing the
+     token itself with a NUL character.  When no more tokens
+     remain, a null pointer is returned.
+
+SEE ALSO
+     index(3), memchr(3), rindex(3), strchr(3), strcspn(3),
+     strpbrk(3), strrchr(3), strsep(3), strspn(3), strstr(3
+
+STANDARDS
+     The strtok() function conforms to ANSI C X3.159-1989 (``ANSI
+     C'').
+
+BUGS
+     There is no way to get tokens from multiple strings simul-
+     taneously.
+
+     The System V strtok(), if handed a string containing only
+     delimiter characters, will not alter the next starting
+     point, so that a call to strtok() with a different (or
+     empty) delimiter string may return a non-NULL value.  Since
+     this implementation always alters the next starting point,
+     such a sequence of calls would always return NULL.
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 12, 1996			1
+
+
+

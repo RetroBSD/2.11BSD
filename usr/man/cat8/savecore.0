@@ -1,0 +1,66 @@
+
+
+
+SAVECORE(8)	    UNIX Programmer's Manual	      SAVECORE(8)
+
+
+
+NAME
+     savecore - save a core dump of the operating system
+
+SYNOPSIS
+     savecore _d_i_r_n_a_m_e [ _s_y_s_t_e_m ]
+
+DESCRIPTION
+     _S_a_v_e_c_o_r_e is meant to be called at the end of the /etc/rc
+     file.  Its function is to save the core dump of the system
+     (if one was made) and to write a reboot message in the shut-
+     down log.
+
+     It saves the core image in the file _d_i_r_n_a_m_e/core.n and its
+     corresponding namelist in _d_i_r_n_a_m_e/unix.n.	The second argu-
+     ment is the namelist for the system which made the core
+     image; the current system is always assumed to be /unix.
+     The trailing ".n" in the pathnames is replaced by a number
+     which grows every time _s_a_v_e_c_o_r_e is run in that directory.
+
+     Before savecore writes out a core image, it reads a number
+     from the file _d_i_r_n_a_m_e/minfree.  If there are fewer free
+     blocks on the file system which contains _d_i_r_n_a_m_e than the
+     number obtained from the minfree file, the core dump is not
+     done.  If the minfree file does not exist, savecore always
+     writes out the core file (assuming that a core dump was
+     taken).
+
+     _S_a_v_e_c_o_r_e also writes a reboot message in the shut down log.
+     If the system crashed as a result of a panic, _s_a_v_e_c_o_r_e
+     records the panic string in the shut down log too.
+
+     If _s_a_v_e_c_o_r_e detects that the system time is wrong because of
+     a crash (the time in the core image is after the current
+     time), it will reset the system time to its best estimate of
+     the time, which is the time in the core image plus the
+     elapsed time since the reboot.  It announces the time that
+     it set when this occurs.
+
+FILES
+     /usr/adm/shutdownlogshutdown log
+     /unix		 current UNIX
+
+BUGS
+     The method used to determine whether a dump is present, and
+     to prevent the same core image from being saved multiple
+     times, is not elegant.  This information should be passed to
+     _i_n_i_t by the system; however, this is difficult because the
+     system may have to be rebooted a second time if the root
+     filesystem is patched.
+
+
+
+
+
+
+Printed 11/24/99						1
+
+
+

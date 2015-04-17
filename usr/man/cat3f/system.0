@@ -1,0 +1,66 @@
+
+
+
+SYSTEM(3F)	    UNIX Programmer's Manual	       SYSTEM(3F)
+
+
+
+NAME
+     system - execute a UNIX command
+
+SYNOPSIS
+     integer function system (string)
+     character*(*) string
+
+DESCRIPTION
+     _S_y_s_t_e_m causes _s_t_r_i_n_g to be given to your shell as input as
+     if the string had been typed as a command.  If environment
+     variable SHELL is found, its value will be used as the com-
+     mand interpreter (shell); otherwise _s_h(1) is used.
+
+     The current process waits until the command terminates.  The
+     returned value will be the exit status of the shell.  See
+     _w_a_i_t(2) for an explanation of this value.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     exec(2), wait(2), system(3)
+
+BUGS
+     _S_t_r_i_n_g can not be longer than NCARGS-50 characters, as
+     defined in <_s_y_s/_p_a_r_a_m._h>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

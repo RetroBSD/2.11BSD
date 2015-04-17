@@ -1,0 +1,91 @@
+To build the "in.identd" daemon, do the following steps:
+
+0. Make sure you have the _latest_ version of Pidentd!! The latest
+   version can always be FTP'd from ftp.lysator.liu.se in the directory
+   pub/ident/servers. If Pidentd doesn't work for you - always make
+   sure you have a current version!
+
+1. Type "make" and see if your machine is among one of those
+   listed. If so, goto step 5.
+
+2. Copy the entry for "other" in the top-level Makefile into a
+   new one and edit it for your system.
+
+3. If your machine/OS has the "KVM" routines (you can find out by
+   typing "man kvm_open"), then add "-lkvm" (or whatever it's called
+   on your system) to your newly created entry.
+
+4. Edit the file "paths.h" to contain valid definitions for
+   your system. 
+
+5. Type "make <systype>", where <systype> is one from the list
+   displayed when you type "make" without arguments. Then watch it
+   build nicely (hopefully).
+
+6. As "root", type "make install". This will copy the executable
+   daemon "in.identd" into the destination directory as specified in
+   the Makefile (normally /usr/local/sbin) and the man page into the
+   specified man directory (normally /usr/local/man/man8).
+
+   Please make sure that it is executable for the user you specify below
+   in step 8! Otherwise it will fail for obvious reasons.
+
+7. Edit /etc/services to contain a line "ident 113/tcp auth tap".
+
+   If your system is running SunOS, or some other system with NIS (or YP)
+   then make sure you edit the /etc/services file on the machine running
+   the _master_ YP server, and then cd to your YP directory and type "make".
+   (On SunOS 4.*: "cd /var/yp; make").
+
+8. Edit the file /etc/inetd.conf to contain a line (replace "sys" with
+   a user with enough rights to READ the kernel memory. Under SunOS 4.*,
+   user "sys" is a member of the "kmem" group and is a good choice. If
+   you have no "kmem" or "sys" user, then I suggest you create one and
+   assign read rights for the group "kmem" to the /vmunix and /dev/kmem
+   and /dev/mem "files" - you might also have to modify the group id of
+   other programs that read the kernel, like "netstat", "ps" and more):
+
+     ident     stream  tcp  nowait  sys   /usr/local/sbin/in.identd in.identd
+
+   If you're running A/UX 2.0*, inetd reads from /etc/servers. This contains
+   an archaic(?) form of the above:
+
+	ident	tcp	/usr/local/sbin/in.identd
+
+   Hint: Some unixes requires the daemon to run as user "root" even though
+   it is setgid to a group that can read /dev/kmem.
+
+9. Restart the "inetd" daemon. (Can normally be done with a "SIGHUP" signal).
+
+10. Test the daemon by TELNET:ing to "130.236.254.1" port 114 and verify 
+    that the information displayed is correct. (It should give your user 
+    name, "UNIX" as operating system and no character set). The program on
+    port 114 will connect to your newly installed daemon and try to retrieve
+    the identity of you.
+
+    Another way to test the daemon is by TELNET:ing to "localhost" port
+    113 and then escape to the command level temporarily (normally you can
+    do this by keying "Ctrl-] z". Then type "netstat -n | egrep 113" and 
+    remember the other port number that you will see. Now return to your
+    TELNET session and enter "4711 , 113", where you replace 4711 with the
+    number you got from "netstat". If things work out ok you should see a
+    response like:
+
+       4711 , 113 : USERID : UNIX : foobar
+
+    Where "foobar" should be your user name. If it doesn't work then
+    please send me a bug report at <pen@lysator.liu.se>.
+
+    You may also find the "itest" program useful to verify that the
+    internal kernel-accessing routines in the Ident daemon is working
+    correctly.
+
+    Use it like this:
+
+	netstat -n | grep ESTAB | ./itest
+
+    And the output should be a list of username and the TCP connections
+    they own. This program must be run as root (or be setgid just like
+    the pidentd daemon).
+
+11. Else all is done and your server should be ready for real world usage.

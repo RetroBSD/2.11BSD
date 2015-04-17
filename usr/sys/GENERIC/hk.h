@@ -1,0 +1,1 @@
+#define NHK	2

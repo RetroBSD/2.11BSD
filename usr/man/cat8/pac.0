@@ -1,0 +1,66 @@
+
+
+
+PAC(8)		    UNIX Programmer's Manual		   PAC(8)
+
+
+
+NAME
+     pac - printer/plotter accounting information
+
+SYNOPSIS
+     /usr/sbin/pac [ -Pprinter ] [ -pprice ] [ -s ] [ -r ] [ -c ]
+     [ -m ] [ name ... ]
+
+DESCRIPTION
+     _P_a_c reads the printer/plotter accounting files, accumulating
+     the number of pages (the usual case) or feet (for raster
+     devices) of paper consumed by each user, and printing out
+     how much each user consumed in pages or feet and dollars.
+     If any _n_a_m_e_s are specified, then statistics are only printed
+     for those users; usually, statistics are printed for every
+     user who has used any paper.
+
+     The -P flag causes accounting to be done for the named
+     printer.  Normally, accounting is done for the default
+     printer (site dependent) or the value of the environment
+     variable PRINTER is used.
+
+     The -p flag causes the value _p_r_i_c_e to be used for the cost
+     in dollars instead of the default value of 0.02 or the price
+     specified in /_e_t_c/_p_r_i_n_t_c_a_p.
+
+     The -c flag causes the output to be sorted by cost; usually
+     the output is sorted alphabetically by name.
+
+     The -r flag reverses the sorting order.
+
+     The -s flag causes the accounting information to be summar-
+     ized on the summary accounting file; this summarization is
+     necessary since on a busy system, the accounting file can
+     grow by several lines per day.
+
+     The -m flag causes the host name to be ignored in the
+     accounting file.  This allows for a user on multiple
+     machines to have all of his printing charges grouped
+     together.
+
+FILES
+     /usr/adm/?acct	 raw accounting files
+     /usr/adm/?_sum	 summary accounting files
+     /etc/printcap	 printer capability data base
+
+SEE ALSO
+     printcap(5)
+
+BUGS
+     The relationship between the computed price and reality is
+     as yet unknown.
+
+
+
+
+Printed 11/26/99	November 1, 1996			1
+
+
+

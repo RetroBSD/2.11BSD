@@ -1,0 +1,78 @@
+.\" Public domain - 1999/7/21 - Steven Schultz
+.\"	@(#)gt307.8	1.0 (2.11BSD) 1999/7/21
+.\"
+.TH GT307 8 "July 21, 1999"
+.UC 4
+.SH NAME
+gt307 \- read and set GT307 clock board
+.SH SYNOPSIS
+.B gt307
+[
+\fB\-d\fP n
+]
+[
+\fB\-l\fP
+]
+[
+\fByymmddhhmm.ss\fP
+]
+.SH DESCRIPTION
+The
+.B gt307
+is used to read and/or set a Computer Products Inc GT307
+clock calendar board.  If the date argument is not given
+the board is read but not written.
+.PP
+The options are:
+.TP 20
+\fB\-d\fP n
+sets Daylight Savings Time (DST) on if \fBn\fP is 1, off if \fBn\fP if 0.
+.TP 20
+\fB\-l\fP
+switches output between long and short formats.  The short format is
+suitable for input to the 
+.IR date (8) 
+command.
+.PP
+.B gt307
+is a user mode program only (not a standalone/bootable program like
+.B toyset
+).  The kernel does not know how to read a GT307 clock.  Thus the
+recommended use of
+.B gt307
+is to set the system time from within the
+.IR rc (8)
+file:
+.sp
+.in +1.0i
+date `/sbin/gt307 -l`
+.br
+.in -1.0i
+.SH FILES
+None.
+.SH SEE ALSO
+date(8),
+phys(2),
+rc(8)
+.SH BUGS
+.B gt307
+uses the 
+.BR phys (2)
+syscall to access the I/O page and thus can only be run by the superuser.  
+Making
+this program
+setuid (so that users can read the GT307 board) could be a large threat
+to system integrity in the event of bugs in the program.  It is \fBNOT\fP
+recommended that 
+.B gt307
+be made setuid.
+.SH HISTORY
+The
+.B gt307
+command first appeared in 2.11BSD.   It was contributed by Robin
+Birch 
+.br
+(robin@falstaf.demon.co.uk).
+.PP
+The Makefile, manpage and integration into
+2.11BSD were done by Steven Schultz (sms@moe.2bsd.com).

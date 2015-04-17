@@ -1,0 +1,66 @@
+
+
+
+SWAP(4)             UNIX Programmer's Manual		  SWAP(4)
+
+
+
+NAME
+     swap - swap device
+
+DESCRIPTION
+     This file refers to the swap device in use by the system.
+     It should be linked to the special file for the disk or disk
+     partition on which the system swaps.  It is used by programs
+     that wish to read from the swap device without knowing its
+     real name.  The script /_d_e_v/_M_A_K_E_D_E_V._l_o_c_a_l normally is edited
+     by the system builder to set /_d_e_v/_s_w_a_p up correctly.
+
+FILES
+     /dev/swap
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+SEE ALSO
+     ps(1), w(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 28, 1988			1
+
+
+

@@ -1,0 +1,11 @@
+--------      --------      --------      --------      --------
+|      | ---> |      | ---> |      | ---> |      | ---> |      |
+|FRONT |      |PARSER|      | OVQP |      |DECOMP|      | DBU  |
+|      | <--- |      | <--- |      | <--- |      | <--- |      |
+--------      --------      --------      --------      --------
+PTAB INFO
+FRONT	nothing
+PARSER	overlay id's, decomp id
+OVQP	nothing
+DECOMP	overlay id's
+DBU	ksort pathname

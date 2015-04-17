@@ -1,0 +1,66 @@
+
+
+
+ECVT(3)             UNIX Programmer's Manual		  ECVT(3)
+
+
+
+NAME
+     ecvt, fcvt, gcvt - output conversion
+
+SYNOPSIS
+     char *ecvt(value, ndigit, decpt, sign)
+     double value;
+     int ndigit, *decpt, *sign;
+
+     char *fcvt(value, ndigit, decpt, sign)
+     double value;
+     int ndigit, *decpt, *sign;
+
+     char *gcvt(value, ndigit, buf)
+     double value;
+     char *buf;
+
+DESCRIPTION
+     _E_c_v_t converts the _v_a_l_u_e to a null-terminated string of _n_d_i_-
+     _g_i_t ASCII digits and returns a pointer thereto.  The posi-
+     tion of the decimal point relative to the beginning of the
+     string is stored indirectly through _d_e_c_p_t (negative means to
+     the left of the returned digits).	If the sign of the result
+     is negative, the word pointed to by _s_i_g_n is non-zero, other-
+     wise it is zero.  The low-order digit is rounded.
+
+     _F_c_v_t is identical to _e_c_v_t, except that the correct digit has
+     been rounded for Fortran F-format output of the number of
+     digits specified by _n_d_i_g_i_t_s.
+
+     _G_c_v_t converts the _v_a_l_u_e to a null-terminated ASCII string in
+     _b_u_f and returns a pointer to _b_u_f. It attempts to produce
+     _n_d_i_g_i_t significant digits in Fortran F format if possible,
+     otherwise E format, ready for printing.  Trailing zeros may
+     be suppressed.
+
+SEE ALSO
+     printf(3)
+
+BUGS
+     The return values point to static data whose content is
+     overwritten by each call.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

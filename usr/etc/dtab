@@ -1,0 +1,46 @@
+# Device Configuration Table
+
+#Name Unit# Addr Vector Br	Handler(s)	# Comments
+
+# dr	? 172410 124	5	drintr		# dr11-w (b-bus emulator)
+# dr	? 172430 130	5	drintr		# dr11-w (gc-bus emulator)
+# dr	? 172450 134	5	drintr		# dr11-w (em-2 interface)
+# du	? 160020 310	5	dhurint	dhuxint	# dhu11 terminal mux
+# dhv	? 160020 310	5	dhvrint	dhvxint	# dhv terminal mux
+# dm	? 170500 310	4	dmintr		# dm11 dh modem control
+# dh	? 160020 320	5	dhrint	dhxint	# dh11 terminal mux
+# dz	? 160100 310	5	dzrint	dzdma	# dz11 terminal mux
+hk	? 177440 210	5	hkintr		# rk611/711 rk06/07
+# hp	? 176700 254	5	hpintr		# rjp04/06, rwp04/06
+ht	? 172440 224	5	htintr		# tu 16 massbus tape
+# vp	? 177500 174	4	vpintr		# Versatec; should be before lp
+# lp	? 177514 200	4	lpintr		# lp-11 line printer
+ra	? 172150 154	5	raintr		# uda50, rqdx1/2/3
+rk	? 177400 220	5	rkintr		# rk05
+rl	? 174400 160	5	rlintr		# rl-01/02
+# rm	? 176700 254	5	rmintr		# rjm02/rwm03, rm02/03/05
+# br	? 176710 254	5	brintr		# Eaton br1537/br1711
+# rx	? 177170 264	5	rxintr		# rx01/02
+# si	? 176700 170	5	siintr		# si9500
+tm	? 172520 224	5	tmintr		# tm11 driver
+tms	? 174500 260	5	tmsintr		# tmscp driver
+ts	? 172520 224	5	tsintr		# ts11 driver
+xp	? 176700 254	5	xpintr		# xp driver
+
+# If you have DL11s, you must give each line an explicit unit number instead
+# of using a '?' as above.  If you use a '?', autoconfig(8) will start
+# assigning unit numbers starting at 0 which will effectively move your
+# console to that first line.  Start your unit numbers with '1'.
+#
+# cn	1 176500 300	5	cnrint	cnxint	# kl/dl-11 (on mvx11-aa)
+
+# The following entries are provided for information only, actual
+# configuration is done elsewhere.
+
+# acc	? 167600	5	accin	accout	# lhdh driver
+# de	?        120	5	deintr		# deuna
+# qe	? 174440 400	5	qeintr		# deqna ethernet
+# il	? 163000 340	5	ilrint	ilcint	# interlan ethernet
+# kw	? 172540 100	6	hardclock	# kw11-p clock
+# sr	?        500	5	srirint	srixint	# sri dr11-c arpanet imp
+# vv	? 161000 350	5	vvrint	vvxint	# pronet

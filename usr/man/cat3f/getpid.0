@@ -1,0 +1,66 @@
+
+
+
+GETPID(3F)	    UNIX Programmer's Manual	       GETPID(3F)
+
+
+
+NAME
+     getpid - get process id
+
+SYNOPSIS
+     integer function getpid()
+
+DESCRIPTION
+     _G_e_t_p_i_d returns the process ID number of the current process.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     getpid(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

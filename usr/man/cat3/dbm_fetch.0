@@ -1,0 +1,198 @@
+
+
+
+NDBM(3)             UNIX Programmer's Manual		  NDBM(3)
+
+
+
+NAME
+     dbm_open, dbm_close, dbm_fetch, dbm_store, dbm_delete,
+     dbm_firstkey, dbm_nextkey, dbm_error, dbm_clearerr - data
+     base subroutines
+
+SYNOPSIS
+     #include <ndbm.h>
+
+     typedef struct {
+	 char *dptr;
+	 int dsize;
+     } datum;
+
+     DBM *dbm_open(file, flags, mode)
+	 char *file;
+	 int flags, mode;
+
+     void dbm_close(db)
+	 DBM *db;
+
+     datum dbm_fetch(db, key)
+	 DBM *db;
+	 datum key;
+
+     int dbm_store(db, key, content, flags)
+	 DBM *db;
+	 datum key, content;
+	 int flags;
+
+     int dbm_delete(db, key)
+	 DBM *db;
+	 datum key;
+
+     datum dbm_firstkey(db)
+	 DBM *db;
+
+     datum dbm_nextkey(db)
+	 DBM *db;
+
+     int dbm_error(db)
+	 DBM *db;
+
+     int dbm_clearerr(db)
+	 DBM *db;
+
+DESCRIPTION
+     These functions maintain key/content pairs in a data base.
+     The functions will handle very large (a billion blocks)
+     databases and will access a keyed item in one or two file
+     system accesses.  This package replaces the earlier _d_b_m(3x)
+     library, which managed only a single database.
+
+
+
+
+Printed 11/26/99	  May 20, 1986				1
+
+
+
+
+
+
+NDBM(3)             UNIX Programmer's Manual		  NDBM(3)
+
+
+
+     _K_e_ys and _c_o_n_t_e_n_ts are described by the _d_a_t_u_m typedef.  A
+     _d_a_t_u_m specifies a string of _d_s_i_z_e bytes pointed to by _d_p_t_r.
+     Arbitrary binary data, as well as normal ASCII strings, are
+     allowed.  The data base is stored in two files.  One file is
+     a directory containing a bit map and has `.dir' as its suf-
+     fix.  The second file contains all data and has `.pag' as
+     its suffix.
+
+     Before a database can be accessed, it must be opened by
+     _d_b_m__o_p_e_n.	This will open and/or create the files _f_i_l_e.dir
+     and _f_i_l_e.pag depending on the flags parameter (see _o_p_e_n(2)).
+
+     Once open, the data stored under a key is accessed by
+     _d_b_m__f_e_t_c_h and data is placed under a key by _d_b_m__s_t_o_r_e.  The
+     _f_l_a_g_s field can be either DBM_INSERT or DBM_REPLACE.
+     DBM_INSERT will only insert new entries into the database
+     and will not change an existing entry with the same key.
+     DBM_REPLACE will replace an existing entry if it has the
+     same key.	A key (and its associated contents) is deleted by
+     _d_b_m__d_e_l_e_t_e.  A linear pass through all keys in a database
+     may be made, in an (apparently) random order, by use of
+     _d_b_m__f_i_r_s_t_k_e_y and _d_b_m__n_e_x_t_k_e_y.  _D_b_m__f_i_r_s_t_k_e_y will return the
+     first key in the database.  _D_b_m__n_e_x_t_k_e_y will return the next
+     key in the database.  This code will traverse the data base:
+
+	  for (key = dbm_firstkey(db); key.dptr != NULL; key =
+	  dbm_nextkey(db))
+
+     _D_b_m__e_r_r_o_r returns non-zero when an error has occurred read-
+     ing or writing the database.  _D_b_m__c_l_e_a_r_e_r_r resets the error
+     condition on the named database.
+
+DIAGNOSTICS
+     All functions that return an _i_n_t indicate errors with nega-
+     tive values.  A zero return indicates ok.	Routines that
+     return a _d_a_t_u_m indicate errors with a null (0) _d_p_t_r. If
+     _d_b_m__s_t_o_r_e called with a _f_l_a_g_s value of DBM_INSERT finds an
+     existing entry with the same key it returns 1.
+
+BUGS
+     The `.pag' file will contain holes so that its apparent size
+     is about four times its actual content.  Older UNIX systems
+     may create real file blocks for these holes when touched.
+     These files cannot be copied by normal means (cp, cat, tp,
+     tar, ar) without filling in the holes.
+
+     _D_p_t_r pointers returned by these subroutines point into
+     static storage that is changed by subsequent calls.
+
+     The sum of the sizes of a key/content pair must not exceed
+     the internal block size (currently 4096 bytes).  Moreover
+     all key/content pairs that hash together must fit on a
+
+
+
+Printed 11/26/99	  May 20, 1986				2
+
+
+
+
+
+
+NDBM(3)             UNIX Programmer's Manual		  NDBM(3)
+
+
+
+     single block.  _D_b_m__s_t_o_r_e will return an error in the event
+     that a disk block fills with inseparable data.
+
+     _D_b_m__d_e_l_e_t_e does not physically reclaim file space, although
+     it does make it available for reuse.
+
+     The order of keys presented by _d_b_m__f_i_r_s_t_k_e_y and _d_b_m__n_e_x_t_k_e_y
+     depends on a hashing function, not on anything interesting.
+
+SEE ALSO
+     dbm(3X)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1986				3
+
+
+

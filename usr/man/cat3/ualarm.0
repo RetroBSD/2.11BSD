@@ -1,0 +1,66 @@
+
+
+
+UALARM(3)	    UNIX Programmer's Manual		UALARM(3)
+
+
+
+NAME
+     ualarm - schedule signal after specified time
+
+SYNOPSIS
+     unsigned ualarm(value, interval)
+     unsigned value;
+     unsigned interval;
+
+DESCRIPTION
+     This is a simplified interface to setitimer(2).
+
+     _U_a_l_a_r_m causes signal SIGALRM, see _s_i_g_n_a_l(3C), to be sent to
+     the invoking process in a number of microseconds given by
+     the _v_a_l_u_e argument.  Unless caught or ignored, the signal
+     terminates the process.
+
+     If the _i_n_t_e_r_v_a_l argument is non-zero, the SIGALRM signal
+     will be sent to the process every _i_n_t_e_r_v_a_l microseconds
+     after the timer expires (e.g. after _v_a_l_u_e microseconds have
+     passed).
+
+     Because of scheduling delays, resumption of execution of
+     when the signal is caught may be delayed an arbitrary
+     amount.  The longest specifiable delay time (on the vax) is
+     2147483647 microseconds.
+
+     The return value is the amount of time previously remaining
+     in the alarm clock.
+
+SEE ALSO
+     getitimer(2), setitimer(2), sigpause(2), sigvec(2),
+     signal(3C), sleep(3), alarm(3), usleep(3)
+
+NOTES  (PDP-11)
+     On the PDP-11, _s_e_t_i_t_i_m_e_r(2) rounds the number of
+     microseconds up to seconds resolution, therefore _u_a_l_a_r_m
+     doesn't give you any more resolution than _a_l_a_r_m(3).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 26, 1988			1
+
+
+

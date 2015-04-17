@@ -1,0 +1,132 @@
+
+
+
+SYSERRLST(5)	    UNIX Programmer's Manual	     SYSERRLST(5)
+
+
+
+NAME
+     syserrlst - error message file format
+
+DESCRIPTION
+     _m_k_e_r_r_l_s_t(1), creates error message files in the format
+     described below.
+
+     An ``error message file'' consists of a header, an array of
+     structures specifying the offset and length of each message,
+     and the array of message strings separated by newlines.
+
+     The message strings are separated by newlines but the new-
+     line characters are not included in the size of the message.
+     These newline characters serve only to make the file edit-
+     able or printable (after stripping off the header).
+
+     The file format is:
+
+     /*
+      * Definitions used by the 'mkerrlst' program which creates error message
+      * files.
+      *
+      * The format of the file created is:
+      *
+      *   struct    ERRLSTHDR ehdr;
+      *   struct    ERRLST  emsg[num_of_messages];
+      *   struct    {
+      *        char msg[] = "error message string";
+      *        char lf = '0;
+      *        } [num_of_messages];
+      *
+      * Note:  the newlines are NOT included in the message lengths, the newlines
+      *        are present to make it easy to 'cat' or 'vi' the file.
+     */
+
+	  struct    ERRLSTHDR
+	       {
+	       short	 magic;
+	       short	 maxmsgnum;
+	       short	 maxmsglen;
+	       short	 pad[5];	/* Reserved */
+	       };
+
+	  struct    ERRLST
+	       {
+	       off_t	 offmsg;
+	       short	 lenmsg;
+	       };
+
+     #define   ERRMAGIC  012345
+
+
+
+
+
+Printed 11/26/99	  March 7, 1996                         1
+
+
+
+
+
+
+SYSERRLST(5)	    UNIX Programmer's Manual	     SYSERRLST(5)
+
+
+
+SEE ALSO
+     mkerrlst(1), syserrlst(3)
+
+BUGS
+     Format of the file isn't necessarily portable between
+     machines.
+
+HISTORY
+     This file format is new with 2.11BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  March 7, 1996                         2
+
+
+

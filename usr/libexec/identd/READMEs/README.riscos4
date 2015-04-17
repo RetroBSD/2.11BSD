@@ -1,0 +1,16 @@
+Machine Type:		MIPS RISC/OS 4.5x
+
+Make using:		make riscos4
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" riscos4
+
+Person(s) porting:	Nigel Metheringham <nigelm@ohm.york.ac.uk>
+Port date:		5 April, 1993
+Verified working:	OS version	Pident vers	Person
+			4.51, 4.52	2.1beta10	<nigelm@ohm.york.ac.uk>
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Works as daemon or from inetd with wait/nowait
+			We run as user bin, but as root would be fine.

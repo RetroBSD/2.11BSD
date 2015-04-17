@@ -1,0 +1,87 @@
+.\" Public Domain, March 1996, Steven M. Schultz
+.\"
+.\"	@(#)mkerrlst.1	1.0 (2.11BSD) 1996/3/14
+.\"
+.TH MKERRLST 1  "March 14, 1996"
+.UC 2
+.SH NAME
+mkerrlst \- create system error file
+.SH SYNOPSIS
+.B mkerrlst
+[
+.B \-i
+.I inputfile
+]
+[
+.B \-o
+.I outputfile
+]
+.SH DESCRIPTION
+.BR Mkerrlst (1)
+creates error message files in the format described by
+.BR syserrlst (5).
+.PP
+With no arguments
+.B mkerrlst
+creates the file
+.I /etc/syserrlst
+from the internal array
+.BR sys_errlist .
+.PP
+Give just the
+.B \-o
+option 
+.B mkerrlst
+will create the file
+.I outputfile
+from the internal array
+.BR sys_errlist .
+.PP
+Given just the
+.B \-i
+option
+.B mkerrlst
+will create the file
+.I /etc/syserrlst
+from the input file
+.I inputfile.
+.PP
+Given both
+.B \-i
+and 
+.B \-o
+options 
+.B mkerrlst
+will create the error message file
+.I outputfile
+from the strings contained in
+.I inputfile.
+.PP
+.B NOTE:
+error messages are numbered from 0.  If the error 0 does not have a
+message associated with it the first string in
+.I inputfile
+must still be present.
+.SH "RETURN VALUE"
+.B mkerrlst
+exits with status of 0 if no errors are encountered.  If errors do occur
+an error message is printed on 
+.I stderr
+and the exit status is 1.
+.SH ERRORS
+.BR mkerrlst (1)
+can encounter any of the errors for the
+.BR open (2),
+.BR lseek (2),
+.BR read (2),
+or
+.BR write(2)
+system calls.
+.SH "SEE ALSO"
+syserrlst(3)
+syserrlst(5)
+.SH HISTORY
+.BR mkerrlst (1),
+first appeared in 2.11BSD.
+.SH BUGS
+Error messages can be a maximum of 80 characters.

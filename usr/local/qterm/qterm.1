@@ -1,0 +1,227 @@
+.\"
+.\" Copyright (c) 1990 Michael A. Cooper.
+.\" This software may be freely distributed provided it is not sold for 
+.\" profit and the author is credited appropriately.
+.\"
+.\" $Header: /am/sol/src/common/usc/bin/qterm/RCS/qterm.1,v 5.0 90/12/15 18:30:38 mcooper Release $
+.\"
+.TH QTERM 1 "6 November 1990"
+.ds ]W USC-UCS
+.SH NAME
+qterm \- Query Terminal
+.SH SYNOPSIS
+qterm 
+[
+.B +|\-alt
+] [
+.B +|\-always
+] [
+.B +|\-longname
+] [
+.B +|\-quiet
+] [
+.B +|\-sent
+] [
+.B +|\-timeout
+] [
+.B +|\-usrtab
+] [
+.B +|\-watch
+] [
+.B +|\-systab
+] [
+.B \-wait
+.I interval
+] [
+.B \-file
+.I tabfile
+]
+.SH DESCRIPTION
+.I Qterm
+is used to query a terminal to determine its name.
+This is done by sending a special sequence to the terminal,
+reading in a response, and comparing it against a table of possible
+responses.
+The ``name'' printed to standard output should be one found in
+the
+.I termcap(5)
+(or
+.I terminfo(5)
+for System V systems)
+database.
+.PP
+For 
+.I csh(1) 
+users,
+putting a line in your 
+.I .login 
+file such as:
+.sp 1
+.in +.5i
+setenv TERM `qterm`
+.in -.5i
+.sp 1
+should automagically set your terminal type.
+For 
+.I sh(1)
+users, putting these lines in your 
+.I .profile 
+file should set your terminal type:
+.sp 1
+.in +.5i
+TERM=`qterm`
+.br
+export TERM
+.in -.5i
+.sp 1
+.LP
+By default,
+.B qterm
+uses the system tab file
+.I /usr/local/lib/qtermtab
+to obtain information for querying terminals.
+.SH OPTIONS
+.IP \fB+alt\fP
+Use the alternate string ``<ESCAPE>[c'' when asking the terminal to
+identify itself.  This string is recognized by most ANSI compatible
+terminals.
+.IP \fB\-alt\fP
+Don't use the alternate string, but the string found in the
+.B tabfile
+being used.
+This is the default.
+.IP \fB+always\fP
+Always send the terminal query string.
+Normally the query string is only sent if it differs from
+the last string sent.
+.IP \fB-always\fP
+Only send the terminal query string if it differs from the last
+string sent.
+This is the default.
+.IP "\fB\-file \fItabfile\fP"
+Use
+.I <tabfile>
+to find information for querying the terminal.
+.IP \fB+longname\fP
+Print only the long (verbose) terminal name.
+.IP \fB\-longname\fP
+Don't print the long (verbose) terminal name.
+This is the default.
+.IP \fB+quiet\fP
+Be quiet and only print the terminal name to standard output.
+.IP \fB\-quiet\fP
+Don't be quiet and only print the terminal name to standard output.
+This is the default.
+.IP \fB+watch\fP
+Watch the characters sent and recieved to the terminal.
+.IP \fB\-watch\fP
+Don't watch the characters sent and recieved to the terminal.
+This is the default.
+.IP \fB+timeout\fP
+Wait for timeout when listening for response string.
+This is useful if the first entry in a qtermtab doesn't have
+a response string with an ending character that is common
+with the rest of the qtermtab entries.
+.IP \fB\-timeout\fP
+Disable waiting for timeout when listening for response string.
+This is the default.
+.IP \fB+usrtab\fP
+Use 
+.B $HOME/.qtermtab
+to find information for querying the terminal.
+.IP \fB\-usrtab\fP
+Don't use
+.B $HOME/.qtermtab
+to find information for querying the terminal.
+This is the default.
+.IP \fB+sent\fP
+Display the final response sent from
+the terminal in a ``nice'' fashion.
+.IP \fB-sent\fP
+Don't display the final response sent from the terminal.
+This is the default.
+.IP \fB+systab\fP
+Use 
+.B /usr/local/lib/qtermtab
+to find information for querying the terminal.
+This is the default
+.IP \fB\-systab\fP
+Don't use
+system tab file
+to find information for querying the terminal.
+.IP "\fB\-wait \fIinterval\fP"
+Set the wait (timeout) period to 
+.I interval
+(in seconds).
+.SH "QTERMTAB"
+The format of the file
+$HOME/.qtermtab
+and 
+.I qterm's
+system tab file
+.I /usr/local/lib/qtermtab,
+consists of four fields each seperated by white space (tabs and/or spaces).
+The first field is the string that should be used to query the terminal.
+The second field is the string to expect in response to the query.
+The third field is the terminal name (compatible with 
+.I termcap(5))
+to print to standard output.
+The fourth field is optional and may contain a description of the exact
+manufacturer and model name of the terminal to be used in a message
+printed to standard error.
+.PP
+Blank lines or lines starting with the character ``#''
+are ignored and may be used as comment lines.
+A character preceeded by a ``^'' is taken to mean the 
+.I control
+character.  (i.e. ``^['' is interpretted as an <ESCAPE>).
+Both the send and receive (first and second) fields may contain
+octal values preceeded by a `\\'.
+(i.e. <ESCAPE> can be represented by `\\033'.)
+.PP
+The ``expect'' (second) field
+can be a regular expression denoted by a leading backslash (`\\').
+i.e. "^[[123" matches the string "^[[123", whereas "^[\\[123]" matches
+"^[1" or "^[2" or "^[3".
+See 
+.I ed(1)
+for regular expression information.
+.PP
+Below is a sample file:
+.sp 2
+.nf
+	#
+	# QTerm File
+	#
+	^[Z\0\0\0\0\0^[[?1;1c\0\0\0\0\0vt100\0\0\0\0\0A vt100 with STP
+	^[Z\0\0\0\0\0^[[?1;2c\0\0\0\0\0vt100\0\0\0\0\0ANSI/VT100 Clone
+	^[Z\0\0\0\0\0^[[?1;3c\0\0\0\0\0vt100\0\0\0\0\0A vt100 with AVO and STP
+	^[Z\0\0\0\0\0^[[?1;4c\0\0\0\0\0vt100\0\0\0\0\0A vt100 with GPO
+	^[Z\0\0\0\0\0^[iBO\0\0\0\0\0\0\0\0z29\0\0\0\0\0\0\0Zenith in Zenith Mode
+.fi
+.sp
+.SH AUTHOR
+Michael A. Cooper, 
+.br
+University Computing Services, 
+.br
+University of Southern California.
+.SH FILES
+.ta \w'/usr/local/lib/qtermtab\ \ \ 'u
+/usr/local/lib/qtermtab	\- System table
+.br
+$HOME/.qtermtab	\- User's table
+.br
+/etc/termcap	\- termcap(5) database
+.SH SEE ALSO
+csh(1), ed(1), sh(1), termcap(5)
+.SH DIAGNOSTICS
+.IP "\fITerminal not recognized - defaults to dumb.\fP"
+.I QTerm
+did not receive a response from the terminal, or the response
+did not match any that 
+.I qterm 
+has stored internally.  Use the \+watch option to check to see which
+is the case.
+.SH BUGS
+Many terminals do not send a response at all.

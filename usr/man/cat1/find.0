@@ -1,0 +1,198 @@
+
+
+
+FIND(1)             UNIX Programmer's Manual		  FIND(1)
+
+
+
+NAME
+     find - find files
+
+SYNOPSIS
+     find pathname-list expression
+     find pattern
+
+DESCRIPTION
+     In the first form above, _f_i_n_d recursively descends the
+     directory hierarchy for each pathname in the _p_a_t_h_n_a_m_e-_l_i_s_t
+     (i.e., one or more pathnames) seeking files that match a
+     boolean _e_x_p_r_e_s_s_i_o_n written in the primaries given below.  In
+     the descriptions, the argument _n is used as a decimal
+     integer where +_n means more than _n, -_n means less than _n and
+     _n means exactly _n.
+
+     The second form rapidly searches a database for all path-
+     names which match _p_a_t_t_e_r_n.  Usually the database is recom-
+     puted weekly and contains the pathnames of all files which
+     are publicly accessible.  If escaped, normal shell "glob-
+     bing" characters (`*', `?', `[', and ']') may be used in
+     _p_a_t_t_e_r_n, but the matching differs in that no characters
+     (_e._g. `/') have to be matched explicitly.	As a special
+     case, a simple _p_a_t_t_e_r_n containing no globbing characters is
+     matched as though it were *_p_a_t_t_e_r_n*; if any globbing charac-
+     ter appears there are no implicit globbing characters.
+
+     -name filename
+	       True if the _f_i_l_e_n_a_m_e argument matches the current
+	       file name.  Normal shell argument syntax may be
+	       used if escaped (watch out for `[', `?' and `*').
+
+     -perm onum
+	       True if the file permission flags exactly match
+	       the octal number _o_n_u_m (see _c_h_m_o_d(1)).  If _o_n_u_m is
+	       prefixed by a minus sign, more flag bits (017777,
+	       see _s_t_a_t(2)) become significant and the flags are
+	       compared: (_f_l_a_g_s&_o_n_u_m)==_o_n_u_m.
+
+     -type c   True if the type of the file is _c, where _c is b,
+	       c, d, f, l or s for block special file, character
+	       special file, directory, plain file, symbolic
+	       link, or socket.
+
+     -links n  True if the file has _n links.
+
+     -user uname
+	       True if the file belongs to the user _u_n_a_m_e (login
+	       name or numeric user ID).
+
+     -nouser   True if the file belongs to a user _n_o_t in the
+	       /etc/passwd database.
+
+
+
+Printed 11/26/99	October 11, 1996			1
+
+
+
+
+
+
+FIND(1)             UNIX Programmer's Manual		  FIND(1)
+
+
+
+     -group gname
+	       True if the file belongs to group _g_n_a_m_e (group
+	       name or numeric group ID).
+
+     -nogroup  True if the file belongs to a group _n_o_t in the
+	       /etc/group database.
+
+     -size n   True if the file is _n blocks long (512 bytes per
+	       block).
+
+     -inum n   True if the file has inode number _n.
+
+     -atime n  True if the file has been accessed in _n days.
+
+     -mtime n  True if the file has been modified in _n days.
+
+     -exec command
+	       True if the executed command returns a zero value
+	       as exit status.	The end of the command must be
+	       punctuated by an escaped semicolon.  A command
+	       argument `{}' is replaced by the current pathname.
+
+     -ok command
+	       Like -exec except that the generated command is
+	       written on the standard output, then the standard
+	       input is read and the command executed only upon
+	       response y.
+
+     -print    Always true; causes the current pathname to be
+	       printed.
+
+     -ls       Always true; causes current pathname to be printed
+	       together with its associated statistics.  These
+	       include (respectively) inode number, size in kilo-
+	       bytes (1024 bytes), protection mode, number of
+	       hard links, user, group, size in bytes, and modif-
+	       ication time.  If the file is a special file the
+	       size field will instead contain the major and
+	       minor device numbers.  If the file is a symbolic
+	       link the pathname of the linked-to file is printed
+	       preceded by ``->''.  The format is identical to
+	       that of ``ls -gilds'' (note however that format-
+	       ting is done internally, without executing the ls
+	       program).
+
+     -newer file
+	       True if the current file has been modified more
+	       recently than the argument _f_i_l_e.
+
+     -cpio file
+	       Write the current file on the argument _f_i_l_e in
+	       _c_p_i_o format.
+
+
+
+Printed 11/26/99	October 11, 1996			2
+
+
+
+
+
+
+FIND(1)             UNIX Programmer's Manual		  FIND(1)
+
+
+
+     -xdev     Always true; causes find _n_o_t to traverse down into
+	       a file system different from the one on which
+	       current _a_r_g_u_m_e_n_t pathname resides.
+
+     The primaries may be combined using the following operators
+     (in order of decreasing precedence):
+
+     1)  A parenthesized group of primaries and operators
+	 (parentheses are special to the Shell and must be
+	 escaped).
+
+     2)  The negation of a primary (`!' is the unary _n_o_t opera-
+	 tor).
+
+     3)  Concatenation of primaries (the _a_n_d operation is implied
+	 by the juxtaposition of two primaries).
+
+     4)  Alternation of primaries (`-o' is the _o_r operator).
+
+EXAMPLES
+     To find all accessible files whose pathname contains `find':
+
+	  find find
+
+     To typeset all variants of manual pages for `ls':
+
+	  vtroff -man `find '*man*/ls.?'`
+
+     To remove all files named `a.out' or `*.o' that have not
+     been accessed for a week:
+
+       find / \( -name a.out -o -name '*.o' \) -atime +7 -exec rm
+       {} \;
+
+FILES
+     /etc/passwd
+     /etc/group
+     /var/db/find.codes     coded pathnames database
+
+SEE ALSO
+     sh(1), test(1), fs(5)
+     Relevant paper in February, 1983 issue of ;_l_o_g_i_n:.
+
+BUGS
+     The first form's syntax is painful, and the second form's
+     exact semantics is confusing and can vary from site to site.
+
+     More than one `-newer' option does not work properly.
+
+
+
+
+
+
+
+Printed 11/26/99	October 11, 1996			3
+
+
+

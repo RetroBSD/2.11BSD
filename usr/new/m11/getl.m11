@@ -1,0 +1,453 @@
+	.title	getl
+	.list	me
+
+	.ident	/03apr4/
+
+
+	.mcall	(at)always,ch.mne,st.flg
+	.globl	..z, sdebug
+	.mcall	(at)zap
+	always
+	ch.mne
+	st.flg
+
+.mcall	(at)sdebug,ndebug
+	.mcall	(at)xmit,param,error
+	.mcall	(at)genedt,gencnd,setnz
+	.mcall	(at)search,scanw
+
+
+	.globl	lcbegl,	linend,	lcendl
+	.globl	cdrsav
+
+	.globl	linnum,	seqend,	pagnum,	pagext,	ffcnt
+	.globl	lppcnt
+
+	.globl	stmnt
+
+	.globl	cndwrd,	lsybas,	lc.cnd,	lsbset
+	.globl	xctlin
+	.globl	secrol,	cndrol,	lsyrol,	symrol
+
+	.globl	srcchn,	smlchn
+	.globl	crfdef,	crfref
+
+	.globl	clcfgs,	clcloc,	clcmax
+	.globl	clcnam,	clcsec,	cpopj
+	.globl	flags,	getchr,	getnb,	getsym
+	.globl	lsrch,	mode
+	.globl	sector,	setnb
+	.globl	setsec,	setxpr
+	.globl	symbol,	tstarg,	value
+	.globl	smllvl,	msbmrp,	getmch
+	.globl	edmask,	ed.cdr,	ed.lc,	ed.lsb
+
+;globals defined in assembler
+
+	.if ndf	xswit
+	.globl	absexp,	chrpnt,	pass
+	.endc
+
+	.globl	savreg,	xmit0
+	.globl	linbuf
+	.globl	gsarg
+
+;globals defined in mcexec
+
+	.globl	getic,	io.eof,	io.eoi,	io.err
+	.globl	argcnt,	cndmex
+	.globl	endflg
+	.globl	getlin,	lblend,	lcendl,	lcflag
+	.globl	lcmask,	lsgbas
+	.globl	u.flag , mac.er, macdfn
+
+	xitsec			;start in default sector
+
+getlin:				;get an input line
+	call	savreg
+getl01:	call	xctlin		;init line-oriented variables
+	mov	ffcnt,r0	;any reserved ff's?
+	beq	2$		;  no
+	add	r0,pagnum	;yes, update page number
+	mov	#-1,pagext
+	clr	ffcnt
+	.if ndf	xlcseq
+	clr	linnum		;init new cref sequence
+	clr	seqend
+	.endc
+	tst	pass
+	beq	2$
+	clr	lppcnt
+2$:	.if ndf	xsml
+	mov	#-1,r4		;assume in sysmac
+	mov	#smlchn,r0
+	tst	smllvl		;true?
+	bne	4$		;  yes
+	.endc
+	clr	r4		;no, assume physical input
+	mov	#srcchn,r0
+	.if ndf	xmacro
+	mov	msbmrp,r1	;fetch pointer
+	beq	4$		;zero means not in macro
+	inc	r4		;make it a one
+4$:	asl	r4		;double for indexing
+	.endc
+	mov	#linbuf,r2
+	mov	r2,lcbegl	;set up beginning
+	mov	r2,chrpnt
+	mov	#linend,lcendl	;  and end of line markers
+				;fall through
+
+getl10:				;char loop
+	call	@getltb(r4)	;call proper routine
+	bic	#200,r5		;clear sign bit
+	beq	getl10		;ignore if null
+	bmi	25$		;special if sign bit set
+	cmp	r5,#40		;less than space?
+	blo	20$		;  yes
+	cmp	r5,#140		;good guy as is?
+	blo	14$		;  yes
+	beq	22$		;illegal
+	cmp	r5,#172		;lower case?
+	bhi	22$		;  no, probably illegal
+	.if ndf	xedlc
+	bit	#ed.lc,edmask	;lower case enabled?
+	beq	14$		;  yes, leave alone
+	.endc
+	sub	#40,r5		;convert lower to upper case
+14$:	movb	r5,(r2)+	;store in linbuf
+	cmp	r2,#linend	;overflow?
+	blo	getl10		;  no
+	tstb	-(r2)		;yes, move back one
+16$:				;flag line error
+	error	12,l,<line too long>
+	br	getl10
+
+20$:	cmp	r5,#tab		;<40, check specials
+	beq	14$		;ok as is
+	cmp	r5,#lf
+	beq	getl40		;eol
+	cmp	r5,#vt		;vertical tab?
+	beq	32$		;  yes (special)
+	cmp	r5,#ff
+	bne	23$
+	tst	u.flag
+	beq	30$		; -u flag not in effect: pay heed to form feeds
+	mov	#40,r5		; flag in effect: convert ^L into space
+	br	14$
+23$:
+	cmp	r5,#cr
+	beq	getl10		;ignore carriage returns
+22$:	cmp	r5,#177		;rubout?
+	beq	getl10		;  yes, ignore
+24$:
+	; error	13,i,<illegal character>
+	bis	#200,r5		;flag for qm on listing
+	br	14$
+
+25$:	bit	r5,#io.eoi	;end of input?
+	bne	34$		;  yes
+	bit	r5,#io.err	;error?
+	bne	16$		;  yes
+				;no, assume eof and fall through
+30$:	.if ndf	xmacro
+	tst	r4		;reading from source?
+	bne	32$		;  no
+	inc	ffcnt		;yes, bump page count
+	add	pagnum,ffcnt+2
+	.endc
+32$:	cmp	r2,#linbuf	;first char?
+	bne	getl40		;  no
+	jmp	getl01		;yes, reprocess line
+
+34$:	tst	macdfn
+	bne	35$
+	error	14,e,<.end not found>	;end of input,
+	br	36$
+35$:	error	140,e,<end of input while macro or repeat in progress>
+36$:
+	inc	endflg		;  missed .end statement
+
+getl40:	clrb	(r2)
+	mov	#linbuf,..z
+	call	sdebug
+	.if ndf	xmacro
+	tst	r4
+	bne	41$
+	.endc
+	.if ndf	xlcseq
+	inc	linnum		;bump line number
+	.globl	fileln
+	inc	fileln		;bump true line number
+	.endc
+41$:	.if ndf	xedcdr
+	movb	linbuf+72.,cdrsav	;save column 73
+	bit	#ed.cdr,edmask	;card reader type?
+	bne	42$		;  no
+	clrb	linbuf+72.	;yes, force eol
+42$:	.endc
+	mov	endflg,r0	;return with "endflg" as argument
+	jmp	setnb		;return pointing at first non-blank
+
+	entsec	dpure		;input mode jump table
+	.if ndf	xsml
+	.word	getic		;sysmac same as regular source
+	.endc
+getltb:	.word	getic		;get input character
+	.if ndf	xmacro
+	.word	getmch		;get macro character
+	.endc
+
+	entsec	imppas
+endflg:	.blkw			;set non-zero on end
+lppcnt:	.blkw	1		;force new page when negative
+ffcnt:	.blkw	2		;unprocessed ff count
+pagext:	.blkw	1		;page number extension
+	.if ndf	xlcseq
+seqend:	.blkw	1
+	.endc
+
+	xitsec
+
+	.iif ndf xedlc,	genedt	lc	;lower case
+setsec:
+	clr	r0
+	bisb	sector,r0
+;	imuli	rs.sec*2,r0	;multiply by bytes/block
+	mov	r0,-(sp)
+	asl	r0
+	asl	r0
+	add	(sp)+,r0
+	asl	r0
+	add	<^pl rolbas>+secrol,r0	;compute base of sector roll
+	mov	(r0)+,symbol	;xfer sector name to symbol
+	mov	(r0)+,symbol+2
+	return
+	.sbttl	conditionals
+
+	.globl	iif
+
+
+
+
+iif:				;immediate handlers
+	call	tcon		;test argument
+	tst	r3
+	bmi	3$		;  branch if unsatisfied
+	cmp	#ch.com,r5	;comma?
+	bne	1$		;  no
+	call	getchr		;yes, bypass
+1$:	mov	chrpnt,r1	;save current location
+	
+	
+	call	setnb		;set to nom-blank
+	bit	#lc.cnd,lcmask	;conditional suppression?
+	beq	2$		;  no
+	mov	r1,lcbegl	;yes, suppress all up to comma
+2$:	clr	argcnt
+	jmp	stmnt		;back to statement
+
+3$:	clr	r5		;false, but no "q" error
+	br	endcx
+
+
+				;concatenated conditionals
+	.irp	arg,	<eq,ge,gt,le,lt,ne,g,l,nz,z,df,ndf>
+	.globl	if'arg
+if'arg:
+	.endm
+
+	mov	symbol+2,symbol	;treat second half as argument
+	call	tconf		;examine it
+	br	if1		;into the main stream
+
+
+	.globl	if,	ift,	iff,	iftf,	endc
+
+if:				;micro-programmmed conditional
+	call	tcon		;test argument
+if1:	mov	#cndlvl,r1	;point to level
+	cmp	(r1),#15.	;room for another?
+	bgt	ifoer1		;  no, error
+	inc	(r1)		;yes, bump level
+	asl	r3		;set carry to true (0) or false (1)
+	ror	-(r1)		;rotate into cndmsk
+	asl	r3
+	ror	-(r1)		;ditto for cndwrd
+	br	endcx
+ift:				;if true sub-conditional
+	mov	cndmsk,r3	;get current
+	br	iftf		;  and branch
+
+iff:				;if false sub-conditional
+	mov	cndmsk,r3	;get current condition
+	com	r3		;use complement and fall through
+
+iftf:				;unconditional sub-conditional
+				;(r3=0 when called directly)
+	tst	cndlvl		;conditional in progress?
+	ble	ifoerr		;  no, error
+	asl	cndwrd		;move off current flag
+	asl	r3		;set carry
+	ror	cndwrd		;mov on
+	br	endcx
+
+endc:				;end of conditional
+	mov	#cndlvl,r1	;point to level
+	tst	(r1)		;in conditional?
+	ble	ifoerr		;  no, error
+	dec	(r1)		;yes, decrement
+	asl	-(r1)		;reduce mask
+	asl	-(r1)		;  and test word
+endcx:
+	bit	#lc.cnd,lcmask	;suppression requested?
+	beq	2$		;  no
+	mov	lblend,r0	;yes, any label?
+	beq	1$		;  no, suppress whole line
+	mov	r0,lcendl	;yes, list only label
+	br	2$
+
+1$:	bis	#lc.cnd,lcflag	;mark conditional
+2$:	return
+
+ifoerr:	error	15,o,<conditional not in progress>	;condition error
+	return
+ifoer1:	error	16,o,<too many nested conditionals>
+	return
+tcon:				;test condition
+	call	gsarg		;get a symbol
+tconf:	scanw	cndrol		;scan for argument
+	beq	7$		;  error if not found
+	mov	symbol+2,r1	;get address
+	asr	r1		;low bit used for toggle flag
+	sbc	r3		;r3 goes to -1 if odd
+	asl	r1		;back to normal (and even)
+	tst	cndwrd		;already unsat?
+	bne	tcon8		;  yes, just exit
+	call	tstarg		;bypass comma
+	jmp	@r1		;jump to handler
+
+7$:	error	17,a,<conditional argument not specified>
+tcon8:	clr	r5		;no "q" error
+	return
+
+
+
+	gencnd	eq,	tconeq
+	gencnd	ne,	tconeq,	f
+	gencnd	z,	tconeq
+	gencnd	nz,	tconeq,	f
+	gencnd	gt,	tcongt
+	gencnd	le,	tcongt,	f
+	gencnd	g,	tcongt
+	gencnd	lt,	tconlt
+	gencnd	ge,	tconlt,	f
+	gencnd	l,	tconlt
+	gencnd	df,	tcondf
+	gencnd	ndf,	tcondf,	f
+
+
+tconeq:	call	absexp		;eq/ne, test expression
+	beq	tcontr		;branch if sat
+tconfa:	com	r3		;  false, toggle
+tcontr:	return			;true, just exit
+
+tcongt:	call	absexp
+	bgt	tcontr
+	br	tconfa
+
+tconlt:	call	absexp
+	blt	tcontr
+	br	tconfa
+
+tcondf:				;if/idf
+	mov	r3,r1		;save initial condition
+	clr	r2		;set "&"
+	clr	r3		;start off true
+1$:	call	getsym		;get a symbol
+	beq	8$		;  undefined if not a sym
+	search	symrol		;search user symbol table
+	call	crfref
+	clr	r0		;assume defined
+	bit	#defflg,mode	;good guess?
+	bne	2$		;  yes
+8$:	com	r0		;no, toggle
+2$:	cmp	r0,r3		;yes, match?
+	beq	3$		;  yes, all set
+	mov	r2,r3		;  no
+	com	r3
+3$:	mov	r1,r2		;assume "&"
+	cmp	r5,#ch.and	; "&"
+	beq	4$		;  branch if good guess
+	cmp	r5,#ch.ior	;perhaps or?
+	bne	5$		;  no
+	com	r2		;yes, toggle mode
+4$:	call	getnb		;bypass op
+	br	1$		;try again
+
+5$:	tst	r1		;ifdf?
+	beq	6$		;  yes
+	com	r3		;no, toggle
+6$:	return
+
+	entsec	imppas
+				;conditional storage (must be ordered)
+cndwrd:	.blkw			;test word
+cndmsk:	.blkw			;condition mask
+cndlvl:	.blkw			;nesting level
+cndmex:	.blkw			;mexit flag
+	xitsec
+
+	.sbttl	roll handlers
+
+	.if ndf	xedlsb
+lsrch:				;local symbol search
+	tst	lsyflg		;flag set?
+	beq	1$		;  no
+	clr	lsyflg		;yes, clear it
+	inc	lsybkn		;bump block number
+1$:	mov	#symbol,r0
+	mov	lsybkn,(r0)+	;move into "symbol"
+	mov	value,(r0)
+	.if ndf	rsx11d
+	beq	2$		;error if zero
+	cmp	(r0),#^d127
+	blos	lsrch3
+	.iff
+	bne	lsrch3
+	.endc
+2$:	error	18,t,<illegal local symbol>	;yes, flag error
+lsrch3:	search	lsyrol		;search the roll
+	return
+	entsec	imppas
+lsyflg:	.blkw			;bumped at "label:"
+lsybkn:	.blkw			;block number
+lsybas:	.blkw			;section base
+lsgbas:	.blkw			;base for generated symbols
+	xitsec
+	genedt	lsb,lsbtst	;local symbol block
+
+	.enabl	lsb
+lsbtst:	bne	2$		;bypass if /ds
+	br	1$
+
+lsbset:	bit	#ed.lsb,edmask	;in lsb over-ride?
+	beq	2$		;  yes
+1$:	inc	lsyflg		;flag new block
+	mov	clcloc,lsybas	;set new base
+	bic	#1,lsybas	;be sure its even
+	clr	lsgbas		;clear generated symbol base
+2$:	return
+
+	.dsabl	lsb
+
+	.endc
+	.sbttl	utilities
+
+setxpr:				;set expression registers
+	mov	#symbol,r1
+	mov	#sector,r2
+	mov	#mode,r3
+	mov	#value,r4
+	return
+	.end

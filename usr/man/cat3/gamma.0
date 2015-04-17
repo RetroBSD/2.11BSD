@@ -1,0 +1,132 @@
+
+
+
+LGAMMA(3M)	    UNIX Programmer's Manual	       LGAMMA(3M)
+
+
+
+NAME
+     lgamma - log gamma function
+
+SYNOPSIS
+     #include <math.h>
+
+     double lgamma(x)
+     double x;
+
+DESCRIPTION
+     Lgamma returns ln|I~(x)|.
+
+     The external integer signgam returns the sign of I~(x) .
+
+IDIOSYNCRASIES
+     Do not use the expression signgam*exp(lgamma(x)) to compute
+     g := I~(x).  Instead use a program like this (in C):
+	  lg = lgamma(x); g = signgam*exp(lg);
+
+     Only after lgamma has returned can signgam be correct.  Note
+     too that I~(x) must overflow when x is large enough, under-
+     flow when -x is large enough, and spawn a division by zero
+     when x is a nonpositive integer.
+
+     Only in the UNIX math library for C was the name gamma ever
+     attached to lnI~.  Elsewhere, for instance in IBM's FORTRAN
+     library, the name GAMMA belongs to I~ and the name ALGAMA to
+     lnI~ in single precision; in double the names are DGAMMA and
+     DLGAMA.  Why should C be different?
+
+     Archaeological records suggest that C's gamma originally
+     delivered ln(I~(|x|)).  Later, the program gamma was changed
+     to cope with negative arguments x in a more conventional
+     way, but the documentation did not reflect that change
+     correctly.  The most recent change corrects inaccurate
+     values when x is almost a negative integer, and lets I~(x) be
+     computed without conditional expressions.	Programmers
+     should not assume that lgamma has settled down.
+
+     At some time in the future, the name _g_a_m_m_a will be rehabili-
+     tated and used for the gamma function, just as is done in
+     FORTRAN.  The reason for this is not so much compatibility
+     with FORTRAN as a desire to achieve greater speed for
+     smaller values of |x| and greater accuracy for larger
+     values.
+
+     Meanwhile, programmers who have to use the name _g_a_m_m_a in its
+     former sense, for what is now _l_g_a_m_m_a, have two choices:
+
+     1) Use the old math library, _l_i_b_o_m.
+
+     2) Add the following program to your others:
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+
+
+
+
+LGAMMA(3M)	    UNIX Programmer's Manual	       LGAMMA(3M)
+
+
+
+	#include <math.h>
+	double gamma(x)
+	double x;
+	{
+	     return (lgamma(x));
+	}
+
+DIAGNOSTICS
+     The reserved operand is returned on a VAX for negative
+     integer arguments, _e_r_r_n_o is set to ERANGE; for very large
+     arguments over/underflows will occur inside the _l_g_a_m_m_a rou-
+     tine.
+
+SEE ALSO
+     math(3M), infnan(3M)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				2
+
+
+

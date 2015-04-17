@@ -1,0 +1,35 @@
+#
+# Copyright (c) 1988 Regents of the University of California.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms are permitted
+# provided that this notice is preserved and that due credit is given
+# to the University of California at Berkeley. The name of the University
+# may not be used to endorse or promote products derived from this
+# software without specific prior written permission. This software
+# is provided ``as is'' without express or implied warranty.
+#
+#	2.1  (2.11BSD) 1996/6/8
+#
+U=	../pdpuba
+VPATH=	../pdpuba
+
+CFILES=	${U}/br.c ${U}/dh.c ${U}/dn.c ${U}/dhu.c ${U}/dhv.c ${U}/dkbad.c \
+	${U}/dr.c ${U}/dz.c ${U}/hk.c ${U}/ht.c ${U}/lp.c ${U}/ra.c ${U}/rk.c \
+	${U}/rl.c ${U}/rx.c ${U}/si.c ${U}/tm.c ${U}/tmscp.c ${U}/tmscpdump.c \
+	${U}/ts.c ${U}/xp.c
+OBJS=	br.o dh.o dhu.o dhv.o dkbad.o dn.o dr.o dz.o hk.o ht.o lp.o ra.o rk.o \
+	rl.o rx.o si.o tm.o tmscp.o tmscpdump.o ts.o xp.o dn.o
+
+.c.o:
+	${CC} ${CFLAGS} -S $*.c
+	${SED} -f SPLFIX $*.s | ${AS} -u -o $*.o
+	rm -f $*.s
+
+all: ${OBJS}
+
+depend: 
+	mkdep -f Make.pdpuba ${CFLAGS} ${CFILES}
+
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

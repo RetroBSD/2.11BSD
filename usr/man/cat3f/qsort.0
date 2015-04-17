@@ -1,0 +1,66 @@
+
+
+
+QSORT(3F)	    UNIX Programmer's Manual		QSORT(3F)
+
+
+
+NAME
+     qsort - quick sort
+
+SYNOPSIS
+     subroutine qsort (array, len, isize, compar)
+     external compar
+     integer*2 compar
+
+DESCRIPTION
+     One dimensional _a_r_r_a_y contains the elements to be sorted.
+     _l_e_n is the number of elements in the array.  _i_s_i_z_e is the
+     size of an element, typically -
+
+	  4 for integer and real
+	  8 for double precision or complex
+	  16 for double complex
+	  (length of character object) for character arrays
+
+     _C_o_m_p_a_r is the name of a user supplied integer*2 function
+     that will determine the sorting order.  This function will
+     be called with 2 arguments that will be elements of _a_r_r_a_y.
+     The function must return -
+
+	  negative if arg 1 is considered to precede arg 2
+	  zero if arg 1 is equivalent to arg 2
+	  positive if arg 1 is considered to follow arg 2
+
+     On return, the elements of _a_r_r_a_y will be sorted.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     qsort(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

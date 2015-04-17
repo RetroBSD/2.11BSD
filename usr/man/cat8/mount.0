@@ -1,0 +1,264 @@
+
+
+
+MOUNT(8)	    UNIX Programmer's Manual		 MOUNT(8)
+
+
+
+NAME
+     mount - mount file systems
+
+SYNOPSIS
+     mount [ -adfruvw ] [ -t _u_f_s | _e_x_t_e_r_n_a_l__t_y_p_e ]
+     mount [ -dfruvw ] _s_p_e_c_i_a_l | _n_o_d_e
+     mount [ -dfruvw ] [ -o _o_p_t_i_o_n_s ] [ -t _u_f_s | _e_x_t_e_r_n_a_l__t_y_p_e ]
+     _s_p_e_c_i_a_l _n_o_d_e
+
+DESCRIPTION
+     The mount command calls the mount(2) system call to prepare
+     and graft a _s_p_e_c_i_a_l _d_e_v_i_c_e on to the file system tree at the
+     point _n_o_d_e.  If either _s_p_e_c_i_a_l or _n_o_d_e are not provided, the
+     appropriate information is taken from the fstab(5) file.
+
+     The system maintains a list of currently mounted file sys-
+     tems.  If no arguments are given to mount, this list is
+     printed.
+
+     The options are as follows:
+
+
+     -a        Causes everything to be done except for the actual
+	       system call.  This option is useful in conjunction
+	       with the
+
+     -v        flag to determine what the mount command is trying
+	       to do.
+
+     -f        Forces the revocation of write access when trying
+	       to downgrade a filesystem mount status from read-
+	       write to read-only.  For 2.11BSD this flag is
+	       currently not implemented.
+
+     -o        Options are specified with a -o flag followed by a
+	       comma separated string of options.  The following
+	       options are available:
+
+
+	       async	 All I/O to the file system should be
+			 done asynchronously.
+
+			 This is a dangerous flag to and should
+			 not be used unless system should your
+			 system crash.
+
+	       force	 The same as -f; forces the revocation of
+			 write access when trying to downgrade a
+			 filesystem mount status from read-write
+			 to read-only.	 This is not (and likely
+			 never will be) supported in 2.11BSD.
+
+
+
+
+Printed 11/24/99	November 16, 1996			1
+
+
+
+
+
+
+MOUNT(8)	    UNIX Programmer's Manual		 MOUNT(8)
+
+
+
+	       noaccesstime
+			 File access times are not updated.
+
+			 This is a performance optimization for
+			 read-only, short-lived data, e.g., news.
+
+	       noauto	 This filesystem should be skipped when
+			 mount is run with the -a flag.
+
+	       na	 Same as noauto.
+
+	       nodev	 Do not interpret character or block spe-
+			 cial devices on the file system.  This
+			 option is useful for a server that has
+			 file systems containing special devices
+			 for architectures other than its own.
+
+	       noexec	 Do not allow execution of any binaries
+			 on the mounted file system.  This option
+			 is useful for a server that has file
+			 systems containing binaries for archi-
+			 tectures other than its own.
+
+	       nosuid	 Do not allow set-user-identifier or
+			 set-group-identifier bits to take
+			 effect.
+
+	       rdonly	 The same as -r; mount the file system
+			 read-only (even the super-user may not
+			 write it).
+
+	       sync	 All I/O to the file system should be
+			 done synchronously.
+
+	       update	 The same as -u; indicate that the status
+			 of an already mounted file system should
+			 be changed.
+
+	       Any additional options specific to a filesystem
+	       type that is not one of the internally known types
+	       (see the -t option) may be passed as a comma
+	       separated list; these options are distinguished by
+	       a leading - (dash).  Options that take a value are
+	       specified using the syntax -option=value.  At
+	       present no 2.11BSD mount options use the following
+	       form, the example has been retained for illustra-
+	       tive purposes only.  For example, the mount com-
+	       mand:
+
+	       mount -t mfs -o nosuid,-N,-s=4000 /dev/dk0b /tmp
+
+
+
+
+
+Printed 11/24/99	November 16, 1996			2
+
+
+
+
+
+
+MOUNT(8)	    UNIX Programmer's Manual		 MOUNT(8)
+
+
+
+	       causes mount to execute the equivalent of:
+
+	       /sbin/mount_mfs -o nosuid -N -s 4000 /dev/dk0b
+	       /tmp
+
+       -r	 The file system is to be mounted read-only.
+		 Mount the file system read-only (even the
+		 super-user may not write it).	The same as the
+		 ``rdonly'' argument to the -o option.
+
+       -t "_u_f_s | _e_x_t_e_r_n_a_l _t_y_p_e"
+		 The argument following the -t is used to indi-
+		 cate the file system type.  The type _u_f_s is the
+		 default.  _U_f_s is also the only value supported
+		 by 2.11BSD other than _s_w_a_p.  Thus the -t will
+		 rarely be used.  The -t option can be used to
+		 indicate that the actions should only be taken
+		 on filesystems of the specified type.	More than
+		 one type may be specified in a comma separated
+		 list.	The list of filesystem types can be pre-
+		 fixed with ``no'' to specify the filesystem
+		 types for which action should _n_o_t be taken.  For
+		 example, the mount command:
+
+		 mount -a -t nonfs,mfs
+
+		 mounts all filesystems except those of type NFS
+		 and MFS.
+
+		 If the type is not one of the internally known
+		 types, mount will attempt to execute a program
+		 in /_s_b_i_n/_m_o_u_n_t__X_X_X where _X_X_X is replaced by the
+		 type name.  For example, mfs filesystems are
+		 mounted by the program /_s_b_i_n/_m_o_u_n_t__m_f_s.
+
+       -u	 The -u flag indicates that the status of an
+		 already mounted file system should be changed.
+		 Any of the options discussed above (the -o
+		 option) may be changed; also a file system can
+		 be changed from read-only to read-write or vice
+		 versa.  An attempt to change from read-write to
+		 read-only will fail if any files on the filesys-
+		 tem are currently open for writing unless the -f
+		 flag is also specified.  This is currently not
+		 implemented in 2.11BSD.  The ability to change
+		 the flags (nodev, nosuid, etc) is however sup-
+		 ported.  The set of options is determined by
+		 first extracting the options for the file system
+		 from the _f_s_t_a_b table, then applying any options
+		 specified by the -o argument, and finally apply-
+		 ing the -r or -w option.
+
+
+
+
+Printed 11/24/99	November 16, 1996			3
+
+
+
+
+
+
+MOUNT(8)	    UNIX Programmer's Manual		 MOUNT(8)
+
+
+
+       -v	 Verbose mode.
+
+       -w	 The file system object is to be read and write.
+
+FILES
+     /etc/fstab
+	       file system table
+
+SEE ALSO
+     mount(2), fstab(5), umount(8)
+
+BUGS
+     It is possible for a corrupted file system to cause a crash.
+
+     mount and this manpage were ported from 4.4BSD-Lite to
+     2.11BSD to gain the ability to set the various flags such as
+     nodev, nosuid and so on.	Multiple filesystem types are not
+     supported and several of the options and flags are not
+     implemented.
+
+HISTORY
+     A mount command appeared in Version 6 AT&T UNIX.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 16, 1996			4
+
+
+

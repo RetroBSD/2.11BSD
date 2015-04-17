@@ -1,0 +1,14 @@
+DDD     DOUBLE-SPEED DATA DUMPER
+
+Ddd is a stripped-down enhanced-throughput multi-process dd(1) clone.
+
+This is version 2.  It has some bugs fixed.  The code is also cleaner
+and more portable.  Forget about version 1 and destroy all copies of it.
+(version 1 is the set of files _without_ version numbers...)
+
+See man page and source for details.
+
+FUTURE PROJECETS:
+Implement skip, files, count and seek opitions,
+as well as noerror and swab conversions.
+Support for multivolume files - replace bundle(1).

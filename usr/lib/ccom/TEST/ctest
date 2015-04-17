@@ -1,0 +1,21 @@
+x=`basename $1 .c`
+if test "$2" != s -a "$3" != s
+then
+	echo compiling with old
+	cc -S $x.c
+	echo finished compiling old
+	mv $x.s $x.so
+fi
+if test $2x = 0x
+then
+	cc -t0 -S $x.c
+fi
+if test $2 = 1
+then
+	cc -t1 -S $x.c
+fi
+if test $2 != 0 -a $2 != 1
+then
+	cc -t01 -S $x.c
+fi
+diff $x.so $x.s

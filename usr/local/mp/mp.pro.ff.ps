@@ -1,0 +1,159 @@
+%!PS-Adobe-1.0
+%%Creator: Steve Holden
+%%Modifed: Rich Burridge
+%%Title: @(#)mp.pro.ff.ps 1.6 92/02/17
+%%CreationDate: see above
+%%PageLength 60
+%%LineLength 80
+%%NumCols 3
+%%DocumentFonts: Times-Bold Times-Roman Courier
+%%Pages: (atend)
+%%EndComments
+
+/FontSize 11 def
+
+/font1d /Times-Bold           reencodeISO
+/font2d /Times-Roman          reencodeISO
+/CourierISO /Courier          reencodeISO
+/fontHd /Helvetica-BoldOblique        reencodeISO
+/fontH2 /Helvetica-BoldOblique        reencodeISO
+/fontNd /Times-Bold           reencodeISO
+/font3d backspacefont
+
+/BoldFont      { /font1d findfont FontSize scalefont setfont } def
+/pf            { /font2d findfont FontSize scalefont setfont } def
+/sf            { /font3d findfont 10 scalefont setfont } def
+/fontH         { /fontHd findfont 15 scalefont setfont } def
+/fontD         { /fontH2 findfont 10 scalefont setfont } def
+/fontN         { /fontNd findfont 12 scalefont setfont } def
+
+sf
+%% stick in all the fudge factors here. May need changing for page sizes,
+%% laserwriter setups etc?
+%%
+/binderspace 100 def
+/filowidth 484 def
+/filoheight 972 def
+/margin 12 def
+/yco filoheight 50 sub def			% space at the top
+/xright filowidth binderspace add 30 sub def	% space at right
+/xleft binderspace 6 add def
+
+/newpage		% page_number newpage --
+{
+  pop                   % pageno
+  0.5 0.5 scale
+  90 rotate
+  -50 filoheight neg translate
+  /PageSave save def
+  gsave			% save state for easy restore
+  margin 0 translate
+  /ypos filoheight 110 sub def
+  xleft ypos moveto
+} def
+
+/endpage		% page_number endpage --
+{
+  pop 			% get rid of page_number
+  PageSave restore      % restore *always* before showpage
+  showpage
+  grestore
+} def
+
+/endcol			% page_number column_number endcol --
+{
+  /thiscol exch def	% column_number
+  gsave
+    fontH
+    % draw the top for owner
+    newpath
+      xleft 10 sub yco moveto
+      xleft yco 20 sub 10 180 270 arc
+      xright yco 20 sub 10 270 0 arc
+      xright yco 10 0 90 arc
+      xleft yco 10 90 180 arc
+    closepath
+    0.90 setgray fill
+    0 setgray stroke
+    xleft yco 16 sub moveto
+    MailFor show
+    User show
+    fontD
+    TimeNow stringwidth pop neg xright add yco 16 sub moveto TimeNow show
+    fontN
+    % dup stringwidth pop 2 div neg 318 add 858 moveto show
+    fontH
+    % lower box for subject etc
+    newpath
+      xleft 10 sub 60 moveto
+      xleft 40 10 180 270 arc
+      xright 40 10 270 0 arc
+      xright 60 10 0 90 arc
+      xleft 60 10 90 180 arc
+    closepath
+    0.90 setgray fill
+    % stick the page number just a few points in from the right hand edge
+    newpath
+      xright 10 sub 50 15 0 360 arc
+      gsave
+        1 setgray fill
+      grestore
+    closepath
+    0 setgray stroke
+    xleft 44 moveto Subject show
+    fontN
+    % position and print the page number
+    dup stringwidth pop 2 div neg xright 10 sub add 46 moveto show
+    fontH
+  grestore
+  filopage			% draw neccessary page breaks
+  grestore gsave		% back to default
+  filowidth thiscol mul margin add 0 translate
+  /ypos filoheight 110 sub def
+  xleft ypos moveto
+} def
+
+/xo 36 def
+/yo 0 def
+/pageno 0 def
+
+/weearc			% draws a little arc to show where the holes go
+{ newpath
+  xo yo 4 0 360 arc
+  closepath
+  fill
+} def
+
+/filopage
+{ gsave
+  /xstart binderspace margin sub def
+  /xfin xstart filowidth add def
+  thiscol 0 eq {		% first break
+	/yo 130 def	% show where the holes should be punched
+	weearc		% except that they will normally be off the edge of
+	/yo 238 def	% the page
+	weearc
+	/yo 346 def
+	weearc
+	/yo 639 def
+	weearc
+	/yo 742 def
+	weearc
+	/yo 850 def
+	weearc
+  } if
+  [1 4] 0 setdash	% use dashed lines for marker
+  newpath
+  xstart 0 moveto
+  xfin 0 lineto
+  xfin filoheight lineto
+  stroke
+  grestore
+} def
+
+/showline
+{
+  show
+  /ypos ypos 12 sub def
+  xleft ypos moveto
+} def

@@ -1,0 +1,45 @@
+This file tells you in which part of the mp distribution each
+file appeared.
+
+Filename.                              |  Part #
+--------------------------------------------------
+README                                 |    1
+Makefile.dist                          |    1
+MANIFEST                               |    1
+FILES                                  |    1
+Data/Mail                              |    1
+Data/MailFolder                        |    1
+Data/NewsArticle1                      |    1
+Data/NewsArticle2                      |    1
+Data/NewsDigest                        |    1
+--------------------------------------------------
+header.c                               |    2
+io.c                                   |    2
+main.c                                 |    2
+misc.c                                 |    2
+print.c                                |    2
+extern.h                               |    2
+mp.h                                   |    2
+patchlevel.h                           |    2
+---------------------------------------------------
+mp.common.ps                           |    3
+mp.pro.ps                              |    3
+mp.pro.l.ps                            |    3
+mp.pro.alt.ps                          |    3
+mp.pro.altl.ps                         |    3
+mp.pro.ff.ps                           |    3
+mp.pro.fp.ps                           |    3
+mp.pro.tm.ps                           |    3
+mp.pro.ts.ps                           |    3
+---------------------------------------------------
+TODO                                   |    4
+mailp                                  |    4
+mp.el                                  |    4
+mp.pro.old                             |    4
+mp.pro.l.old                           |    4
+mp.man                                 |    4
+mp.man.text                            |    4
+mailp.man                              |    4
+mailp.man.text                         |    4
+---------------------------------------------------
+CHANGES                                |    5

@@ -1,0 +1,132 @@
+
+
+
+VARARGS(3)	    UNIX Programmer's Manual	       VARARGS(3)
+
+
+
+NAME
+     varargs - variable argument list
+
+SYNOPSIS
+     #include <varargs.h>
+
+     _f_u_n_c_t_i_o_n(va_alist)
+     va_dcl
+     va_list _p_v_a_r;
+     va_start(_p_v_a_r);
+     f = va_arg(_p_v_a_r, _t_y_p_e);
+     va_end(_p_v_a_r);
+
+DESCRIPTION
+     This set of macros provides a means of writing portable pro-
+     cedures that accept variable argument lists.  Routines hav-
+     ing variable argument lists (such as _p_r_i_n_t_f(3)) that do not
+     use varargs are inherently nonportable, since different
+     machines use different argument passing conventions.
+
+     va_alist is used in a function header to declare a variable
+     argument list.
+
+     va_dcl is a declaration for va_alist.  Note that there is no
+     semicolon after va_dcl.
+
+     va_list is a type which can be used for the variable _p_v_a_r,
+     which is used to traverse the list.  One such variable must
+     always be declared.
+
+     va_start(pvar) is called to initialize _p_v_a_r to the beginning
+     of the list.
+
+     va_arg(_p_v_a_r, _t_y_p_e) will return the next argument in the list
+     pointed to by _p_v_a_r.  _T_y_p_e is the type to which the expected
+     argument will be converted when passed as an argument.  In
+     standard C, arguments that are char or short should be
+     accessed as int, unsigned char or unsigned short are con-
+     verted to unsigned int, and float arguments are converted to
+     double.  Different types can be mixed, but it is up to the
+     routine to know what type of argument is expected, since it
+     cannot be determined at runtime.
+
+     va_end(_p_v_a_r) is used to finish up.
+
+     Multiple traversals, each bracketed by va_start ...  va_end,
+     are possible.
+
+EXAMPLE
+	  #include <varargs.h>
+	  execl(va_alist)
+	  va_dcl
+
+
+
+Printed 11/26/99	  May 15, 1986				1
+
+
+
+
+
+
+VARARGS(3)	    UNIX Programmer's Manual	       VARARGS(3)
+
+
+
+	  {
+	       va_list ap;
+	       char *file;
+	       char *args[100];
+	       int argno = 0;
+
+	       va_start(ap);
+	       file = va_arg(ap, char *);
+	       while (args[argno++] = va_arg(ap, char *))
+		    ;
+	       va_end(ap);
+	       return execv(file, args);
+	  }
+
+BUGS
+     It is up to the calling routine to determine how many argu-
+     ments there are, since it is not possible to determine this
+     from the stack frame.  For example, _e_x_e_c_l passes a 0 to sig-
+     nal the end of the list.  _P_r_i_n_t_f can tell how many arguments
+     are supposed to be there by the format.
+
+     The macros _v_a__s_t_a_r_t and _v_a__e_n_d may be arbitrarily complex;
+     for example, _v_a__s_t_a_r_t might contain an opening brace, which
+     is closed by a matching brace in _v_a__e_n_d.  Thus, they should
+     only be used where they could be placed within a single com-
+     plex statement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1986				2
+
+
+

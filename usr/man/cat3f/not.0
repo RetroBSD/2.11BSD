@@ -1,0 +1,66 @@
+
+
+
+BIT(3F)             UNIX Programmer's Manual		  BIT(3F)
+
+
+
+NAME
+     bit - and, or, xor, not, rshift, lshift bitwise functions
+
+SYNOPSIS
+     (intrinsic) function and (word1, word2)
+
+     (intrinsic) function or (word1, word2)
+
+     (intrinsic) function xor (word1, word2)
+
+     (intrinsic) function not (word)
+
+     (intrinsic) function rshift (word, nbits)
+
+     (intrinsic) function lshift (word, nbits)
+
+DESCRIPTION
+     These bitwise functions are built into the compiler and
+     return the data type of their argument(s).  Their arguments
+     must be integer or logical values.
+
+     The bitwise combinatorial functions return the bitwise
+     ``and'' (and), ``or'' (or), or ``exclusive or'' (xor) of two
+     operands.	Not returns the bitwise complement of its
+     operand.
+
+     _L_s_h_i_f_t, or _r_s_h_i_f_t with a negative _n_b_i_t_s, is a logical left
+     shift with no end around carry.  _R_s_h_i_f_t, or _l_s_h_i_f_t with a
+     negative _n_b_i_t_s, is an arithmetic right shift with sign
+     extension.  No test is made for a reasonable value of _n_b_i_t_s.
+
+     These functions may be used to create a variety of general
+     routines, as in the following statement function defini-
+     tions:
+
+	integer bitset, bitclr, getbit, word, bitnum
+
+	bitset( word, bitnum ) = or(word,lshift(1,bitnum))
+	bitclr( word, bitnum ) = and(word,not(lshift(1,bitnum)))
+	getbit( word, bitnum ) = and(rshift(word,bitnum),1)
+
+FILES
+     These functions are generated in-line by the f77 compiler.
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 30, 1986                         1
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+MP(3X)		    UNIX Programmer's Manual		   MP(3X)
+
+
+
+NAME
+     madd, msub, mult, mdiv, pow, gcd, invert, rpow, msqrt, mcmp,
+     move, min, omin, fmin, m_in, mout, omout, fmout, m_out,
+     sdiv, itom - multiple precision integer arithmetic
+
+SYNOPSIS
+     #include <mp.h>
+     #include <stdio.h>
+
+     typedef struct mint { int len; short *val; } MINT;
+
+     madd(a, b, c)
+     msub(a, b, c)
+     mult(a, b, c)
+     mdiv(a, b, q, r)
+     pow(a, b, m, c)
+     gcd(a, b, c)
+     invert(a, b, c)
+     rpow(a, n, c)
+     msqrt(a, b, r)
+     mcmp(a, b)
+     move(a, b)
+     min(a)
+     omin(a)
+     fmin(a, f)
+     m_in(a, n, f)
+     mout(a)
+     omout(a)
+     fmout(a, f)
+     m_out(a, n, f)
+     MINT *a, *b, *c, *m, *q, *r;
+     FILE *f;
+     int n;
+
+     sdiv(a, n, q, r)
+     MINT *a, *q;
+     short n;
+     short *r;
+
+     MINT *itom(n)
+
+DESCRIPTION
+     These routines perform arithmetic on integers of arbitrary
+     length.  The integers are stored using the defined type
+     _M_I_N_T.  Pointers to a _M_I_N_T can be initialized using the func-
+     tion _i_t_o_m which sets the initial value to _n.  After that,
+     space is managed automatically by the routines.
+
+     _m_a_d_d, _m_s_u_b and _m_u_l_t assign to _c the sum, difference and pro-
+     duct, respectively, of _a and _b.  _m_d_i_v assigns to _q and _r the
+     quotient and remainder obtained from dividing _a by _b.  _s_d_i_v
+     is like _m_d_i_v except that the divisor is a short integer _n
+
+
+
+Printed 11/26/99	  June 4, 1986				1
+
+
+
+
+
+
+MP(3X)		    UNIX Programmer's Manual		   MP(3X)
+
+
+
+     and the remainder is placed in a short whose address is
+     given as _r.  _m_s_q_r_t produces the integer square root of _a in
+     _b and places the remainder in _r.  _r_p_o_w calculates in _c the
+     value of _a raised to the (``regular'' integral) power _n,
+     while _p_o_w calculates this with a full multiple precision
+     exponent _b and the result is reduced modulo _m.  _g_c_d returns
+     the greatest common denominator of _a and _b in _c, and _i_n_v_e_r_t
+     computes _c such that _a*_c mod _b = 1, for _a and _b relatively
+     prime.  _m_c_m_p returns a negative, zero or positive integer
+     value when _a is less than, equal to or greater than _b,
+     respectively.  _m_o_v_e copies _a to _b.  _m_i_n and _m_o_u_t do decimal
+     input and output while _o_m_i_n and _o_m_o_u_t do octal input and
+     output.  More generally, _f_m_i_n and _f_m_o_u_t do decimal input and
+     output using file _f, and _m__i_n and _m__o_u_t do I/O with arbi-
+     trary radix _n.  On input, records should have the form of
+     strings of digits terminated by a newline; output records
+     have a similar form.
+
+     Programs which use the multiple-precision arithmetic library
+     must be loaded using the loader flag -_l_m_p.
+
+FILES
+     /usr/include/mp.h	 include file
+     /usr/lib/libmp.a	 object code library
+
+SEE ALSO
+     dc(1), bc(1)
+
+DIAGNOSTICS
+     Illegal operations and running out of memory produce mes-
+     sages and core images.
+
+BUGS
+     Bases for input and output should be <= 10.
+
+     _d_c(1) and _b_c(1) don't use this library.
+
+     The input and output routines are a crock.
+
+     _p_o_w is also the name of a standard math library routine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 4, 1986				2
+
+
+

@@ -1,0 +1,48 @@
+
+		Q T E R M  -  Q U E R Y   T E R M I N A L
+
+			    Version 5.0
+
+Qterm is a program that queries terminals to find out what kind of
+terminal is responding.  It is useful to automagically define your
+terminal type.  It prints the name of the terminal (compatible,
+hopefully, with a termcap/terminfo name) such as "vt100" to standard
+output.  See the manual for details.
+
+The major changes in these version of qterm is a re-write of command
+line parsing and the options qterm accepts.  I've written a new,
+"generic" command line parsing package called "options" which is
+included as part of this distribution of qterm.  (See the options.3
+man page for details on programming with the options package.)  Qterm
+now has a totally new set of (hopefully) clear and concise options.
+The old command line options are still accepted if qterm is compiled
+with OPT_COMPAT defined (see Makefile).  WARNING: Some of the old
+options conflict with the new options.  i.e.  If OPT_COMPAT is
+defined, "qterm -file foo" does not do what you think it will.  This
+is parsed as "qterm -f ile foo".
+
+Qterm was written under 4.[23] BSD and will probably run without
+modification on other Berkeley Unix systems.  This version has also
+been tested under UTS 2.1 which is a System V.3 derivative.  It was
+compiled with "USG5" defined and setting $(LIBS) to "-lPW".  (See
+Makefile for more info).  It should work on other System V platforms.
+
+It has been running at one point or another here at USC on:
+
+	Sun-3, Sun-4, Sun386i's under SunOS 3.X, 4.0, 4.0.3, 4.1, 4.1.1
+	Alliant's under Concentrix 3.X, 4.X, 5.X
+	IBM RT's under ACIS 4.2 and 4.3
+	DEC VAX & DEC RISC under Ultrix 2.2, 3.1, 4.0, 4.1
+	4.[23]BSD (VAX)
+	4.3BSD [MORE/bsd] (HP)
+	Amdahl UTS (System V.3) 2.1
+
+If you have Internet access, the latest and greatest version of qterm
+is available from "usc.edu" via anonymous ftp in the file
+/pub/qterm.shar.  I update this file whenever there are any changes,
+so it's bound to be newer than a copy from any other source.
+
+
+Michael A. Cooper, University Computing Services, U of Southern California
+  INTERNET: mcooper@usc.edu	            PHONE: 213-740-2957
+  UUCP: ...!uunet!usc!mcooper              BITNET: mcooper@gamera

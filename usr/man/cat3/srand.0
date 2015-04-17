@@ -1,0 +1,66 @@
+
+
+
+RAND(3C)	    UNIX Programmer's Manual		 RAND(3C)
+
+
+
+NAME
+     rand, srand - random number generator
+
+SYNOPSIS
+     srand(seed)
+     int seed;
+
+     rand()
+
+DESCRIPTION
+     The newer random(3) should be used in new applications; rand
+     remains for compatibilty.
+
+     _R_a_n_d uses a multiplicative congruential random number gen-
+     erator with period 2**32 to return successive pseudo-random
+     numbers in the range from 0 to (2**31)-1 on the VAX, and
+     (2**15)-1 on the PDP-11.
+
+     The generator is reinitialized by calling _s_r_a_n_d with 1 as
+     argument.	It can be set to a random starting point by cal-
+     ling _s_r_a_n_d with whatever you like as argument.
+
+SEE ALSO
+     random(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99       September 29, 1985			1
+
+
+

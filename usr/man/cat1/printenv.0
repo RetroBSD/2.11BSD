@@ -1,0 +1,66 @@
+
+
+
+PRINTENV(1)	    UNIX Programmer's Manual	      PRINTENV(1)
+
+
+
+NAME
+     printenv - print out the environment
+
+SYNOPSIS
+     printenv [ name ]
+
+DESCRIPTION
+     _P_r_i_n_t_e_n_v prints out the values of the variables in the
+     environment.  If a _n_a_m_e is specified, only its value is
+     printed.
+
+     If a _n_a_m_e is specified and it is not defined in the environ-
+     ment, _p_r_i_n_t_e_n_v returns exit status 1, else it returns status
+     0.
+
+SEE ALSO
+     sh(1), environ(7), csh(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

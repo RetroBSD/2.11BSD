@@ -1,0 +1,166 @@
+Received: from lanai.cs.ucla.edu (lanai.cs.ucla.edu.ARPA) by corwyn.cognet.ucla.edu (4.12/1.1)
+	id AA02393; Wed, 17 Aug 88 12:45:53 pdt
+Return-Path: <bostic@okeeffe.Berkeley.EDU>
+Received: from okeeffe.Berkeley.EDU by lanai.cs.ucla.edu (Sendmail 5.58.2/2.10)
+	id AA02195; Wed, 17 Aug 88 12:43:36 PDT
+Received: by okeeffe.Berkeley.EDU (5.60/1.29)
+	id AA01264; Wed, 17 Aug 88 12:45:18 PDT
+Date: Wed, 17 Aug 88 12:45:18 PDT
+From: bostic@okeeffe.Berkeley.EDU (Keith Bostic)
+Message-Id: <8808171945.AA01264@okeeffe.Berkeley.EDU>
+To: casey@cs.ucla.edu
+Subject: fix to dh
+Status: RO
+
+
+Not sure if we should put this in -- maybe as part of the man page
+for the dh?  Or a README?  Your choice...
+
+--keith
+
+
+> From tcdmath!ajudge@jade.berkeley.edu Wed Aug 17 11:02:26 1988
+> Date: Wed, 17 Aug 88 18:21:39 BST
+> From: Alan Judge <ajudge@maths.tcd.ie>
+> Subject: New Release of 2.10 and Ethernetting
+> To: bostic@okeeffe.Berkeley.EDU
+> X-Fortune: Mix a little foolishness with your serious plans; it's lovely to be
+>  silly at the right moment. -- Horace
+
+Also when we installed 2.10 we had a problem with port-boards because of a
+slight difference between Emulex CS-02 boards in DH-11/DM-11 emulation and
+the real thing. The rules for 22-bit QBUS operation are different. Anyway at
+the time we fixed the problem locally and since we were not on the net
+reliably I don't think we told anybody. In case the problem still remains
+unfixed I include patches for 2.10 for the problem. You can then post a fix
+to news if necessary.
+--
+Alan Judge, System Administrator
+School of Mathematics, Trinity College, Dublin.
+ajudge@maths.tcd.ie
+
+
+RCS file: RCS/dh.c,v
+retrieving revision 1.1
+diff -c -r1.1 dh.c
+*** /tmp/,RCSt1011296   Wed Aug 17 18:14:33 1988
+--- dh.c        Sun Nov  8 19:37:11 1987
+***************
+*** 405,413 ****
+--- 405,419 ----
+  #else
+                                {
+                                ubadr_t car;
++ #if   defined(CS02)
++                               struct dmdevice *dmaddr = (struct dmdevice *)dmi
+nfo[dh].ui_addr;
+
++                               car = (ubadr_t)addr->dhcar;
++                               car |= ((ubadr_t)(dmaddr->dmlst_h&077) << 16);
++ #else
+                                car = (ubadr_t) addr->dhcar
+                                    | (ubadr_t)(addr->dhsilo & 0300) << 10;
++ #endif
+                                cntr = car - cpaddr(tp->t_outq.c_cf);
+                                ndflush(&tp->t_outq, cntr);
+                                }
+***************
+*** 492,500 ****
+--- 498,514 ----
+                addr->dhcar = (u_short)cpaddr(tp->t_outq.c_cf);
+  #else
+                ubadr_t uba;
++ #if   defined(CS02)
++               struct dmdevice *dmaddr = (struct dmdevice *)dminfo[dh].ui_addr;
++ #endif
+
+                uba = cpaddr(tp->t_outq.c_cf);
++ #if   defined(CS02)
++               addr->un.dhcsrl = (unit&017) | DH_IE;
++               dmaddr->dmlst_h = hiint(uba) & 077;
++ #else
+                addr->un.dhcsrl = (unit&017) | DH_IE | ((hiint(uba)<<4)&060);
++ #endif
+                addr->dhcar = loint(uba);
+  #endif
+                { short word = 1 << unit;
+===================================================================
+RCS file: RCS/dmreg.h,v
+retrieving revision 1.1
+diff -c -r1.1 dmreg.h
+*** /tmp/,RCSt1011296   Wed Aug 17 18:14:39 1988
+--- dmreg.h     Sun Nov  8 19:37:43 1987
+***************
+*** 11,19 ****
+--- 11,30 ----
+   */
+  struct dmdevice {
+        short   dmcsr;          /* control status register */
++ #if   defined(CS02)
++       union {                 /* Need to access high byte independently */
++               short dmlst_w;
++               char dmlst_b[2];
++       } cs02un;
++ #define dmlstat cs02un.dmlst_w
++ #define dmlst_l cs02un.dmlst_b[0]     /* low byte */
++ #define dmlst_h cs02un.dmlst_b[1]     /* high byte */
++ #else
+        short   dmlstat;        /* line status register */
++ #endif
+        short   dmpad1[2];
+  };
++
+
+  /* bits in dm csr */
+  #define       DM_RF           0100000         /* ring flag */
+
+Return-Path: tcdmath!@CUNYVM.CUNY.EDU:ajudge
+Return-Path: <tcdmath!@CUNYVM.CUNY.EDU:ajudge>
+Received: from CUNYVM.CUNY.EDU (cunyvm.cuny.edu.ARPA) by corwyn.cognet.ucla.edu (4.12/1.1)
+	id AA00331; Mon, 26 Sep 88 16:46:33 pdt
+Received: from CUNYVM.BITNET by CUNYVM.CUNY.EDU (IBM VM SMTP R1.1) with BSMTP id 7572; Mon, 26 Sep 88 18:48:06 EDT
+Received: from CUNYVM by CUNYVM.BITNET (Mailer X2.00) with BSMTP id 0180; Mon,
+ 26 Sep 88 18:45:03 EDT
+Received: from IRLEARN.BITNET by CUNYVM.CUNY.EDU (IBM VM SMTP R1.1) with BSMTP
+ id 7550; Mon, 26 Sep 88 18:45:01 EDT
+Received: from ccvax.ucd.ie by IRLEARN.BITNET (Mailer X1.24) with BSMTP id
+ 0531; Sat, 24 Sep 88 19:39:42 GMT
+Received: from cs.tcd.ie by ccvax.ucd.ie; Sat, 24 Sep 88 19:35 GMT
+Received: from csclnb.uucp by cs.tcd.ie; Sat, 24 Sep 88 19:35 GMT
+Received: from maths by csclnb.cs.tcd.ie id aa28619; 24 Sep 88 19:33 EDT
+Date: Sat, 24 Sep 88 17:49:15 BST
+From: Alan Judge <ajudge%maths.tcd.ie%CUNYVM.CUNY.EDU@CUNYVM.CUNY.EDU>
+Subject: Re: Your fixes for pdpuba/dh.c
+To: casey@cognet.ucla.edu
+X-Fortune: If everything seems to be going well, you have obviously overlooked
+ something.
+In-Reply-To: Your message of Mon, 29 Aug 88 00:58:18 -0700 .
+Message-Id:  <8809241749.aa011619@hamilton.maths.tcd.ie>
+
+
+> Alan,
+>   This is my third attempt to get through to you.  Keith Bostic forwarded
+> your note about the changes you had to make to dh.c to get it to work
+> with the Emulex CS-02.  I'd like to know if these changes are specific to
+> the Emulex, or to *any* DH on a QBUS.  In particular, I wasn't aware that
+> there was any DH available for the QBUS.  Is Emulex's the only such or
+> does DEC also supply one?  Please answer as soon as possible.
+>
+> Casey
+I am just back from holidays and this message arrived today. It seems that
+this message arrived was delayed in IRLEARN.BITNET (a site in another
+irish university) for 3 weeks. None of your other
+messages have yet arrived. Normally the through-time by this link is less
+than an hour. Hopefully mail to ajudge@maths.tcd.ie should only take a matter
+of hours from the states. Something must have gone  wrong while I was
+away.
+
+The manual for the CS02/H1 says that the board can emulate either one
+DH11/DM11 or 2 DHV11's. This and the programming section seems to imply that
+there is a DEC product. Unfortunately I don't know for sure. The Emulex board
+may be emulating the DH on some other bus. However the DEC product probably
+does not support 22-bit addressing as Emulex use part of the LSR (line status
+register for this). The patches ARE specific to 22-bit addressing on a Q-BUS,
+they may be specific to Emulex if DEC does have a 22-bit Q-BUS DH.
+--
+Alan

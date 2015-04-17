@@ -1,0 +1,225 @@
+These patches should be applied to make pathalias run under the VENIX
+operating system.  They affect the files
+
+addlink.c
+config.h
+getstruct.c
+mapit.c
+
+*** addlink.c	Mon Apr  4 20:52:12 1988
+--- ../addlink.c	Mon Apr  4 21:44:08 1988
+***************
+*** 142,150
+  	register p_link l;
+  	char netchar, netdir;
+  {
+! 	getlink(l)->l_flag &= ~LDIR;
+! 	getlink(l)->l_flag |= netdir;
+! 	getlink(l)->l_netop = netchar;
+  }
+  
+  int
+
+--- 142,153 -----
+  	register p_link l;
+  	char netchar, netdir;
+  {
+! 	link *lp;	/* this is used instead of repeated calls to */
+! 			/* getlink() to work around a VENIX compiler bug */
+! 	lp = getlink(l);
+! 	lp->l_flag &= ~LDIR;
+! 	lp->l_flag |= netdir;
+! 	lp->l_netop = netchar;
+  }
+  
+  int
+
+
+*** config.h	Mon Apr  4 20:52:12 1988
+--- ../config.h	Mon Apr  4 21:00:30 1988
+***************
+*** 1,5
+  /* pathalias -- by steve bellovin, as told to peter honeyman */
+  
+  #undef STRCHR		/* have strchr -- system v and many others */
+  
+  #undef UNAME		/* have uname() -- probably system v or 8th ed. */
+
+--- 1,11 -----
+  /* pathalias -- by steve bellovin, as told to peter honeyman */
+  
++ /* VENIX doesn't have these defines */
++ 
++ #define L_SET	0
++ #define L_INCR	1
++ #define L_XTND	2
++ 
+  #undef STRCHR		/* have strchr -- system v and many others */
+  
+  #undef UNAME		/* have uname() -- probably system v or 8th ed. */
+***************
+*** 5,11
+  #undef UNAME		/* have uname() -- probably system v or 8th ed. */
+  #undef MEMSET		/* have memset() -- probably system v or 8th ed. */
+  
+! #define GETHOSTNAME	/* have gethostname() -- probably bsd */
+  #define BZERO		/* have bzero() -- probably bsd */
+  
+  /* default place for dbm output of makedb (or use -o at run-time) */
+
+--- 11,17 -----
+  #undef UNAME		/* have uname() -- probably system v or 8th ed. */
+  #undef MEMSET		/* have memset() -- probably system v or 8th ed. */
+  
+! #undef GETHOSTNAME	/* have gethostname() -- probably bsd */
+  #define BZERO		/* have bzero() -- probably bsd */
+  
+  /* default place for dbm output of makedb (or use -o at run-time) */
+
+
+*** getstruct.c	Mon Apr  4 20:52:12 1988
+--- ../getstruct.c	Tue Apr  5 19:50:40 1988
+***************
+*** 66,73
+  	register int i;
+  
+  	/* Open the temporary files. */
+! 	nfile = mktemp("/tmp/nodeXXXXXX");
+! 	if ((fdnode = open(nfile, O_RDWR|O_CREAT|O_TRUNC, 0666)) < 0) {
+  		perror(nfile);
+  		exit(1);
+  	}
+
+--- 66,73 -----
+  	register int i;
+  
+  	/* Open the temporary files. */
+! 	nfile = mktemp("/usr/spool/tmp/nodeXXXXXX");
+! 	if ((fdnode = xopen(nfile)) < 0) {
+  		perror(nfile);
+  		exit(1);
+  	}
+***************
+*** 71,78
+  		perror(nfile);
+  		exit(1);
+  	}
+! 	lfile = mktemp("/tmp/linkXXXXXX");
+! 	if ((fdlink = open(lfile, O_RDWR|O_CREAT|O_TRUNC, 0666)) < 0) {
+  		perror(lfile);
+  		exit(1);
+  	}
+
+--- 71,78 -----
+  		perror(nfile);
+  		exit(1);
+  	}
+! 	lfile = mktemp("/usr/spool/tmp/linkXXXXXX");
+! 	if ((fdlink = xopen(lfile)) < 0) {
+  		perror(lfile);
+  		exit(1);
+  	}
+***************
+*** 76,83
+  		perror(lfile);
+  		exit(1);
+  	}
+! 	sfile = mktemp("/tmp/nameXXXXXX");
+! 	if ((fdname = open(sfile, O_RDWR|O_CREAT|O_TRUNC, 0666)) < 0) {
+  		perror(sfile);
+  		exit(1);
+  	}
+
+--- 76,83 -----
+  		perror(lfile);
+  		exit(1);
+  	}
+! 	sfile = mktemp("/usr/spool/tmp/nameXXXXXX");
+! 	if ((fdname = xopen(sfile)) < 0) {
+  		perror(sfile);
+  		exit(1);
+  	}
+***************
+*** 304,307
+  		exit(1);
+  	}
+  }
+  #endif /*TMPFILES*/
+
+--- 304,321 -----
+  		exit(1);
+  	}
+  }
++ 
++ /* Create and open temp files */
++ 
++ xopen(name)
++ {
++ int fd;
++ 
++ fd = creat(name, 0666);
++ if (fd < 0) return (fd);
++ close(fd);
++ fd = open(name, 2);
++ return (fd);
++ }
++ 
+  #endif /*TMPFILES*/
+
+
+*** mapit.c	Mon Apr  4 21:02:29 1988
+--- ../mapit.c	Mon Apr  4 21:02:35 1988
+***************
+*** 356,362
+  STATIC void
+  heapup(l)
+  	p_link l;
+! {	register long cindx, pindx;	/* child, parent indices */
+  	register Cost cost;
+  	register p_node child;
+  	register p_node parent;
+
+--- 356,362 -----
+  STATIC void
+  heapup(l)
+  	p_link l;
+! {	register int cindx, pindx;	/* child, parent indices */
+  	register Cost cost;
+  	register p_node child;
+  	register p_node parent;
+***************
+*** 421,427
+  STATIC void
+  heapdown(l)
+  	p_link l;
+! {	register long pindx, cindx;
+  	register p_link *rheap = Heap;	/* in register -- heavily used */
+  	p_node child;
+  	p_node rchild;
+
+--- 421,427 -----
+  STATIC void
+  heapdown(l)
+  	p_link l;
+! {	register int pindx, cindx;
+  	register p_link *rheap = Heap;	/* in register -- heavily used */
+  	p_node child;
+  	p_node rchild;
+***************
+*** 472,478
+  /* exchange Heap[i] and Heap[j] pointers */
+  STATIC void
+  heapswap(i, j)
+! 	long i, j;
+  {	register p_link temp;
+  	register p_link *rheap;
+  
+
+--- 472,478 -----
+  /* exchange Heap[i] and Heap[j] pointers */
+  STATIC void
+  heapswap(i, j)
+! 	int i, j;
+  {	register p_link temp;
+  	register p_link *rheap;
+  

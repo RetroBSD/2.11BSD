@@ -1,0 +1,66 @@
+
+
+
+LOC(3F)             UNIX Programmer's Manual		  LOC(3F)
+
+
+
+NAME
+     loc - return the address of an object
+
+SYNOPSIS
+     function loc (arg)
+
+DESCRIPTION
+     The returned value will be the address of _a_r_g.
+
+FILES
+     /usr/lib/libU77.a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

@@ -1,0 +1,120 @@
+From US.CCK@CU20B.COLUMBIA.EDU Tue Nov 19 10:28:52 1985
+Received: from CU20B.COLUMBIA.EDU by seismo.CSS.GOV with SMTP; Tue, 19 Nov 85 10:28:42 EST
+Date: Tue 19 Nov 85 10:27:03-EST
+From: Charlie C Kim <US.CCK@CU20B.COLUMBIA.EDU>
+Subject: Re:  2.9BSD for PRO350/380's
+To: keith
+Cc: US.CCK@CU20B.COLUMBIA.EDU, RICK@UOGVAX2.ARPA
+In-Reply-To: <8511190108.AA06319@seismo.CSS.GOV>
+Message-Id: <12160504635.53.US.CCK@CU20B.COLUMBIA.EDU>
+Status: RO
+
+>> Hi, I noticed you were on the list of people that Paul Milazzo send the
+>> information on the 350's out to.  I'm willing to sending out one more set
+>> of diskette and/or tapes if you'd like a set (I assume it would eventually
+>> go onto the harvard/seismo distribution, thus relieving many people of
+>> problems).
+>> 
+>> Our code is essentially what Guelph has, but with support for
+>> PRO380's as well.
+>
+>Hi, Charlie, thanks for writing, I was going to write you about the same
+>thing.  I would very much like to add support for the PRO to our 2.9
+>distribution, especially since we now support the 11/73.  First off,
+>what 2.9 did you port to the PRO?  And where are the changes required?
+>
+>Keith Bostic
+>	keith@seismo.CSS.GOV
+>	seismo!keith
+>	703-276-7900
+
+Actually, to be honest, it was Rick Macklem at the University of
+Guelph who did all the work for PRO350s.  We've just added
+support for PRO380 which was essentially trivial after his work
+(and after remembering that the 380 and 350s had a device in
+different places).
+
+The baseline used looks like the standard 2.9 distribution - it
+wasn't the harvard distribution.  I've been meaning to try this
+out, but since our only 11s are PROs with 10MB hard disks...
+
+The modifications were minimial.  Mostly changes to deal with
+the PRO's specialized clock and interrupt chip.  The big thing
+that was added at Guelph was all the device drivers: cn.c
+(console - bitmap display/keyboard), r5.c (rx50 controller),
+rd.c (rd5x controller), pc.c (comm port & lp port driver), and
+recently if_dc.c (the decna controller).  All the above drivers
+are for CTI bus devices.  (He also included an RDQX1 controller
+for QBUS machines which he said might work on UDA conrollers as
+well - probably should too since both are MSCP).
+
+The PRO350 essentially maps to an 11/23 while the PRO380
+essentially maps to an 11/73 w/o cache or unibus map (not sure
+if the Micro-11/73 has a unibus map).  The PRO380 pretends to
+have a cache.
+
+CTI modules with drivers:
+	RX50 controller
+	RD50/RD51 controller
+	DECNA ethernet adapter
+	Screen/keyboard controller (n.b. part of the system unit on a 380)
+	Memory boards (configured in by PRO diagnostics)
+
+Devices with no drivers:
+1	Phone system controller (TCMS board?)
+*	4-line SLU adapter (probably easy, but neither of us have one)
+2	RD52/RD51/RD50 controller
+3	CPM card
+*	Real Time Interface card
+
+* - no documentation and no card to test it with 
+1 - no card to test with and insufficent documentation 
+2 - I'm pretty sure that the RD52 (or 53) require a different
+controller than the ones which most people have for their
+RD51/RD50's.  However, with minor modifications to the current
+driver, should work
+3 - we have a card to test it with and some documenation, but it
+isn't high priority
+
+Problems with currently running software:
+	console driver isn't as robust as it could be.  Someone
+	here is working on it.
+
+	comm port driver isn't as effective as it might be.
+	We're looking at that as well.
+
+	decna driver is in beta test.  No problems to date,
+	though there might be problems with breaking out of a
+	controller hung condition
+
+	clock interrupts get lost sometimes...
+
+	system isn't autoconfigured (well a couple of devices
+	are), assumptions are made about where the major cards
+	are in the CTI bus (relates to interrupt structure and
+	device addresses).  Unfortunately, DEC started out
+	making it easy to do this and then dropped support for
+	it (they had device ids in some of the earlier cards).
+	This is something people will have to live with...
+
+Modules modified: conf/l.s, conf/ioconf.c, conf/c.c for the
+device drivers.  The changes to the sys directory I'm sending in
+the next message so you can get a feel for what needed to
+happen.  (All changes in the sys directory which apply to the
+PRO350 also apply to the PRO380).  Rick mapped the 350 as machine
+type "21" (it does require slightly different handling) and I
+mapped the 380 as type "71" (to follow suit - was going to pick
+83, but that would have been a horrible idea).  Modifications
+for the 380 also included going through and making sure that
+conditions for the 70 got mapped for the 380.
+
+I guess I could give you a temporary account on our machine so
+you can get the stuff.  However, I've got to clean up some
+first, you can poke around if you want.
+
+Rick, do you have any problems with giving the code to
+Harvard/Seismo so they can distribute it?  They check licensing.
+
+Charlie
+-------
+

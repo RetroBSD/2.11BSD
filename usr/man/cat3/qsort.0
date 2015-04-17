@@ -1,0 +1,66 @@
+
+
+
+QSORT(3)	    UNIX Programmer's Manual		 QSORT(3)
+
+
+
+NAME
+     qsort - quicker sort
+
+SYNOPSIS
+     qsort(base, nel, width, compar)
+     char *base;
+     int (*compar)();
+
+DESCRIPTION
+     _Q_s_o_r_t is an implementation of the quicker-sort algorithm.
+     The first argument is a pointer to the base of the data; the
+     second is the number of elements; the third is the width of
+     an element in bytes; the last is the name of the comparison
+     routine to be called with two arguments which are pointers
+     to the elements being compared.  The routine must return an
+     integer less than, equal to, or greater than 0 according as
+     the first argument is to be considered less than, equal to,
+     or greater than the second.
+
+SEE ALSO
+     sort(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

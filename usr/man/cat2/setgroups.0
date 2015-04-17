@@ -1,0 +1,66 @@
+
+
+
+SETGROUPS(2)	    UNIX Programmer's Manual	     SETGROUPS(2)
+
+
+
+NAME
+     setgroups - set group access list
+
+SYNOPSIS
+     #include <sys/param.h>
+
+     setgroups(ngroups, gidset)
+     int ngroups, *gidset;
+
+DESCRIPTION
+     _S_e_t_g_r_o_u_p_s sets the group access list of the current user
+     process according to the array _g_i_d_s_e_t.  The parameter
+     _n_g_r_o_u_p_s indicates the number of entries in the array and
+     must be no more than NGROUPS, as defined in <_s_y_s/_p_a_r_a_m._h>.
+
+     Only the super-user may set new groups.
+
+RETURN VALUE
+     A 0 value is returned on success, -1 on error, with a error
+     code stored in _e_r_r_n_o.
+
+ERRORS
+     The _s_e_t_g_r_o_u_p_s call will fail if:
+
+     [EPERM]	    The caller is not the super-user.
+
+     [EFAULT]	    The address specified for _g_i_d_s_e_t is outside
+		    the process address space.
+
+SEE ALSO
+     getgroups(2), initgroups(3X)
+
+BUGS
+     The _g_i_d_s_e_t array should be of type gid_t, but remains
+     integer for compatibility with earlier systems.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 13, 1986				1
+
+
+

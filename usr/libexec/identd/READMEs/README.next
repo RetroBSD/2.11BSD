@@ -1,0 +1,32 @@
+Machine Type:		NeXTstep 2.x/3.0
+
+Make using:		make next
+Make optimised:		make "CFLAGS=-O -pipe" "LDFLAGS=-object" next
+
+Person(s) porting:	Nigel Metheringham <nigelm@ohm.york.ac.uk>
+Port date:		5 April, 1993
+Verified working:	OS version    Pident vers  Person
+			3.0	      2.1beta9	   <nigelm@ohm.york.ac.uk>
+			2.1	      2.1beta9	   <Piete.Brooks@cl.cam.ac.uk>
+
+Build comments:		Build using the optimising make line above - makes a
+			much smaller tighter daemon.
+			Edit the destination part of the Makefile to suit
+			your system -
+			common values are:-
+				DESTROOT=
+				DESTDIR=/usr/etc
+				MANROOT=/usr/man
+				MANDIR=$(MANROOT)/man8
+			This has only been tested on black (ie NeXT) hardware,
+			however there is no reason why it should not run on
+			white (486) hardware under NeXTstep for Intel
+			Processors.
+
+
+Install comments:	Generally install into /usr/etc
+			Start from inetd (or as daemon if you prefer)
+
+Usage comments:		Make sure that the user this runs under from inetd
+			can read /dev/kmem.  Alternatively run it as root -
+			its quite safe!

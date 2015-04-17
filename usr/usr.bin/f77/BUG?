@@ -1,0 +1,45 @@
+I have discovered what I believe to be a problem in the second pass of
+both the old and the new versions of the C compiler.  The problem is
+attributable to the following ratfor source:
+
+	#  cause /lib/c1 to fail
+	#  W.E.Brown; 4-Nov-85
+
+	program junk
+	   parameter (TRIP = 0)
+	   logical WantEv
+	   integer x
+
+	   WantEv = .true.
+	   for (read *, x; x != TRIP; read *, x)
+	      if (WantEv  .eqv. (0 == mod(x,2)))
+		 print *, x
+	   
+	   stop
+	end
+
+
+When this is compiled via "f77 -d junk.r", the following results:
+
+	ratfor  junk.r >junk.f
+	f77pass1 -d junk.f /tmp/fort6926.s /tmp/fort6926.d /tmp/fort6926.x
+	junk.f:
+	   MAIN test:
+	/lib/c1 /tmp/fort6926.x - /tmp/fort6926.a 
+	line 8: No code table for op: !=
+
+	compiler error.
+
+
+Note especially the message about "No code table" -- this comes from
+/lib/c1.
+
+While it is certainly possible that f77pass1 is generating
+something which /lib/c1 doesn't understand, I believe (from a somewhat
+cursory inspection of the source of f77pass1) that the problem
+does lie in /lib/c1.
+
+I am writing to inquire whether this is a known bug, and whether there
+exists a fix.  If not, I would ask that these symptoms be posted on the
+net, with a request for assistance.  I just don't know the C compiler's
+internals well enough to try to dope out this problem myself.

@@ -1,0 +1,66 @@
+
+
+
+NOSTK(2)	    UNIX Programmer's Manual		 NOSTK(2)
+
+
+
+NAME
+     nostk - allow process to manage its own stack (2BSD)
+
+SYNOPSYS
+     nostk();
+
+DESCRIPTION
+     _N_o_s_t_k informs the system that the process wishes to manage
+     its own stack.  The system releases the stack segment(s) it
+     has reserved, making them available for allocation (via
+     _b_r_k(2)) by the user.
+
+     C programs should use _n_o_s_t_k only with great caution and
+     understanding of the C language calling and stack conven-
+     tions.  It is most useful for assembler programs that want
+     to use the entire available address space.
+
+SEE ALSO
+     stack(5)
+
+BUGS
+     _N_o_s_t_k is unique to the PDP-11 and 2BSD; its use is
+     discouraged.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 24, 1987                         1
+
+
+

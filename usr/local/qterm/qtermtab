@@ -1,0 +1,73 @@
+#
+# $Header: /am/sol/src/common/usc/bin/qterm/RCS/qtermtab,v 5.0 90/12/15 18:30:49 mcooper Release $
+#
+# QtermTab - Query terminal table for qterm(1).
+#
+#SendStr ReceiveStr		TermName	FullTermName
+#
+^[Z	^[[?1;0c     		vt100    	Base vt100
+^[Z	^[[?1;1c     		vt100   	vt100 with STP
+^[Z	^[[?1;2c     		vt100   	ANSI/VT100 Clone
+^[Z	^[[?1;3c     		vt100    	vt100 with AVO and STP
+^[Z	^[[?1;4c     		vt100    	vt100 with GPO
+^[Z	^[[?1;5c     		vt100    	vt100 with GPO and STP
+^[Z	^[[?1;6c     		vt100    	vt100 with GPO and AVO
+^[Z	^[[?1;7c     		vt100    	vt100 with GPO, STP, and AVO
+^[Z     ^[[?6;2c                vt100           Uniterm vt100 Emulator
+^[Z	^[/K          		h29	 	Zenith z29 in zenith mode
+^[Z	^[/Z          		vt52	 	Generic vt52
+^[Z	^[[0n         		vt100    	AT&T Unix PC 7300
+^[Z	^[[62;1;2;6;8c		f220     	Freedom 220 DEC clone
+^[Z	^[[=1;1c     		avt-4p-s 	Concept with 4 pages memory
+^[Z	^[[=1;2c     		avt-8p-s 	Concept with 8 pages memory
+^[Z	^[[?10c       		la120	 	DEC Writer III
+^[Z	^[[?12;7;0;102c 	vt125	 	DEC Pro 350 in vt125 mode
+^[Z	^[[?12c       		vt100    	Concept from Pro 350/UNIX
+^[Z	^[[?1;11c    		cit101e  	CIE CIT-101 Enhanced w/Graphics
+^[Z	^[[?62;1;2;6;7;8;9c 	vt220   	DEC VT220
+^[Z	^[[?62;1;2;6;7;8c	vt100		Amiga Handshake
+^[Z	^[[?62;1;4;6;7;8;9;15c	vt200-sb	Microvax II VMS
+^[Z	^[[?63;1;2;6;7;8c 	tvi9220  	TeleVideo 9220
+^[Z	^[[?6c        		vt100  	 	Generic vt100
+^[Z	^[[?8;8;6c		att630		AT&T 630 MTG
+^[Z	^[[?8c        		vt100    	TeleVideo 970
+^[Z	^[[?;c        		vt100    	Concept From Pro 350/UNIX
+^[Z	^[[?l;0c     		vt100    	AT&T Unix PC 7300
+^[Z	^[iB0         		h29	 	Zenith z29 in zenith mode
+#^[Z	^[[?1;11c    		xt100+   	Northern Tech LANPARSCOPE
+############################################################################
+#
+# Enable at your own risk
+#
+#^[\040		50		wyse50		Wyse 50 Terminal
+#^[i0		^[iB0		z29		Zenith z29
+#
+# HP terminals
+#
+#^[*s1\^	2621^J		hp2621		Hewlett-Packard HP-2621
+#^[*s1\^	2621A^J		hp2621a		Hewlett-Packard HP-2621A
+#^[*s1\^	2621B^J		hp2621b		Hewlett-Packard HP-2621B
+#^[*s1\^	2621K^J		hp2621k		Hewlett-Packard HP-2621K
+#^[*s1\^	2621K45^J	hp2621k45	Hewlett-Packard HP-2621K45
+#^[*s1\^	2621NL^J	hp2621nl	Hewlett-Packard HP-2621NL
+#^[*s1\^	2621NT^J	hp2621nt	Hewlett-Packard HP-2621NT
+#^[*s1\^	2621P^J		hp2621p		Hewlett-Packard HP-2621P
+#^[*s1\^	2621WL^J	hp2621wl	Hewlett-Packard HP-2621WL
+#^[*s1\^	2622^J		hp2622		Hewlett-Packard HP-2622
+#^[*s1\^	2622A^J		hp2622a		Hewlett-Packard HP-2622A
+#^[*s1\^	2622P^J		hp2622p		Hewlett-Packard HP-2622P
+#^[*s1\^	2626^J		hp2626		Hewlett-Packard HP-2626
+#^[*s1\^	2626A^J		hp2626a		Hewlett-Packard HP-2626A
+#^[*s1\^	2626P^J		hp2626p		Hewlett-Packard HP-2626P
+#^[*s1\^	2640^J		hp2640		Hewlett-Packard HP-2640
+#^[*s1\^	2640A^J		hp2640a		Hewlett-Packard HP-2640A
+#^[*s1\^	2640B^J		hp2640b		Hewlett-Packard HP-2640B
+#^[*s1\^	2644A^J		hp2644a		Hewlett-Packard HP-2644A
+#^[*s1\^	2645^J		hp2645		Hewlett-Packard HP-2645
+#^[*s1\^	2645A^J		hp2645a		Hewlett-Packard HP-2645A
+#^[*s1\^	2645NP^J	hp2645np	Hewlett-Packard HP-2645NP
+#^[*s1\^	2647^J		hp2647		Hewlett-Packard HP-2647
+#^[*s1\^	2647A^J		hp2647a		Hewlett-Packard HP-2647A
+#^[*s1\^	2648^J		hp2648		Hewlett-Packard HP-2648
+#^[*s1\^	2648A^J		hp2648a		Hewlett-Packard HP-2648A
+############################################################################

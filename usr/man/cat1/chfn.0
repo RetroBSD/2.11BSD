@@ -1,0 +1,198 @@
+
+
+
+CHPASS(1)	    UNIX Programmer's Manual		CHPASS(1)
+
+
+
+NAME
+     chpass - add or change user database information
+
+SYNOPSIS
+     chpass [ -a list ] [ user ]
+
+DESCRIPTION
+     _C_h_p_a_s_s allows editing of the user database information asso-
+     ciated with _u_s_e_r or, by default, the current user.  The
+     information is formatted and supplied to an editor for
+     changes.  The _v_i editor will be used unless the environmen-
+     tal variable EDITOR selects an alternate editor.  When the
+     editor terminates, the information is re-read and used to
+     update the user database itself.  Only the user, or the
+     super-user, may edit the information associated with the
+     user.
+
+     Only the information that the user is allowed to change is
+     displayed.
+
+     Possible display items are as follows:
+
+	   Login:	      user's login name
+	   Password:	      user's encrypted password
+	   Uid:               user's id
+	   Gid:               user's login group id
+	   Change:	      password change time
+	   Expire:	      account expiration time
+	   Class:	      user's general classification
+	   Home Directory:    user's home directory
+	   Shell:	      user's login shell
+	   Full Name:	      user's real name
+	   Location:	      user's normal location
+	   Home Phone:	      user's home phone
+	   Office Phone:      user's office phone
+
+     The _l_o_g_i_n field is the user name used to access the computer
+     account.
+
+     The _p_a_s_s_w_o_r_d field contains the encrypted form of the user's
+     password.
+
+     The _u_i_d field is the number associated with the _l_o_g_i_n field.
+     Both of these fields should be unique across the system (and
+     often across a group of systems) as they control file
+     access.
+
+     While it is possible to have multiple entries with identical
+     login names and/or identical user id's, it is usually a mis-
+     take to do so.  Routines that manipulate these files will
+     often return only one of the multiple entries, and that one
+     by random selection.
+
+
+
+Printed 11/24/99	 March 12, 1989                         1
+
+
+
+
+
+
+CHPASS(1)	    UNIX Programmer's Manual		CHPASS(1)
+
+
+
+     The _g_r_o_u_p field is the group that the user will be placed in
+     upon login.  Since this system supports multiple groups (see
+     _g_r_o_u_p_s(1)) this field currently has little special meaning.
+     This field may be filled in with either a number or a group
+     name (see _g_r_o_u_p(5)).
+
+     The _c_h_a_n_g_e field is the date by which the password must be
+     changed.
+
+     The _e_x_p_i_r_e field is the date on which the account expires.
+
+     Both the _c_h_a_n_g_e and _e_x_p_i_r_e fields should be entered in the
+     form ``month day year'' where _m_o_n_t_h is the month name (the
+     first three characters are sufficient), _d_a_y is the day of
+     the month, and _y_e_a_r is the year.
+
+     The _c_l_a_s_s field is currently unused.  In the near future it
+     will be a key to a _t_e_r_m_c_a_p(5) style database of user attri-
+     butes.
+
+     The user's home directory is the full UNIX path name where
+     the user will be placed on login.
+
+     The shell field is the command interpreter the user prefers.
+     If the _s_h_e_l_l field is empty, the Bourne shell (/_b_i_n/_s_h) is
+     assumed.
+
+     When altering a login shell, and not the super-user, the
+     user must select an approved shell from the list in
+     /_e_t_c/_s_h_e_l_l_s.
+
+     The last four fields are for storing the user's full name,
+     office location, and home and work telephone numbers.
+
+     The super-user is also allowed to directly supply a user
+     database entry, in the format specified by _p_a_s_s_w_d(5), as an
+     argument to the -_a option.  This argument must be a colon
+     (``:'') separated list of all the user database fields,
+     although they may be empty.
+
+     Once the information has been verified, _c_h_p_a_s_s uses
+     _m_k_p_a_s_s_w_d(8) to update the user database.  This is run in the
+     background, and, at very large sites could take several
+     minutes.  Until this update is completed, the password file
+     is unavailable for other updates and the new information
+     will not be available to programs.
+
+FILES
+     /etc/master.passwd       The user database
+     /etc/shells	      The list of approved shells
+
+
+
+
+
+Printed 11/24/99	 March 12, 1989                         2
+
+
+
+
+
+
+CHPASS(1)	    UNIX Programmer's Manual		CHPASS(1)
+
+
+
+SEE ALSO
+     login(1), finger(1), getusershell(3), passwd(5),
+     mkpasswd(8), vipw(8)
+     Robert Morris and Ken Thompson, _U_N_I_X _p_a_s_s_w_o_r_d _s_e_c_u_r_i_t_y
+
+BUGS
+     User information should (and eventually will) be stored
+     elsewhere.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	 March 12, 1989                         3
+
+
+

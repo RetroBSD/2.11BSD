@@ -1,0 +1,231 @@
+.if \nv .rm CM
+.TL
+How to use the UNIX\(dg Automatic Text Overlays:
+A Tutorial
+.AU
+Barbara Bekins
+.AI
+U.S. Geological Survey
+Menlo Park, California 
+.AU
+Bill Jolitz
+.AI
+Symmetric Computer Systems
+Los Gatos, California
+.AB
+.PP
+The automatic text overlay feature allows a program to run with up to 
+400 Kbytes of text.  The feature is said to be automatic because it
+generally requires no special program rewriting or intervention.  It attempts to
+be wholly invisible to the program.
+The feature is also orders of magnitude faster than standard replacement
+text overlays, because 
+changing overlay segments only requires that the 8 segmentation
+registers be remapped.  An overlay switch takes as little as 50-250 \(*msec.
+To use the feature each module of the program must be compiled to allow an extra
+word in the call frame so each subroutine call can record the overlay segment
+from which it was called.
+.AE
+.ds  LH UNIX Text Overlays Tutorial
+.ds RH Revision 1.0
+.ds LF DRAFT
+.ds RF 10/20/81
+.FS
+\u\(dg\d \s-2UNIX\s0 is a trademark of Bell Laboratories.
+.FE
+.PP
+.SH
+Introduction
+.PP
+This feature was originally devised by C. Haley and W. Joy
+to allow very large programs
+that were developed on machines like the VAX\(dd 11/780 to function on
+.FS
+\u\(dd\d \s-2PDP\s0 and \s-2VAX\s0 are trademarks of
+Digital Equipment Corporation.
+.FE
+the relatively tiny (65536 byte) addressing space of the PDP-11.  It does this
+by timesharing a part of the process's text area in invisible manner;
+the process appears to be running in an eightfold larger addressing space.
+It can only be used to extend the program or text bounds of a given process;
+it cannot increase the the variable or data bounds of a process.
+.SH
+Requirements to Use
+.PP
+This overlaying technique has a few rules that apply to its use.  They relate
+to the mechanism of the current PDP-11 implementation.  First, all object 
+modules must  be compiled with a special option to the particular compiler.
+For \fIas\fP\|(1), C, and F77 source respectively, the commands are:
+.IP
+\fBas -V\fP prog.s
+.br
+\fBcc -V\fP prog.c
+.br
+\fBf77 -V\fP prog.f 
+.br
+(note that Ratfor and Efl modules are treated similarly)
+.sp
+.pp
+Second, assembly code modules must be treated with care.  Only those which
+obey the \fIcsv\fP/\fIcret\fP call doctrine,
+or those which confine their activities to a given overlay,
+can be allowed in an overlay.  All others must be confined
+to the base segment by being mentioned before the first
+.B \-Z
+or after the
+.B \-L
+in an
+.B ld(1)
+command.  For 90 % of all uses, this merely means that the
+.B \-lovc
+flag must appear after the 
+.B \-L .
+.PP
+.SH
+Planning
+.PP
+The next step in overlaying a given program is to plan the
+layout of modules within the final overlaid process.  This is the careful
+part of the job, where it pays to be size conscious.  After the target program
+is working the first time one will probably understand better how to craft
+the layout; this is an iterative process.  As a first pass one is only
+concerned with the sizes of the given modules and fitting them into overlays.
+When arranging modules into overlays, the following formula validates
+a legal load.  The magic numbers are due to the granularity of PDP-11
+segmentation registers:
+.sp 
+in the case of separate auto-overlays:
+.ce
+.EQ
+left ceiling "size of base segment" over "8192" right ceiling
+~+~left ceiling "size of largest overlay segment" over "8192" right ceiling
+~<=~8
+.EN
+.sp
+in the case of pure auto overlays:
+.ce
+.EQ
+left ceiling "size of base segment" over "8192" right ceiling
+~+~left ceiling "size of largest overlay segment" over "8192" right ceiling
+~+~left ceiling "size of data + bss" over "8192" right ceiling
+~<=~7
+.EN
+.sp
+Where the \(lc \| \(rc indicates the least integer function
+(round any non-integer up to the next integer).
+.PP
+It can be noticed  from the above  that modules larger than 8 or 16,000
+bytes can be difficult to load; so the preference is to break up large
+modules into smaller ones (decomposing files into separate subroutines)
+when the large ones fail to fit into overlays by themselves.  The above
+rules therefore put bounds on the largest subroutine or module usable
+with this technique:
+.sp
+for separate auto-overlays:
+.nf
+	8(segmentation registers) - 1(at least one for the base segment) =
+		7(number of available segmentation registers for a given overlay)
+
+	7* 8192(bytes per segmentation register) = 56Kbytes
+.fi
+.sp
+for pure auto-overlays:
+.nf
+	7(from above) - 1(at least one seg. register for data) - 1(at least one stack seg. register)
+		= 5 (number of available seg. registers for a given overlay)
+	5* 8192 = 40Kbytes.
+.fi
+.PP
+In practice these bounds will be smaller.
+.PP
+A useful strategy is to examine the text sizes of each of the modules,
+ranking them in order of size.  The largest of these may determine the
+maximum size of all overlays.  If the modules are all 8192 bytes or less,
+the packing may be easy to achieve.  Note that pure auto-overlays must
+also take into account the size of the data, stack, and bss areas. 
+.PP
+Only in the extreme cases will the initial packing be a difficult problem.
+More frequently the case will be grouping modules into
+30,000 byte overlays.
+There are a maximum of eight segments; one base segment and 7 overlays.
+The base segment
+is never mapped out.  This segment is the place to put frequently called
+subroutines and library routines, space permitting. 
+The reason for this is that there are 8
+address registers used for mapping each segment of the text.  Since the base
+segment is always present, it must be allocated some of the registers leaving
+the rest to map a given overlay.  Each register maps 8 Kbytes,
+so the size of the overlay is divided by 8 Kbytes and the answer is
+rounded up to figure the number of registers each segment requires 
+to be addressed.
+.PP
+After arriving at a successful (no undefined externals) load, the size of
+the resulting executable module should be checked (see \fIcheckobj\fP\|(1)
+and \fIsize\fP\|(1)).  The
+above formulas should be used to examine the resulting executable files
+and \fInm\fP\|(1) can be used in desperate situations to discern the deployment
+of space within an overlay.
+.SH
+Example
+.PP
+For example, a program with 100 Kbytes of text of which 20 Kbytes was used in
+the base segment could have no other segment greater than 40 Kbytes because 
+.EQ
+left ceiling "20k" over "8k" right ceiling~=~3
+.EN
+Thus the base segment needs 3 segmentation registers, leaving 5 for the overlay
+segments.  
+Once the configuration is decided upon, the program is loaded using:
+.IP
+.nf
+\fBld\fP \fB\-X\fP -[in] /lib/crt0.o [  .o files to go in base segment] \\
+	\fB\-Z\fP [ .o files to go in first overlay segment] \\
+	\fB\-Z\fP [ .o files to go in second overlay segment] \\
+	... \fB\-Z\fP [.o files to go in seventh overlay segment] \\
+	\fB\-L\fP [libraries to go in base segment]
+.fi
+.PP
+Note that overlaid versions of all standard libraries must be requested.
+These were made by compiling the library routines with the proper options.
+In general, the overlaid version of a library named libx.a will be called
+libovx.a.
+All the usual loader flags work also.
+.SH
+Debugging
+.PP
+For debugging, \fIadb\fP will work on overlaid
+programs to give stack backtraces and show the value of variables.
+See \fIadb\fP\|(1) for details.
+.SH
+Performance tricks
+.PP
+After you have a working program you can tailor the \fBld\fP command
+to fit the program much better.  You might even take advantage of some
+programming tricks to either reduce the program's size or speed up
+its operation.
+.PP
+The simplest trick to increasing program speed is to group modules
+which intensively call each other, placing them in the same overlay.
+Also, modules which are called frequently  by all overlays should be placed
+in the base segment if there is space.  These tricks will reduce overlay
+switch calls, which are about 5 times slower than normal procedure calls.
+(note: it's surprising that this is as fast as it is: the overlaid f77
+as it exists must do at least two switches per object or token that it
+accepts, yet in toto it runs at half the speed of the nonoverlaid f77).
+.PP
+Finally, if you have a pure overlaid program you can reduce the
+amount of space used by data by targeting data structures that are read-only
+and locally used in an overlay.  These can be turned into text and merged into
+the overlay itself by editing the raw assembly code.  Although the targeting
+must usually be done by hand, the assembly language editing can be automated
+as a part of the makefile.  This usually is a very successful technique when
+it can be used, since you have more overlay space than data space in
+pure overlays.
+.SH
+Bugs
+.PP
+Some things definitely do not work.  Profiling has yet
+to be taught about overlays.  Only strictly defined overlaid
+UNIX kernels can be built.  Some C library subroutines must be loaded in
+the base segment.   These include the startup routines, csv.o,
+setjmp.o, signal.o, and fpsim.o.

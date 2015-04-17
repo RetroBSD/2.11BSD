@@ -1,0 +1,221 @@
+	.title	main
+
+	.ident	/03apr4/
+
+	.mcall	(at)always,ch.mne,st.flg
+	always
+	ch.mne
+	st.flg
+
+	.mcall	(at)xmit,param
+	.mcall	(at)genedt,gencnd,setnz
+	.mcall	(at)search,scanw,next
+	.if df	rsx11d
+	.mcall	(at)scan
+	.endc
+
+
+	.globl	endp2l
+	.globl	secini,	stmnt
+	.globl	setmax,	propc
+	.globl	exmflg,	xctpas,	xctlin
+	.globl	objchn,	openo
+
+
+;
+	.globl	clcfgs,	clcloc,	clcmax
+	.globl	clcnam,	clcsec,	cpopj
+	.globl	errbts
+	.globl	flags,	insert
+	.globl	mode,	rellvl
+	.globl	rolupd
+	.globl	sector,	setnb
+	.globl	setxpr
+	.globl	symbol,	value
+	.globl	endp1c,	endp2c
+	.globl	prop1,	endp1,	prop2,	endp2
+	.globl	bksiz
+
+	.if ndf	xswit
+	.globl	pass,	prosw
+	.endc
+
+	.globl	savreg,	xmit0
+
+	.globl	endflg,	endlin
+	.globl	getlin
+	.sbttl		roll definitions
+
+	entsec	rolbas
+rolbas	=	.
+	entsec	roltop
+	entsec	rolsiz
+	xitsec
+
+	.macro	genrol	name,	limits,	size
+	entsec	rolbas
+	.globl	name'rol
+name'rol=	.-rolbas
+	.if nb	<limits>
+	.word	<^pl limits>
+	.iff
+	.word	0
+	.endc
+	entsec	roltop
+	.if nb	<limits>
+	.word	<^ph limits>
+	.iff
+	.word	0
+	.endc
+	entsec	rolsiz
+	.word	size*2
+	xitsec
+	.iif gt	size-maxxmt,	maxxmt=size
+	.endm	genrol
+
+	.iif ndf maxxmt,	maxxmt=	0
+
+	.if df	rsx11d
+	genrol	reg,	,4	;register symbols
+	.endc
+	genrol	sym,	,4	;symbol table
+	.if ndf	xmacro
+	genrol	mac,	,4	;macro roll
+	genrol	dma,	,2	;dummy argument roll
+	.endc
+	.if ndf	xedlsb
+	genrol	lsy,	,4	;local symbol roll
+	.endc
+	genrol	sec,	,5	;section roll
+	genrol	cod,	,4	;code roll
+
+	genrol	dum,	,0	;dummy (separates variable from fixed)
+
+	genrol	cnd,cndsec,2	;conditional arguments
+	genrol	swt,swtsec,2	;command string switches
+	genrol	edt,edtsec,3	;enabl/dsabl
+	genrol	lcd,lctsec,1	;listing control
+	genrol	psa,psasec,2	;psect attributes
+	genrol	pst,pstsec,4	;permanent symbol table
+	genrol	crf,crfsec,3	;cref options
+	.sbttl	assembler proper
+
+	entsec	impure
+
+pass:	.blkw
+
+bksiz:	.blkw	2
+				;next group must stay together
+	entsec	imppas
+
+symbol:	.blkw	2		;symbol accumulator
+mode:
+flags:	.blkb	1		;flag bits
+sector:	.blkb	1		;symbol/expression type
+value:	.blkw	1		;expression value
+rellvl:	.blkw	1
+	.rept	maxxmt-<<.-symbol>/2>	;end of grouped data
+	.blkw
+	.endm
+
+clcnam:	.blkw	2		;current location counter symbol
+clcfgs:	.blkb	1
+clcsec:	.blkb	1
+clcloc:	.blkw	1
+clcmax:	.blkw	1
+
+	xitsec			;return to normal
+prop1:				;process pass 1
+	mov	#regtbl,r1	;set to init regs
+	clr	r2
+2$:	mov	#symbol,r4
+	mov	(r1)+,(r4)+	;set mnemonic
+	clr	(r4)+
+	.if df	rsx11d
+	scan	regrol		;set indices
+	.iff
+	search	symrol		;set indices
+	.endc
+	mov	#defflg!regflg,(r4)+
+	mov	r2,(r4)
+	call	insert
+	inc	r2
+	cmp	r2,#10		;end?
+	blo	2$		;  no
+	br	prop2		;  yes, exit through pass 2
+
+	entsec	dpure
+regtbl:	.rad50	/r0 r1 r2 r3 r4 r5 sp pc /
+	xitsec
+prop2:				;macro pass 2
+	call	xctpas
+	call	secini		;init the sector roll
+3$:	call	getlin		;get the next input line
+	bne	4$		;  branch if eof
+	call	stmnt		;process the statement
+4$:	call	endlin		;polish off line
+	tst	endflg		;end seen?
+	beq	3$		;  no, continue
+	return
+
+
+
+endp1:				;end of pass handler
+	.if ndf	xrel
+	call	setmax		;set max location
+	.iftf
+	mov	#objchn,r0
+	call	openo		;open output file
+	call	endp1c		;init binary
+	clr	rolupd		;set for re-init scan
+31$:	next	secrol		;get the next entry
+	beq	32$		;  branch if finished
+	clr	value		;found, reset pc
+	call	insert		;put back in table
+	br	31$
+
+32$:
+	.endc
+	return
+
+
+
+
+endp2:				;end of pass 2
+	.if ndf	xrel
+	call	setmax		;set max location
+	.endc
+	call	endp2c		;clean up binary
+	jmp	endp2l		;output listing of table
+	.if ndf	xswit
+
+prosw:				;process switch
+				;in -  ascii in r0
+				;out-  .ne. 0 if ok
+	call	savreg
+	call	setnb
+	call	setxpr		;set expression-type registers
+	mov	r0,(r1)+	;set "symbol"
+	call	xctlin		;zero line-oriented flags
+	scanw	swtrol		;scan for switch
+	beq	9$		;  not found, exit zero
+	clr	(r3)		;clear "mode"
+	mov	(r1),(r4)	;address to "value"
+	inc	exmflg		;flag exec mode
+	call	propc		;process as op-code
+	clr	r0		;assume error
+	bis	errbts,r5	;error or not terminator?
+	bne	9$		;  yes, error
+	com	r0		;ok, set .ne. zero
+9$:	return
+
+
+	.endc
+
+
+	entsec	implin
+exmflg:	.blkw			;exec mode flag
+	xitsec
+
+
+	.end

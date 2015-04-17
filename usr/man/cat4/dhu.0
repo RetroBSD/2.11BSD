@@ -1,0 +1,132 @@
+
+
+
+DHU(4)		    UNIX Programmer's Manual		   DHU(4)
+
+
+
+NAME
+     dhu - DHU-11 communications multiplexer
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NDHU _d_h_u__u_n_i_t_s # DHU11
+
+     /etc/dtab:
+	  #Name Unit# Addr   Vector Br Handler(s)      # Comments
+	  du	?     160020 310    5  dhurint dhuxint # dhu11 terminal mux
+
+     major device number(s):
+	  raw: 4
+     minor device encoding:
+	  bits 0017 specify line on DHU unit
+	  bits 0060 specify DHU unit
+	  bit  0100 specify RTS/CTS flow control
+	  bit  0200 specifies non-blocking open (``CD always on'')
+
+DESCRIPTION
+     A DHU-11 provides 16 communication lines.
+
+     Each line attached to the DHU-11 communications multiplexer
+     behaves as described in _t_t_y(4).  Input and output for each
+     line may independently be set to run at any of 13 speeds
+     (50, 200 and 38400 baud are not available); see _t_t_y(4) for
+     the encoding.
+
+     Bit _0_2_0_0 of the minor device number for DHU lines may be set
+     to say that a line is not properly connected, and that the
+     line should be treated as hard-wired with carrier always
+     present.  Thus creating the special character device node
+     "4, 130" via _m_k_n_o_d /_d_e_v/_t_t_y_S_2 _c _4 _1_3_0 would cause line ttyS2
+     to be treated in this way.  Turning on bit 6 (adding 64) to
+     the minor device number via _m_k_n_o_d /_d_e_v/_t_t_y_S_2 _c _4 _1_9_4 enables
+     RTS/CTS flow control.
+
+     The DHU-11 driver normally uses input silos and delays
+     receiver interrupts by 20 milliseconds rather than taking an
+     interrupt on each input character.
+
+FILES
+     /dev/tty[S-Z][0-9a-f]
+
+SEE ALSO
+     tty(4)
+
+DIAGNOSTICS
+     dhu(%d,%d) NXM.  No response from UNIBUS on a DMA transfer
+     within a timeout period.  This has never been observed on a
+     PDP-11 and is believed to be a carryover from the VAX driver
+     when it was ported.  It is not serious.
+
+
+
+Printed 11/26/99	  May 31, 1997				1
+
+
+
+
+
+
+DHU(4)		    UNIX Programmer's Manual		   DHU(4)
+
+
+
+     dhu%d %d overruns.  The character input silo overflowed
+     before it could be serviced.  This message is printed only
+     at line close time rather than on each overrun error.  Ker-
+     nel printf's are not interrupt driven and caused more over-
+     runs by blocking interrupts for lengthy periods of time.
+
+NOTES
+     The driver currently does not make full use of the hardware
+     capabilities of the DHU-11, for dealing with XON/XOFF flow-
+     control or hard-wired lines for example.
+
+     The 4 40-way cables are a pain.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 31, 1997				2
+
+
+

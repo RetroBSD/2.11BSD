@@ -1,0 +1,66 @@
+
+
+
+MKFS(8)             UNIX Programmer's Manual		  MKFS(8)
+
+
+
+NAME
+     mkfs - construct a file system
+
+SYNOPSIS
+     /sbin/mkfs [ -i bytes ] [ -s size ] [ -m gap ] [ -n modulus
+     ] special
+
+DESCRIPTION
+     N.B.: file systems are normally created with the _n_e_w_f_s(8)
+     command.
+
+     _M_k_f_s constructs a file system by writing on the special file
+     _s_p_e_c_i_a_l.  The size of the filesystem in logical blocks is
+     specified by the -s _s_i_z_e option.  Logical blocks are 1K (2
+     sectors) under 2.11BSD.
+
+	  NOTE: The newfs(8) program's -s option is in units of
+	  sectors. Newfs(8) converts this to filesystem (logical)
+	  blocks for mkfs(8).
+
+     The number of inodes is calculated based on the argument
+     _b_y_t_e_s to the -i option.  The default is 4096.  If more
+     inodes are desired in a filesystem (there is an absolute
+     maximum of 65500) then a lower value for _b_y_t_e_s should be
+     used, perhaps 3072 or even 2048.
+
+     The flags -m _g_a_p and -n _m_o_d_u_l_u_s determine the block inter-
+     leaving of the freelist that will be constructed, where _g_a_p
+     is the distance between successive 1024-byte blocks, and
+     _m_o_d_u_l_u_s is the number of blocks before the pattern repeats,
+     typically one cylinder.  The optimal values for these param-
+     eters vary with the speed and geometry of the disk, as well
+     as the speed of the processor. Newfs(8) will calculate the
+     correct values in almost all cases from the disklabel.
+
+SEE ALSO
+     fs(5), dir(5), disklabel(8), fsck(8), mkproto(8) newfs(8)
+
+BUGS
+     The _l_o_s_t+_f_o_u_n_d directory is created but the boot block is
+     left uninitialized (see disklabel(8).)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 16, 1996			1
+
+
+

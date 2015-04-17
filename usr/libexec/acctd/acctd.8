@@ -1,0 +1,37 @@
+.\"
+.\"	@(#) 2.11BSD acctd.8 1.1 1999/4/28
+.\"
+.TH ACCTD 8 "April 28, 1999"
+.UC 4
+.SH NAME
+acctd \- system accounting daemon
+.SH SYNOPSIS
+.B acctd [\fB\-d\fP]
+.SH DESCRIPTION
+.B Acctd
+reads accounting records from the kernel's accounting driver (/dev/acctlog)
+and writes the records to a file for later analysis.  The 
+.BR accton (8)
+program is used to update (or create) the config file (/etc/acctd.cf).
+.PP
+.BR Acctd (8)
+reads the config file upon startup and reciept of a SIGHUP signal.
+If a SIGTERM signal is received the accounting file is closed and the
+daemon exits.
+The one option is:
+.TP 10
+\-d
+Enable debugging mode.  Currently no debugging logic is present.
+.SH FILES
+.TP 20
+/etc/acctd.cf
+The configuration file.  Must be owned by root and writeable only by root.
+This file, while simple text, is not meant for human editing since the
+parse is simpleminded and the daemon is paranoid.
+.SH SEE ALSO
+acct(5),
+accton(8),
+sa(8)
+.SH HISTORY
+.B Acctd
+first appeared in 2.11BSD

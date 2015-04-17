@@ -1,0 +1,66 @@
+
+
+
+INSQUE(3)	    UNIX Programmer's Manual		INSQUE(3)
+
+
+
+NAME
+     insque, remque - insert/remove element from a queue
+
+SYNOPSIS
+     struct qelem {
+	  struct    qelem *q_forw;
+	  struct    qelem *q_back;
+	  char q_data[];
+     };
+
+     insque(elem, pred)
+     struct qelem *elem, *pred;
+
+     remque(elem)
+     struct qelem *elem;
+
+DESCRIPTION
+     _I_n_s_q_u_e and _r_e_m_q_u_e manipulate queues built from doubly linked
+     lists.  Each element in the queue must in the form of
+     ``struct qelem''.	_I_n_s_q_u_e inserts _e_l_e_m in a queue immedi-
+     ately after _p_r_e_d; _r_e_m_q_u_e removes an entry _e_l_e_m from a queue.
+
+SEE ALSO
+     ``VAX Architecture Handbook'', pp. 228-235.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1986				1
+
+
+

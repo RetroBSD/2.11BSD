@@ -1,0 +1,66 @@
+
+
+
+MFORMAT(1)          UNIX Programmer's Manual           MFORMAT(1)
+
+
+
+NAME
+     mformat - add an MSDOS filesystem to a low-level formatted
+     diskette.
+
+SYNOPSIS
+     mformat [ -t tracks ] [ -h heads ] [ -s sectors ] [ -l
+     volume label ] drive:
+
+DESCRIPTION
+     _M_f_o_r_m_a_t adds a minimal MSDOS filesystem (boot sector, FAT,
+     and root directory) to a diskette that has already been for-
+     matted by a Unix low-level format.
+
+     The follow options are supported:
+
+     t    The number of tracks (not cylinders).
+
+     h    The number of heads (sides).
+
+     s    The number of sectors per track.
+
+     l    An optional volume label.
+
+     To format a diskette at a density other than the default,
+     you must supply (at least) those command line parameters
+     that are different from the default.
+
+SEE ALSO
+     mlabel(1)
+
+BUGS
+     Requires a low-level format utility from Unix.
+
+     Doesn't detect (or record) bad block information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

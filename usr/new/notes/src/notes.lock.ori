@@ -1,0 +1,113 @@
+/*
+ * lock creates a lock file, or waits until it can create the lock. lock
+ * files are of the form lock#  where # is a character passed to the routine. 
+ *
+ * Rob Kolstad	10/20/80 modified: rbe December 1981 to add full path name
+ * for lock file 
+ */
+
+locknf (io, c)
+struct io_f *io;
+char    c;
+{
+    register int i, fd, holderr, trys;
+/*    char    p[WDLEN];  /* not needed */
+
+    /* not needed for lockf */
+    /* sprintf (p, "%s/%s/%c%s", Mstdir, LOCKS, c, io -> nf); */
+
+    trys = LOCKTRY;			/* set him up */
+
+    /*
+     * old bad code while ((i = creat (p, 0)) < 0) 
+     */
+    switch (c) {			/* determine which type of lock we
+					 * want */
+      case 'DSCRLOCK':
+	fd = io->fidrdx;
+	break;
+      case 'TXTLOCK':
+	fd = io->fidtxt;
+	break;
+      default:
+	fprintf (stderr, "unknown lock %c in lockf, bye\n", c);
+	exit (BAD);
+    }
+
+    /* save the seek pointer for later restoration */
+    if ((old_seek_place = lseek (fd, 0, 0)) < 0)
+	/* do something particularly bad here, like exit */
+	perror ("fatal notes error lseek"), exit (BAD);
+
+    while ((i = lockf (fd, F_TLOCK, 0)) < 0) {
+	if (trys-- == 0) {
+	    holderr = errno;		/* before it's abused */
+	    fprintf (stderr, "lock %c (%s) permanently locked - consult a guru\n",
+		     c, io->nf);
+#ifdef	NFMAINT
+	    if (strcmp (NFMAINT, io -> nf))		/* avoid loops */
+	    {
+		char    pbuf[256];			/* for error logging */
+		char    tbuf[256];			/* title */
+		sprintf (pbuf,
+			"lock %c failed for %s,\nerrno = %d (%s)\nProgram = %s\n",
+			c, io -> fullname, holderr, sys_errlist[holderr],
+			Invokedas);
+		sprintf (tbuf, "%s: locked (%c)", io -> nf, c);
+		nfcomment (NFMAINT, pbuf, tbuf, 0, 0);
+	    }
+#endif	NFMAINT
+		ttystop ();
+	    exit (BAD);			/* jthomp thinks we should recover
+					 * from this. */
+	}
+	sleep (2);			/* guarantee at least 1 */
+    }
+    (void) lseek (fd, old_seek_place, 0);	/* set the pointer back */
+    ignoresigs++;			/* critical section */
+
+    /*
+     * could be above getting the lock, but wanted to be able to suspend
+     * while getting the lock.  The interuptable window is very small 
+     */
+
+    /*
+     * old bad code -- can't close the fd, the lock goes away.  --jt close
+     * (i); 
+     */
+}
+
+/*
+ * unlock takes the same arguements as the lock routine, and it will remove
+ * the corresponding lock file 
+ *
+ * Rob Kolstad 10/20/80 modified: rbe December 1981 to add full path name for
+ * lock name 
+ */
+
+unlocknf (io, c)
+struct io_f *io;
+char    c;
+{
+    int     fd;				/* for the filedesc */
+
+    /* char    p[WDLEN];  /* not needed */
+    switch (c) {			/* determine which type of lock we
+					 * want */
+      case 'DSCRLOCK':
+	fd = io->fidrdx;
+	break;
+      case 'TXTLOCK':
+	fd = io->fidtxt;
+	break;
+      default:
+	fprintf (stderr, "unknown lock %c in lockf, bye\n", c);
+	exit (BAD);
+    }
+
+    /* sprintf (p, "%s/%s/%c%s", Mstdir, LOCKS, c, io -> nf);  /* unnecessary */
+    /* generate file name */
+    /* x (unlink (p) < 0, "unlock: unlink lock");	/* old, bad code */
+    x (lockf (fd, F_UNLOCK, 0) < 0 "unlock: bad lockf call");
+    ignoresigs--;			/* no longer critical */
+}

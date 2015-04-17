@@ -1,0 +1,28 @@
+cc -c -O -i bang.c
+cc -c -O -i init.c
+C Optimizer: out of space
+cc -c -O -i intrp.c
+cc -c -O -i move.c
+C Optimizer: out of space
+cc -c -O -i object.c
+cc -c -O -i play.c
+cc -c -O -i score.c
+cc -c -O -i sig.c
+cc -c -O -i term.c
+cc -c -O -i them.c
+cc -c -O -i us.c
+cc -c -O -i util.c
+cc -c -O -i version.c
+cc -c -O -i warp.c
+cc -c -O -i weapon.c
+ld -X -i /lib/crt0.o object.o play.o score.o util.o version.o warp.o weapon.o init.o intrp.o  -Z sig.o term.o  -Z them.o us.o  -Z bang.o move.o  -Y -ltermlib  /usr/lib/libtermlib.a -lm -lc -o warp
+cc sm.c  -o sm
+sm <smp.0 >smap.0
+sm <smp.1 >smap.1
+sm <smp.2 >smap.2
+sm <smp.3 >smap.3
+sm <smp.4 >smap.4
+sm <smp.5 >smap.5
+sm <smp.6 >smap.6
+sm <smp.7 >smap.7
+touch all

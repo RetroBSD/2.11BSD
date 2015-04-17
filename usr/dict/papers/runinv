@@ -1,0 +1,6 @@
+#! /bin/sh
+
+/usr/libexec/refer/mkey R* | /usr/libexec/refer/inv -v -h997 -n Xind
+mv Xind.ia Ind.ia
+mv Xind.ib Ind.ib
+mv Xind.ic Ind.ic

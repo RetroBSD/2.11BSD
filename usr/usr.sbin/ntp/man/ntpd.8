@@ -1,0 +1,221 @@
+.TH NTPD 8 "27 November 1996" LOCAL "Clockwatcher's Programming Manual"
+.SH NAME
+ntpd \- time synchronization daemon implementing NTP
+.SH SYNOPSIS
+.B ntpd
+[-d] [-s] [-t]
+.SH OPTIONS
+.B -d
+will bump the debug level by one.  May be specified more than once to increment debug
+level by one each time.  Has no effect if 
+.I ntpd
+has not been compiled with 
+.B DEBUG
+defined.
+.PP
+.B -s
+will cause
+.I ntpd
+to
+.B not
+adjust the the local clock.
+.PP
+.B -t
+will cause
+.I ntpd
+to modify the value of
+.I tickadj
+in your kernel.  This will have no effect unless 
+.I ntpd
+was compiled with
+.B SETTICKADJ
+defined.
+.SH DESCRIPTION
+.I NTPD
+is the network time synchronization daemon and is normally invoked at 
+boot time from the
+.IR /etc/rc (8)
+file.  It implements a new revision of the
+.B Network Time Protocol
+first described in RFC-958.
+It maintains the host's time synchronized with a set of distributed time 
+servers, each with varying accurracy and reliability.  Multiple time server
+masters may exist, but there is no requirement for election of a single
+master. 
+.PP
+.I Ntpd
+uses the
+.IR adjtime (2)
+system call to slew the clock of the host by small amount in order to keep the
+clock synchronized.  If the local clock exceeds the ``correct'' time by some
+threshold, then 
+.IR settimeofday (2)
+is used to make a step adjustment of the local clock.
+.PP
+When
+.IR ntpd (8)
+is started on the machine, it reads configuration information from
+.I /etc/ntp.conf
+which contains information about other 
+.I ntp
+time servers and host specific information.  Configuration information is
+listed one entry per line, with fields separated by whitespace.  Lines which 
+begin with a ``#'' character are treated as comments.  Here is a sample
+configuration file:
+.in +2m
+.nf
+#
+# 		Local clock parameters
+#
+#	Precision of the local clock to the nearest power of 2
+#		ex.
+#			60-HZ   = 2**-6
+#			100-HZ  = 2**-7
+#			1000-HZ = 2**-10
+precision -7
+#
+# intrinsic drift of local clock
+#
+tickadj 1
+#
+#	Peers		Type Name
+#
+peer       foo.umd.edu
+peer       192.5.39.94
+peer       bar.arpa
+server     bogon.umd.edu
+passive    bozo.umd.edu
+
+.DT
+.fi
+.PP
+There are two major types of information specified in the configuration file: local host
+information, and remote timer server specification.  The local host information is
+used to describe the intrinsic properties of the local host's timekeeping
+machinary.  The commands in this group are
+.B precision,
+and
+.B tickadj.
+.PP
+The
+.B precision
+command takes a number which describes the resolution of the local clock, as a power
+of two.  For example, a 
+.I VAX
+system typically has a 100 HZ clock and thus a 
+.I precision 
+of -7.  If the symbol
+.B _hz
+is defined in the namelist of /vmunix, this value is automatically set based
+on the value of hz.
+.PP
+The
+.B tickadj
+command is used to specify the granularity of clock adjustment done by the
+.IR adjtime(2)
+system call.  If the 
+.B \-s
+option is specified when ntpd is invoked, the kernel variable _tickadj is
+modified via
+.IR /dev/kmem.
+The preferred method of setting 
+.B tickadj
+is by changing the value in the kernel file
+.I conf.c
+instead of having ntpd set in this rude fashion.
+On a VAX, a value of 1 is usually used. See the README file for typical values of 
+.B tickadj
+on various hardware platforms.
+.\" 
+.\" All of the drift stuff is currently a lie...
+.\" 
+.\" .PP
+.\" The
+.\" .B drift
+.\" command can be set to describe the drift of the local clock.  If this value
+.\" is known, the local clock will converge to the correct time faster.  If it
+.\" is unknown, then specify it as zero, or omit the
+.\" .B drift
+.\" command completely.  Its value will be computed as clock offset samples are
+.\" acquired from the reference clock.
+.\" 
+.\" 
+.PP
+Currently three timer server specifications are supported.  They are
+.B peer, server
+and
+.B passive.
+Each command takes either a dotted-quad internet address or a host name.
+Each host specified in any one of the three commands is elligable to be
+synchronized to, while random hosts which set up a peer relationship are not.
+The
+.B peer
+and
+.B server
+commands create an active polling situation; in the case of 
+.B peer,
+the NTP packets are sourced in 
+.I Symmetric-Active
+mode, while using
+.B server
+causes the packets to be in
+.I Client
+mode.  When reachability is lost with a configured host in either of these
+two cases, the daemon will continue to poll to re-acquire that host.
+A host specified in the
+.B passive
+command will not continue to be polled.  If that host begins to poll us,
+it will be eligable as to be synchronized but will not be polled if
+reachability is lost.
+.PP
+It is recommended that the bulk of the peers configured should be specified
+with the
+.I client
+keyword; this will minimize resource usage on the remote NTP server.  If your
+host will be serving as a redistribution point for a cluster of hosts,  you
+should set up
+.I peer
+relationships with higher quality clocks (lower stratums) and other equal
+stratum clocks.  In other words, if you are not redistributing time to
+others, you shouldn't need to configure any
+.I peers
+in your NTP configuration;
+.I client
+specifications are more appropriate.
+.SH NOTES
+.B Please choose your NTP peers carefully; 
+.B send mail to
+.IR ntp@TRANTOR.UMD.EDU
+.B for assitance.
+.PP
+There exists a
+.B broadcast
+command which will exercise completely untested code.  Use at your own risk.
+.PP
+There is no reason to believe that the
+.B hpux
+code which was added still works.  In general, this code and adaptations of the
+NTPD to platforms without the
+.IR adjtime(2)
+system call are not likely to be very satisfying.
+.SH BUGS
+No doubt.
+.SH FILES
+.nf
+/etc/ntp.conf  NTP daemon configuration file
+.fi
+.SH "SEE ALSO"
+adjtime(2), settimeofday(2), RFC-958, 
+.I Network Time Protocol (Version 1) Specification and Implementation, 
+.I Revised 17 September 1988
+.SH "AUTHORS"
+Louis A. Mamakos,
+.I louie@TRANTOR.UMD.EDU
+.br
+Michael G. Petry,
+.I petry@TRANTOR.UMD.EDU
+.br
+The University of Maryland, Computer Science Center.
+
+
+

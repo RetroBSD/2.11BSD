@@ -1,0 +1,280 @@
+Thu Nov 14 22:07:23 1996  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Modifed the ALLOW_FORMAT code to better handle cases
+	  where a user might be a member of a group which is
+	  found in /etc/group.
+
+	* Some small fixes to crypto.c and some sanity checks for freebsd.c
+
+	* Added a hack to perhaps make GCC be able to compile Pidentd
+	  on AIX correctly again..
+
+Fri Oct 18 11:16:59 1996  Peter Eriksson  <peter@ifm.liu.se>
+
+	* Removed the DEC Alpha OSF/1 >20000 npid sanity check (breaks
+	  on big machines).
+
+	* Some portability fixes for non-ANSI C compilers
+
+Thu Oct 17 00:30:11 1996  Mark Montague <markmont@umich.edu>
+
+	* Patch to fix "wait" mode for Solaris 2.5.1 (and other OS)
+
+Fri Sep  6 22:23:40 1996  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 2.7
+
+Wed Jun 12 20:18:26 1996  Alan Barrett <apb@iafrica.com>
+
+	* New man page for "idecrypt"
+
+	* Additions to the identd man page to document the -C option
+
+	* Fixes for some nits in the identd man page
+
+	* src/kernel/netbsd.c as used in NetBSD-1.1B
+  
+	* Makefile modifications for NetBSD
+
+	* Makefile modifications for idecrypt
+  
+Sun Aug 11 22:18:34 1996  Peter Eriksson  <peter@ifm.liu.se>
+
+	* Use $(INSTALL) (== install) instead of "cp" to install files.
+
+Sun Aug 11 22:12:12 1996  Paul F. Wells <paul@wellserv.com>
+
+	* UnixWare 2 support added.
+	
+Sun Aug 11 22:02:19 1996  MURAYAMA Fumitaka  <umura@nn.solan.chubu.ac.jp>
+
+	* Fix to SunOS 4 to avoid infinite loops.
+
+Mon Mar  4 18:41:00 1996  Greg A. Woods  <woods@planix.com>
+
+	* Makefile: - add a new rule set for identconn
+
+	* src/kernel/bsdi.c: - back-port to BSDI-1.1 again...
+
+	* identconn.sh: - set local bin from DESTROOT (sed in Makefile)
+
+	* src/Makefile, Makefile: - re-write patches from local-2_7a1-v0
+
+	* identd.man: - make pathnames a bit more configurable...
+
+	* .cvsignore: - new target -- man page intermediate...
+
+	* src/parse.c: - reduce some syslog levels to a more resonable priority
+
+Fri Aug 11 22:07:06 1995  Greg A. Woods  <woods@planix.com>
+
+	* Makefile: - add SHARE, SBIN, PREFIX, and MANEXT config options
+	- add -lident to default GLIBS (you'll need it anyway)
+	- add LDFLAGS with default -L$(DESTROOT)/lib (where -lident likely is)
+	- add -DSTRONG_LOG to default GDEFS
+	- build ident.man from ident.8 using sed
+	- build itest by default
+	- add an identconn target and build it by default
+	- fix up install target to be a bit more powerful (probably should include
+	GNU install.sh too though).
+	- use $(MAKE) for clean
+	- add identconn and itest to cleanup
+
+	* Attic/identd.8: - make some pathanmes configurable from the makefile
+	- add a FILES section
+	- quotes needed around multi-word .SH's
+
+	* src/Makefile:
+	- support the use of $(PREFIX) to specify an "in." prefix only if desired
+
+Thu Jun 29 17:18:33 1995  Greg A. Woods  <woods@planix.com>
+
+	* Makefile: - cleanup and localisations
+
+	* identconn.sh: - first time in
+
+	* .cvsignore: - first time in with default targets
+
+Sun Aug 11 20:54:51 1996  James Carlson <carlson@xylogics.com>
+
+	* Bugfix for AIX (didn't support the ALLOW_FORMAT stuff)
+
+Sun Aug 11 20:54:49 1996  Peter Eriksson  <peter@laphroaig.ifm.liu.se>
+
+	* Added some fixes to the OSF/1 support based on a bug report
+	  from Anne Bennett <anne@alcor.concordia.ca>.
+
+Sun Aug 11 20:42:43 1996  Trevor Strohman  <trev@tenon.com>
+
+	* Support for Tenon's MachTen 4.0.x added.
+
+Sun Aug 11 20:26:17 1996  Peter Wemm  <peter@freefall.freebsd.org>
+
+	* New and updated FreeBSD kernel module.
+
+Sun Aug 11 20:18:20 1996  Dave Blob  <blob@syl.dl.nec.com>
+
+	* Support for IRIX 6.2 added.
+
+Sun Aug 11 20:11:12 1996  David L Stevens  <dls@icd.cc.purdue.edu>
+
+	* Makefile changes for AIX3 and AIX4 (-DSVR4 added)
+
+Thu May 16 09:10:16 1996  Paul Szabo  <psz@maths.usyd.edu.au>
+
+	* Moved k_open call from parent to child process so
+	  simultaneous identd queries can work
+	
+	* Fixed typo in parse.c (seen only with INCLUDE_EXTESIONS)
+
+Fri Apr 12 09:30:01 1996  Paul Szabo  <psz@maths.usyd.edu.au>
+
+	* Added support for Apollos (running Domain/OS SR10.x)
+
+Tue Apr  9 20:13:59 1996  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixes from Casper for Solaris 2.5 and 2.5.1
+
+Mon Apr  1 10:49:43 1996  Paul Szabo  <psz@maths.usyd.edu.au>
+
+	* Added random sleep between k_getuid retries
+	* Added sanity (error?) checks in kernel/alpha3.c
+
+Thu Mar 28 11:21:59 1996  Paul Szabo  <psz@maths.usyd.edu.au>
+
+	* Fixed bug in kernel/alpha3.c with k_getuid returning
+	  bad value (or is the bug in parse.c ?)
+
+Fri Nov 24 13:43:07 1995  Paul Szabo  <szabo_p@maths.su.oz.au>
+
+	* Added option for format of info returned (generalizing and
+	  replacing -n option)
+
+Fri Oct 13 14:19:29 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed the BSDI 2.0 support (from Dave Blob <blob@syl.dl.nec.com>
+
+	* Default to "-b" mode if started from the command line.
+
+Mon Oct  9 08:40:05 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for Apple A/UX 3.0.1 (Herb Weiner <herbw@wiskit.com>)
+
+Wed Oct  4 19:32:45 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed a #ifdef for SGI in identd.c
+
+	* Fixed some syslog calls for Solaris 2.
+
+	* Added support for HP-UX 10 (simple kernel location path change)
+
+	* Fixed aix.c:k_getuid() so that it won't return without
+	  returning a proper value.
+
+Tue Aug  8 07:34:21 1995  Peter Eriksson  <peter@ifm.liu.se>
+
+	* Fixed the name of the sco32_42+5.c file to be just that :-)
+
+Thu Aug  3 17:30:54 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added Bela Lubkin & Vic Abell's SCO Unix patches.
+
+	* Added Vic Abell's AIX 4 patch.
+
+	* Added Andrey A. Chernov`s FreeBSD patch.
+	
+	* Added patches from 'der Mouse <mouse@Collatz.McRCIM.McGill.EDU>':
+		Removed	the space between the ":" and the username in the
+		returned information.
+
+Mon Jun  5 15:30:09 1995  Peter Eriksson  <peter@ifm.liu.se>
+
+	* Release version 2.6.1
+
+	* Made the Solaris 2.4 workaround conditional with a:
+		(#ifdef SOLARIS24_WORKAROUND)
+		
+	* Added support for IRIX 6 (Rob Banz)
+
+	* Released version 2.6
+
+	* Added support for SCO Unix 3.2v4.2 and v5 (Vic Abell)
+
+	* Added support for Sequent PTX/2 and PTX/4 (Tim Wright)
+
+	* Updated the FreeBSD support (Torsten Blum)
+
+	* some Solaris cosmetic changes.
+
+	* Added a STRONG_LOG compile-time option.
+
+	* Added SO_REUSEADDR socket option before bind()
+
+	* Made the daemon not fork()-and-detach from controlling TTY
+	  if started in debug mode (-d)
+
+	* Added a workaround to the Solaris 2.4 problem with running
+	  the daemon in standalone or "wait" modes (that the Solaris KVM
+	  library caches more information than it should). The workaround
+	  is that it opens/rescans and closes the KVM for every call. Slow
+	  but...
+
+	* Added compile time&date output to the VERSION request.
+
+Wed Feb  1 13:25:56 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 2.5.1
+
+Wed Feb  1 13:25:56 1995  Casper Dik <casper@fwi.uva.nl>
+
+	* Fixed a Solaris 2.4 bug in "-w" and "-b" modes.
+
+Wed Feb  1 13:25:56 1995  Peter Eriksson  <pen@lysator.liu.se>
+
+        * Released version 2.5
+
+	* Added support for Irix 5.3
+	
+Thu Dec 15 18:34:20 1994  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 2.4.1.
+
+Thu Dec 15 18:33:48 1994  Casper Dik <casper@fwi.uva.nl>
+
+	* src/kernel/sunos5.c (k_getuid): Added fix for Sol2.4/x86
+
+Tue Dec 13 14:03:20 1994  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 2.4.
+
+Thu Oct 27 10:36:09 1994  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for IBM AIX 3.2
+	
+Thu Oct 27 10:36:08 1994  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Use "ChangeLog" instead of "WHATSNEW".
+
+	* Released version 2.4alpha.4
+
+	* Added support for FreeBSD 2.
+
+	* Released version 2.4alpha.3
+
+	* Some minor fixes
+
+	* Released version 2.4alpha.2
+
+	* Bug fix for the Solaris 2.4 support.
+
+	* Added the "itest" program.
+
+	* Released version 2.4alpha.1:
+
+	* Support for Solaris 2.4 added.
+
+	* src/kvm.h moved to src/kernel/kvm.h
+
+Thu Oct 27 10:36:07 1994  Peter Eriksson  <pen@lysator.liu.se>
+
+	* WHATSNEW/ChangeLog truncated (see pidentd-2.3 for old news)

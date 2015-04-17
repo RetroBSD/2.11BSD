@@ -1,0 +1,132 @@
+
+
+
+SIGSTACK(2)	    UNIX Programmer's Manual	      SIGSTACK(2)
+
+
+
+NAME
+     sigstack - set and/or get signal stack context
+
+SYNOPSIS
+     #include <signal.h>
+
+     struct sigstack {
+	caddr_t     ss_sp;
+	int    ss_onstack;
+     };
+
+     sigstack(ss, oss);
+     struct sigstack *ss, *oss;
+
+DESCRIPTION
+     This interface has been made obsolete sigaltstack(2).
+
+     _S_i_g_s_t_a_c_k allows users to define an alternate stack on which
+     signals are to be processed.  If _s_s is non-zero, it speci-
+     fies a _s_i_g_n_a_l _s_t_a_c_k on which to deliver signals and tells
+     the system if the process is currently executing on that
+     stack.  When a signal's action indicates its handler should
+     execute on the signal stack (specified with a _s_i_g_v_e_c(2)
+     call), the system checks to see if the process is currently
+     executing on that stack.  If the process is not currently
+     executing on the signal stack, the system arranges a switch
+     to the signal stack for the duration of the signal handler's
+     execution. If _o_s_s is non-zero, the current signal stack
+     state is returned.
+
+NOTES
+     Signal stacks are not ``grown'' automatically, as is done
+     for the normal stack.  If the stack overflows unpredictable
+     results may occur.
+
+RETURN VALUE
+     Upon successful completion, a value of 0 is returned.  Oth-
+     erwise, a value of -1 is returned and _e_r_r_n_o is set to indi-
+     cate the error.
+
+ERRORS
+     _S_i_g_s_t_a_c_k will fail and the signal stack context will remain
+     unchanged if one of the following occurs.
+
+     [EFAULT]	    Either _s_s or _o_s_s points to memory that is not
+		    a valid part of the process address space.
+
+SEE ALSO
+     sigvec(2), setjmp(3)
+
+HISTORY
+     The sigstack function call appeared in 4.2BSD and has been
+
+
+
+Printed 11/26/99	September 3, 1997			1
+
+
+
+
+
+
+SIGSTACK(2)	    UNIX Programmer's Manual	      SIGSTACK(2)
+
+
+
+     deprecated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	September 3, 1997			2
+
+
+

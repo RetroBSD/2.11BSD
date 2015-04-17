@@ -1,0 +1,1473 @@
+
+; @(#)exec.m11	1.2 3/26/82
+;this is the key to the bob bowering assembler that has been modified for
+;unix by brent byer
+;symbols for ddt have been added by forrest howard, who also fixed various
+;bugs
+	.title	exec	-  assembler exec
+
+	.ident	/01aug5/
+
+	.mcall (at)ndebug,sdebug
+	.mcall (at)jeq,jne
+	.mcall	(at)always,ct.mne,xmit,putkb,putkbl,putlp,genswt
+	.mcall	(at)genedt
+	.mcall	(at)error,scanw
+	.mcall	(at)st.flg
+	always
+	ct.mne
+	st.flg
+
+
+	.macro	strcpy	from,to ,?loop
+	mov	r0,-(sp)
+	mov	r1,-(sp)
+	mov	from,r0
+	mov	to,r1
+loop:
+	movb	(r0)+,(r1)+
+	bne	loop
+
+	mov	(sp)+,r1
+	mov	(sp)+,r0
+	.endm
+	.sbttl		assembly options
+
+;the following macro causes assembly options to be
+;printed on the loader map and any implications
+;(second argument) to be defined.  options are
+;selected by equating them to zero.
+
+	.macro	ldrmap	mne,implies
+	.if df	mne
+	.list
+	.globl	mne
+	.nlist
+	.irp	x,<implies>
+	.globl	x
+x=	0			;invoke implications
+	.endm
+	.endc
+	.endm	ldrmap
+
+
+;the following group enables functions
+
+	ldrmap	rsx11d,<dflgtb>		;rsx11d "features"
+
+	ldrmap	debug		;debug version
+	ldrmap	pdpv45		;pdp-11/45 instructions
+	ldrmap	id.spc		;i- & d-space capability for unix
+	ldrmap	dblbuf		;tran'd input
+
+;the following group disables functions
+
+	.iif df	x40&x45,	xfltg=	0
+
+	ldrmap	xbaw		;no bells and whistles
+	ldrmap	xswit,xcref	;no switches
+	ldrmap	xrel,xedpic	;abs output only
+	ldrmap	xmacro,xsml	;all generated code (macro, rept, etc.)
+	ldrmap	xsml		;system macros
+	ldrmap	x40		;pdp-11/40 features
+	ldrmap	x45		;pdp-11/45 features
+	ldrmap	xfltg,xedfpt	;floating point evaluation
+	ldrmap	xedabs		;ed.abs
+	ldrmap	xedama		;ed.ama
+	ldrmap	xedpic		;ed.pic
+	ldrmap	xedfpt		;ed.fpt
+	ldrmap	xedlsb		;ed.lsb
+	ldrmap	xedpnc		;ed.pnc
+	ldrmap	xedlc		;ed.lc
+	ldrmap	xedcdr		;card reader format
+	ldrmap	xzerr		;"z" errors
+	ldrmap	xlcttm		;no lpt listing format
+	ldrmap	xlcseq		;sequence numbers
+	ldrmap	xtime		;no time & date on header
+	.sbttl		globals
+
+;globals defined in assembler
+
+	.globl	srchi
+	.globl	prop1,	endp1,	prop2,	endp2
+	.globl	bksiz
+	.globl	symlp,	symhp
+	.globl	setlc,	seted
+	.globl	uc.set, um.set
+
+
+	.globl	pass
+
+	.globl	putkb,	putkbl,	putlp
+
+	.globl	dnc,	movbyt,	savreg,	xmit0
+
+	.globl	linbuf,	errcnt,	openo,	openc
+	.globl	chrpnt,	prosw, absexp
+
+	.globl	xctpas
+
+
+;globals defined in mcexec
+
+	.globl	pagnum,	linnum
+	.globl	inicor, iargv
+
+	.if ndf	xtime
+	.globl	dattim
+	.endc
+	.if ndf	xsml
+	.globl	finsml,	inisml,	smlnam, smlfil
+	.endc
+	.globl	getic,	hdrttl,	putoc,	getsrc
+	.globl	io.eof,	io.eoi,	io.tty,	io.err
+
+	.globl	ioftbl,	cnttbl,	buftbl,	ioltbl,	chrtbl
+	.globl	exttbl,	bintbl,	lstflg, chntbl
+	.globl	$wrsys, $wrbfp, $wrcnt, $brksy, $brkad
+
+	.globl	symovf, macovf
+
+	.globl	errrol,crfrol
+	.globl	xctprg
+errrol=	1
+	.mcall	(at)param
+
+	.globl	$creat, $open, $close, $exit, $read, $write, $sbrk
+	.globl	$seek, $gettod, $fork, $wait, $execv
+
+				;init sectors
+
+
+	entsec	implin
+	.blkw
+	xitsec
+	.sbttl	mcioch - i/o channel assignments
+
+.macro	genchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	setchn	cmo,	cmo,	cmo,	0,	,80.
+	setchn	src,	src,	src,	0,	m11,	132.
+	setchn	lst,	lst,	lst,	,	lst,	512.
+	setchn	obj,	obj,	obj,	1,	obj,	42.
+	.if ndf	xsml
+	setchn	sml,	sml,	sml,	0,	sml,	80.
+	.endc
+	.if ndf xcref
+	setchn	crf,	crf,	crf,	,	xrf,	512.
+	.endc
+.endm	genchn
+
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.if nb	<zlen>
+	param	zbuf'len,	zlen
+	.endc
+	.endm
+
+	genchn
+
+	.globl	objlen
+
+tmpcnt=	0
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+zchan'chn=	tmpcnt
+	.nlist
+	.globl	zchan'chn
+tmpcnt=	tmpcnt+2
+	.endm
+
+	genchn
+
+maxchn=	tmpcnt			;just to preserve the count
+	.macro	serror	xxx ; was: .macro serror number,message
+	mov	xxx,r0		; was:  jsr	r0,serror
+				; was: .asciz	\message\
+	jmp	serror		; new: no return
+				;.even
+	.endm	serror
+
+.macro .asclc, str
+	.nlist
+
+	.irpc x, ^%str%
+
+	.if ge ''x-101
+		.if le ''x-132
+			.byte ''x+40
+		.iff
+			.byte ''x
+		.endc
+	.iff
+	.byte ''x
+	.endc
+
+	.endm
+
+	.byte	0
+
+	.list
+.endm
+	.sbttl	start of program
+
+	.globl	start,	fin
+
+
+start:				;start of program
+	mov	(sp)+,iargc	;store arg. count
+	mov	sp,iargv	;store pointer to arg. vector
+	clr	(sp)
+	mov	#dattim,r2	;set date and time
+	sub	#8.,sp		;allocate a timeval on the stack
+	mov	sp,r0
+	clr	-(sp)		;we're not interested in the time zone
+	mov	r0,-(sp)	;pointer to allocated timeval
+	tst	-(sp)		;simulate return address stack spacing
+	$gettod
+	add	#6.,sp		;skip up to timeval
+	mov	(sp)+,r0	;snag tv_sec
+	mov	(sp)+,r1
+	cmp	(sp)+,(sp)+	;toss tv_usec
+	call	cvtim		;convert to ascii 
+
+	call	xctprg		;clean up core
+	call 	inip0		;output file processing
+	call 	inip1
+	call	prop1	;pass one
+	call 	finp1
+	call	endp1	;clean up
+	call 	inip2
+	call	prop2	;pass 2
+	call	endp2
+	call 	setdn		;finished, control not returned
+
+	mov	#objchn,r0
+	call	zwrite
+	call	zclose
+	
+	mov	#lstchn,r0	;output any remaining listing
+	call	zwrite
+	
+	.if ndf xcref
+	mov	crfpnt,r2
+	beq	9$
+	mov	#crfchn,r0
+	call	zwrite		;dump out any remaining output
+	call	zclose		;close cref tmp. file
+	mov	#lstchn,r0
+	tst	ioftbl+lstchn
+	bne	81$
+	mov	cnttbl+crfchn,cnttbl+lstchn
+				;set up to recycle (i hope)
+	inc	lstflg
+	call	openo
+81$:	mov	#lstchn,r2	;set up name of listing file in linbuf
+	call	src.ap
+	; execl("macxrf", "macxrf", "-flags", "fred.xrf", "fred.lst", 0);
+	;	meaning of flags arg:
+	;	"-"	m11 invoked with -cr only: do the standard stuff
+	;	"-am.." other letters added as extra cr flags invoked.
+	;
+	mov	#crefav,-(sp)	;cref will do the rest!!
+	mov	#crfrun,-(sp)
+	tst	-(sp)		;simulate return address stack spacing
+	$execv
+	add	#6.,sp
+
+
+	br	$$exit
+	.endc
+
+9$:	tst	lpflag		;spooler requested?
+	beq	$$exit		;no, leave
+	
+	mov	#lstchn,r0	;yes, close listing channel
+	mov	r0,r2		;copy for src.ap
+	call	zclose
+	call	src.ap		;put name of lst file into linbuf
+	mov	#lpargs,-(sp)	;take it away, LPR!
+	mov	#lprrun,-(sp)
+	tst	-(sp)		;simulate return address stack spacing
+	$execv
+	add	#6.,sp
+
+$$exit:	clr	r0		;leave r0 set corectly
+	tst	errcnt
+	beq	1$		;no problems
+	inc	r0		;return 1
+1$:
+	mov	r0,-(sp)	;that's all, folks!
+	tst	-(sp)		;simulate return address stack spacing
+	$exit
+
+
+
+	entsec	dpure
+lpargs:	lprrun
+	linbuf
+	0
+
+lprrun:	.asclc	/usr/ucb/lpr
+	.even
+
+
+
+	entsec	mixed
+
+argc:	.blkw	1
+iargc:	.blkw	1
+iargv:	.blkw	1
+argv:	.blkw	1
+symlp:	<^pl xpcor>
+symhp:	<<<^ph xpcor>+63.>&^c63.>-2
+
+	entsec	impure
+
+lstflg:	.blkw	1
+lttflg::	.blkw	1
+crfpnd:	.blkw	1
+no.flg:	.blkw	1
+u.flag::	.blkw	1		; user wants UNIX style line numbers
+lpflag:	.blkw	1
+mx.flg::	.blkw	1		; if set, do macro expansion ONLY
+xx.flg::	.blkw	1		; debug switch
+my.flg::	.blkw	1		; and also show the pre-xpnd srce lines
+sx.flg::	.blkw	1		; if set, generate more local syms syms
+pdp10::		.blkw	1		; check for model dependencies in
+					; the instruction set
+	entsec	mixed
+crefil:	.blkw	30			; name of cref file: /fred.xrf/
+crefav:	.word	crfrun
+	.word	crflag+1
+	.word	crefil
+	.word	linbuf
+	.word	0
+crflag:	.ascii	/--/
+	.blkw	5
+crap:	.word	crflag+2
+
+	xitsec
+	.sbttl	output file initialization
+
+inip0:				;initialize things
+	mov	#cmochn,r0	;set up cmo
+	call	zopen
+	mov	#1,chntbl+cmochn	;it is file handle #1
+	call	inip0z		;set up argc & argv
+1$:	dec	argc		;any more arguments?
+	blt	9$		;no, return
+	mov	argv,r0		;yes, get pointer to next arg.
+	mov	(r0)+,r1	;  into r1
+	mov	r0,argv		;store back new argv
+	tst	r1
+	beq	1$		;ignore null pointers (maybe, first one)
+	cmpb	(r1)+,#'-	;is switch indicated?
+	beq	3$		;yes
+	mov	-(r0),srcnam	;no , last name will be prefix
+	br	1$
+3$:	;here is hack for explicit name switch
+	cmpb	(r1),#'n
+	bne	33$
+	cmpb	1(r1),#'a
+	bne	33$
+	add	#3,r1		;move past na:
+	mov	r1,esrcnam
+	br	1$
+33$:	mov	#linbuf,r2	;point to dest. for switch
+	mov	r2,r3		;make copy
+	clr	(r2)+		;zap initially
+	mov	r2,chrpnt	;copy pointer here for arg.
+4$:	movb	(r1)+,r0	;get char.
+	call	mk.up		;make upper case
+	ble	55$		;null or :
+	movb	r0,(r3)+	;ok, store
+	cmp	r3,r2		;max. of 2 chars.
+	blo	4$
+5$:	movb	(r1)+,r0	;store rest of arg. in linbuf
+	call	mk.up		;check it and make upper case
+55$:	bge	6$		;neg. indicates :
+	mov	#40,r0		;replace with space
+6$:	movb	r0,(r2)+
+	bne	5$		;continue till null
+	mov	linbuf,r0	;restore switch name into r0
+7$:	call	prosw		;process the switch
+	bne	1$		;continue if no error
+8$:	serror	#swcerr
+
+9$:
+19$:	tst	srcnam		;must be at least one filename
+	beq	$$exit		;or we are just a no-op.
+	return
+
+.globl	cttbl			; defined in misc.m11
+
+mk.up:
+	bic	#^c177,r0
+	cmpb	#ct.lc,cttbl(r0)
+	bne	1$		; if lower, make upper
+	sub	#40,r0
+1$:	cmpb	#':,r0		; if input is a colon,
+	bne	2$
+	neg	r0		; return MINUS COLON !!!
+2$:	tst	r0		; else return input
+	return
+	
+	entsec	impure
+srcnam:	.blkw	1
+esrcnam: .blkw	1
+	xitsec
+	genswt	no,no.set
+no.set:	inc	no.flg		;indicate no object output
+	return
+
+	genswt	uc,uc.set	; revert to bad old DEC upper case rules
+	genswt	um,um.set	; revert to bad old Harvard upper case rules
+
+	genswt	sx,sx.set
+sx.set:	inc	sx.flg
+	return
+
+	genswt	u,u.set
+
+u.set:	inc	u.flag
+	return
+	genswt	xx,xx.set
+xx.set:	inc	xx.flg
+	return
+	genswt	mx,mx.set
+	genswt	my,my.set
+	genswt	lt,lt.set
+mx.set:	
+	call 	no.set
+	call	lt.set
+	inc	mx.flg
+	return
+my.set:
+	inc	my.flg
+	br	mx.set
+
+	genswt	10,setten
+setten:
+	inc	pdp10
+	return
+lt.set:
+	mov	#1,lttflg
+	call	ls.set
+	movb	#'o,@crap		; tell cref to go on stdout, too.
+	inc	crap
+	return
+.if	ne,mk.symbol
+	genswt	ns,ns.set
+
+ns.set:	inc	out$ym
+	return
+
+	.globl	out$ym
+.endc
+	.globl	fixtit
+	.globl	ed.gbl, eddflt
+	genswt	xs,xs.set
+xs.set:				; obsolete
+	call	absexp		; so that -xs:3 wont genrerate a 'bad switch'
+				; error.
+	return
+
+	genswt	ha,ha.set
+	genswt	de,de.set
+ha.set:
+	inc	veritas				; reinstate addf #12,3,fr1
+	mov	#harvid,vernam
+	call	um.set
+	;	harvard .psect attrib scheme uses same defaults as UCB,
+	;	but uses them wrong.  The 'veritas' flag tells when to misuse
+	;	them.  See 'psect' in xlat.m11
+	;
+	bis	#ed.gbl,eddflt
+	jmp	fixtit
+de.set:
+	call	uc.set
+	mov	#decid,vernam
+	;
+	; incomprehensible but true DEC default attribute patterns
+	;
+	mov	#insflg!pattrs,psdflt
+	mov	#insflg!cattrs,csdflt
+	mov	#insflg!aattrs,asdflt
+	bis	#ed.gbl,eddflt
+	jmp	fixtit
+
+	genswt	dp,dp.set
+	genswt	da,da.set
+	genswt	dc,dc.set
+	.globl	psdflt,asdflt,csdflt,psarol	; in xlat.m11:  .psect atribs
+
+da.set:
+	mov	#asdflt,-(sp)
+	br	dx.set
+dc.set:
+	mov	#csdflt,-(sp)
+	br	dx.set
+dp.set:
+	mov	#psdflt,-(sp)
+dx.set:
+	call	gsarg
+	beq	9$
+	scanw	psarol
+	beq	10$
+	bisb	symbol+2,@(sp)
+	bicb	symbol+3,@(sp)
+	br	dx.set
+10$:	error	45,a,<illegal .psect attribute>
+9$:
+	tst	(sp)+
+	return
+
+	genswt	ls,ls.set
+	genswt	lp,lp.set
+
+lp.set:	inc	lpflag		;note spooler request
+	movb	#'l,@crap
+	inc	crap
+ls.set:	inc	lstflg		;note lst file req.
+	mov	#lstchn,r2	;set up to add buffer for lstchn
+addbuf:	mov	symlp,r0	;get cur. free loc.
+	mov	r0,cnttbl(r2)	;that's where our byte count will go
+	tst	(r0)+		;now point to our buffer
+	mov	r0,buftbl(r2)
+	add	ioltbl(r2),r0	;allow for length of buffer
+	mov	r0,symlp	;new free loc.
+
+	return
+
+.if ndf xcref
+	genswt	cr,cr.set
+	genedt	crf
+	.globl	ed.crf,edmask,gsarg,cpopj
+cr.set:	
+	tst	crfpnd
+	bne	2$
+	inc	crfpnd		;note pending cref
+	bis	#ed.crf,edmask	; so .enabl/.dsabl crf will work.
+1$:
+	call	gsarg
+	beq	3$
+	scanw	crfrol
+	beq	9$
+	movb	symbol+4,@crap
+	inc	crap
+	br	1$
+3$:
+	mov	#crfchn,r2	;set up buffer for it
+	jmp	addbuf
+
+9$:
+	error	55,a, <illegal cref argument>
+2$:
+	return
+
+	.macro	gencrf	name,char
+	entsec	crfsec
+	.even
+	.rad50	/name/
+	.word	cpopj
+	.word	char
+	.endm
+	gencrf	s,'s
+	gencrf	sy,'s
+	gencrf	sym,'s
+	gencrf	r,'r
+	gencrf	re,'r
+	gencrf	reg,'r
+	gencrf	m,'m
+	gencrf	ma,'m
+	gencrf	mac,'m
+	gencrf	p,'p
+	gencrf	pe,'p
+	gencrf	per,'p
+	gencrf	pst,'p
+	gencrf	c,'c
+	gencrf	cs,'c
+	gencrf	cse,'c
+	gencrf	sec,'c
+	gencrf	pse,'c
+	gencrf	e,'e
+	gencrf	er,'e
+	gencrf	err,'e
+
+	xitsec
+
+.endc
+	.sbttl	pass initialization
+
+inip1:			;init for pass 1
+	mov	#lstchn,r0
+	call	openo
+	call	srchi		;init the symbol table & rolls
+	br	inip2f		;set source for pass
+
+inip2:				;init for pass 2
+	inc	pass
+	tst	crfpnd
+	beq	inip2f
+	call	crfset
+inip2f:	call	setlc
+	.globl	mx.2 , mdepth
+	.globl	mac.er
+	clr	mx.2
+	clr	mdepth
+	call	seted
+inip0z:	mov	iargv,argv	;init count & pointer to args.
+	mov	iargc,argc
+	dec	argc
+	add	#2,argv
+	return
+	.sbttl	end of pass routines
+
+finp1:				;finish of pass
+	mov	#srcchn,r0
+	call	zclose
+	return
+
+
+
+openo:				;open output file
+	call	savreg
+	mov	r0,r2		;copy r0 (chn. #)
+	cmp	r0,#lstchn	;is it list channel?
+	bne	1$		;no
+	tst	lttflg		; <<< REEDS june 1981
+	beq	100$		; <<<
+	mov	#1,r0		; <<< use standard output if -lt flag in use
+	br	7$		; <<<
+100$:
+	tst	lstflg		;yes, is listing enabled (-ls) ?
+	beq	9$		;no, ignore
+1$:	cmp	r0,#objchn	;is this object channel?
+	bne	11$		;no
+	tst	no.flg		;were we told to withhold obj. o/p ?
+	bne	9$		;yes, ignore
+11$:	call	src.ap		;set up name in linbuf
+	mov	#linbuf,$crtnm	;  and pointer to name
+2$:	mov	$crtmd,-(sp)
+	mov	$crtnm,-(sp)
+	tst	-(sp)
+	$creat
+	bcs	99$
+	add	#6.,sp
+	br	7$
+99$:
+	add	#6.,sp
+	mov	#linbuf,r1	;no good, complain
+3$:	tstb	(r1)+		;find end of filename
+	bne	3$
+	dec	r1		;back up over null
+	mov	#ncmsg,r0	;append rest of msg.
+4$:	movb	(r0)+,(r1)+
+	bne	4$
+	putkb	#linbuf
+	return
+
+7$:	mov	r0,chntbl(r2)	;store file handle
+	mov	r2,r0		;restore r0 with chn. #
+	call	zopen
+9$:	return
+src.fp:
+	mov	srcnam,r1	;transfer file name from src prefix
+	tst	esrcnam
+	beq 1$
+	mov	esrcnam,r1
+1$:
+	mov	#linbuf,r0	;and store in linbuf
+nam.fp:	clr	-(sp)		;clear "." flag
+2$:	movb	(r1)+,(r0)+	;transfer a byte
+	beq	4$		;move on if done
+	cmpb	-1(r0),#'.	;not null, was it a "." ?
+	beq	3$		;yes, set flag and cont.
+	cmpb	-1(r0),#'/	;no, was it / ?
+	bne	2$		;no, continue
+	clr	(sp)		;yes, clear flag
+	br	2$		;continue
+3$:	mov	r0,(sp)		;flag with adr. past period.
+	br	2$
+4$:	mov	r0,r1		;copy adr. past terminating null
+	mov	(sp)+,r0	;restore period flag (adr.)
+	bne	5$		;if set, move on
+	mov	r1,r0		;use this adr.
+5$:	dec	r0		;back up pointer to null or period.
+	return
+
+nam.ap:	call	nam.fp		;move to period
+	br	ap.ext
+
+src.ap:	call	src.fp		;find period.
+				; and plop appropriate ext. in
+
+ap.ext:	tstb	(r0)+		;period here?
+	bne	1$		;yes, assuming non-null is a period
+	movb	#'.,-1(r0)	;no, put one in
+1$:	mov	exttbl(r2),r1	;get pointer to ext.
+2$:	movb	(r1)+,(r0)+	;store the ext. at end of name
+	bne	2$
+7$:	return
+	.sbttl	end of program cleanup
+
+setdn:				;clean up
+	mov	#finmsg,r1	;set for final message
+	mov	#linbuf,r2
+	call	movbyt		;move into linbuf
+	mov	errcnt,r1
+; ***	beq	1$		;don't bother if successful
+	call	dnc		;print in decimal
+	clrb	(r2)
+
+	tst	mx.flg
+	bne	1$
+	tst	lttflg		; <<< REEDS june 81
+	beq	100$		; <<< REEDS june 81
+	putlp	#linbuf		; <<< REEDS june 81
+	br	1$		; <<< REEDS june 81
+100$:	putkbl	#linbuf		;list to kb & lp
+
+1$:	return
+serror:				;"s" error
+	call	putkb
+	call	mac.er			;maybe caused by macro explosion
+	mov	#1,r0
+	mov	r0,-(sp)
+	tst	-(sp)			;simulate return address stack spacing
+	$exit
+
+; symovf:	serror	217,<symbol table overflow>
+symovf:
+		serror	#symerr
+macovf:		call	mac.er
+		serror	#macerr		; no return: exit sys call
+
+getic:				;get input character
+	dec	@cnttbl(r0)	;any chars left in line?
+	blt	4$		;  no
+	clr	r5
+	bisb	@chrtbl(r0),r5	;yes, fetch next
+	inc	chrtbl(r0)	;bump count
+	return
+
+4$:	tst	ioftbl(r0)	;file initted?
+	beq	5$		;no, do so
+	call	zread		;read and wait
+	mov	ioftbl(r0),r5	;get condition flags
+	bic	#^c<io.eof!io.err>,r5	;clear extraneous
+	beq	getic		;branch if nothing special
+	bit	#io.eof,r5
+	beq	9$		;  error, exit
+	mov	#io.eoi,r5	;in case not source
+	cmp	r0,#srcchn	;is it src.?
+	bne	9$		;no
+5$:	call	getsrc		;open next source file
+	mov	#io.eoi,r5	;in case unsuccessful
+	tst	ioftbl+srcchn	;winner?
+	beq	9$		;no
+	mov	#io.eof,r5	;set end-of-file
+9$:	bis	#100000,r5	;set flag bit
+	return
+
+	.globl	err.by		; array holds file name for error printer
+getsrc:
+	clrb	err.by
+	clr	fileln		; start unix line numbers over
+	mov	#srcchn,r0	;use source chn.
+	mov	r0,-(sp)
+	mov	r1,-(sp)
+	mov	r2,-(sp)
+	mov	r0,r2		;copy chn. #
+	call	zclose		;close current source input
+1$:	dec	argc		;any left?
+	blt	7$		;no
+	mov	argv,r0		;point to next arg.
+	mov	(r0)+,r1
+	mov	r0,argv
+	tst	r1		;ignore null pointer
+	beq	1$
+	cmpb	(r1),#'-	;switch?
+	beq	1$		;yes, ignore
+	mov	buftbl+srcchn,r0	;point to dest. of name
+	mov	r0,$opnnm	;set up pointer to name
+	call	nam.fp		;transfer name & find period.
+	clr	-(sp)		;clear retry indicator
+	tstb	(r0)		;was ext. specified?
+	bne	13$		;yes, try it as is
+	mov	r0,(sp)		;no, save adr. of null
+	call	ap.ext		;append default ext.
+13$:	clr	$opnmd		;set up mode as "read"
+	mov	$opnmd,-(sp)
+	mov	$opnnm,-(sp)
+	tst	-(sp)		;simulate return address stack spacing
+	$open
+	bcs	99$		;if ok, move on
+	add	#6.,sp
+	br	3$
+99$:
+	add	#6,sp
+	tst	(sp)		;prepared to retry w/o ext.?
+	beq	14$		;no, not found!
+	clrb	@(sp)		;yes, remove ext.
+	clr	(sp)		;just one retry
+	br	13$
+14$:	mov	#linbuf,r1	;store msg. in buffer
+	mov	$opnnm,r0
+15$:	movb	(r0)+,(r1)+
+	bne	15$		;store file name
+	dec	r1		;back up pointer
+	mov	#nfmsg,r0
+2$:	movb	(r0)+,(r1)+
+	bne	2$
+	putkb	#linbuf
+	mov	#1,-(sp)	;indicate error status
+	tst	-(sp)		;and die
+	$exit
+
+3$:	mov	r0,chntbl+srcchn	;store file handle.
+	bis	#io.opn,ioftbl+srcchn	;denote open
+	clr	@cnttbl+srcchn	;beware of dos "feature"
+	tst	(sp)+		;flush retry indicator
+	mov	$opnnm,r1
+	mov	#err.by,r2
+	call	movbyt
+	clrb	(r2)
+4$:	mov	argc,r0		;get arg. count
+	mov	argv,r1		;and vector ptr.
+5$:	dec	r0		;any left?
+	blt	7$		;no
+	cmpb	@(r1)+,#'-	;yes, but is it switch?
+	beq	5$		;yes
+	clr	r5		;no, note another file to go
+6$:
+10$:	mov	(sp)+,r2
+	mov	(sp)+,r1
+	mov	(sp)+,r0
+	return
+7$:	mov	sp,r5		;note no more files
+	br	6$
+
+putoc:	cmp	@cnttbl(r0),ioltbl(r0)	;any room left?
+	bge	5$		;no
+	movb	r1,@chrtbl(r0)	;yes
+	inc	chrtbl(r0)
+	inc	@cnttbl(r0)
+4$:	return
+5$:	bit	#io.opn,ioftbl(r0)	;open?
+	beq	4$		;no, return
+	call	zwrite		;yes, dump buffer
+	br	putoc		;try again
+	.sbttl	system macro handlers
+
+	.if ndf	xsml
+
+inisml:				;init sml file
+	mov	#smlchn,r0	;open 'er up
+	tst	ioftbl(r0)
+	bne	finsml
+	call	zopen
+	mov	smlnam,r1	;get pointer to name prefix
+	mov	#smlfil,r0	;point to destination of complete string
+	mov	r0,$opnnm	;make copy for system call
+	mov	#smlchn,r2	;set up channel #
+	call	nam.fp		;transfer name to smlfil & find period.
+	tstb	(r0)		;ext. specified?
+	bne	1$		;yes
+	call	ap.ext		;no, supply default
+1$:	clr	$opnmd		;for reading
+	mov	$opnmd,-(sp)
+	mov	$opnnm,-(sp)
+	tst	-(sp)
+	$open
+	bcc	99$
+	add	#6.,sp
+	br	finsml
+99$:
+	add	#6.,sp
+	mov	r0,chntbl+smlchn
+	mov	sp,r0		;flag good (non-zero) return
+	return
+
+finsml:				;close out sml file
+	mov	#smlchn,r0	;  and release it
+	call	zrlse
+	clr	r0		;signal that we're through
+	return
+
+
+	.data
+.globl	veritas
+veritas:	.blkw				; harvard retrocomat in effect
+;
+
+	entsec	impure
+
+smlnam:	.blkw	1
+smlfil:	.blkw	20		;macro filename (.sml) goes here
+
+	xitsec
+
+	.endc
+	.sbttl	init/read/write routines
+
+	.globl	zread,	zwrite
+
+zinit:				;init a device
+	bis	#io.ini,ioftbl(r0)	;flag as in use
+	return
+
+zopen:	bis	#io.opn,ioftbl(r0)
+	mov	buftbl(r0),chrtbl(r0)
+	clr	@cnttbl(r0)
+	return
+
+zread:				;read a line
+	mov	r0,-(sp)
+	mov	r1,-(sp)
+	mov	r0,r1
+	mov	buftbl(r0),$rdbfp
+	mov	ioltbl(r0),$rdcnt
+	mov	buftbl(r0),chrtbl(r0)
+	mov	$rdcnt,-(sp)
+	mov	$rdbfp,-(sp)
+	mov	chntbl(r0),-(sp);get file handle
+	tst	-(sp)
+	$read
+	bcs	99$
+	add	#8.,sp
+	br	1$
+99$:
+	add	#8.,sp
+	bis	#io.err,ioftbl(r1)
+	br	8$
+1$:	mov	r0,@cnttbl(r1)	;store count of chars. read
+	bne	8$
+	bis	#io.eof,ioftbl(r1)	;eof if none
+8$:
+	mov	(sp)+,r1
+	mov	(sp)+,r0
+	return
+zwrite:				;write a line
+	mov	r0,-(sp)
+	mov	r1,-(sp)
+	mov	r2,-(sp)
+	mov	r0,r2
+	bit	#io.opn,ioftbl(r0)	;only if open
+	beq	9$
+	mov	buftbl(r0),r1
+	mov	@cnttbl(r0),r0
+	beq	4$		;and non-zero count
+	tst	bintbl(r2)	;binary?
+	ble	59$		;  no
+	mov	r2,-(sp)
+	add	#4,r0
+	mov	r0,-(r1)
+	mov	#1,-(r1)
+	mov	r0,-(sp)
+	add	r1,r0
+	clr	-(sp)
+51$:	movb	(r1)+,r2
+	add	r2,(sp)
+	cmp	r1,r0
+	blo	51$
+	neg	(sp)
+	movb	(sp)+,(r1)
+	clrb	1(r1)
+	mov	(sp)+,r0
+	sub	r0,r1
+	bis	#1,r0
+	inc	r0
+	mov	(sp)+,r2
+59$:	mov	r0,$wrcnt	;store byte count
+	mov	r1,$wrbfp	;and buffer adr.
+	mov	$wrcnt,-(sp)
+	mov	$wrbfp,-(sp)
+	mov	chntbl(r2),-(sp);get file handle
+	tst	-(sp)
+	$write
+	bcs	99$
+	add	#8.,sp
+	br	4$
+99$:
+	add	#8.,sp
+	bis	#io.err,ioftbl(r2)	;error
+4$:	clr	@cnttbl(r2)	;clear count initially
+	mov	buftbl(r2),chrtbl(r2)	;point to beg. of buffer
+9$:	mov	(sp)+,r2
+	mov	(sp)+,r1
+	mov	(sp)+,r0
+	return
+zclose:				;close file
+	bit	#io.opn,ioftbl(r0)	;is file open?
+	beq	1$		;no
+	mov	r0,-(sp)	;yes, save r0
+	mov	chntbl(r0),-(sp) ;get file handle
+	tst	-(sp)		;close
+	$close
+	cmp	(sp)+,(sp)+
+	mov	(sp)+,r0
+	clr	ioftbl(r0)
+	clr	@cnttbl(r0)
+1$:	return
+
+zrlse:				;close and release file
+	call	zclose		;be sure it's closed
+	clr	ioftbl(r0)	;clear device table
+	return
+	.sbttl	messages
+
+	entsec	imppas
+pagnum:	.blkw			;page number
+linnum:	.blkw	2		;line number
+fileln::	.blkw	1		; true line number in file
+	entsec	mixed
+
+
+	.if ndf	xtime
+dattim:	.ascii	/00-xxx-00 /
+datti1:	.ascii	/00:00/
+datti2:	.ascii	/:00/
+	.even
+	.endc
+
+	entsec	dpure
+
+;endp1m:	.asciz	/end of pass/
+macerr:	.asciz	/macro text overflow/
+symerr:	.asciz	/symbol table overflow/
+swcerr:	.asciz	/bad switch/
+finmsg:	.asciz	/errors detected:  /
+
+nfmsg:	.asciz	/ not found/
+ncmsg:	.asciz	/ - can't create/
+
+	.even
+
+	entsec	mixed
+vernam::	1$		; addr of default logo
+1$:	.asciz	/UCB m11 v1.2 /
+harvid:	.asciz	/Harvard m11 /
+decid:	.asciz	/DEC Macro-11 /
+	.even
+
+	xitsec
+	.sbttl	i/o tables
+
+	.list	meb
+				;i/o flags
+io.ini=	000001			;initted
+io.opn=	000002			;opened
+io.tty=	000004			;device is tty
+io.eof=	000010			;eof seen
+io.err=	000020			;error encountered
+io.eoi=	000040			;end of input
+io.out=	100000			;output device
+
+	entsec	impure
+ioftbl:	.blkw	maxchn/2	;i/o flag table
+
+	entsec	dpure
+ioltbl:				;i/o length table
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.word	zbuf'len
+	.nlist
+	.endm
+	genchn
+
+	.list
+
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.if nb zext
+zchan'ext:	.asclc	zext
+	.endc
+	.nlist
+	.endm
+
+	genchn
+
+	.even
+nulext:	.word	0
+
+
+	entsec	mixed
+exttbl:
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.if nb zext
+	.word	zchan'ext
+	.iff
+	.word	nulext
+	.endc
+	.nlist
+	.endm
+
+	genchn
+	entsec	mixed
+cnttbl:				;pointer to counts
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.if nb ztype
+	.word	zbuf'buf-2
+	.iff
+	.word	0
+	.endc
+	.nlist
+	.endm
+	genchn
+
+
+buftbl:				;pointers to buffers
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.if nb ztype
+	.word	zbuf'buf
+	.iff
+	.word	0
+	.endc
+	.nlist
+	.endm
+	genchn
+
+	entsec	impure
+chrtbl:				;char pointer table
+	.blkw	maxchn/2
+
+
+chntbl:			;channel <--> file handle table
+	.blkw	maxchn/2
+
+	entsec	mixed
+
+bintbl:
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.list
+	.if nb ztype
+	.word	ztype
+	.iff
+	.word	0
+	.endc
+	.nlist
+	.endm
+
+	genchn
+	.macro	setchn	zchan,zlnk,zbuf,ztype,zext,zlen
+	.if nb	<ztype>
+	entsec	impure
+	.list
+
+	.blkw	3
+zbuf'buf:	.blkw	<zbuf'len+1>/2+2
+	.nlist
+	.endc
+	.endm
+
+	genchn
+
+
+	entsec	mixed
+$wrbfp:	.blkw	1
+$wrcnt:	.blkw	1
+
+$rdbfp:	.blkw	1
+$rdcnt:	.blkw	1
+
+$crtnm:	.blkw	1
+$crtmd:	.word	0644
+
+
+$opnnm:	.blkw	1
+$opnmd:	.blkw	1
+
+$brkad:	.blkw	1
+
+	xitsec
+	.sbttl	cross reference handlers
+
+	.if ndf	xcref
+
+crfset:				;cref switch processor
+	tst	pass
+	beq	9$
+	mov	#crfchn,r0
+	call	openo
+	bit	#io.opn,ioftbl+crfchn	;successful?
+	beq	9$		;no
+	strcpy	#linbuf,#crefil
+	mov	sp,crfpnt	;yes, flag non-null
+9$:	return
+	.globl	crfdef,	crfref,	rolndx,	r50unp
+
+	.nlist	meb
+	.if df	xcref
+crfref:	crfdef:	return
+	.iff
+
+	.globl	symbol
+
+crfdef:	inc	crfdfl		;cref definition
+crfref:	tst	crfpnt		;any cref output at this time?
+	jeq	9$		;  no
+	tst	pass
+	jeq	9$		; experiment
+	tst	pagnum		;started yet?
+	jeq	9$		;  no, forget it
+	bit	#ed.crf,edmask	; cref might be turned off for a while
+	jeq	9$
+	call	savreg
+1$:	cmp	crfpag,pagnum	;new page?
+	bhis	2$		;  no
+	mov	#cr.pag,r1	;yes, send flag
+	call	putxrf
+	inc	crfpag
+	clr	crflin
+	br	1$
+
+2$:	cmp	crflin,linnum	;new line number?
+	bhis	3$		;  no
+	mov	#cr.lin,r1
+	call	putxrf
+	inc	crflin
+	br	2$
+
+3$:	tst	symbol		;ignore null symbols
+	jeq	8$
+	mov	#crftyp,r1
+4$:	
+	cmpb	rolndx,(r1)+	;map roll number to cref type
+	bne	4$
+	sub	#crftyp+1-cr.sym,r1
+	call	tstreg
+	tst	xxxreg
+	beq	44$
+	movb	#25,r1
+44$:
+	clr	xxxreg
+	call	putxrf
+	mov	#crfsym,r2	;point to where symbol gets unpacked to
+	call	r50unp		;unpack the symbol
+	mov	#crfsym,r2	;point to beginning of unpacked symbol
+5$:	movb	(r2)+,r1	;get symbol char.
+	cmpb	r1,#space	;space is end
+	beq	55$
+	call	putxrf		;non-space - output it
+	cmp	r2,#crfsym+6	;max. of 6 chars.
+	blo	5$
+55$:	mov	crfdfl,r1	;set "#" bit
+	tstb	opclas
+	bpl	6$		;branch if no "*"
+	bis	#2,r1
+6$:	bis	#cr.sym,r1	;set terminator
+	call	putxrf		;send it
+	call	ckvtc		;see if vt needed
+8$:
+9$:	clr	crfdfl
+	return
+
+tstreg:
+	clr	xxxreg
+	call	savreg
+	cmp	rolndx,#symrol
+	bne	1$
+	mov	#regrol,r4
+	mov	<^pl rolbas>(r4),r3
+	mov	<^pl roltop>(r4),r1
+	movb	<^pl rolsiz>(r4),r2
+4$:
+	cmp	r3,r1
+	bge	1$
+	cmp	(r3),symbol
+	bne	2$
+	cmp	2(r3),symbol+2
+	bne	2$
+	inc	xxxreg
+	br	1$
+2$:
+	add	r2,r3
+	br	4$
+1$:
+	return
+
+putxrf:	dec	vtcnt
+	mov	#crfchn,r0	;reset channel #
+	tst	r1
+	jne	putoc
+	return
+	;jmp	putoc
+
+vtini=100.
+
+ckvtc:	tst	vtcnt
+	bmi	1$
+	return
+1$:	mov	#vtini,vtcnt
+	mov	#vt,r1
+	mov	#crfchn,r0	;reset channel #
+	tst	r1
+	jne	putoc
+	return
+	;jmp	putoc
+	entsec	impure
+crfsym:	.blkw	3
+vtcnt:	.blkw
+crfflg:	.blkw
+crfpnt:	.blkw
+xxxreg::	.blkw
+
+
+
+	.globl	opclas,	errrol
+
+cr.ver=	001+<001*400>		;type 1, version #1
+cr.pag=	002			;new page
+cr.lin=	003			;new line
+cr.sym=	020			;symbol
+
+errrol=	1			;dummy roll
+
+	entsec	impure
+crfver:	.blkw			;version flag
+crfpag:	.blkw
+crflin:	.blkw
+
+	entsec	implin
+crfdfl:	.blkw			; "#" and "*" flags
+
+	entsec	dpure
+crftyp:
+	.irp	x,<sym,mac,pst,sec,err,reg>
+	.iif ndf x'rol, .globl  x'rol
+	.byte	x'rol
+	.endm
+	.even
+
+crfrun:	.asclc	/usr/new/macxrf
+	.even
+	xitsec
+
+	.endc
+.if ndf xtime
+
+	.globl	dnc, movbyt
+
+;called with:
+;	r0 - high-order word of 32-bit # seconds past 1jan70 gmt
+;	r1 - low-order word
+;	r2 - destination adr. of ascii (19 bytes)
+
+	gmtsec = $timdf*3600.
+
+
+cvtim::
+	sub	#gmtsec,r1	;adjust for deviation
+	sbc	r0
+	div	#8.*3600.,r0	;form # 8-hour units
+	mov	r1,-(sp)	;save remaining hours, minutes & seconds
+	mov	r0,r1		;now form days
+	clr	r0
+	div	#3,r0
+	ash	#3,r1		;and hours
+	mov	r1,-(sp)	;saving hours
+	movb	#-1.,nmonth	;begin month ticker
+	mov	#69.,nyear	;epoch starts in 1970
+1$:	incb	nyear
+	jsr	pc,yearl	;returns length of that year in r1
+	sub	r1,r0
+	bpl	1$
+	add	r1,r0
+	mov	#28.,$feb
+	cmp	r1,#366.	;is this leap year?
+	bne	21$
+	inc	$feb		;yes
+21$:	mov	#montab,r1
+4$:	incb	nmonth
+	sub	(r1)+,r0
+	bpl	4$
+	add	-(r1),r0
+	inc	r0		;form day of month
+	mov	r0,r1		;put # days into r1 for conversion
+	call	dnc
+	movb	#'-,(r2)+	;store dash
+	movb	nmonth,r1
+	asl	r1		;form offset into asciz table
+	asl	r1
+	add	#mo.tab,r1	;form adr. of string
+	call	movbyt
+	movb	#'-,(r2)+
+	mov	nyear,r1	;print out year modulo 100
+	call	dnc
+	movb	#40,(r2)+
+	mov	(sp)+,r0	;get partial hours
+	mov	(sp)+,r1	;get initial remainder
+	mov	r0,-(sp)	;save
+	clr	r0		;form hours
+	div	#3600.,r0
+	add	(sp)+,r0
+	mov	r1,-(sp)	;save # seconds
+	mov	r0,r1		;set up for conversion
+	cmp	r1,#10.
+	bge	6$
+	movb	#'0,(r2)+
+6$:	call	dnc
+	movb	#':,(r2)+
+	mov	(sp)+,r1	;restore # seconds
+	clr	r0
+	div	#60.,r0		;form # minutes
+	mov	r0,r1
+	cmp	r1,#10.
+	bge	7$
+	movb	#'0,(r2)+
+7$:	call	dnc
+	clrb	(r2)+
+	rts	pc
+yearl:	mov	#365.,r1
+	bit	#3,nyear
+	bne	8$
+	inc	r1
+8$:	rts	pc
+
+
+
+entsec	dpure
+
+mo.tab:	.asciz	/jan/
+	.asciz	/feb/
+	.asciz	/mar/
+	.asciz	/apr/
+	.asciz	/may/
+	.asciz	/jun/
+	.asciz	/jul/
+	.asciz	/aug/
+	.asciz	/sep/
+	.asciz	/oct/
+	.asciz	/nov/
+	.asciz	/dec/
+
+entsec	mixed
+
+montab:	31.
+$feb:	28.
+	31.
+	30.
+	31.
+	30.
+	31.
+	31.
+	30.
+	31.
+	30.
+	31.
+
+
+entsec	impure
+.even
+nyear:	.blkw
+nmonth:	.blkb
+.even
+
+xitsec
+
+.endc
+
+	.end	start

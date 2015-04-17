@@ -1,0 +1,66 @@
+
+
+
+SWAPON(8)	    UNIX Programmer's Manual		SWAPON(8)
+
+
+
+NAME
+     swapon - specify additional device for paging and swapping
+
+SYNOPSIS
+     swapon -a
+     swapon name ...
+
+DESCRIPTION
+     _S_w_a_p_o_n is used to specify additional devices on which paging
+     and swapping are to take place.  The system begins by swap-
+     ping and paging on only a single device so that only one
+     disk is required at bootstrap time.  Calls to _s_w_a_p_o_n nor-
+     mally occur in the system multi-user initialization file
+     /_e_t_c/_r_c making all swap devices available, so that the pag-
+     ing and swapping activity is interleaved across several dev-
+     ices.
+
+     Normally, the -a argument is given, causing all devices
+     marked as ``sw'' swap devices in /etc/fstab to be made
+     available.
+
+     The second form gives individual block devices as given in
+     the system swap configuration table.  The call makes only
+     this space available to the system for swap allocation.
+
+SEE ALSO
+     swapon(2), init(8)
+
+FILES
+     /dev/[ru][pk]?b	 normal paging devices
+
+BUGS
+     There is no way to stop paging and swapping on a device.  It
+     is therefore not possible to make use of devices which may
+     be dismounted during system operation.
+
+     swapon is not implemented in 2.11BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 17, 1996			1
+
+
+

@@ -1,0 +1,56 @@
+From wucs!root Sat Mar  8 07:50:44 1986
+Date: Fri, 7 Mar 86 14:53:51 est
+From: adiron!root (AdironVax)
+To: wucs!seismo!keith
+Subject: ht.c
+
+Keith - after some studying of  the driver I think we have found the
+problem.  The minor device numbers in the /dev/MAKE script are incorrect
+and cause the wrong unit to be selected.  The driver seems to be working
+fine.  However it is noted in the source that ht.c only supports one
+controller.  Therfore it looks like one should never set NHT to be > 1.
+The MAKE script does the following:
+
+		WRONG		RIGHT
+name	major	minor		minor
+mt0	9	0		0		unit0
+mt1	9	64		64		unit0
+mt2	9	2		1		unit1
+mt3	9	66		65		unit1
+
+nmt0	9	128		128		unit0
+nmt1	9	192		192		unit0
+nmt2	9	130		129		unit1
+nmt3	9	194		193		unit1
+
+.. and similar permutations for rmt_ and nrmt_ (major = 17).
+
+The change to MAKE seems simple enough: 
+ht*|ut*)
+	umask 0 ; unit=`expr $i : '..\(.*\)'`
+	case $i in
+	ut*) blk=3; chr=12;;
+	ht*) blk=9; chr=17;;
+	esac
+	case $unit in
+	0|1|2|3|4|5|6|7)
+		name=`expr $unit '*' 2` ; one=`expr $name + 1`
+		norew=`expr $unit + 128` ; hidens=`expr $unit + 64`
+		norewhidens=`expr $unit + 192`
+		mknod mt$name	b $blk $unit
+		mknod mt$one	b $blk $hidens
+		mknod nmt$name	b $blk $norew
+		mknod nmt$one	b $blk $norewhidens
+		mknod rmt$name	c $chr $unit
+		mknod rmt$one	c $chr $hidens
+		mknod nrmt$name	c $chr $norew
+		mknod nrmt$one	c $chr $norewhidens
+		umask 77
+		;;
+	*)
+		echo bad unit for tape in: $1
+		;;
+	esac
+	;;
+
+It is nice to be sending you a fix for a change - tish

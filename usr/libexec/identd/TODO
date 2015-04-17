@@ -1,0 +1,25 @@
+* Use the output from "uname -s" to auto-select the target in the Makefile.
+
+* Write more ./READMEs/README.* files
+
+* Implement more test programs in ./testdir
+
+* Long and short command options.
+
+* Implement a config file (/etc/identd.conf).
+
+* Implement some way for an external program to register indirect
+  pointers. For example a TCP/IP relaying daemon might wanna do this.
+  So that the <Identifier> returned will look something like:
+
+      42 , 4711 : USERID : OTHER : foo (fubar.su!bar)
+
+  or:
+
+      42 , 4711 : USERID : OTHER : foo (this.host.se!foo (fubar.su!bar))
+
+  Probably should be implemented using a UNIX domain socket with access
+  control.
+
+* Implement some way to encrypt <Identifiers>.
+

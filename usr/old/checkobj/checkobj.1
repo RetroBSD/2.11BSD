@@ -1,0 +1,56 @@
+.TH CHECKOBJ 1
+.UC
+.SH NAME
+checkobj \- check an object file to see whether it can be executed
+.SH SYNTAX
+.B checkobj
+[
+.B \-s
+]
+[
+.B \-f
+]
+[
+.B \-40
+]
+[ file ... ]
+.SH DESCRIPTION
+.I Checkobj
+attempts to determine whether the named files are valid executable
+binary files.
+It checks for size restrictions, including those due to the granularity
+of memory management on the PDP11.
+It is especially useful for overlaid object files, where there are
+a number of constraints.
+If a file is too large or improperly laid out,
+.I checkobj
+attempts to point out format changes that would allow the program to run.
+.SH OPTIONS
+Several options control the checks:
+.TP
+.B \-\^s
+Check for the use of separate I/D.
+If the file is separate executable, an error is flagged,
+and an appropriate way to load for a nonseparate machine is suggested
+if possible.
+.TP
+.B \-\^f
+Check for the use of floating point arithmetic without inclusion of
+the floating-point interpreter.
+.TP
+.B \-\^40
+Combine the
+.B \-s
+and
+.B \-f
+options, to check for suitability for an 11/40-class PDP11.
+.SH BUGS
+The test for floating point is simple-minded.
+It is based on the definition of ``fltused'' by the C compiler
+and ``fptrap'' in the floating-point simulator.
+This test does not work if the object has been stripped.
+.SH DIAGNOSTICS
+The exit status is 0 if all named files are runnable with the
+specified options, nonzero otherwise.
+.SH AUTHOR
+Mike Karels, University of California, Berkeley

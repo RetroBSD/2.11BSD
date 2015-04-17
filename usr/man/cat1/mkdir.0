@@ -1,0 +1,66 @@
+
+
+
+MKDIR(1)	    UNIX Programmer's Manual		 MKDIR(1)
+
+
+
+NAME
+     mkdir - make directories
+
+SYNOPSIS
+     mkdir [ -p directory_name ... ]
+
+DESCRIPTION
+     Mkdir creates the directories named as operands, in the
+     order specified, using mode 0777 modified by the current
+     umask(2).
+
+     The options are as follows:
+
+     -p   Create intermediate directories as required.	If this
+	  option is not specified, the full path prefix of each
+	  operand must already exist.
+
+     The user must have write permission in the parent directory.
+
+     Mkdir exits 0 if successful, and >0 if an error occurred.
+
+SEE ALSO
+     rmdir(1)
+
+STANDARDS
+     Mkdir is POSIX 1003.2 compliant.  This manual page is
+     derived from the POSIX 1003.2 manual page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 16, 1993			1
+
+
+

@@ -1,0 +1,60 @@
+Updated 1997/2/14
+
+	This directory contains prototypes of the files necessary to remaking
+the kernel.  The kernel is not compiled or loaded in this directory, but in
+individual directories per machine.  To set up a directory for a new machine,
+copy the file GENERIC to a file with the same name as the machine, and edit it
+to describe the desired kernel and the machine's hardware configuration.  Then,
+run the script "./config", giving it the file name as an argument.  Config
+will create a directory ../machinename and will copy or create the necessary
+files in it.
+	When creating a GENERIC system remember to copy /sys/pdpdist/dtab
+to /etc/dtab before creating the dump(8) of the root filesystem.  This is
+so 'autoconfig' will find the tape and disc devices when the GENERIC kernel
+is booted.
+	You will probably need to change the overlay definitions in the
+Makefile, if you are going to run an overlaid kernel, but most of the work
+of configuring a system will be done.
+	OVERLAY notes: Almost none of the CONF modules can be placed in 
+overlays.  In general assembly language modules (source files ending in .s) 
+may not be placed in overlays because they do not observe the overlay calling 
+sequence used by the .c modules.  Other than that restriction modules may 
+be placed in overlays in any order subject to the size constraints mentioned
+below.  It is a good idea to attempt to group modules which call each other
+in the same overlay when possible, this saves overlay switching overhead.
+It is a very good idea to keep the frequently/constantly called modules
+(such as ufs_namei.o or tty.o) in the BASE segment.  If the system has
+a large amount of memory and swapping does not occur often then the swap
+(vm_swap.o, etc) modules are good candidates for being placed in overlays.
+Maximum size of the BASE is 56kb, maximum size of each overlay segment
+is 8kb - the 'checksys' program will warn of segments (root/base, overlays 
+and data) which are too large.  There is a limit of 15 overlays at present, 
+however there is a lower limit on the size of a kernel which may be loaded.  
+/boot can not deal with kernels larger than about 192kb (sum of text and data)
+because that is where /boot relocates himself to while loading /unix.  See
+the comments in /sys/pdpstand/M.s for more information and a workaround
+(which will not work with the 3Com ethernet board installed in the system).
+	There is one possible problem that you need to be aware of.  Running
+the shell script config generates the file localopts.h in the system include
+files directory, "../h".  If you change your configuration, config will
+overwrite your old version of that file.  Therefore, if you want to return
+to the old version of your system, you'll have to recover the file before
+you try and remake the old system.  To make this easy, config saves a copy
+in the kernel directory.
+
+Almost no applications depend on localopts.h now, pstat.c and mkfs.c
+are the only ones which come to mind.  'pstat' and 'mkfs' need the 
+EXTERNALITIMES define.
+
+ALL other options have either been deleted (obsolete) or made
+standard.  The few remaining options have been moved into the kernel Makefile
+as "-Dxxx" flags to the compiler.  If EXTERNALITIMES changes you will need
+to recompile anything which looks at the kernel's incore inode table.
+
+	The directory VAX.compile contains a C preprocessor that defines
+"pdp11" and a C compiler that knows where to find said preprocessor.  If you
+compile and install VAX.compile/cpp as VAX.compile/CPP and VAX.compile/cc.c
+as VAX.compile/CC, then do "./config VAX", you can compile the entire kernel
+on a larger machine; obviously, this is more of a test for syntax/load errors
+than anything else.  If you're interested, it usually took me about 5 minutes
+to compile the entire networking kernel on a VAX 8600.

@@ -1,0 +1,34 @@
+     This directory contains lotsa good stuff common to both
+the news server, support, and client programs.  The short of it is:
+
+conf.h		Configuration information for NNTP server,
+		support, and client programs.  Described in detail
+		in README in this directory.
+
+nntp.h		These are the #define's of the numeric response
+		codes (and other stuff) in NNTP as defined by RFC 977.
+
+clientlib.c	This file is a collection of routines which clients
+		can use to talk to the NNTP server.  The code is
+		well documented, but briefly, the functions are
+
+			getserverbyfile	Opens a named file and
+					returns the contents,
+					presumed to be a host name
+			server_init	Open connection to server
+			getsocket	Get a stream socket
+			get_server	Get line from server
+			put_server	Send line to server
+			close_server	Close connection
+
+		It is worth noting that these routines use
+		buffered I/O, and leave the external variables
+		"ser_rd_fp" and "ser_wr_fp" (server read/write
+		file pointers, respectively) floating around
+		for use by programs which need them.
+
+If you use the clientlib package to build an NNTP client of your
+own, you either need to define NNTPSRC on the "cc" command
+line when compiling clientlib.c, or add compile-type -D lines to
+the "cc" command line for each option.  Defining NNTPSRC will
+try to include "../common/conf.h", which should be used if it exists.

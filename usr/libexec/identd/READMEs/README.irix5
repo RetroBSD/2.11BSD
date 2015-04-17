@@ -1,0 +1,11 @@
+Frank Maas says:
+
+I have had this question a couple of times, so I wondered if you could
+add the following comment just before the #include <sys/vnode.h> state-
+ment in src/kernel/irix5.c... (we are talking pident2.5.1 here ;-):
+
+/** Well... here some problems begin: when upgrading IRIX to 5.3 the **/
+/** `inst' program shows one of its peculiar bugs: the file vnode.h  **/
+/** has changed location in between versions and now the file is up- **/
+/** grade first (new package) and then deleted (old package). So if  **/
+/** you have problems finding this file: reinstall eoe1.sw.unix.     **/

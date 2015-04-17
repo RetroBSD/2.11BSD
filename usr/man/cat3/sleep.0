@@ -1,0 +1,132 @@
+
+
+
+SLEEP(3)	    UNIX Programmer's Manual		 SLEEP(3)
+
+
+
+NAME
+     sleep, usleep - suspend process execution
+
+SYNOPSIS
+     #include <unistd.h>
+
+     unsigned int
+     sleep(seconds)
+	   unsigned int seconds;
+
+     void
+     usleep(microseconds)
+	    long microseconds;
+
+DESCRIPTION
+     The sleep function suspends execution of the calling process
+     for _s_e_c_o_n_d_s of clock time, or until interrupted by a signal.
+
+     The usleep function suspends execution of the calling pro-
+     cess for _m_i_c_r_o_s_e_c_o_n_d_s of clock time, or until interrupted by
+     a signal.
+
+     System activity may lengthen the suspension.
+
+RETURN VALUES
+     The sleep function returns 0, or if interrupted before
+     _s_e_c_o_n_d_s, the amount not slept (the requested time minus the
+     time actually slept) in seconds.  The usleep function does
+     not return anything (meaningful).
+
+SEE ALSO
+     select(2)
+
+COMPATIBILITY
+     Previous implementations of sleep and usleep re-suspended
+     the process if interrupted by a signal.  This implementation
+     has been changed to return in that case, to conform to POSIX
+     1003.1-88.
+
+     On the PDP-11 the previous version of usleep took a _u__i_n_t as
+     the input parameter.  This has been changed to be _l_o_n_g so
+     that usleep can be used for more than 65 milliseconds (a
+     u_int could only count 65535 microseconds) of sleep.  Thus
+     it is now possible for usleep to handle longer sleep dura-
+     tions than sleep.
+
+BUGS
+     On the PDP-11 the clock resolution is limited to the line
+     frequency (usually 60Hz in the U.S.A. and 50Hz elsewhere).
+
+HISTORY
+     A usleep function appeared in 4.3BSD.  A sleep function
+
+
+
+Printed 11/26/99	September 26,1997			1
+
+
+
+
+
+
+SLEEP(3)	    UNIX Programmer's Manual		 SLEEP(3)
+
+
+
+     appeared in V7.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	September 26,1997			2
+
+
+

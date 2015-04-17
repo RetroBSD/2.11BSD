@@ -1,0 +1,132 @@
+
+
+
+UMOUNT(8)	    UNIX Programmer's Manual		UMOUNT(8)
+
+
+
+NAME
+     umount - unmount file systems
+
+SYNOPSIS
+     umount [ -fv ] _s_p_e_c_i_a_l | _n_o_d_e
+     umount -a [ -fv ] [ -t _u_f_s | _e_x_t_e_r_n_a_l__t_y_p_e ]
+
+DESCRIPTION
+     The umount command calls the umount(2) system call to remove
+     a _s_p_e_c_i_a_l _d_e_v_i_c_e from the file system tree at the point
+     _n_o_d_e.  If either _s_p_e_c_i_a_l or _n_o_d_e are not provided, the
+     appropriate information is taken from the fstab(5) file.
+
+     The options are as follows:
+
+
+     -a        All of the file systems described in fstab(5) are
+	       unmounted.
+
+     -f        The file system is forcibly unmounted.  Active
+	       special devices continue to work, but all other
+	       files return errors if further accesses are
+	       attempted.  The root file system cannot be forci-
+	       bly unmounted.  This is not currently implemented
+	       in 2.11BSD.
+
+     -t _u_f_s | _e_x_t_e_r_n_a_l _t_y_p_e
+	       Is used to indicate the actions should only be
+	       taken on filesystems of the specified type.  More
+	       than one type may be specified in a comma
+	       separated list.	The list of filesystem types can
+	       be prefixed with no to specify the filesystem
+	       types for which action should not be taken.  For
+	       example, the umount command:
+
+	       umount -a -t nfs,mfs
+
+	       umounts all filesystems of the type NFS and MFS.
+
+	       NOTE: Only UFS is supported by 2.11BSD.	The exam-
+	       ple is for illustrative purposes only.
+
+     -v        Verbose, additional information is printed out as
+	       each file system is unmounted.
+
+FILES
+     /etc/fstab     file system table
+
+SEE ALSO
+     umount(2), fstab(5), mount(8)
+
+
+
+
+
+Printed 11/24/99	January 16, 1996			1
+
+
+
+
+
+
+UMOUNT(8)	    UNIX Programmer's Manual		UMOUNT(8)
+
+
+
+HISTORY
+     A umount command appeared in Version 6 AT&T UNIX.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	January 16, 1996			2
+
+
+

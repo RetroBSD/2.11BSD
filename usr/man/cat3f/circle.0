@@ -1,0 +1,132 @@
+
+
+
+PLOT(3F)	    UNIX Programmer's Manual		 PLOT(3F)
+
+
+
+NAME
+     plot: openpl et al. - f77 library interface to _p_l_o_t (3X)
+     libraries.
+
+SYNOPSIS
+     subroutine openpl()
+
+     subroutine erase()
+
+     subroutine label(str)
+     character str*(*)
+
+     subroutine line(ix1, iy1, ix2, iy2)
+
+     subroutine box(ix1, iy1, ix2, iy2)
+     Draw a rectangle and leave the cursor at ( _i_x_2,_i_y_2).
+
+     subroutine circle(ix, iy, ir)
+
+     subroutine arc(ix, iy, ix0, iy0, ix1, iy1)
+
+     subroutine move(ix, iy)
+
+     subroutine cont(ix, iy)
+
+     subroutine point(ix, iy)
+
+     subroutine linemd(str)
+     character str*(*)
+
+     subroutine space(ix0, iy0, ix1, iy1)
+
+     subroutine clospl()
+
+DESCRIPTION
+     These are interface subroutines, in the library -_l_f_7_7_p_l_o_t,
+     allowing _f_7_7 users to call the _p_l_o_t(3X) graphics routines
+     which generate graphic output in a relatively device-
+     independent manner.  The _f_7_7 subroutine names are the same
+     as the _C function names except that _l_i_n_e_m_o_d and _c_l_o_s_e_p_l have
+     been shortened to _l_i_n_e_m_d and _c_l_o_s_p_l . See _p_l_o_t(5) and
+     _p_l_o_t(3X) for a description of their effect.
+
+     Only the first 255 character in string arguments to _l_a_b_e_l
+     and _l_i_n_e_m_d are used.
+
+     This library must be specified in the _f_7_7(1) command before
+     the device specific graphics library; for example, to com-
+     pile and load a FORTRAN program in _p_r_o_g._f to run on a Tek-
+     tronix 4014 terminal:
+
+	  f77 prog.f -lf77plot -l4014
+
+
+
+Printed 11/26/99	 April 30, 1986                         1
+
+
+
+
+
+
+PLOT(3F)	    UNIX Programmer's Manual		 PLOT(3F)
+
+
+
+     See _p_l_o_t(3X) for a complete list of device specific plotting
+     libraries.
+
+SEE ALSO
+     plot(5), plot(1G), plot(3X), graph(1G)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 30, 1986                         2
+
+
+

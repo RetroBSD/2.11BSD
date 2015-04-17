@@ -1,0 +1,132 @@
+
+
+
+RESTOR(8)	    UNIX Programmer's Manual		RESTOR(8)
+
+
+
+NAME
+     restor - incremental file system restore
+
+SYNOPSIS
+     _r_e_s_t_o_r key [ argument ... ]
+
+DESCRIPTION
+     _R_e_s_t_o_r is used to read magtapes dumped with the _d_u_m_p com-
+     mand.  The _k_e_y specifies what is to be done.  _K_e_y is one of
+     the characters rRxt optionally combined with f.
+
+     f	  Use the first _a_r_g_u_m_e_n_t as the name of the tape instead
+	  of the default.
+
+     r or R
+	  The tape is read and loaded into the file system speci-
+	  fied in _a_r_g_u_m_e_n_t. This should not be done lightly (see
+	  below).  If the key is R _r_e_s_t_o_r asks which tape of a
+	  multi volume set to start on.  This allows restor to be
+	  interrupted and then restarted (an _i_c_h_e_c_k -s must be
+	  done before restarting ).
+
+     x	  Each file on the tape named by an _a_r_g_u_m_e_n_t is
+	  extracted.  The file name has all `mount' prefixes
+	  removed; for example, /usr/bin/lpr is named /bin/lpr on
+	  the tape.  The file extracted is placed in a file with
+	  a numeric name supplied by _r_e_s_t_o_r (actually the inode
+	  number).  In order to keep the amount of tape read to a
+	  minimum, the following procedure is recommended:
+
+	  Mount volume 1 of the set of dump tapes.
+
+	  Type the _r_e_s_t_o_r command.
+
+	  _R_e_s_t_o_r will announce whether or not it found the files,
+	  give the number it will name the file, and rewind the
+	  tape.
+
+	  It then asks you to `mount the desired tape volume'.
+	  Type the number of the volume you choose.  On a mul-
+	  tivolume dump the recommended procedure is to mount the
+	  last through the first volume in that order.	_R_e_s_t_o_r
+	  checks to see if any of the files requested are on the
+	  mounted tape (or a later tape, thus the reverse order)
+	  and doesn't read through the tape if no files are.  If
+	  you are working with a single volume dump or the number
+	  of files being restored is large, respond to the query
+	  with `1' and _r_e_s_t_o_r will read the tapes in sequential
+	  order.
+
+	  If you have a hierarchy to restore you can use _d_u_m_p_-
+	  _d_i_r(8) to produce the list of names and a shell script
+
+
+
+Printed 11/24/99						1
+
+
+
+
+
+
+RESTOR(8)	    UNIX Programmer's Manual		RESTOR(8)
+
+
+
+	  to move the resulting files to their homes.
+
+     t	  Print the date the tape was written and the date the
+	  file system was dumped from.
+
+     The r option should only be used to restore a complete dump
+     tape onto a clear file system or to restore an incremental
+     dump tape onto this.  Thus
+
+	  mkfs /dev/hp0a 4807
+	  restor r /dev/hp0a
+
+     is a typical sequence to restore a complete dump.	Another
+     _r_e_s_t_o_r can be done to get an incremental dump in on top of
+     this.
+
+     A _d_u_m_p followed by a _m_k_f_s and a _r_e_s_t_o_r is used to change the
+     size of a file system.
+
+FILES
+     /dev/rmt1		 default file name
+     rst*		 temporary files
+
+SEE ALSO
+     dump(8), dumpdir(8), mkfs(8)
+
+DIAGNOSTICS
+     There are various diagnostics involved with reading the tape
+     and writing the disk.  There are also diagnostics if the i-
+     list or the free list of the file system is not large enough
+     to hold the dump.
+
+     If the dump extends over more than one tape, it may ask you
+     to change tapes.  Reply with a newline when the next tape
+     has been mounted.
+
+     Dump tapes made before the new ondisc directory structure
+     will be converted automatically by _r_e_s_t_o_r .
+
+BUGS
+     There is redundant information on the tape that could be
+     used in case of tape reading problems.  Unfortunately, _r_e_s_-
+     _t_o_r does't use it.
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						2
+
+
+

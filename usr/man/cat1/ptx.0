@@ -1,0 +1,132 @@
+
+
+
+PTX(1)		    UNIX Programmer's Manual		   PTX(1)
+
+
+
+NAME
+     ptx - permuted index
+
+SYNOPSIS
+     ptx [ option ] ...  [ input [ output ] ]
+
+DESCRIPTION
+     _P_t_x generates a permuted index to file _i_n_p_u_t on file _o_u_t_p_u_t
+     (standard input and output default).  It has three phases:
+     the first does the permutation, generating one line for each
+     keyword in an input line.	The keyword is rotated to the
+     front.  The permuted file is then sorted.	Finally, the
+     sorted lines are rotated so the keyword comes at the middle
+     of the page.  _P_t_x produces output in the form:
+
+	  .xx "tail" "before keyword" "keyword and after" "head"
+
+     where .xx may be an _n_r_o_f_f or _t_r_o_f_f(1) macro for user-defined
+     formatting.  The _b_e_f_o_r_e _k_e_y_w_o_r_d and _k_e_y_w_o_r_d _a_n_d _a_f_t_e_r fields
+     incorporate as much of the line as will fit around the key-
+     word when it is printed at the middle of the page.  _T_a_i_l and
+     _h_e_a_d, at least one of which is an empty string "", are
+     wrapped-around pieces small enough to fit in the unused
+     space at the opposite end of the line.  When original text
+     must be discarded, `/' marks the spot.
+
+     The following options can be applied:
+
+     -f   Fold upper and lower case letters for sorting.
+
+     -t   Prepare the output for the phototypesetter; the default
+	  line length is 100 characters.
+
+     -w _n Use the next argument, _n, as the width of the output
+	  line.  The default line length is 72 characters.
+
+     -g _n Use the next argument, _n, as the number of characters
+	  to allow for each gap among the four parts of the line
+	  as finally printed.  The default gap is 3 characters.
+
+     -o only
+	  Use as keywords only the words given in the _o_n_l_y file.
+
+     -i ignore
+	  Do not use as keywords any words given in the _i_g_n_o_r_e
+	  file.  If the -i and -o options are missing, use
+	  /_u_s_r/_s_h_a_r_e/_m_i_s_c/_e_i_g_n as the _i_g_n_o_r_e file.
+
+     -b break
+	  Use the characters in the _b_r_e_a_k file to separate words.
+	  In any case, tab, newline, and space characters are
+	  always used as break characters.
+
+
+
+Printed 11/26/99	October 22, 1996			1
+
+
+
+
+
+
+PTX(1)		    UNIX Programmer's Manual		   PTX(1)
+
+
+
+     -r   Take any leading nonblank characters of each input line
+	  to be a reference identifier (as to a page or chapter)
+	  separate from the text of the line.  Attach that iden-
+	  tifier as a 5th field on each output line.
+
+     The index for this manual was generated using _p_t_x.
+
+FILES
+     /usr/bin/sort
+     /usr/share/misc/eign
+
+BUGS
+     Line length counts do not account for overstriking or pro-
+     portional spacing.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	October 22, 1996			2
+
+
+

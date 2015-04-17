@@ -1,0 +1,132 @@
+
+
+
+AUTOCONFIG(8)	    UNIX Programmer's Manual	    AUTOCONFIG(8)
+
+
+
+NAME
+     autoconfig - configure the running system to the hardware
+
+SYNOPSIS
+     autoconfig [-i ifile] [-n nfile] [-k kfile] [-v] [-d] [-c]
+
+DESCRIPTION
+     _A_u_t_o_c_o_n_f_i_g is called by _i_n_i_t(8) to configure the currently
+     running system.  Init checks the exit status of autoconfig
+     to determine if the configuration was successful.	_A_u_t_o_c_o_n_-
+     _f_i_g reads the device table /_e_t_c/_d_t_a_b for a list of devices
+     which may be on the system.  It first verifies that the ker-
+     nel has an attach routine for each device (and therefore has
+     a device handler) and that the kernel has a probe routine.
+     It then checks each of these devices to see if it is
+     present, and if it is, attempts to make it interrupt (if
+     possible) to verify that the interrupt vector is correct.
+     The interrupt vector is checked to see that it has not pre-
+     viously been used.  An interrupt through any of the device's
+     consecutive vectors is sufficient.
+
+     Devices which use programmable vectors (MSCP and TMSCP) are
+     permitted to have a value of 0 in the dtab vector field.
+     This special value tells autoconfig to call the kernel's get
+     next available vector routine and assign that to the device.
+     For programmable vector devices if the dtab vector field is
+     non 0 then the value specified in the dtab file is used.  In
+     both cases the driver is called at its xxVec() routine with
+     the vector being assigned to the device.
+
+     If the address and vector are correct, it then attaches the
+     device by passing the address and unit number to the
+     kernel's attach routine and setting up the interrupt vector
+     according to the interrupt handlers and priority listed in
+     the device table.	If the unit number is given as a '?' in
+     the device table, it will be assigned the next available
+     unit number if the device exists.	If the device is not
+     present or the vector is incorrect, and if the unit number
+     was specified (not a '?'), then the kernel is notified that
+     that unit is not present, preventing accesses to a nonex-
+     istent device address.
+
+     There are only a few flags which are mostly useful for
+     debugging but for completeness, here they are.
+
+     -i _i_f_i_l_e  Use _i_f_i_l_e instead of /_e_t_c/_d_t_a_b as the device
+	       table.
+
+     -n _n_f_i_l_e  Use _n_f_i_l_e instead of /_u_n_i_x for finding the namel-
+	       ist of the currently running kernel.
+
+     -k _k_f_i_l_e  The file _k_f_i_l_e should be used instead of /_d_e_v/_k_m_e_m
+
+
+
+Printed 11/26/99	December 30, 1992			1
+
+
+
+
+
+
+AUTOCONFIG(8)	    UNIX Programmer's Manual	    AUTOCONFIG(8)
+
+
+
+	       to alter and read kernel memory.
+
+     -v        Verbose output, indicates reason for rejecting any
+	       device in the device table.  Normally only
+	       attached devices are reported.
+
+     -c        Report error messages for devices skipped because
+	       of problems with their interrupt vectors.
+
+     -d        Turn on debugging mode.	Shows many gory details
+	       of autoconfig's internal processing.
+
+BUGS
+     Devices of the same type must be listed with ascending unit
+     numbers or with wildcards.
+
+     Disks that could be root devices must have their addresses
+     and vectors initialized in the kernel; the kernel uses a
+     root attach entry in the block device switch to allow disk
+     drivers to do any probes necessary before autoconfiguration.
+
+     Must be run only by _i_n_i_t(8).  There is a flag set in the
+     kernel that autoconfig has already run, running autoconfig a
+     second time results in the error:
+
+     "namelist doesn't match running kernel."
+	  Autoconfig attempts to open /dev/kmem for write.  If
+	  the kernel is in securelevel 1 or higher the open of
+	  /dev/kmem will fail.
+
+FILES
+     /etc/dtab		 device table
+     /unix
+     /dev/kmem
+
+SEE ALSO
+     ucall(2), nlist(3), dtab(5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 30, 1992			2
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+RAND(3F)	    UNIX Programmer's Manual		 RAND(3F)
+
+
+
+NAME
+     rand, drand, irand - return random values
+
+SYNOPSIS
+     function irand (iflag)
+
+     function rand (iflag)
+
+     double precision function drand (iflag)
+
+DESCRIPTION
+     The newer random(3f) should be used in new applications;
+     rand remains for compatibilty.
+
+     These functions use _r_a_n_d(3C) to generate sequences of random
+     numbers.  If _i_f_l_a_g is '1', the generator is restarted and
+     the first random value is returned.  If _i_f_l_a_g is otherwise
+     non-zero, it is used as a new seed for the random number
+     generator, and the first new random value is returned.
+
+     _I_r_a_n_d returns positive integers in the range 0 through
+     2147483647.  _R_a_n_d and _d_r_a_n_d return values in the range 0.
+     through 1.0 .
+
+FILES
+     /usr/lib/libF77.a
+
+SEE ALSO
+     random(3F), rand(3C)
+
+BUGS
+     The algorithm returns a 15 bit quantity on the PDP11; a 31
+     bit quantity on the VAX.  _I_r_a_n_d on the PDP11 calls _r_a_n_d(3C)
+     twice to form a 31 bit quantity, but bit 15 will always be
+     0.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

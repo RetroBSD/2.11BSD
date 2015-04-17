@@ -1,0 +1,132 @@
+
+
+
+HT(4)		    UNIX Programmer's Manual		    HT(4)
+
+
+
+NAME
+     ht - TM-03/TE-16,TU-45,TU-77 MASSBUS magtape interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NHT  _h_t__d_r_i_v_e_s # TE16, TU45, TU77
+
+     /etc/dtab:
+	  #Name Unit# Addr   Vector Br Handler(s)      # Comments
+	  ht	?     172440 224    5  htintr	       # tu 16 massbus tape
+
+     major device number(s):
+	  raw: 6
+	  block: 0
+     minor device encoding:
+	  bits 0003 specify HT drive
+	  bit  0004 specifies no-rewind operation
+	  bit  0010 specifies 1600BPI recording density instead of 800BPI
+
+DESCRIPTION
+     The tm-03/transport combination provides a standard tape
+     drive interface as described in _m_t_i_o(4).  All drives provide
+     both 800 and 1600 bpi; the TE-16 runs at 45 ips, the TU-45
+     at 75 ips, while the TU-77 runs at 125 ips and autoloads
+     tapes.
+
+FILES
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+SEE ALSO
+     mt(1), tar(1), tp(1), mtio(4), tm(4), ts(4), dtab(5), auto-
+     config(8)
+
+DIAGNOSTICS
+     tu%d: no write ring.  An attempt was made to write on the
+     tape drive when no write ring was present; this message is
+     written on the terminal of the user who tried to access the
+     tape.
+
+     tu%d: not online.	An attempt was made to access the tape
+     while it was offline; this message is written on the termi-
+     nal of the user who tried to access the tape.
+
+     tu%d: can't change density in mid-tape.  An attempt was made
+     to write on a tape at a different density than is already
+     recorded on the tape.  This message is written on the termi-
+     nal of the user who tried to switch the density.
+
+     tu%d: hard error bn%d er=%b ds=%b.   A tape error occurred
+     at block _b_n; the ht error register and drive status register
+     are printed in octal with the bits symbolically decoded.
+
+
+
+Printed 11/26/99	January 28, 1988			1
+
+
+
+
+
+
+HT(4)		    UNIX Programmer's Manual		    HT(4)
+
+
+
+     Any error is fatal on non-raw tape; when possible the driver
+     will have retried the operation which failed several times
+     before reporting the error.
+
+BUGS
+     If any non-data error is encountered on non-raw tape, it
+     refuses to do anything more until closed.
+
+     The system should remember which controlling terminal has
+     the tape drive open and write error messages to that termi-
+     nal rather than on the console.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 28, 1988			2
+
+
+

@@ -1,0 +1,82 @@
+Replied: Fri, 30 Sep 88 02:27:16 -0700
+Return-Path: cdl@mplvax.nosc.mil
+Received: from hera.cs.ucla.edu (cs.ucla.edu.ARPA) by corwyn.cognet.ucla.edu (4.12/1.1)
+	id AA01375; Thu, 29 Sep 88 13:02:51 pdt
+Return-Path: <cdl@mplvax.nosc.mil>
+Received: from mplvax.nosc.mil by hera.cs.ucla.edu (Sendmail 5.58.2/2.12)
+	id AA19980; Thu, 29 Sep 88 13:01:52 PDT
+Received: by mplvax (5.51/5.0)
+	id AA09749 for casey@cs.ucla.edu; Thu, 29 Sep 88 12:59:22 PDT
+Date:  Thu, 29 Sep 88 12:59:22 PDT
+From: Carl Lowenstein <cdl@mplvax.nosc.mil>
+Message-Id:  <8809291959.AA09749@mplvax>
+To: casey@CS.UCLA.EDU
+Subject: how to tell a tm11
+
+Newsgroups: comp.bugs.2bsd
+In-Reply-To: <16291@shemp.CS.UCLA.EDU>
+Organization: U.C. San Diego, Marine Physical Laboratory
+Cc: cdl
+Status: R
+
+In article <16291@shemp.CS.UCLA.EDU> you write:
+
+>  The problem is that the TS and the TM share the same CSR address
+>(0172520), but the *standard* TS CSR is only two words long:
+>
+>	/*
+>	 * TS11 controller registers
+>	 */
+>	struct tsdevice {
+>		u_short	tsdb;		/* data buffer */
+>		u_short	tssr;		/* status register */
+>	};
+>
+>and the TM CSR is seven words long:
+>
+>	/*
+>	 * TM11 controller registers
+>	 */
+>	struct tmdevice {
+>		u_short	tmer;		/* error register, per drive */
+>		u_short	tmcs;		/* control-status register */
+>		short	tmbc;		/* byte/frame count */
+>		caddr_t	tmba;		/* address */
+>		short	tmdb;		/* data buffer */
+>		short	tmrd;		/* read lines */
+>		short	tmmr;		/* maintenance register */
+>	};
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Thanks to networked computers, I got hold of my RT11 sources without
+having to leave this chair.  DEC tells the difference between TS11 and
+TM11 with the following PDP11 assembly language (paraphrased):
+(this is DEC-flavor not unix-flavor assembly language)
+
+;;;;;;;;;;;;;;;;;;
+	MOV	#MTCSR, R0		; point to control-status
+	MOV	#1000, 2(R0)		; try to select unit 2
+	BIT	#1000, 2(R0)		;  did it work?
+	BNE	GOOD			; yes, it is a TM11
+BAD:					; no, it isn't
+	. . .
+GOOD:
+;;;;;;;;;;;;;;;;;;
+
+I would take a first cut at translating this into C as:
+
+	TMADDR->tmcs = 01000;		/* try to select unit 2 */
+	if (TMADDR->tmcs & 01000) {
+		/* do tm11 things */
+	} else {
+		/* do ts11 things */
+	}
+/* note that selecting unit 2 is a benign thing to do even if you have
+    only one TM11 drive.  The controller can select up to 8 drives
+    even if they are not present.  Of course, the non-existent drive
+    doesn't report that it is ready. */
+
+		carl
+
+	carl lowenstein		marine physical lab	u.c. san diego
+	{decvax|ucbvax}	!ucsd!mplvax!cdl

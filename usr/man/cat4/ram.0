@@ -1,0 +1,132 @@
+
+
+
+RAM(4)		    UNIX Programmer's Manual		   RAM(4)
+
+
+
+NAME
+     ram - ram disk driver
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NRAM _r_a_m__s_i_z_e  # RAM disk size (512-byte blocks)
+
+     major device number(s):
+	  block: 3
+     minor device encoding:
+	  must be zero (0)
+
+DESCRIPTION
+     The _r_a_m pseudo-device provides a very fast extended memory
+     store.  It's use is intended for file systems like /_t_m_p and
+     applications which need to access a reasonably large amount
+     of data quickly.
+
+     The amount of memory dedicated to the ram device is con-
+     trolled by the NRAM definition in units of 512-byte blocks.
+     This is also patchable in the system binary through the
+     variable _r_a_m__s_i_z_e (though a patched system would have to be
+     rebooted before any change took effect; see _a_d_b(1)).  This
+     makes it easy to test the effects of different ram disk
+     sizes on system performance.  It's important to note that
+     any space given to the ram device is permanently allocated
+     at system boot time.  Dedicating too much memory can
+     adversely affect system performance by forcing the system to
+     swap heavily as in a memory poor environment.
+
+     The block file accesses the ram disk via the system's
+     buffering mechanism through a buffer sharing arrangement
+     with the buffer cache.  It may be read and written without
+     regard to physical disk records.  There is no `raw' inter-
+     face since no speed advantage is gained by such an interface
+     with the ram disk.
+
+DISK SUPPORT
+     The _r_a_m driver does not support pseudo-disks (partitions).
+     The special files refer to the entire `drive' as a single
+     sequentially addressed file.
+
+     A typical use for the ram disk would be to mount /_t_m_p on it.
+     Note that if this arrangement is recorded in /_e_t_c/_f_s_t_a_b then
+     /_e_t_c/_r_c will have to be modified slightly to do a _m_k_f_s(8) on
+     the ram disk before the standard file system checks are
+     done.
+
+FILES
+     /dev/ram		 block file
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+
+
+Printed 11/26/99	Januray 27, 1996			1
+
+
+
+
+
+
+RAM(4)		    UNIX Programmer's Manual		   RAM(4)
+
+
+
+SEE ALSO
+     hk(4), ra(4), rl(4), rk(4), rp(4), rx(4), si(4), xp(4)
+     dtab(5), autoconfig(8)
+
+DIAGNOSTICS
+     ram: no space.  There is not enough memory to allocate the
+     space needed by the ram disk.  The ram disk is disabled.
+     Any attempts to access it will return an error.
+
+     ram: not allocated.  No memory was allocated to the ram disk
+     and an attempt was made to open it.  Either not enough
+     memory was available at boot time or the kernel variable
+     _r_a_m__s_i_z_e was set to zero.
+
+BUGS
+     The _r_a_m driver is only available under 2.11BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	Januray 27, 1996			2
+
+
+

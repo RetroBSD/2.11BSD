@@ -1,0 +1,66 @@
+
+
+
+GETLOG(3F)	    UNIX Programmer's Manual	       GETLOG(3F)
+
+
+
+NAME
+     getlog - get user's login name
+
+SYNOPSIS
+     subroutine getlog (name)
+     character*(*) name
+
+     character*(*) function getlog()
+
+DESCRIPTION
+     _G_e_t_l_o_g will return the user's login name or all blanks if
+     the process is running detached from a terminal.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     getlogin(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

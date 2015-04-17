@@ -1,0 +1,14 @@
+bk.c is the old version that didn't work with 2.9.  tty_bk.c is the new
+version stolen from 4.3 that doesn't work with 2.10.  What you probably
+want to do is figure out how to make bk.c work, and then fold the changes
+into tty_bk.c. And then remember that it loses characters after every
+carriage return.
+
+It's clear that you don't want to use the buffer cache.  Maybe throw
+1K of data space per line at the problem?  It's got to be fast.
+
+berknet_driver is a copy of 2.9's driver that was supposedly fixed.  It
+may have all of the mapped out stuff you need, so you might be able
+to fold its fixes into the 4.3 one.
+
+Enjoy.

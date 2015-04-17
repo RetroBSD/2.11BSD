@@ -1,0 +1,66 @@
+
+
+
+CB(1)		    UNIX Programmer's Manual		    CB(1)
+
+
+
+NAME
+     cb - C program beautifier
+
+SYNOPSIS
+     cb
+
+DESCRIPTION
+     _C_b places a copy of the C program from the standard input on
+     the standard output with spacing and indentation that
+     displays the structure of the program.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

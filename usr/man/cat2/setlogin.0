@@ -1,0 +1,132 @@
+
+
+
+GETLOGIN(2)	    UNIX Programmer's Manual	      GETLOGIN(2)
+
+
+
+NAME
+     getlogin, setlogin - get/set login name
+
+SYNOPSIS
+     #include <unistd.h>
+
+     char *
+     getlogin()
+
+     int
+     setlogin(name)
+	  char *name;
+
+DESCRIPTION
+     The getlogin routine returns the login name of the user
+     associated with the current session, as previously set by
+     setlogin.	The name is normally associated with a login
+     shell at the time a session is created, and is inherited by
+     all processes descended from the login shell.  (This is true
+     even if some of those processes assume another user ID, for
+     example when su(1) is used.)
+
+     Setlogin sets the login name of the user associated with the
+     current session to _n_a_m_e.  This call is restricted to the
+     super-user, and is normally used only when a new session is
+     being created on behalf of the named user (for example, at
+     login time, or when a remote shell is invoked).
+
+RETURN VALUES
+     If a call to getlogin succeeds, it returns a pointer to a
+     null-terminated string in a static buffer.  If the name has
+     not been set, it returns _N_U_L_L.  If a call to setlogin
+     succeeds, a value of 0 is returned.  If setlogin fails, a
+     value of -1 is returned and an error code is placed in the
+     global location _e_r_r_n_o.
+
+ERRORS
+     The following errors may be returned by these calls:
+
+     EFAULT	    The _n_a_m_e parameter gave an invalid address.
+
+     EINVAL	    The _n_a_m_e parameter pointed to a string that
+		    was too long.  Login names are limited to
+		    _M_A_X_L_O_G_N_A_M_E (from <_s_y_s/_p_a_r_a_m._h>) characters,
+		    currently 16.
+
+     EPERM	    The caller tried to set the login name and
+		    was not the super-user.
+
+SEE ALSO
+     setsid(2)
+
+
+
+
+Printed 11/26/99       September 23, 1997			1
+
+
+
+
+
+
+GETLOGIN(2)	    UNIX Programmer's Manual	      GETLOGIN(2)
+
+
+
+BUGS
+     Login names are limited in length by setlogin.  However,
+     lower limits are placed on login names elsewhere in the sys-
+     tem (UT_NAMESIZE in <_u_t_m_p._h>).
+
+     In earlier versions of the system, getlogin failed unless
+     the process was associated with a login terminal.	The
+     current implementation (using setlogin) allows getlogin to
+     succeed even when the process has no controlling terminal.
+     In earlier versions of the system, the value returned by
+     getlogin could not be trusted without checking the user ID.
+     Portable programs should probably still make this check.
+
+HISTORY
+     The setlogin function first appeared in 4.4BSD.  The getlo-
+     gin function was present in V7.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99       September 23, 1997			2
+
+
+

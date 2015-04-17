@@ -1,0 +1,66 @@
+
+
+
+GETUSERSHELL(3)     UNIX Programmer's Manual	  GETUSERSHELL(3)
+
+
+
+NAME
+     getusershell, setusershell, endusershell - get legal user
+     shells
+
+SYNOPSIS
+     char *getusershell()
+
+     setusershell()
+
+     endusershell()
+
+DESCRIPTION
+     _G_e_t_u_s_e_r_s_h_e_l_l returns a pointer to a legal user shell as
+     defined by the system manager in the file /_e_t_c/_s_h_e_l_l_s.  If
+     /_e_t_c/_s_h_e_l_l_s is unreadable or does not exist, _g_e_t_u_s_e_r_s_h_e_l_l
+     behaves as if /_b_i_n/_s_h and /_b_i_n/_c_s_h were listed in the file.
+
+     _G_e_t_u_s_e_r_s_h_e_l_l reads the next line (opening the file if neces-
+     sary); _s_e_t_u_s_e_r_s_h_e_l_l rewinds the file; _e_n_d_u_s_e_r_s_h_e_l_l closes
+     it.
+
+FILES
+     /etc/shells
+
+SEE ALSO
+     shells(5)
+
+DIAGNOSTICS
+     The routine _g_e_t_u_s_e_r_s_h_e_l_l returns a null pointer (0) on EOF.
+
+BUGS
+     All information is contained in a static area so it must be
+     copied if it is to be saved.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 30, 1988			1
+
+
+

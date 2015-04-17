@@ -1,0 +1,66 @@
+
+
+
+FLMIN(3F)	    UNIX Programmer's Manual		FLMIN(3F)
+
+
+
+NAME
+     flmin, flmax, ffrac, dflmin, dflmax, dffrac, inmax - return
+     extreme values
+
+SYNOPSIS
+     function flmin()
+
+     function flmax()
+
+     function ffrac()
+
+     double precision function dflmin()
+
+     double precision function dflmax()
+
+     double precision function dffrac()
+
+     function inmax()
+
+DESCRIPTION
+     Functions _f_l_m_i_n and _f_l_m_a_x return the minimum and maximum
+     positive floating point values respectively.  Functions
+     _d_f_l_m_i_n and _d_f_l_m_a_x return the minimum and maximum positive
+     double precision floating point values.  Function _i_n_m_a_x
+     returns the maximum positive integer value.
+
+     The functions _f_f_r_a_c and _d_f_f_r_a_c return the fractional accu-
+     racy of single and double precision floating point numbers
+     respectively.  This is the difference between 1.0 and the
+     smallest real number greater than 1.0.
+
+     These functions can be used by programs that must scale
+     algorithms to the numerical range of the processor.
+
+FILES
+     /usr/lib/libF77.a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 7, 1985				1
+
+
+

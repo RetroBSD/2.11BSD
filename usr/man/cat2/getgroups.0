@@ -1,0 +1,66 @@
+
+
+
+GETGROUPS(2)	    UNIX Programmer's Manual	     GETGROUPS(2)
+
+
+
+NAME
+     getgroups - get group access list
+
+SYNOPSIS
+     #include <sys/param.h>
+
+     ngroups = getgroups(gidsetlen, gidset)
+     int ngroups, gidsetlen, *gidset;
+
+DESCRIPTION
+     _G_e_t_g_r_o_u_p_s gets the current group access list of the user
+     process and stores it in the array _g_i_d_s_e_t.  The parameter
+     _g_i_d_s_e_t_l_e_n indicates the number of entries that may be placed
+     in _g_i_d_s_e_t.  _G_e_t_g_r_o_u_p_s returns the actual number of groups
+     returned in _g_i_d_s_e_t.  No more than NGROUPS, as defined in
+     <_s_y_s/_p_a_r_a_m._h>, will ever be returned.
+
+RETURN VALUE
+     A successful call returns the number of groups in the group
+     set.  A value of -1 indicates that an error occurred, and
+     the error code is stored in the global variable _e_r_r_n_o.
+
+ERRORS
+     The possible errors for _g_e_t_g_r_o_u_p are:
+
+     [EINVAL]	    The argument _g_i_d_s_e_t_l_e_n is smaller than the
+		    number of groups in the group set.
+
+     [EFAULT]	    The argument _g_i_d_s_e_t specifies an invalid
+		    address.
+
+SEE ALSO
+     setgroups(2), initgroups(3X)
+
+BUGS
+     The _g_i_d_s_e_t array should be of type gid_t, but remains
+     integer for compatibility with earlier systems.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 13, 1986				1
+
+
+

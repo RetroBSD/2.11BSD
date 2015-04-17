@@ -1,0 +1,132 @@
+
+
+
+LPQ(1)		    UNIX Programmer's Manual		   LPQ(1)
+
+
+
+NAME
+     lpq - spool queue examination program
+
+SYNOPSIS
+     lpq [ +[ n ] ] [ -l ] [ -Pprinter ] [ job # ... ] [ user ...
+     ]
+
+DESCRIPTION
+     _l_p_q examines the spooling area used by _l_p_d(8) for printing
+     files on the line printer, and reports the status of the
+     specified jobs or all jobs associated with a user. _l_p_q
+     invoked without any arguments reports on any jobs currently
+     in the queue.  A -P flag may be used to specify a particular
+     printer, otherwise the default line printer is used (or the
+     value of the PRINTER variable in the environment).  If a +
+     argument is supplied, _l_p_q displays the spool queue until it
+     empties.  Supplying a number immediately after the + sign
+     indicates that _l_p_q should sleep _n seconds in between scans
+     of the queue.  All other arguments supplied are interpreted
+     as user names or job numbers to filter out only those jobs
+     of interest.
+
+     For each job submitted (i.e. invocation of _l_p_r(1)) _l_p_q
+     reports the user's name, current rank in the queue, the
+     names of files comprising the job, the job identifier (a
+     number which may be supplied to _l_p_r_m(1) for removing a
+     specific job), and the total size in bytes.  The -l option
+     causes information about each of the files comprising the
+     job to be printed.  Normally, only as much information as
+     will fit on one line is displayed.  Job ordering is depen-
+     dent on the algorithm used to scan the spooling directory
+     and is supposed to be FIFO (First in First Out).  File names
+     comprising a job may be unavailable (when _l_p_r(1) is used as
+     a sink in a pipeline) in which case the file is indicated as
+     ``(standard input)".
+
+     If _l_p_q warns that there is no daemon present (i.e. due to
+     some malfunction), the _l_p_c(8) command can be used to restart
+     the printer daemon.
+
+FILES
+     /etc/termcap	     for manipulating the screen for repeated display
+     /etc/printcap	     to determine printer characteristics
+     /usr/spool/*	     the spooling directory, as determined from printcap
+     /usr/spool/*/cf*	     control files specifying jobs
+     /usr/spool/*/lock	     the lock file to obtain the currently active job
+
+SEE ALSO
+     lpr(1), lprm(1), lpc(8), lpd(8)
+
+BUGS
+     Due to the dynamic nature of the information in the spooling
+
+
+
+Printed 11/26/99	  June 5, 1986				1
+
+
+
+
+
+
+LPQ(1)		    UNIX Programmer's Manual		   LPQ(1)
+
+
+
+     directory lpq may report unreliably.  Output formatting is
+     sensitive to the line length of the terminal; this can
+     results in widely spaced columns.
+
+DIAGNOSTICS
+     Unable to open various files.  The lock file being mal-
+     formed.  Garbage files when there is no daemon active, but
+     files in the spooling directory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 5, 1986				2
+
+
+

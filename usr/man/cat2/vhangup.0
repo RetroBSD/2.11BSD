@@ -1,0 +1,66 @@
+
+
+
+VHANGUP(2)	    UNIX Programmer's Manual	       VHANGUP(2)
+
+
+
+NAME
+     vhangup - virtually ``hangup'' the current control terminal
+
+SYNOPSIS
+     vhangup()
+
+DESCRIPTION
+     _V_h_a_n_g_u_p is used by the initialization process _i_n_i_t(8) (among
+     others) to arrange that users are given "clean"' terminals
+     at login, by revoking access of the previous users'
+     processes to the terminal.  To effect this, _v_h_a_n_g_u_p searches
+     the system tables for references to the control terminal of
+     the invoking process, revoking access permissions on each
+     instance of the terminal that it finds.  Further attempts to
+     access the terminal by the affected processes will yield i/o
+     errors (EBADF).  Finally, a hangup signal (SIGHUP) is sent
+     to the process group of the control terminal.
+
+SEE ALSO
+     init (8)
+
+BUGS
+     Access to the control terminal via /dev/tty is still possi-
+     ble.
+
+     This call should be replaced by an automatic mechanism that
+     takes place on process exit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 30, 1985                         1
+
+
+

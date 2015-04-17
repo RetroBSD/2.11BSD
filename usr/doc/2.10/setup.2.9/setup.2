@@ -1,0 +1,512 @@
+.ds RH Bootstrapping
+.bp
+.nr H1 2
+.nr H2 0
+.bp
+.LG
+.B
+.ce
+2. BOOTSTRAP PROCEDURES
+.sp 2
+.R
+.NL
+.PP
+This section explains the bootstrap procedures that can be used
+to get one of the kernels supplied with this tape running on your machine.
+If you are not yet running UNIX or are running a version of UNIX other
+than 2.8BSD, you will have to do a full bootstrap.
+.PP
+If you are
+running 2.8BSD you can use the update procedure described
+in section 4.2 instead of a full bootstrap.  This will affect modifications
+to the local system less than a full bootstrap.
+Note, however, that a full bootstrap will probably require less effort
+unless you have made major local modifications which you must carry over
+to the new system.
+.PP
+If you are already running UNIX and need to do a full bootstrap you should
+first save your existing files on magnetic tape.
+The 2.9BSD file system uses 1K-byte blocks by clustering disk blocks
+(as did the 2.8BSD system); file systems in other formats cannot be mounted.
+.B
+Those upgrading from 2.8 should note that
+2.9BSD uses generally different file system partition sizes than 2.8BSD,
+and that a few of the major device numbers have changed (in particular,
+that for the hk).
+.R
+The easiest way
+to save the current files on tape is by doing a full dump and then restoring
+in the new system.  This works also in converting V7,
+System-III, or System-V 512-byte file systems.
+Although the dump format is different on V7, System-III, and System-V,
+\fI512restor\fP\|(8) can restore old format V7 \fIdump\fP image tapes into the
+file system format used by 2.9BSD.
+.IR Tar (1)
+can also be used to exchange files from different file system formats,
+and has the additional advantage that directory trees can be placed
+on different file systems than on the old configuration.
+Note that 2.9BSD does not support \fIcpio\fP tape format.
+.PP
+The tape bootstrap procedure involves three steps:  loading
+the tape bootstrap monitor, creating and initializing
+a UNIX ``root'' file system
+system on the disk, and booting the system.
+.NH 2
+Booting from tape
+.PP
+To load the tape bootstrap monitor, first
+mount the magnetic tape on drive 0 at load point, making
+sure that the write ring is not inserted.
+Then use the normal bootstrap ROM, console monitor or other
+bootstrap to boot from the tape.
+If no other means are available, the following code can be keyed in
+and executed at (say) 0100000 to boot from a TM tape drive (the magic number
+172526 is the address of the TM-11 current memory address register;
+an adjustment may be necessary if your controller is at a nonstandard
+address):
+.DS
+.TS
+l l.
+012700	(mov $172526, r0)
+172526
+010040	(mov r0, -(r0))
+012740	(mov $60003, -(r0))
+060003
+000777	(br .)
+.TE
+.DE
+When this is executed, the first block of the tape will be read into memory.
+Halt the CPU and restart at location 0.
+.PP
+The console should type
+.DS
+.B
+\fInn\fPBoot
+:
+.R
+.DE
+where \fInn\fP is the CPU class on which it believes it is running.
+The value will be one of 24, 40, 45 or 70, depending on whether
+separate instruction and data (separate I/D) and/or a UNIBUS map are detected.
+The CPUs in each class are:
+.DS
+.TS
+c l c c.
+Class	PDP11s	Separate I/D	UNIBUS map
+24	24	-	+
+40	23, 34, 34A, 40, 60	-	-
+45	45, 55	+	-
+70	44, 70	+	+
+.TE
+.DE
+The bootstrap can be forced to set up the machine as for a different
+class of PDP11 by placing an appropriate value in the console switch register
+(if there is one) while booting it.
+The value to use is the PDP11 class, interpreted as an \fIoctal\fP number
+(use, for example, 070 for an 11/70).
+\fBWarning:\fP  some old DEC bootstraps use the switch
+register to indicate where to boot from.
+On such machines, if the value in the switch register indicates
+an incorrect CPU, be sure to reset the switches immediately after
+initiating the tape bootstrap.
+.PP
+You are now talking to the tape bootstrap monitor.
+At any point in the following procedure you can return
+to this section, reload the tape bootstrap, and restart.
+.PP
+To first check that everything is working properly,
+you can use the \fIcat\fP program on the tape to print
+the list of utilities on the tape.
+Through the rest of this section,
+substitute the correct disk type for \fIdk\fP
+and the tape type for \fItp\fP.
+In response to the prompt of the bootstrap which is now running,
+type
+.DS
+\fItp\|\fP(0,1)	(load file 1 from tape 0)
+.DE
+\fICat\fP will respond
+.DS
+.B
+Cat
+File?
+.R
+.DE
+The table of contents is in file 2 on the tape, therefore answer
+.DS
+\fItp\|\fP(0,2)
+.DE
+The tape will move, then a short list of files will print on the console,
+followed by:
+.DS
+.B
+exit called
+\fInn\fPBoot
+:
+.R
+.DE
+After \fIcat\fP is finished, it returns to the bootstrap
+for the next operation.
+.NH 2
+Creating an empty UNIX file system
+.PP
+Now create the root file system using the following procedures.
+First determine the size of your root file system from the
+following table:
+.DS
+.TS
+l l.
+Disk	Root File System Size
+	  (1K-byte blocks)
+
+hk	2970
+rk\(dg	2000
+rl01\(dg	4000
+rl02\(dg	8500
+rp	5200
+xp	4807 (RP04/RP05/RP06)
+	2400 (RM02/RM03)
+	4560 (RM05)
+	4702 (DIVA)
+.TE
+.DE
+.FS
+\u\(dg\dThese sizes are for full disks less some space used for swapping.
+.FE
+.PP
+If the disk on which you are creating a root file system is an \fBxp\fP
+disk, you should check the drive type register at this time to make sure
+it holds a value that will be recognized correctly by the driver.
+There are numbering conflicts; the
+following numbers are used internally:
+.DS
+.TS
+c l
+c l.
+Drive Type Register	Drive Assumed
+Low Byte (standard address: 0776726)
+
+022	RP04/05/06
+025	RM02/RM03
+027	RM05
+076	Emulex SC-21/300 Mb RM05 emulation (815 cylinders)
+077	Diva Comp-V/300 Mb SMD
+.TE
+.DE
+Check the drive type number in your controller manual,
+or halt the CPU and examine this register.
+If the value does not correspond to the actual drive type,
+you must place the correct value in the switch
+register after the tape bootstrap is running
+and before any attempt is made to access the drive.
+This will override the drive type register.
+This value must be present at the time each program
+(including the bootstrap itself) first tries to access the disk.
+On machines without a switch register, the \fIxptype\fP 
+variable can be patched in memory.  After starting each utility
+but before accessing the disk, halt the CPU, place the new drive type
+number at the proper memory location with the console switches or monitor,
+and then continue.  The location of \fIxptype\fP in each utility is
+.\"CHECK
+mkfs:  032700, restor:  031570, icheck:  030150 and boot:  0427754
+(the location for boot is higher because it relocates itself).
+Once UNIX itself is booted (see below) you must
+patch it also.
+.PP
+Finally, determine the proper interleaving factors \fIm\fP and \fIn\fP
+for your disk and CPU combination from the following table.
+These numbers determine the layout of the free list that will be constructed;
+the proper interleaving will help increase the speed of the file system.
+If you have a non-DEC disk that emulates one of the disks listed,
+you may be able to use these numbers as well, but check that
+the actual disk geometry is the same as the emulated disk
+(rather than the controller mapping onto a different physical disk).
+Also, the rotational speed must be the same as the DEC disk
+for these numbers to apply.
+.DS
+.TS
+cB s s s s s s s s
+l l l l l l l l l.
+Disk Interleaving Factors for Disk/CPU Combinations (\fIm\fP/\fIn\fP)
+CPU	RK05	RK06/7	RL01/2	RM02	RM03	RM05	RP03	RP04/5/6
+
+11/23	X/12	X/33	X/10	X/80	-	-	X/100	X/209
+11/24	X/12	7/33	X/10	10/80	-	-	X/100	10/209
+11/34	X/12	6/33	X/10	8/80	-	-	3/100	8/209
+11/40	2/12	6/33	X/10	8/80	-	-	3/100	8/209
+11/44	X/12	4/33	X/10	6/80	-	-	2/100	6/209
+11/45	2/12	5/33	X/10	7/80	-	-	3/100	7/209
+11/55	X/12	5/33	X/10	7/80	-	-	3/100	7/209
+11/60	X/12	5/33	X/10	7/80	-	-	3/100	7/209
+11/70	X/12	3/33	X/10	5/80	7/80	7/304	X/100	5/209
+.TE
+.DE
+For example, for an RP06 on an 11/70, \fIm\fP is 5 and \fIn\fP is 209.
+See
+\fImkfs\fP\|(8)
+for more explanation of the values of \fIm\fP and \fIn\fP.
+An X entry means that we
+do not know the correct number for this combination of
+CPU and disk.  If you do, please let us know.  If \fIm\fP is
+unspecified or you have a disk which emulates a DEC disk,
+use the number for the most similar disk/CPU pair.
+.B
+If \fIn\fP is unspecified, use the cylinder size divided by 2.
+.R
+.PP
+Then run a standalone version of the \fImkfs\fP (8) program.
+In the following procedure, substitute the correct types
+for \fItp\fP and \fIdk\fP and the size determined above for \fIsize\fP:
+.DS
+.TS
+lw(1.5i) l.
+\fB:\|\fP\fItp\|\fP(0,3)
+\fBMkfs\fP
+\fBfile system:\fP \fIdk\|\fP(0,0)	(root is the first file system on drive 0)
+\fBfile system size:\fP \fIsize\fP	(count of 1024 byte blocks in root)
+\fBinterleaving factor (m, 5 default):\fP \fIm\fP	(interleaving, see above)
+\fBinterleaving modulus (n, 10 default):\fP \fIn\fP	(interleaving, see above)
+\fBisize = XX\fP	(count of inodes in root file system)
+\fBm/n = \fP\fIm n\fP	(interleave parameters)
+\fBExit called\fP
+\fInn\fP\fBBoot\fP
+\fB:\fP	(back at tape boot level)
+.TE
+.DE
+You now have an empty UNIX root file system.
+.NH 2
+Restoring the root file system
+.PP
+To restore a small root file system onto it, type
+.DS
+.TS
+lw(1.5i) l.
+\fB:\|\fP\fItp\|\fP(0,4)
+\fBRestor\fP
+\fBTape?\fP \fItp\|\fP(0,6)	(unit 0, seventh tape file)
+\fBDisk?\fP \fIdk\|\fP(0,0)	(into root file system)
+\fBLast chance before scribbling on disk.\fP	(just hit return)
+     (30 second pause then tape should move)
+     (tape moves for a few minutes)
+.B
+end of tape
+Exit called
+\fInn\fPBoot
+\fB:\fR	(back at tape boot level)
+.R
+.TE
+.DE
+If you wish, you may use the \fIicheck\fP program on the tape,
+\fItp\|\fP(0,5), to check the consistency of the file system you have just
+installed.
+.NH 2
+Booting UNIX
+.PP
+You are now ready to boot from disk.  It is best to read the rest
+of this section first, since some systems must be patched while booting.
+Then type:
+.DS
+.TS
+lw(1.5i) l.
+\fB:\fP\fIdk\|\fP(0,0)\fIdk\^\fPunix	(bring in \fIdk\^\fPunix off root system)
+.TE
+.DE
+The standalone boot program should then read \fIdk\^\fPunix from
+the root file system you just created, and the system should boot:
+.DS
+.B
+.\"CHECK
+Berkeley UNIX (Rev. 2.9.5) Mon Aug 2 18:44:30 PDT 1983
+mem = xxx
+
+CONFIGURE SYSTEM:
+.R
+(Information about various devices will print;
+most of them will probably not be found until
+the addresses are set below.)
+.B
+erase=^?, kill=^U, intr=^C
+#
+.R
+.DE
+If you are booting from an \fIxp\fP with a drive type
+that is not recognized, it will be necessary to patch the system before
+it first accesses the root file system.
+Halt the processor after it
+has begun printing the version string but before it has finished printing
+the ``mem = xxx'' string.
+Place the drive type number corresponding to your drive
+.\"CHECK
+at location 061472; 
+the addresses for
+drives 1, 2 and 3 are 061506, 061522 and 061536 respectively.
+If you plan to use any drives other than 0 before you recompile
+the system, you should patch these locations.
+Make the patches and continue the CPU.
+The value before patching must be zero.  If it is not, you have halted too
+late and should try again.
+.PP
+UNIX begins by printing
+out a banner identifying the version of the system that is in use and
+the date it was compiled.  Note that this version is different from the
+system release number, and applies only to the operating system
+kernel.
+.PP
+Next the
+.I mem
+message gives the
+amount of memory (in bytes) available to user programs.
+On an 11/23 with no clock control register, a message ``No clock???''
+will print next; this is a reminder to turn on the clock switch if
+it is not already on, since UNIX cannot enable the clock itself.
+The information about different devices being attached or not being
+found is produced by the \fIautoconfig\fP\|(8) program.
+Most of this is not important for the moment, but later the device table
+can be edited to correspond to your hardware.
+However, the tape drive of the correct type should have been detected
+and attached.
+.PP
+The ``erase=...'' message is part of /.profile
+that was executed by the root shell when it started.  The file
+/.profile contained commands to
+set the UNIX erase, line kill and interrupt characters
+to be what is standard on DEC systems so that it is
+consistent with the DEC console interface characters.
+This is not normal for UNIX, but is convenient when working
+on a hardcopy console; change it if you like.
+.PP
+UNIX is now running,
+and the Berkeley PDP-11
+\s-2UNIX\s0
+Programmer's manual applies.
+The `#' is the prompt from the Shell,
+and lets you know that you are the super-user, whose login name is ``root.''
+.PP
+There are a number of copies of \fIunix\fP on the root file system,
+one for each possible type of root file system device.
+All but one of them (\fIxpunix\fP)
+has had its symbol table
+removed (i.e. they have been ``stripped''; see
+.IR strip (1)).
+The unstripped copy is linked (see
+.IR ln (1))
+to \fI/unix\fP to provide a system namelist
+for programs like
+.IR ps (1)
+and
+.IR autoconfig (8).
+All of the systems were created from \fI/unix\fP by the
+C shell script \fI/genallsys.sh\fP.
+If you had to patch the \fIxp\fP type as you
+booted, you may want to use \fIadb\fP (see
+.IR adb (1))
+to make the same patch in a copy of \fIxpunix\fP.
+If you are short of space,
+you can patch a copy of \fI/unix\fP instead (setting the rootdev, etc.)
+and install it as \fI/unix\fP after verifying that it works.
+See \fI/genallsys.sh\fP for examples of using \fIadb\fP to patch the system.
+The system load images for other disk types can be removed.
+.B
+Do not remove or replace the copy of \fI/unix\fP, however, unless you have made
+a working copy of it that is patched for your file system configuration
+and still has a symbol table.
+.R
+Many programs
+use the symbol table of /\fIunix\fP in order to determine
+the locations of things in memory, therefore /\fIunix\fP should always
+be an unstripped file corresponding to the current system.
+If at all possible, you should save the original UNIX binaries
+for your disk configuration (\fIdk\fP\^unix and unix)
+for use in an emergency.
+.PP
+There are a few minor details that should be attended to now.
+The system date is initially set from the root file system,
+and should be reset.  The root password should also be set:
+.DS
+.TS
+lw(1.5i) l.
+\fB#\fP date \fIyymmddhhmm\fP	(set date, see \fIdate\fP\|(1))
+\fB#\fP passwd root	(set password for super-user)
+\fBNew password:\fP	(password will not echo)
+\fBRetype new password:\fP
+.TE
+.DE
+.NH 2
+Installing the disk bootstrap
+.PP
+The disk with the new root file system on it will not be bootable
+directly until the block 0 bootstrap program for the disk has been installed.
+There are copies of the bootstraps in /mdec.
+This is not the usual location for the bootstraps (that is /usr/src/sys/mdec),
+but it is convenient to be able to install the boot block now.
+Use \fIdd\fP\|(1) to copy the right boot block onto the disk;
+the first form of the command is for small disks (\fBrk\fP, \fBrl\fP)
+and the second form for disks with multiple partitions
+(\fBhk\fP, \fBrp\fP, \fBxp\fP),
+substituting as usual for \fIdk\fP:
+.DS
+\fB#\fP dd if=\fIdk\^\fPuboot of=/dev/r\fIdk\^\fP0 count=1
+
+or
+
+\fB#\fP dd if=\fIdk\^\fPuboot of=/dev/r\fIdk\^\fP0a count=1
+.DE
+will install the bootstrap in block 0.
+Once this is done, booting from this disk will load and execute
+the block 0 bootstrap, which will in turn load /boot (actually, the
+boot program on the first file system, which is root).
+The console will print
+.DS
+.TS
+lw(1.5i) l.
+\fB>boot\fP	(printed by the block 0 boot)
+
+.B
+\fInn\fPBoot	\fR(printed by /boot)\fP
+:
+.R
+.TE
+.DE
+The '>' is the prompt from the first bootstrap.
+It automatically boots /\fIboot\fP for you;
+if /\fIboot\fP is not found, it will prompt again and allow another
+name to be tried.
+It is a very small and simple program, however, and can only
+boot the second-stage boot from the first file system.
+Once /boot is running and prints its ``: '' prompt,
+boot unix as above, using \fIdk\^\fPunix or unix as appropriate.
+.NH 2
+Checking the root file system
+.PP
+Before continuing,
+check the integrity of the root file system by giving the command
+.DS
+\fB#\fP fsck /dev/r\fIdk\^\fP0a
+.DE
+(omit the \fBa\fP for an RK05 or RL).
+The output from
+.I fsck
+should look something like:
+.DS
+.B
+/dev/r\fIxx\^\fP0a
+File System:  /
+
+** Checking /dev/r\fIxx\^\fP0a
+** Phase 1 - Check Blocks and Sizes
+** Phase 2 - Check Pathnames
+** Phase 3 - Check Connectivity
+** Phase 4 - Check Reference Counts
+** Phase 5 - Check Free List 
+.\"CHECK
+236 files 1881 blocks xxxxx free
+.R
+.R
+.DE
+.PP
+If there are inconsistencies in the file system, you may be prompted
+to apply corrective action; see the document describing
+.I fsck
+for information.
+The number of free blocks will vary depending on the disk you are
+using for your root file system.

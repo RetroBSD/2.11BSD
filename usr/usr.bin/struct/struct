@@ -1,0 +1,23 @@
+#! /bin/sh
+#
+#	@(#)struct	4.2.1	(2.11BSD)	1996/10/23
+#
+trap "rm -f /tmp/struct*$$" 0 1 2 3 13 15
+files=no
+for i
+do
+	case $i in
+	-*)	;;
+	*)	files=yes
+	esac
+done
+
+case $files in
+yes)
+	/usr/libexec/struct/structure $* >/tmp/struct$$
+	;;
+no)
+	cat >/tmp/structin$$
+	/usr/libexec/struct/structure /tmp/structin$$ $* >/tmp/struct$$
+esac &&
+	/usr/libexec/struct/beautify</tmp/struct$$

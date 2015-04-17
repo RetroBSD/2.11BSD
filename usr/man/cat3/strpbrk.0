@@ -1,0 +1,66 @@
+
+
+
+STRPBRK(3)	    UNIX Programmer's Manual	       STRPBRK(3)
+
+
+
+NAME
+     strpbrk - locate multiple characters in string
+
+SYNOPSIS
+     #include <string.h>
+
+     char *
+     strpbrk(s, charset)
+     _c_h_a_r *_s;
+     _c_h_a_r *_c_h_a_r_s_e_t;
+
+DESCRIPTION
+     The strpbrk() function locates in the null-terminated string
+     _s the first occurrence of any character in the string _c_h_a_r_-
+     _s_e_t and returns a pointer to this character.  If no charac-
+     ters from _c_h_a_r_s_e_t occur anywhere in _s strpbrk() returns
+     NULL.
+
+SEE ALSO
+     index(3), memchr(3), rindex(3), strchr(3), strcspn(3),
+     strrchr(3), strsep(3), strspn(3), strstr(3), strtok(3)
+
+STANDARDS
+     The strpbrk() function conforms to ANSI C X3.159-1989
+     )``ANSI C'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 12, 1996			1
+
+
+

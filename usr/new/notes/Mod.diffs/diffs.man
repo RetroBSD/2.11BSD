@@ -1,0 +1,47 @@
+*** notes.1.old		Wed Jun 24 14:02:30 1987
+--- notes.1		Wed Jun 24 14:02:32 1987
+***************
+*** 195,200 ****
+--- 195,207 ----
+  allowing users to use different editors for writing notes and
+  for other tools.
+  .PP
++ Notes and responses to non-local notesfiles will include the file named
++ in the
++ .I NFSIG
++ variable as a signature block.
++ .I Notes
++ will prompt whether to include it when a new note or response is posted.
++ .PP
+  Some commonly used commands within the notesfile system are listed below:
+  .TP 10
+  space
+*** nfadmin.8.old	Wed Jun 24 14:02:47 1987
+--- nfadmin.8		Wed Jun 24 14:02:48 1987
+***************
+*** 47,52 ****
+--- 47,70 ----
+  Flag this notesfile as a non-archive notesfile.  This does not affect what
+  happens to notes when they expire.
+  .TP
++ -M+
++ Flag this notesfile as a moderated notesfile.  This causes commands that
++ create new notes or responses to create a mail message to the newsgroup
++ moderator instead.  A list of notesfiles and the mail address of the
++ moderator is maintained in /usr/spool/notes/.utilities/moderators.
++ .TP
++ -M-
++ Flag this notesfile as a non-moderated notesfile.
++ .TP
++ -L+
++ Flag this notesfile as a local notesfile.  Local notesfiles don't ask
++ whether to include a .signature file at the end of a new note or response.
++ .TP
++ -L-
++ Flag this notesfile as a non-local notesfile.  If the NFSIG environment
++ variable is set, notes will prompt whether or not to include the signature
++ file named by NFSIG at the end of a new note or response.
++ .TP
+  -e=NN
+  Set the expiration time of this notesfile to NN days.  (NN should be replaced
+  with a positive number).

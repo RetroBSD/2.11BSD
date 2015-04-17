@@ -1,0 +1,66 @@
+
+
+
+DMESG(8)	    UNIX Programmer's Manual		 DMESG(8)
+
+
+
+NAME
+     dmesg - collect system diagnostic messages to form error log
+
+SYNOPSIS
+     /sbin/dmesg [ - ]
+
+DESCRIPTION
+     N.B.: _D_m_e_s_g is obsoleted by _s_y_s_l_o_g_d(8) for maintenance of
+     the system error log.
+
+     _D_m_e_s_g looks in a system buffer for recently printed diagnos-
+     tic messages and prints them on the standard output.  The
+     messages are those printed or logged by the system when
+     errors occur.  If the - flag is given, then _d_m_e_s_g computes
+     (incrementally) the new messages since the last time it was
+     run and places these on the standard output.
+
+FILES
+     /usr/adm/msgbuf	 scratch file for memory of - option
+
+SEE ALSO
+     syslogd(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 17, 1996			1
+
+
+

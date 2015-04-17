@@ -1,0 +1,13 @@
+rx.c	a working rx01 driver.  Two interleave factors are supported,
+	non-interleaved (IBM standard) and DEC interleaving, used in
+	RT-11.  Special minor device numbers are used to access the
+	different interleaving factors, see the source code for details.
+
+rxreg.h	this is /usr/include/sys/rxreg.h.  In contains register definitions
+	for the rx01 driver
+
+		Keith Packard
+		5440 SE 41st
+		Portland, OR 97202
+		...!tektronix!azure!keithp
+		...!tektronix!reed!motel6!keith

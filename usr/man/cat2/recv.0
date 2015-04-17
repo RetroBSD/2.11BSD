@@ -1,0 +1,132 @@
+
+
+
+RECV(2)             UNIX Programmer's Manual		  RECV(2)
+
+
+
+NAME
+     recv, recvfrom, recvmsg - receive a message from a socket
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <sys/socket.h>
+
+     cc = recv(s, buf, len, flags)
+     int cc, s;
+     char *buf;
+     int len, flags;
+
+     cc = recvfrom(s, buf, len, flags, from, fromlen)
+     int cc, s;
+     char *buf;
+     int len, flags;
+     struct sockaddr *from;
+     int *fromlen;
+
+     cc = recvmsg(s, msg, flags)
+     int cc, s;
+     struct msghdr msg[];
+     int flags;
+
+DESCRIPTION
+     _R_e_c_v, _r_e_c_v_f_r_o_m, and _r_e_c_v_m_s_g are used to receive messages
+     from a socket.
+
+     The _r_e_c_v call is normally used only on a _c_o_n_n_e_c_t_e_d socket
+     (see _c_o_n_n_e_c_t(2)), while _r_e_c_v_f_r_o_m and _r_e_c_v_m_s_g may be used to
+     receive data on a socket whether it is in a connected state
+     or not.
+
+     If _f_r_o_m is non-zero, the source address of the message is
+     filled in.  _F_r_o_m_l_e_n is a value-result parameter, initialized
+     to the size of the buffer associated with _f_r_o_m, and modified
+     on return to indicate the actual size of the address stored
+     there.  The length of the message is returned in _c_c.  If a
+     message is too long to fit in the supplied buffer, excess
+     bytes may be discarded depending on the type of socket the
+     message is received from (see _s_o_c_k_e_t(2)).
+
+     If no messages are available at the socket, the receive call
+     waits for a message to arrive, unless the socket is non-
+     blocking (see _i_o_c_t_l(2)) in which case a _c_c of -1 is returned
+     with the external variable errno set to EWOULDBLOCK.
+
+     The _s_e_l_e_c_t(2) call may be used to determine when more data
+     arrives.
+
+     The _f_l_a_g_s argument to a recv call is formed by _o_r'ing one or
+     more of the values,
+
+
+
+Printed 11/26/99	  May 23, 1986				1
+
+
+
+
+
+
+RECV(2)             UNIX Programmer's Manual		  RECV(2)
+
+
+
+	  #define  MSG_OOB	   0x1	  /* process out-of-band data */
+	  #define  MSG_PEEK	   0x2	  /* peek at incoming message */
+
+     The _r_e_c_v_m_s_g call uses a _m_s_g_h_d_r structure to minimize the
+     number of directly supplied parameters.  This structure has
+     the following form, as defined in <_s_y_s/_s_o_c_k_e_t._h>:
+
+	  struct msghdr {
+	       caddr_t	 msg_name;	/* optional address */
+	       int  msg_namelen;	/* size of address */
+	       struct	 iovec *msg_iov;	  /* scatter/gather array */
+	       int  msg_iovlen;         /* # elements in msg_iov */
+	       caddr_t	 msg_accrights;      /* access rights sent/received */
+	       int  msg_accrightslen;
+	  };
+
+     Here _m_s_g__n_a_m_e and _m_s_g__n_a_m_e_l_e_n specify the destination
+     address if the socket is unconnected; _m_s_g__n_a_m_e may be given
+     as a null pointer if no names are desired or required.  The
+     _m_s_g__i_o_v and _m_s_g__i_o_v_l_e_n describe the scatter gather loca-
+     tions, as described in _r_e_a_d(2).  A buffer to receive any
+     access rights sent along with the message is specified in
+     _m_s_g__a_c_c_r_i_g_h_t_s, which has length _m_s_g__a_c_c_r_i_g_h_t_s_l_e_n.	Access
+     rights are currently limited to file descriptors, which each
+     occupy the size of an int.
+
+RETURN VALUE
+     These calls return the number of bytes received, or -1 if an
+     error occurred.
+
+ERRORS
+     The calls fail if:
+
+     [EBADF]		 The argument _s is an invalid descriptor.
+
+     [ENOTSOCK]          The argument _s is not a socket.
+
+     [EWOULDBLOCK]	 The socket is marked non-blocking and
+			 the receive operation would block.
+
+     [EINTR]		 The receive was interrupted by delivery
+			 of a signal before any data was avail-
+			 able for the receive.
+
+     [EFAULT]		 The data was specified to be received
+			 into a non-existent or protected part of
+			 the process address space.
+
+SEE ALSO
+     fcntl(2), read(2), send(2), select(2), getsockopt(2),
+     socket(2)
+
+
+
+
+Printed 11/26/99	  May 23, 1986				2
+
+
+

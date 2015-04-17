@@ -1,0 +1,185 @@
+%!PS-Adobe-1.0
+%%Creator: Steve Holden
+%%Modified: John Macdonald, Rich Burridge, Rainer Klute
+%%Modified: Bertrand Decouty, Bjorn P. Brox
+%%Title: @(#)mp.pro.l.ps 1.8 92/02/17
+%%CreationDate: see above
+%%PageLength 60
+%%LineLength 80
+%%NumCols 2
+%%DocumentFonts: Courier Helvetica-BoldOblique Times-Bold Times-Roman
+%%Pages: (atend)
+%%EndComments
+
+/setpagepos      % pageno setpagepos --
+{
+  /leftedge 0 def
+  /bottomedge 0 def
+  /rightedge fullheight 2 div def
+  /topedge fullwidth def
+  2 mod 0 eq {
+    fullheight 2 div
+    dup /leftedge exch leftedge add def
+        /rightedge exch rightedge add def
+  } if
+  /ypos topedge 92 sub def
+  /xpos leftedge 50 add def
+} def
+
+
+/setmargin {
+  9 7 LandscapeMode { exch } if pop
+    /FontSize exch def
+
+  /font1d /Times-Bold           reencodeISO
+  /font2d /Times-Roman          reencodeISO
+  /CourierISO /Courier          reencodeISO
+  /fontHd /Helvetica-BoldOblique        reencodeISO
+  /fontH2 /Helvetica-BoldOblique        reencodeISO
+  /fontNd /Times-Bold           reencodeISO
+  /font3d backspacefont
+
+  /BoldFont      { /font1d findfont FontSize scalefont setfont } def
+  /pf            { /font2d findfont FontSize scalefont setfont } def
+  /sf            { /font3d findfont FontSize scalefont setfont } def
+  /fontH         { /fontHd findfont 10 scalefont setfont } def
+  /fontD         { /fontH2 findfont 8 scalefont setfont } def
+  /fontN         { /fontNd findfont 10 scalefont setfont } def
+} def
+
+/graybox	% grey x1 y1 x2 y2 graybox --
+{
+    newpath
+      4 -1 roll 2 copy			% y2 x1
+      10 sub exch moveto
+      4 -1 roll 2 copy			% x1 y1
+      10 180 270 arc
+      4 -1 roll 1 copy 3 -1 roll	% x2 y1
+      10 270 0 arc
+      3 -1 roll 1 copy 3 1 roll		% x1 y2 x2 y2
+      10 0 90 arc
+      10 90 180 arc
+    closepath
+    gsave
+      setgray fill
+    grestore
+    0 setgray stroke
+} bind def
+
+/dobanners                        % page_number dobanners --
+{
+  gsave
+    % listing type, user, date across the top
+    0.88                                % gray level
+    leftedge  50 add topedge 56 sub     % bottom lt corner
+    rightedge 95 sub topedge 36 sub     % top rt corner
+    graybox
+
+    currentdict /sfactor known not
+    {
+      % determine a suitable factor to scale down the header text (done
+      % only once per document)
+      rightedge 95 sub leftedge 50 add sub % available space
+      fontD MailFor stringwidth pop
+      fontH User    stringwidth pop add
+            (  )    stringwidth pop add
+      fontD TimeNow stringwidth pop add    % total length of strings
+      div
+      dup 1 gt {pop 1} if                  % does it fit?
+      /sfactor exch def                    % if not scale down
+    }
+    if
+
+    leftedge 50 add topedge 50 sub moveto
+    gsave
+    sfactor dup scale
+    fontD MailFor show
+    fontH User    show
+          (  )    show
+    grestore
+    fontD
+    rightedge 95 sub TimeNow stringwidth pop sfactor mul sub
+    topedge 50 sub moveto
+    gsave
+    sfactor dup scale
+    TimeNow show
+    grestore
+    % page number to the top right corner
+    1                                   % gray level
+    rightedge 70 sub topedge 56 sub     % bottom lt
+    rightedge 50 sub topedge 36 sub     % top rt
+    graybox
+    fontD
+    (Page) dup stringwidth
+       topedge 40 sub exch sub                  % y-centered
+       exch 2 div rightedge 60 sub exch sub     % x-centered
+       exch moveto show
+    fontH
+    dup stringwidth
+       topedge 58 sub exch sub                  % y-centered
+       exch 2 div rightedge 60 sub exch sub     % x-centered
+       exch moveto show
+    0.88                                   % gray level
+    leftedge  50 add bottomedge 50 add     % bottom lt corner
+    rightedge 50 sub bottomedge 70 add     % top rt corner
+    graybox
+    fontH
+    % compute x pos for centring
+      % ((l+50) + (r-50)) / 2 is the page centre
+      leftedge rightedge add 2 div
+      % but we want to start at the beginning of the string, not the middle
+      Subject stringwidth pop 2 div sub
+    % y pos is simple
+      bottomedge 54 add
+      moveto
+    Subject show
+  grestore
+} bind def
+
+/endpage		% page_number endpage --
+{
+  pop
+%  PageSave restore      % restore *always* before showpage
+  showpage		% display it
+} bind def
+
+/endcol			% page_number col_number endcol --
+{
+  /ColNo exch def
+  PageNo ColNo add 1 sub setpagepos
+  dobanners
+  PageNo ColNo add setpagepos
+  xpos ypos moveto
+} bind def
+
+/newpage	% page_number newpage --
+{
+  2 mul 1 sub /PageNo exch def   % to be consistent with other prologues.
+  /ColNo 1 def
+  PageNo setpagepos
+%  /PageSave save def
+  LandscapeMode {setlandscape} if
+  /lct 0 def
+  xpos ypos moveto
+  sf
+} bind def
+
+/setlandscape
+{
+  612 0 translate
+  90 rotate
+} bind def
+
+/showline
+{
+  show
+  /ypos ypos FontSize sub def
+  xpos ypos moveto
+} bind def
+
+% see the trouble shooting section in the README for details on setscreen.
+106 45 {dup mul exch dup mul add 1.0 exch sub} setscreen
+
+/LandscapeMode true def
+
+setmargin

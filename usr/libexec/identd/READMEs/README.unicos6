@@ -1,0 +1,20 @@
+Machine Type:		Cray UNICOS 6
+
+Make using:		make unicos6
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" sunos6
+
+Person(s) porting:	Douglas Lee Schales <Doug.Schales@sc.tamu.edu>
+Port date:		A long time ago...
+Verified working:	OS version(s)	Pident vers  Person
+			6.0.12		2.1beta.7    <Doug.Schales@sc.tamu.edu>
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Works as daemon or from inetd with wait/nowait
+
+Known bugs:		It returns the <uid> of the process owning the
+			socket in question instead of the <ruid>. Ie,
+			it returns "root" instead of the actual user
+			when the user runs a setuid-root program like rsh..

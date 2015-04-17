@@ -1,0 +1,28 @@
+Forget about using the original (non-overlaid) Makefile; f77 is so big
+now that it can't run without overlays, even given separate i/d.
+
+Ovmakefile.-n is essentially the original Ovmakefile; Ovmakefile.-i
+takes advantage of separate i/d to cut down (drastically) on the number
+of overlays needed.  In addition, moving selected tables into i-space
+both doesn't work and isn't needed given split i/d; thus, it isn't
+attempted.
+
+Defs has been hacked for larger internal compiler table sizes.  This
+will only work with separate i/d; copy defs.orig onto defs if you are
+running a non-split i/d machine.
+
+Error.c has been trivially (and dirtily) hacked to give a decent
+diagnostic message on FATAL and FATAL1 compiler errors.  The message
+was there all along; however, f77pass1 used to exit before emitting the
+message text.
+
+Take note that you may need to remake yacc before you can remake
+f77pass1.  F77pass1 needs lots of yacc table space.
+
+For further information, contact:
+	Dr. Walter E. Brown
+	Computer Science Dept.
+	Moravian College
+	Bethlehem, PA  18018
+	(215) 861-1441
+	...!{ihnp4, brl-bmd, aluxp}!mc70!brown

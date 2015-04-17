@@ -1,0 +1,264 @@
+
+
+
+WAIT(2)             UNIX Programmer's Manual		  WAIT(2)
+
+
+
+NAME
+     wait, waitpid, wait4, wait3 - wait for process terminatation
+
+SYNOPSIS
+     #include <sys/types.h>
+     #include <sys/wait.h>
+
+     pid = wait(status)
+     int pid;
+     union wait *status;
+
+     #include <sys/time.h>
+     #include <sys/resource.h>
+
+     pid = waitpid(wpid, status, options);
+     int pid;
+     int wpid;
+     union wait *status;
+     int options;
+
+     pid = wait3(status, options, rusage);
+     int pid;
+     union wait *status;
+     int options;
+     struct rusage *rusage;
+
+     pid = wait4(wpid, status, options, rusage);
+     int pid;
+     int wpid;
+     union wait *status;
+     int options;
+     struct rusage *rusage;
+
+DESCRIPTION
+     The _w_a_i_t function suspends execution of its calling process
+     until status information is available for a terminated child
+     process, or a signal is received.	On return from a success-
+     ful _w_a_i_t call, the status area contains termination informa-
+     tion about the process that exited as defined below.
+
+     The _w_a_i_t_4 call provides a more general interface for pro-
+     grams that need to wait for certain child processes, that
+     need resource utilization statistics accummulated by child
+     processes, or that require options.  The other wait func-
+     tions are implemented using _w_a_i_t_4 .
+
+     The wpid parameter specifies the set of child processes for
+     which to wait.  If wpid is -1, the call waits for any child
+     process.  If wpid is 0, the call waits for any child process
+     in the process group of the caller.  If wpid is greater than
+     zero, the call waits for the process with process id wpid .
+     If wpid is less than -1, the call waits for any process
+
+
+
+Printed 11/26/99	 March 12, 1993                         1
+
+
+
+
+
+
+WAIT(2)             UNIX Programmer's Manual		  WAIT(2)
+
+
+
+     whose process group id equals the absolute value of wpid .
+
+     The status parameter is defined below.  The options parame-
+     ter contains the bitwise OR of any of the following options.
+     The WNOHANG option is used to indicate that the call should
+     not block if there are no processes that wish to report
+     status.  If the WUNTRACED option is set, children of the
+     current process that are stopped due to a SIGTTIN , SIGTTOU
+     , SIGTSTP , or SIGSTOP signal also have their status
+     reported.
+
+     If rusage is non-zero, a summary of the resources used by
+     the terminated process and all its children is returned
+     (this information is currently not available for stopped
+     processes).
+
+     When the WNOHANG option is specified and no processes wish
+     to report status, _w_a_i_t_4 returns a process id of 0.
+
+     The _w_a_i_t_p_i_d call is identical to _w_a_i_t_4 with an rusage value
+     of zero.  The older _w_a_i_t_3 call is the same as _w_a_i_t_4 with a
+     wpid value of -1.
+
+     The following macros may be used to test the manner of exit
+     of the process.  One of the first three macros will evaluate
+     to a non-zero (true) value:
+
+     _W_I_F_E_X_I_T_E_D(_s_t_a_t_u_s) - True if the process terminated normally
+     by a call to __e_x_i_t(_2) or _e_x_i_t(_2) .
+
+     _W_I_F_S_I_G_N_A_L_E_D(_s_t_a_t_u_s) - True if the process terminated due to
+     receipt of a signal.
+
+     _W_I_F_S_T_O_P_P_E_D(_s_t_a_t_u_s) - True if the process has not terminated,
+     but has stopped and can be restarted.  This macro can be
+     true only if the wait call specified the WUNTRACED option or
+     if the child process is being traced (see _p_t_r_a_c_e(_2)).
+
+     Depending on the values of those macros, the following mac-
+     ros produce the remaining status information about the child
+     process:
+
+     _W_E_X_I_T_S_T_A_T_U_S(_s_t_a_t_u_s) - If _W_I_F_E_X_I_T_E_D(_s_t_a_t_u_s) is true, evalu-
+     ates to the low-order 8 bits of the argument passed to
+     __e_x_i_t(_2) or _e_x_i_t(_2) by the child.
+
+     _W_T_E_R_M_S_I_G(_s_t_a_t_u_s) - If _W_I_F_S_I_G_N_A_L_E_D(_s_t_a_t_u_s) is true, evaluates
+     to the number of the signal that caused the termination of
+     the process.
+
+     _W_C_O_R_E_D_U_M_P(_s_t_a_t_u_s) If _W_I_F_S_I_G_N_A_L_E_D(_s_t_a_t_u_s) is true, evaluates
+     as true if the termination of the process was accompanied by
+
+
+
+Printed 11/26/99	 March 12, 1993                         2
+
+
+
+
+
+
+WAIT(2)             UNIX Programmer's Manual		  WAIT(2)
+
+
+
+     the creation of a core file containing an image of the pro-
+     cess when the signal was received.
+
+     _W_S_T_O_P_S_I_G(_s_t_a_t_u_s) If _W_I_F_S_T_O_P_P_E_D(_s_t_a_t_u_s) is true, evaluates to
+     the number of the signal that caused the process to stop.
+
+NOTES
+     See _s_i_g_v_e_c(_2) for a list of termination signals.  A status
+     of 0 indicates normal termination.
+
+     If a parent process terminates without waiting for all of
+     its child processes to terminate, the remaining child
+     processes are assigned the parent process 1 ID (the init
+     process ID).
+
+     If a signal is caught while any of the _w_a_i_t calls is pend-
+     ing, the call may be interrupted or restarted when the
+     signal-catching routine returns, depending on the options in
+     effect for the signal; see _i_n_t_r_o(_2), System call restart.
+
+RETURN VALUES
+     If _w_a_i_t() returns due to a stopped or terminated child pro-
+     cess, the process ID of the child is returned to the calling
+     process.  Otherwise, a value of -1 is returned and _e_r_r_n_o is
+     set to indicate the error.
+
+     If _w_a_i_t_4(), _w_a_i_t_3() _o_r _w_a_i_t_p_i_d() returns due to a stopped or
+     terminated child process, the process ID of the child is
+     returned to the calling process.  If there are no children
+     not previously awaited, -1 is returned with _e_r_r_n_o set to
+     [ECHILD]. Otherwise, if WNOHANG is specified and there are
+     no stopped or exited children, 0 is returned.  If an error
+     is detected or a caught signal aborts the call, a value of
+     -1 is returned and _e_r_r_n_o is set to indicate the error.
+
+ERRORS
+     _W_a_i_t() will fail and return immediately if:
+
+     [ECHILD]	    The calling process has no existing
+		    unwaited-for child processes.
+
+     [EFAULT]	    The _s_t_a_t_u_s or _r_u_s_a_g_e arguments point to an
+		    illegal address.  (May not be detected before
+		    exit of a child process.)
+
+     [EINTR]	    The call was interrupted by a caught signal,
+		    or the signal had the _S_V__I_N_T_E_R_R_U_P_T flag set.
+
+STANDARDS
+     The _w_a_i_t and _w_a_i_t_p_i_d functions are defined by POSIX; _w_a_i_t_4
+     and _w_a_i_t_3 are not specified by POSIX.  The _W_C_O_R_E_D_U_M_P macro
+     and the ability to restart a pending _w_a_i_t call are
+
+
+
+Printed 11/26/99	 March 12, 1993                         3
+
+
+
+
+
+
+WAIT(2)             UNIX Programmer's Manual		  WAIT(2)
+
+
+
+     extensions to the POSIX interface.
+
+SEE ALSO
+     _e_x_i_t(_2) , _s_i_g_v_e_c(_2) A _w_a_i_t function call appeared in Version
+     6 AT&T UNIX.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 March 12, 1993                         4
+
+
+

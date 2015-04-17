@@ -1,0 +1,132 @@
+
+
+
+CHDIR(2)	    UNIX Programmer's Manual		 CHDIR(2)
+
+
+
+NAME
+     chdir, fchdir - change current working directory
+
+SYNOPSIS
+     chdir(path)
+     char *path;
+
+     fchdir(fd)
+     int fd;
+
+DESCRIPTION
+     The path argument points to the pathname of a directory.
+     The fd argument is a file descriptor which references a
+     directory.  The _c_h_d_i_r function causes this directory to
+     become the current working directory, the starting point for
+     path names not beginning with ``/''.
+
+     The _f_c_h_d_i_r function causes the directory referenced by fd to
+     become the current working directory, the starting point for
+     path searches of pathnames not beginning with a slahs, '/'.
+
+     In order for a directory to become the current directory, a
+     process must have execute (search) access to the directory.
+
+RETURN VALUE
+     Upon successful completion, a value of 0 is returned.  Oth-
+     erwise, a value of -1 is returned and _e_r_r_n_o is set to indi-
+     cate the error.
+
+ERRORS
+     _C_h_d_i_r will fail and the current working directory will be
+     unchanged if one or more of the following are true:
+
+     [ENOTDIR]	    A component of the path prefix is not a
+		    directory.
+
+     [EINVAL]	    The pathname contains a character with the
+		    high-order bit set.
+
+     [ENAMETOOLONG] A component of a pathname exceeded 63 charac-
+		    ters, or an entire path name exceeded 255
+		    characters.
+
+     [ENOENT]	    The named directory does not exist.
+
+     [ELOOP]	    Too many symbolic links were encountered in
+		    translating the pathname.
+
+     [EACCES]	    Search permission is denied for any component
+		    of the path name.
+
+     [EFAULT]	    _P_a_t_h points outside the process's allocated
+
+
+
+Printed 11/26/99	 April 21, 1994                         1
+
+
+
+
+
+
+CHDIR(2)	    UNIX Programmer's Manual		 CHDIR(2)
+
+
+
+		    address space.
+
+     [EIO]	    An I/O error occurred while reading from or
+		    writing to the file system.
+
+     _F_c_h_d_i_r will fail and the current working directory will be
+     unchanged if one or more of the following are true:
+
+     [EACCES]	    Search permission is denied for the directory
+		    referenced by the file descriptor.
+
+     [ENOTDIR]	    The file descriptor fd does not reference a
+		    directory.
+
+     [EBADF]	    The argument fd is not a valid file descrip-
+		    tor.
+
+SEE ALSO
+     chroot(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 21, 1994                         2
+
+
+

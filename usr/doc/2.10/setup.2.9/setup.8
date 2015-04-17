@@ -1,0 +1,83 @@
+.nr H1 8
+.nr H2 0
+.ds CF \*(DY
+.ds RH "Magic numbers
+.bp
+.LG
+.B
+.ce
+8. KERNEL MAGIC NUMBERS
+.sp 2
+.R
+.NL
+.PP
+This sections contains a collection of magic numbers for use in patching
+core or an executable unix binary.  Some of them have also been mentioned
+earlier in this paper.  
+With the exception of the \fIxp_type[i]\fP variables (which hold bytes)
+and \fIswplo\fP (which is a long) all locations given contain short integers.
+N.B.:  in the case of paired interrupt vectors (for DHs and DZs) the address
+of the second vector of the pair is four more than
+the address of the first vector.
+.PP
+.sp 1i
+.TS
+c s s s s
+c c c c c
+l l n n n.
+Interrupt Vectors
+.sp .5
+Vector	Handler	Contents	Block device	Character device
+0160	rlio	01202	8	18
+0210	hkio	01142	4	19
+0220	rkio	01172	0	9
+0224	tmio	01222	3	12
+0224	htio	01152	7	15
+0224	tsio	01232	9	20
+0254	xpio	01242	6	14
+0260	rpio	01212	1	11
+\(dg	dzin	01132	-	21
+\(dg	dzdma	02202	-	21
+\(dg	dhin	01112	-	4
+\(dg	dhou	01122	-	4
+\(dg	lpio	01162	-	2
+.TE
+.FS
+\u\(dg\d Set by \fIautoconfig\fP\|(8).
+.FE
+.bp
+.TS
+c s s
+c c c
+l n n.
+Other Variables
+.sp .5
+Name	Address	Contents
+xp_addr	061464	0176700
+xp_type[0]	061472	\(dd
+xp_type[1]	061506	\(dd
+xp_type[2]	061522	\(dd
+xp_type[3]	061536	\(dd
+HKADDR	061006	0177440
+HTADDR	0114236	\(dg
+RKADDR	061152	0177400
+RLADDR	061154	0174400
+RPADDR	061236	0176710
+TMADDR	0113330	\(dg
+TSADDR	0113622	\(dg
+dz_addr	0113324	\(dg
+dh_addr	0114146	\(dg
+lp_addr	0113462	\(dg
+rootdev	060772	*
+pipedev	060776	*
+swapdev	060774	*
+swplo	061000	*
+nswap	061004	*
+.TE
+.FS
+\(dg Set by \fIautoconfig\fP\|(8).
+.br
+\(dd Set by reading the corresponding drive type register.
+.br
+\u*\d System dependent.
+.FE

@@ -1,0 +1,66 @@
+
+
+
+SINH(3M)	    UNIX Programmer's Manual		 SINH(3M)
+
+
+
+NAME
+     sinh, cosh, tanh - hyperbolic functions
+
+SYNOPSIS
+     #include <math.h>
+
+     double sinh(x)
+     double x;
+
+     double cosh(x)
+     double x;
+
+     double tanh(x)
+     double x;
+
+DESCRIPTION
+     These functions compute the designated hyperbolic functions
+     for real arguments.
+
+ERROR (due to Roundoff etc.)
+     Below 2.4 _u_l_ps; an _u_l_p is one _Unit in the _Last _Place.
+
+DIAGNOSTICS
+     Sinh and cosh return the reserved operand on a VAX if the
+     correct value would overflow.
+
+SEE ALSO
+     math(3M), infnan(3M)
+
+AUTHOR
+     W. Kahan, Kwok-Choi Ng
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

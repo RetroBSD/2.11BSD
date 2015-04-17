@@ -1,0 +1,66 @@
+
+
+
+LA(1)		    UNIX Programmer's Manual		    LA(1)
+
+
+
+NAME
+     la - print 1, 5 and 15 minute system load averages
+
+SYNOPSIS
+     la
+
+DESCRIPTION
+     _l_a prints the one, five and fifteen minute system load aver-
+     ages.  These averages represent the average number of runn-
+     able jobs for the indicated time period.
+
+SEE ALSO
+     w(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	  June 20, 1987                         1
+
+
+

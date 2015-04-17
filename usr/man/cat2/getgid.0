@@ -1,0 +1,66 @@
+
+
+
+GETGID(2)	    UNIX Programmer's Manual		GETGID(2)
+
+
+
+NAME
+     getgid, getegid - get group process identification
+
+SYNOPSIS
+     #include <sys/types.h>
+
+     _g_i_d__t
+     getgid()
+
+     _g_i_d__t
+     getegid()
+
+DESCRIPTION
+     The getgid function returns the real group ID of the calling
+     process, getegid returns the effective group ID of the cal-
+     ling process.
+
+     The real group ID is specified at login time.
+
+     The real group ID is the group of the user who invoked the
+     program.  As the effective group ID gives the process addi-
+     tional permissions during the execution of ``_s_e_t-_g_r_o_u_p-_I_D''
+     mode processes, getgid is used to determine the real-user-id
+     of the calling process.
+
+ERRORS
+     The getgid and getegid functions are always successful, and
+     no return value is reserved to indicate an error.
+
+SEE ALSO
+     getuid(2), setregid(2), setgid(3)
+
+STANDARDS
+     Getgid and getegid conform to IEEE Std 1003.1-1988
+     (``POSIX'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 2, 1997			1
+
+
+

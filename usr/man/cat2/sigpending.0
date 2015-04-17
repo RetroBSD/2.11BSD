@@ -1,0 +1,66 @@
+
+
+
+SIGPENDING(2)	    UNIX Programmer's Manual	    SIGPENDING(2)
+
+
+
+NAME
+     sigpending - get pending signals
+
+SYNOPSIS
+     #include <signal.h>
+
+     _i_n_t
+     sigpending(set)
+     _s_i_g_s_e_t__t *_s_e_t;
+
+DESCRIPTION
+     The sigpending function returns a mask of the signals pend-
+     ing for delivery to the calling process in the location
+     indicated by _s_e_t.	Signals may be pending because they are
+     currently masked, or transiently before delivery (although
+     the latter case is not normally detectable).
+
+RETURN VALUES
+     A 0 value indicated that the call succeeded.  A -1 return
+     value indicates an error occurred and _e_r_r_n_o is set to indi-
+     cated the reason.
+
+ERRORS
+     If sigpending fails then _e_r_r_n_o will contain one of the fol-
+     lowing:
+
+
+     [EFAULT]		 _s_e_t contains an invalid address.
+
+SEE ALSO
+     sigaction(2), sigprocmask(2)
+
+STANDARDS
+     The sigpending function is defined by IEEE Std1003.1-1988
+     (``POSIX'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	September 3, 1997			1
+
+
+

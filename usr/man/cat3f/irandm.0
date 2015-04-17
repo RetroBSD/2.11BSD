@@ -1,0 +1,66 @@
+
+
+
+RANDOM(3F)	    UNIX Programmer's Manual	       RANDOM(3F)
+
+
+
+NAME
+     random, drandm, irandm - better random number generator
+
+SYNOPSIS
+     function irandm (iflag)
+
+     function random (iflag)
+
+     double precision function drandm (iflag)
+
+DESCRIPTION
+     These functions use _r_a_n_d_o_m(3) to generate sequences of ran-
+     dom numbers, and should be used rather than the older func-
+     tions described in _m_a_n _3_f _r_a_n_d. If _i_f_l_a_g is non-zero, it is
+     used as a new seed for the random number generator, and the
+     first new random value is returned.
+
+     _I_r_a_n_d_m returns positive integers in the range 0 through
+     2147483647 ( 2**31-1).  _R_a_n_d_o_m and _d_r_a_n_d_m return values in
+     the range 0. through 1.0 by dividing the integer random
+     number from _r_a_n_d_o_m(3) by 2147483647 .
+
+FILES
+     /usr/lib/libF77.a
+
+SEE ALSO
+     random(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

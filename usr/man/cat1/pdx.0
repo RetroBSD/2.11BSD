@@ -1,0 +1,330 @@
+
+
+
+PDX(1)		    UNIX Programmer's Manual		   PDX(1)
+
+
+
+NAME
+     pdx - pascal debugger
+
+SYNOPSIS
+     pdx [-r] [_o_b_j_f_i_l_e]
+
+DESCRIPTION
+     _P_d_x is a tool for source level debugging and execution of
+     Pascal programs.  The _o_b_j_f_i_l_e is an object file produced by
+     the Pascal translator _p_i(1).  If no _o_b_j_f_i_l_e is specified,
+     _p_d_x looks for a file named ``obj'' in the current directory.
+     The object file contains a symbol table which includes the
+     name of the all the source files translated by _p_i to create
+     it.  These files are available for perusal while using the
+     debugger.
+
+     If the file ``.pdxinit'' exists in the current directory,
+     then the debugger commands in it are executed.
+
+     The -r option causes the _o_b_j_f_i_l_e to be executed immediately;
+     if it terminates successfully _p_d_x exits.  Otherwise it
+     reports the reason for termination and offers the user the
+     option of entering the debugger or simply letting _p_x con-
+     tinue with a traceback.  If -r is not specified, _p_d_x just
+     prompts and waits for a command.
+
+     The commands are:
+
+     run [_a_r_g_s] [< _f_i_l_e_n_a_m_e] [> _f_i_l_e_n_a_m_e]
+	  Start executing _o_b_j_f_i_l_e, passing _a_r_g_s as command line
+	  arguments; < or > can be used to redirect input or out-
+	  put in the usual manner.
+
+     trace [in _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n] [if _c_o_n_d_i_t_i_o_n]
+     trace _s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r [if _c_o_n_d_i_t_i_o_n]
+     trace _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n [in _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n] [if _c_o_n_d_i_t_i_o_n]
+     trace _e_x_p_r_e_s_s_i_o_n at _s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r [if _c_o_n_d_i_t_i_o_n]
+     trace _v_a_r_i_a_b_l_e [in _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n] [if _c_o_n_d_i_t_i_o_n]
+	  Have tracing information printed when the program is
+	  executed.  A number is associated with the command that
+	  is used to turn the tracing off (see the delete com-
+	  mand).
+
+	  The first argument describes what is to be traced.  If
+	  it is a _s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r, then the line is printed
+	  immediately prior to being executed.	Source line
+	  numbers in a file other than the current one must be
+	  preceded by the name of the file and a colon, e.g.
+	  ``mumble.p:17''.
+
+	  If the argument is a procedure or function name then
+	  every time it is called, information is printed telling
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+
+
+
+
+PDX(1)		    UNIX Programmer's Manual		   PDX(1)
+
+
+
+	  what routine called it, from what source line it was
+	  called, and what parameters were passed to it.  In
+	  addition, its return is noted, and if it's a function
+	  then the value it is returning is also printed.
+
+	  If the argument is an _e_x_p_r_e_s_s_i_o_n with an at clause then
+	  the value of the expression is printed whenever the
+	  identified source line is reached.
+
+	  If the argument is a variable then the name and value
+	  of the variable is printed whenever it changes.  Execu-
+	  tion is substantially slower during this form of trac-
+	  ing.
+
+	  If no argument is specified then all source lines are
+	  printed before they are executed.  Execution is sub-
+	  stantially slower during this form of tracing.
+
+	  The clause ``in _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n'' restricts tracing
+	  information to be printed only while executing inside
+	  the given procedure or function.
+
+	  _C_o_n_d_i_t_i_o_n is a Pascal boolean expression and is
+	  evaluated prior to printing the tracing information; if
+	  it is false then the information is not printed.
+
+	  There is no restriction on the amount of information
+	  that can be traced.
+
+     stop if _c_o_n_d_i_t_i_o_n
+     stop at _s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r [if _c_o_n_d_i_t_i_o_n]
+     stop in _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n [if _c_o_n_d_i_t_i_o_n]
+     stop _v_a_r_i_a_b_l_e [if _c_o_n_d_i_t_i_o_n]
+	  Stop execution when the given line is reached, pro-
+	  cedure or function called, variable changed, or condi-
+	  tion true.
+
+     delete _c_o_m_m_a_n_d-_n_u_m_b_e_r
+	  The trace or stop corresponding to the given number is
+	  removed.  The numbers associated with traces and stops
+	  are printed by the status command.
+
+     status [> _f_i_l_e_n_a_m_e]
+	  Print out the currently active trace and stop commands.
+
+     cont Continue execution from where it stopped.  This can
+	  only be done when the program was stopped by an inter-
+	  rupt or through use of the stop command.
+
+     step Execute one source line.
+
+     next Execute up to the next source line.  The difference
+
+
+
+Printed 11/26/99	 April 29, 1985                         2
+
+
+
+
+
+
+PDX(1)		    UNIX Programmer's Manual		   PDX(1)
+
+
+
+	  between this and step is that if the line contains a
+	  call to a procedure or function the step command will
+	  stop at the beginning of that block, while the next
+	  command will not.
+
+     print _e_x_p_r_e_s_s_i_o_n [, _e_x_p_r_e_s_s_i_o_n ...]
+	  Print out the values of the Pascal expressions.  Vari-
+	  ables declared in an outer block but having the same
+	  identifier as one in the current block may be refer-
+	  enced as ``_b_l_o_c_k-_n_a_m_e . _v_a_r_i_a_b_l_e''.
+
+     whatis _i_d_e_n_t_i_f_i_e_r
+	  Print the declaration of the given identifier.
+
+     which _i_d_e_n_t_i_f_i_e_r
+	  Print the full qualification of the given identifer,
+	  i.e.	the outer blocks that the identifier is associ-
+	  ated with.
+
+     assign _v_a_r_i_a_b_l_e _e_x_p_r_e_s_s_i_o_n
+	  Assign the value of the expression to the variable.
+
+     call _p_r_o_c_e_d_u_r_e(_p_a_r_a_m_e_t_e_r_s)
+	  Execute the object code associated with the named pro-
+	  cedure or function.
+
+     help Print out a synopsis of _p_d_x commands.
+
+     gripe
+	  Invokes a mail program to send a message to the person
+	  in charge of _p_d_x.
+
+     where
+	  Print out a list of the active procedures and functions
+	  and the respective source line where they are called.
+
+     source _f_i_l_e_n_a_m_e
+	  Read _p_d_x commands from the given _f_i_l_e_n_a_m_e.  Especially
+	  useful when the _f_i_l_e_n_a_m_e has been created by redirect-
+	  ing a status command from an earlier debugging session.
+
+     dump [> _f_i_l_e_n_a_m_e]
+	  Print the names and values of all active data.
+
+     list [_s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r [, _s_o_u_r_c_e-_l_i_n_e-_n_u_m_b_e_r]]
+     list _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n
+	  List the lines in the current source file from the
+	  first line number to the second inclusive.  As in the
+	  editor ``$'' can be used to refer to the last line.  If
+	  no lines are specified, the entire file is listed.  If
+	  the name of a procedure or function is given lines _n-_k
+	  to _n+_k are listed where _n is the first statement in the
+
+
+
+Printed 11/26/99	 April 29, 1985                         3
+
+
+
+
+
+
+PDX(1)		    UNIX Programmer's Manual		   PDX(1)
+
+
+
+	  procedure or function and _k is small.
+
+     file [_f_i_l_e_n_a_m_e]
+	  Change the current source file name to _f_i_l_e_n_a_m_e.  If
+	  none is specified then the current source file name is
+	  printed.
+
+     edit [_f_i_l_e_n_a_m_e]
+     edit _p_r_o_c_e_d_u_r_e/_f_u_n_c_t_i_o_n-_n_a_m_e
+	  Invoke an editor on _f_i_l_e_n_a_m_e or the current source file
+	  if none is specified.  If a _p_r_o_c_e_d_u_r_e or _f_u_n_c_t_i_o_n name
+	  is specified, the editor is invoked on the file that
+	  contains it.	Which editor is invoked by default
+	  depends on the installation.	The default can be over-
+	  ridden by setting the environment variable EDITOR to
+	  the name of the desired editor.
+
+     pi   Recompile the program and read in the new symbol table
+	  information.
+
+     sh _c_o_m_m_a_n_d-_l_i_n_e
+	  Pass the command line to the shell for execution.  The
+	  SHELL environment variable determines which shell is
+	  used.
+
+     alias _n_e_w-_c_o_m_m_a_n_d-_n_a_m_e _o_l_d-_c_o_m_m_a_n_d-_n_a_m_e
+	  This command makes _p_d_x respond to _n_e_w-_c_o_m_m_a_n_d-_n_a_m_e the
+	  way it used to respond to _o_l_d-_c_o_m_m_a_n_d-_n_a_m_e.
+
+     quit Exit _p_d_x.
+
+
+
+
+
+     The following commands deal with the program at the _p_x
+     instruction level rather than source level.  They are not
+     intended for general use.
+
+     tracei [_a_d_d_r_e_s_s] [if _c_o_n_d]
+     tracei [_v_a_r_i_a_b_l_e] [at _a_d_d_r_e_s_s] [if _c_o_n_d]
+     stopi [_a_d_d_r_e_s_s] [if _c_o_n_d]
+     stopi [at] [_a_d_d_r_e_s_s] [if _c_o_n_d]
+	  Turn on tracing or set a stop using a _p_x machine
+	  instruction addresses.
+
+     xi _a_d_d_r_e_s_s [, _a_d_d_r_e_s_s]
+	  Print the instructions starting at the first _a_d_d_r_e_s_s.
+	  Instructions up to the second _a_d_d_r_e_s_s are printed.
+
+     xd _a_d_d_r_e_s_s [, _a_d_d_r_e_s_s]
+	  Print in octal the specified data location(s).
+
+
+
+Printed 11/26/99	 April 29, 1985                         4
+
+
+
+
+
+
+PDX(1)		    UNIX Programmer's Manual		   PDX(1)
+
+
+
+FILES
+     obj		      Pascal object file
+     .pdxinit		      _P_d_x initialization file
+
+
+SEE ALSO
+     pi(1), px(1)
+     _A_n _I_n_t_r_o_d_u_c_t_i_o_n _t_o _P_d_x
+
+BUGS
+     _P_d_x does not understand sets, and provides no information
+     about files.
+
+     The _w_h_a_t_i_s command doesn't quite work for variant records.
+
+     Bad things will happen if a procedure invoked with the call
+     command does a non-local goto.
+
+     The commands step and next should be able to take a _c_o_u_n_t
+     that specifies how many lines to execute.
+
+     There should be commands stepi and nexti that correspond to
+     step and next but work at the instruction level.
+
+     There should be a way to get an address associated with a
+     line number, procedure or function, and variable.
+
+     Most of the command names are too long.
+
+     The alias facility is quite weak.
+
+     A _c_s_h-like history capability would improve the situation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         5
+
+
+

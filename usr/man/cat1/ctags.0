@@ -1,0 +1,132 @@
+
+
+
+CTAGS(1)	    UNIX Programmer's Manual		 CTAGS(1)
+
+
+
+NAME
+     ctags - create a tags file
+
+SYNOPSIS
+     ctags [ -BFatuwvx ] [ -f _t_a_g_s_f_i_l_e ] name ...
+
+DESCRIPTION
+     _C_t_a_g_s makes a tags file for _e_x(1) from the specified C, Pas-
+     cal, Fortran, YACC, lex, and lisp sources.  A tags file
+     gives the locations of specified objects (in this case func-
+     tions and typedefs) in a group of files.  Each line of the
+     tags file contains the object name, the file in which it is
+     defined, and an address specification for the object defini-
+     tion. Functions are searched with a pattern, typedefs with a
+     line number. Specifiers are given in separate fields on the
+     line, separated by blanks or tabs.  Using the _t_a_g_s file, _e_x
+     can quickly find these objects definitions.
+
+     If the -x flag is given, _c_t_a_g_s produces a list of object
+     names, the line number and file name on which each is
+     defined, as well as the text of that line and prints this on
+     the standard output.  This is a simple index which can be
+     printed out as an off-line readable function index.
+
+     If the -v flag is given, an index of the form expected by
+     _v_g_r_i_n_d(1) is produced on the standard output.  This listing
+     contains the function name, file name, and page number
+     (assuming 64 line pages).	Since the output will be sorted
+     into lexicographic order, it may be desired to run the out-
+     put through sort -f.  Sample use:
+	  ctags -v files | sort -f > index
+	  vgrind -x index
+
+     Normally _c_t_a_g_s places the tag descriptions in a file called
+     _t_a_g_s; this may be overridden with the -f option.
+
+     Files whose names end in .c or .h are assumed to be C source
+     files and are searched for C routine and macro definitions.
+     Files whose names end in .y are assumed to be YACC source
+     files.  Files whose names end in .l are assumed to be either
+     lisp files if their first non-blank character is `;', `(',
+     or `[', or lex files otherwise.  Other files are first exam-
+     ined to see if they contain any Pascal or Fortran routine
+     definitions; if not, they are processed again looking for C
+     definitions.
+
+     Other options are:
+
+     -F   use forward searching patterns (/.../) (default).
+
+     -B   use backward searching patterns (?...?).
+
+
+
+
+Printed 11/26/99	  May 30, 1985				1
+
+
+
+
+
+
+CTAGS(1)	    UNIX Programmer's Manual		 CTAGS(1)
+
+
+
+     -a   append to tags file.
+
+     -t   create tags for typedefs.
+
+     -w   suppressing warning diagnostics.
+
+     -u   causing the specified files to be _u_p_d_a_t_e_d in tags, that
+	  is, all references to them are deleted, and the new
+	  values are appended to the file.  (Beware: this option
+	  is implemented in a way which is rather slow; it is
+	  usually faster to simply rebuild the _t_a_g_s file.)
+
+     The tag _m_a_i_n is treated specially in C programs.  The tag
+     formed is created by prepending _M to the name of the file,
+     with a trailing .c removed, if any, and leading pathname
+     components also removed.  This makes use of _c_t_a_g_s practical
+     in directories with more than one program.
+
+FILES
+     tags      output tags file
+
+SEE ALSO
+     ex(1), vi(1)
+
+AUTHOR
+     Ken Arnold; FORTRAN added by Jim Kleckner; Bill Joy added
+     Pascal and -x, replacing _c_x_r_e_f; C typedefs added by Ed
+     Pelegri-Llopart.
+
+BUGS
+     Recognition of functions, subroutines and procedures for
+     FORTRAN and Pascal is done is a very simpleminded way.  No
+     attempt is made to deal with block structure; if you have
+     two Pascal procedures in different blocks with the same name
+     you lose.
+
+     The method of deciding whether to look for C or Pascal and
+     FORTRAN functions is a hack.
+
+     Does not know about #ifdefs.
+
+     Should know about Pascal types.  Relies on the input being
+     well formed to detect typedefs.  Use of -tx shows only the
+     last line of typedefs.
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 30, 1985				2
+
+
+

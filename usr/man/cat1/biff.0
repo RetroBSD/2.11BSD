@@ -1,0 +1,66 @@
+
+
+
+BIFF(1)             UNIX Programmer's Manual		  BIFF(1)
+
+
+
+NAME
+     biff - be notified if mail arrives and who it is from
+
+SYNOPSIS
+     biff [ yn ]
+
+DESCRIPTION
+     _B_i_f_f informs the system whether you want to be notified when
+     mail arrives during the current terminal session.	The com-
+     mand
+
+	  biff y
+
+     enables notification; the command
+
+	  biff n
+
+     disables it.  When mail notification is enabled, the header
+     and first few lines of the message will be printed on your
+     screen whenever mail arrives.  A ``biff y'' command is often
+     included in the file ._l_o_g_i_n or ._p_r_o_f_i_l_e to be executed at
+     each login.
+
+     _B_i_f_f operates asynchronously.  For synchronous notification
+     use the MAIL variable of _s_h(1) or the _m_a_i_l variable of
+     _c_s_h(1).
+
+SEE ALSO
+     csh(1), sh(1), mail(1), comsat(8C)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

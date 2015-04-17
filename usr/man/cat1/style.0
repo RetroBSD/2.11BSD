@@ -1,0 +1,66 @@
+
+
+
+STYLE(1)	    UNIX Programmer's Manual		 STYLE(1)
+
+
+
+NAME
+     style  -  analyze surface characteristics of a document
+
+SYNOPSIS
+     style [ -ml ] [ -mm ] [ -a ] [ -e ] [ -l num ] [ -r num ] [
+     -p ] [ -P ] file ...
+
+DESCRIPTION
+     _S_t_y_l_e analyzes the surface characteristics of the writing
+     style of a document.  It reports on readability, sentence
+     length and structure, word length and usage, verb type, and
+     sentence openers.	Because _s_t_y_l_e runs _d_e_r_o_f_f before looking
+     at the text, formatting header files should be included as
+     part of the input.  The default macro package -ms may be
+     overridden with the flag -mm. The flag -ml, which causes
+     deroff to skip lists, should be used if the document con-
+     tains many lists of non-sentences.  The other options are
+     used to locate sentences with certain characteristics.
+
+     -a   print all sentences with their length and readability
+	  index.
+
+     -e   print all sentences that begin with an expletive.
+
+     -p   print all sentences that contain a passive verb.
+
+     -l_n_u_m
+	  print all sentences longer than _n_u_m.
+
+     -r_n_u_m
+	  print all sentences whose readability index is greater
+	  than _n_u_m.
+
+     -P   print parts of speech of the words in the document.
+
+SEE ALSO
+     deroff(1), diction(1)
+
+BUGS
+     Use of non-standard formatting macros may cause incorrect
+     sentence breaks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

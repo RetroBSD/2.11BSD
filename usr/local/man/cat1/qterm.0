@@ -1,0 +1,264 @@
+
+
+
+QTERM(1)	    UNIX Programmer's Manual		 QTERM(1)
+
+
+
+NAME
+     qterm - Query Terminal
+
+SYNOPSIS
+     qterm [ +|-alt ] [ +|-always ] [ +|-longname ] [ +|-quiet ]
+     [ +|-sent ] [ +|-timeout ] [ +|-usrtab ] [ +|-watch ] [
+     +|-systab ] [ -wait _i_n_t_e_r_v_a_l ] [ -file _t_a_b_f_i_l_e ]
+
+DESCRIPTION
+     _Q_t_e_r_m is used to query a terminal to determine its name.
+     This is done by sending a special sequence to the terminal,
+     reading in a response, and comparing it against a table of
+     possible responses.  The ``name'' printed to standard output
+     should be one found in the _t_e_r_m_c_a_p(_5) (or _t_e_r_m_i_n_f_o(_5) for
+     System V systems) database.
+
+     For _c_s_h(_1) users, putting a line in your ._l_o_g_i_n file such
+     as:
+
+	  setenv TERM `qterm`
+
+     should automagically set your terminal type.  For _s_h(_1)
+     users, putting these lines in your ._p_r_o_f_i_l_e file should set
+     your terminal type:
+
+	  TERM=`qterm`
+	  export TERM
+
+
+     By default, qterm uses the system tab file
+     /_u_s_r/_l_o_c_a_l/_l_i_b/_q_t_e_r_m_t_a_b to obtain information for querying
+     terminals.
+
+OPTIONS
+     +alt Use the alternate string ``<ESCAPE>[c'' when asking the
+	  terminal to identify itself.	This string is recognized
+	  by most ANSI compatible terminals.
+
+     -alt Don't use the alternate string, but the string found in
+	  the tabfile being used.  This is the default.
+
+     +always
+	  Always send the terminal query string.  Normally the
+	  query string is only sent if it differs from the last
+	  string sent.
+
+     -always
+	  Only send the terminal query string if it differs from
+	  the last string sent.  This is the default.
+
+     -file _t_a_b_f_i_l_e
+	  Use <_t_a_b_f_i_l_e> to find information for querying the
+
+
+
+USC-UCS                  6 November 1990			1
+
+
+
+
+
+
+QTERM(1)	    UNIX Programmer's Manual		 QTERM(1)
+
+
+
+	  terminal.
+
+     +longname
+	  Print only the long (verbose) terminal name.
+
+     -longname
+	  Don't print the long (verbose) terminal name.  This is
+	  the default.
+
+     +quiet
+	  Be quiet and only print the terminal name to standard
+	  output.
+
+     -quiet
+	  Don't be quiet and only print the terminal name to
+	  standard output.  This is the default.
+
+     +watch
+	  Watch the characters sent and recieved to the terminal.
+
+     -watch
+	  Don't watch the characters sent and recieved to the
+	  terminal.  This is the default.
+
+     +timeout
+	  Wait for timeout when listening for response string.
+	  This is useful if the first entry in a qtermtab doesn't
+	  have a response string with an ending character that is
+	  common with the rest of the qtermtab entries.
+
+     -timeout
+	  Disable waiting for timeout when listening for response
+	  string.  This is the default.
+
+     +usrtab
+	  Use $HOME/.qtermtab to find information for querying
+	  the terminal.
+
+     -usrtab
+	  Don't use $HOME/.qtermtab to find information for
+	  querying the terminal.  This is the default.
+
+     +sent
+	  Display the final response sent from the terminal in a
+	  ``nice'' fashion.
+
+     -sent
+	  Don't display the final response sent from the termi-
+	  nal.	This is the default.
+
+     +systab
+	  Use /usr/local/lib/qtermtab to find information for
+
+
+
+USC-UCS                  6 November 1990			2
+
+
+
+
+
+
+QTERM(1)	    UNIX Programmer's Manual		 QTERM(1)
+
+
+
+	  querying the terminal.  This is the default
+
+     -systab
+	  Don't use system tab file to find information for
+	  querying the terminal.
+
+     -wait _i_n_t_e_r_v_a_l
+	  Set the wait (timeout) period to _i_n_t_e_r_v_a_l (in seconds).
+
+QTERMTAB
+     The format of the file $HOME/.qtermtab and _q_t_e_r_m'_s system
+     tab file /_u_s_r/_l_o_c_a_l/_l_i_b/_q_t_e_r_m_t_a_b, consists of four fields
+     each seperated by white space (tabs and/or spaces).  The
+     first field is the string that should be used to query the
+     terminal.	The second field is the string to expect in
+     response to the query.  The third field is the terminal name
+     (compatible with _t_e_r_m_c_a_p(_5)) to print to standard output.
+     The fourth field is optional and may contain a description
+     of the exact manufacturer and model name of the terminal to
+     be used in a message printed to standard error.
+
+     Blank lines or lines starting with the character ``#'' are
+     ignored and may be used as comment lines.	A character pre-
+     ceeded by a ``^'' is taken to mean the _c_o_n_t_r_o_l character.
+     (i.e. ``^['' is interpretted as an <ESCAPE>).  Both the send
+     and receive (first and second) fields may contain octal
+     values preceeded by a `\'.  (i.e. <ESCAPE> can be
+     represented by `\033'.)
+
+     The ``expect'' (second) field can be a regular expression
+     denoted by a leading backslash (`\').  i.e. "^[[123" matches
+     the string "^[[123", whereas "^[\[123]" matches "^[1" or
+     "^[2" or "^[3".  See _e_d(_1) for regular expression informa-
+     tion.
+
+     Below is a sample file:
+
+
+	  #
+	  # QTerm File
+	  #
+	  ^[Z	  ^[[?1;1c     vt100	 A vt100 with STP
+	  ^[Z	  ^[[?1;2c     vt100	 ANSI/VT100 Clone
+	  ^[Z	  ^[[?1;3c     vt100	 A vt100 with AVO and STP
+	  ^[Z	  ^[[?1;4c     vt100	 A vt100 with GPO
+	  ^[Z	  ^[iBO        z29	 Zenith in Zenith Mode
+
+
+AUTHOR
+     Michael A. Cooper,
+     University Computing Services,
+     University of Southern California.
+
+
+
+USC-UCS                  6 November 1990			3
+
+
+
+
+
+
+QTERM(1)	    UNIX Programmer's Manual		 QTERM(1)
+
+
+
+FILES
+     /usr/local/lib/qtermtab   - System table
+     $HOME/.qtermtab	       - User's table
+     /etc/termcap	       - termcap(5) database
+
+SEE ALSO
+     csh(1), ed(1), sh(1), termcap(5)
+
+DIAGNOSTICS
+     _T_e_r_m_i_n_a_l _n_o_t _r_e_c_o_g_n_i_z_e_d - _d_e_f_a_u_l_t_s _t_o _d_u_m_b.
+	  _Q_T_e_r_m did not receive a response from the terminal, or
+	  the response did not match any that _q_t_e_r_m has stored
+	  internally.  Use the +watch option to check to see
+	  which is the case.
+
+BUGS
+     Many terminals do not send a response at all.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USC-UCS                  6 November 1990			4
+
+
+

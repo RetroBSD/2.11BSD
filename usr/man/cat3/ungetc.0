@@ -1,0 +1,66 @@
+
+
+
+UNGETC(3S)	    UNIX Programmer's Manual	       UNGETC(3S)
+
+
+
+NAME
+     ungetc - push character back into input stream
+
+SYNOPSIS
+     #include <stdio.h>
+
+     ungetc(c, stream)
+     FILE *stream;
+
+DESCRIPTION
+     _U_n_g_e_t_c pushes the character _c back on an input stream.  That
+     character will be returned by the next _g_e_t_c call on that
+     stream.  _U_n_g_e_t_c returns _c.
+
+     One character of pushback is guaranteed provided something
+     has been read from the stream and the stream is actually
+     buffered.	Attempts to push EOF are rejected.
+
+     _F_s_e_e_k(3S) erases all memory of pushed back characters.
+
+SEE ALSO
+     getc(3S), setbuf(3S), fseek(3S)
+
+DIAGNOSTICS
+     _U_n_g_e_t_c returns EOF if it can't push a character back.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

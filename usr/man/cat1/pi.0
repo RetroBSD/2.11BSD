@@ -1,0 +1,198 @@
+
+
+
+PI(1)		    UNIX Programmer's Manual		    PI(1)
+
+
+
+NAME
+     pi - Pascal interpreter code translator
+
+SYNOPSIS
+     pi [ -blnpstuwz ] [ -i name ...  ] name.p
+
+DESCRIPTION
+     _P_i translates the program in the file _n_a_m_e._p leaving inter-
+     preter code in the file _o_b_j in the current directory.  The
+     interpreter code can be executed using _p_x. _P_i_x performs the
+     functions of _p_i and _p_x for `load and go' Pascal.
+
+     The following flags are interpreted by _p_i; the associated
+     options can also be controlled in comments within the pro-
+     gram as described in the _B_e_r_k_e_l_e_y _P_a_s_c_a_l _U_s_e_r'_s _M_a_n_u_a_l.
+
+     -b    Block buffer the file _o_u_t_p_u_t.
+
+     -i    Enable the listing for any specified procedures and
+	   functions and while processing any specified include
+	   files.
+
+     -l    Make a program listing during translation.
+
+     -n    Begin each listed include file on a new page with a
+	   banner line.
+
+     -p    Suppress the post-mortem control flow backtrace if an
+	   error occurs; suppress statement limit counting.
+
+     -s    Accept standard Pascal only; non-standard constructs
+	   cause warning diagnostics.
+
+     -t    Suppress runtime tests of subrange variables and treat
+	   assert statements as comments.
+
+     -u    Card image mode; only the first 72 characters of input
+	   lines are used.
+
+     -w    Suppress warning diagnostics.
+
+     -z    Allow execution profiling with _p_x_p by generating
+	   statement counters, and arranging for the creation of
+	   the profile data file _p_m_o_n._o_u_t when the resulting
+	   object is executed.
+
+FILES
+     file.p		 input file
+     file.i		 include file(s)
+     /usr/share/pascal/pi_stringstext of the error messages
+     /usr/share/pascal/how_pi*basic usage explanation
+     obj		 interpreter code output
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+PI(1)		    UNIX Programmer's Manual		    PI(1)
+
+
+
+SEE ALSO
+     Berkeley Pascal User's Manual
+     pcc(1), pix(1), px(1), pxp(1), pxref(1)
+
+DIAGNOSTICS
+     For a basic explanation do
+
+	     pi
+
+     In the diagnostic output of the translator, lines containing
+     syntax errors are listed with a flag indicating the point of
+     error.  Diagnostic messages indicate the action which the
+     recovery mechanism took in order to be able to continue
+     parsing.  Some diagnostics indicate only that the input is
+     `malformed.' This occurs if the recovery can find no simple
+     correction to make the input syntactically valid.
+
+     Semantic error diagnostics indicate a line in the source
+     text near the point of error.  Some errors evoke more than
+     one diagnostic to help pinpoint the error; the follow-up
+     messages begin with an ellipsis `...'.
+
+     The first character of each error message indicates its
+     class:
+
+		    E	      Fatal error; no code will be gen-
+	  erated.
+		    e	      Non-fatal error.
+		    w	      Warning - a potential problem.
+		    s	      Non-standard Pascal construct warn-
+	  ing.
+
+     If a severe error occurs which inhibits further processing,
+     the translator will give a diagnostic and then `QUIT'.
+
+AUTHORS
+     Charles B. Haley, William N. Joy, and Ken Thompson
+
+BUGS
+     Formal parameters which are procedures and functions are not
+     supported.
+
+     The keyword packed and the function _d_i_s_p_o_s_e are recognized
+     but have no effect.
+
+     For clarity, semantic errors should be flagged at an
+     appropriate place in the source text, and multiple instances
+     of the `same' semantic error should be summarized at the end
+     of a procedure or function rather than evoking many diagnos-
+     tics.
+
+
+
+
+
+Printed 11/26/99						2
+
+
+
+
+
+
+PI(1)		    UNIX Programmer's Manual		    PI(1)
+
+
+
+     When include files are present, diagnostics relating to the
+     last procedure in one file may appear after the beginning of
+     the listing of the next.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						3
+
+
+

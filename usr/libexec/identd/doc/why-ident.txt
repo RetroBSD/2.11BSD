@@ -1,0 +1,11 @@
+Well... Go read "why-tap.txt". More or less the same arguments
+apply for the IDENT protocol. :-)
+
+I'm not sure the "rfc931-users" mailing list is alive anymore though.
+I've created a new mailing list "ident-users@lysator.liu.se" that you
+may wish to join instead. Send email to "ident-users-request@lysator.liu.se"
+to join/leave that list.
+
+/Peter Eriksson <pen@lysator.liu.se>, 3 Nov 1993
+
+ 

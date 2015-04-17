@@ -1,0 +1,66 @@
+
+
+
+MKTEMP(3)	    UNIX Programmer's Manual		MKTEMP(3)
+
+
+
+NAME
+     mktemp - make a unique file name
+
+SYNOPSIS
+     char *mktemp(template)
+     char *template;
+
+     mkstemp(template)
+     char *template;
+
+DESCRIPTION
+     _M_k_t_e_m_p creates a unique file name and returns the address of
+     the template.  The template should contain a file name with
+     trailing _X's, normally something like /_t_m_p/_t_e_m_p_X_X_X_X_X_X.  The
+     _X's are replaced by the current process number and/or a
+     unique letter combination.  _M_k_s_t_e_m_p makes the same replace-
+     ment to the template but opens the template file and returns
+     a file descriptor open for reading and writing.  _M_k_s_t_e_m_p
+     avoids the race between testing whether the file exists and
+     opening it for use.  The number of file name combinations
+     _m_k_t_e_m_p and _m_k_s_t_e_m_p will try depends on the number of _X's
+     placed on the end of the template; six _X's will result in
+     them trying roughly 26 ** 6 combinations.
+
+SEE ALSO
+     access(2), getpid(2), open(2)
+
+DIAGNOSTICS
+     _M_k_t_e_m_p returns NULL on failure, _m_k_s_t_e_m_p returns -1 if no
+     suitable file could be created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 10, 1987                         1
+
+
+

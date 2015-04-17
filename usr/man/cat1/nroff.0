@@ -1,0 +1,132 @@
+
+
+
+NROFF(1)	    UNIX Programmer's Manual		 NROFF(1)
+
+
+
+NAME
+     nroff - text formatting
+
+SYNOPSIS
+     nroff [ option ] ...  [ file ] ...
+
+DESCRIPTION
+     _N_r_o_f_f formats text in the named _f_i_l_e_s for typewriter-like
+     devices.  See also _t_r_o_f_f(_1). The full capabilities of _n_r_o_f_f
+     are described in the _N_r_o_f_f/_T_r_o_f_f _U_s_e_r'_s _M_a_n_u_a_l.
+
+     If no _f_i_l_e argument is present, the standard input is read.
+     An argument consisting of a single minus (-) is taken to be
+     a file name corresponding to the standard input.
+
+     The options, which may appear in any order so long as they
+     appear _b_e_f_o_r_e the files, are:
+
+     -o_l_i_s_t Print only pages whose page numbers appear in the
+	    comma-separated _l_i_s_t of numbers and ranges.  A range
+	    _N-_M means pages _N through _M; an initial -_N means from
+	    the beginning to page _N; and a final _N- means from _N
+	    to the end.
+
+     -n_N    Number first generated page _N.
+
+     -s_N    Stop every _N pages.  _N_r_o_f_f will halt prior to every _N
+	    pages (default _N=1) to allow paper loading or chang-
+	    ing, and will resume upon receipt of a newline.
+
+     -m_n_a_m_e Prepend the macro file /usr/share/tmac/tmac._n_a_m_e to
+	    the input _f_i_l_e_s.
+
+     -r_a_N   Set register _a (one-character) to _N.
+
+     -i     Read standard input after the input files are
+	    exhausted.
+
+     -q     Invoke the simultaneous input-output mode of the rd
+	    request.
+
+     -T_n_a_m_e Prepare output for specified terminal.  Known _n_a_m_e_s
+	    are 37 for the (default) Teletype Corporation Model
+	    37 terminal, tn300 for the GE TermiNet 300 (or any
+	    terminal without half-line capability), 300S for the
+	    DASI-300S, 300 for the DASI-300, and 450 for the
+	    DASI-450 (Diablo Hyterm).
+
+     -e     Produce equally-spaced words in adjusted lines, using
+	    full terminal resolution.
+
+     -h     Use output tabs during horizontal spacing to speed
+
+
+
+Printed 11/26/99	October 22, 1996			1
+
+
+
+
+
+
+NROFF(1)	    UNIX Programmer's Manual		 NROFF(1)
+
+
+
+	    output and reduce output character count.  Tab set-
+	    tings are assumed to be every 8 nominal character
+	    widths.
+
+FILES
+     /tmp/ta*		     temporary file
+     /usr/share/tmac/tmac.*  standard macro files
+     /usr/share/term/*	     terminal driving tables for _n_r_o_f_f
+
+SEE ALSO
+     J. F. Ossanna, _N_r_o_f_f/_T_r_o_f_f _u_s_e_r'_s _m_a_n_u_a_l
+     B. W. Kernighan, _A _T_R_O_F_F _T_u_t_o_r_i_a_l
+     troff(1), eqn(1), tbl(1), ms(7), me(7), man(7), col(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	October 22, 1996			2
+
+
+

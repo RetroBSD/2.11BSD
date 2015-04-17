@@ -1,0 +1,132 @@
+
+
+
+SIGSETOPS(3)	    UNIX Programmer's Manual	     SIGSETOPS(3)
+
+
+
+NAME
+     sigemptyset, sigfillset, sigaddset, sigdelset, sigismember -
+     manipulate signal sets
+
+SYNOPSIS
+     #include <signal.h>
+
+     sigemptyset(set)
+     _s_i_g_s_e_t__t *_s_e_t;
+
+     sigfillset(set)
+     _s_i_g_s_e_t__t *_s_e_t;
+
+     sigaddset(set, signo)
+     _s_i_g_s_e_t__t *_s_e_t;
+     _i_n_t _s_i_g_n_o;
+
+     sigdelset(set, signo)
+     _s_i_g_s_e_t__t *_s_e_t;
+     _i_n_t _s_i_g_n_o;
+
+     sigismember(set, signo)
+     _s_i_g_s_e_t__t *_s_e_t;
+     _i_n_t _s_i_g_n_o;
+
+DESCRIPTION
+     These functions manipulate signal sets stored in a _s_i_g_s_e_t__t
+     . Either sigemptyset or sigfillset must be called for every
+     object of type _s_i_g_s_e_t__t before any other use of the object.
+
+     The sigemptyset function initializes a signal set to be
+     empty.
+
+     The sigfillset function initializes a signal set to contain
+     all signals.
+
+     The sigaddset function adds the specified signal _s_i_g_n_o to
+     the signal set.
+
+     The sigdelset function deletes the specified signal _s_i_g_n_o
+     from the signal set.
+
+     The sigismember function returns whether a specified signal
+     _s_i_g_n_o is contained in the signal set.
+
+     These functions are provided as macros in the include file
+     <_s_i_g_n_a_l._h>.  Actual functions are available if their names
+     are undefined (with #undef name).
+
+RETURN VALUES
+     The sigismember function returns 1 if the signal is a member
+     of the set, 0 otherwise.  The other functions return 0.
+
+
+
+Printed 11/26/99	September 3, 1997			1
+
+
+
+
+
+
+SIGSETOPS(3)	    UNIX Programmer's Manual	     SIGSETOPS(3)
+
+
+
+ERRORS
+     Currently no errors are detected.
+
+SEE ALSO
+     kill(2), sigaction(2), sigsuspend(2)
+
+STANDARDS
+     These functions are defined by IEEE Std1003.1-1988
+     (``POSIX'').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	September 3, 1997			2
+
+
+

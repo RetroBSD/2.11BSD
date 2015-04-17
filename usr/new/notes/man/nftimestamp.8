@@ -1,0 +1,80 @@
+.TH NFTIMESTAMP 8 "University of Illinois"
+.SH NAME
+nftimestamp \- Set Notesfile sequencer timestamps
+.SH SYNOPSIS
+.B nftimestamp
+[
+.B -v
+] [
+.B "-t"
+.i "time specification"
+]
+notesfile [ notesfile ]
+.SH DESCRIPTION
+The Notesfile system uses timestamps to determine which
+articles in a notesfile have been read by an individual
+user.
+The timestamps are compared with arrival times of the individual
+articles to determine if a user has seen that article.
+.I Nftimestamp
+provides a simple mechanism for updating many timestamps.
+.PP
+In the usual case,
+.I nftimestamp
+is invoked with a list of notesfiles.
+The invoking user's sequencer timestamps for the specified
+notesfiles are set to the current time.
+The
+.B "-t"
+option allows the user to specify some different time.
+Notesfiles are
+specified in the same manner as on the
+.I notes
+command line.
+Include notesfiles by using their name;
+the shell wildcard characters (?*[]) are correctly expanded.
+Exclude notesfiles be prefixing their name with an exclamation
+mark:
+.IR "!notesfile" .
+The
+.B "-f"
+option reads a list of notesfiles to be included and excluded
+from the specifid file.
+.PP
+The Notesfile Administrator can use the
+.B "-u"
+option to set the sequencer for systems and other users.
+.PP
+The
+.I seqtoascii
+and
+.I seqtobinary
+utilities provide the same function as this program.
+Using those programs, the user must change each timestamp
+manually and then restore the sequencer file.
+.I Nftimestamp
+provides a simpler interface.
+.SH FILES
+.PD 0
+.TP 35
+/etc/passwd
+for the users name
+.TP 35
+/etc/group
+for the users group
+.TP 35
+/usr/spool/notes
+the default notesfile data base
+.PD
+.SH SEE ALSO
+notes(1),
+seqtoascii(1), seqtobinary(1),
+.br
+.ul
+The Notesfile Reference Manual
+.SH AUTHORS
+.nf
+Ray Essick (uiucdcs!essick, essick@a.cs.uiuc.edu)
+University of Illinois at Urbana-Champaign
+Urbana, IL
+.fi

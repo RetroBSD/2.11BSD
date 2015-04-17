@@ -1,0 +1,132 @@
+
+
+
+PLOT(3X)	    UNIX Programmer's Manual		 PLOT(3X)
+
+
+
+NAME
+     plot: openpl, erase, label, line, circle, arc, move, cont,
+     point, linemod, space, closepl - graphics interface
+
+SYNOPSIS
+     openpl()
+
+     erase()
+
+     label(s)
+     char s[];
+
+     line(x1, y1, x2, y2)
+
+     circle(x, y, r)
+
+     arc(x, y, x0, y0, x1, y1)
+
+     move(x, y)
+
+     cont(x, y)
+
+     point(x, y)
+
+     linemod(s)
+     char s[];
+
+     space(x0, y0, x1, y1)
+
+     closepl()
+
+DESCRIPTION
+     These subroutines generate graphic output in a relatively
+     device-independent manner.  See _p_l_o_t(5) for a description of
+     their effect.  _O_p_e_n_p_l must be used before any of the others
+     to open the device for writing.  _C_l_o_s_e_p_l flushes the output.
+
+     String arguments to _l_a_b_e_l and _l_i_n_e_m_o_d are null-terminated,
+     and do not contain newlines.
+
+     Various flavors of these functions exist for different out-
+     put devices. They are obtained by the following _l_d(1)
+     options:
+
+     -lplot  device-independent graphics stream on standard out-
+	     put for _p_l_o_t(1) filters
+     -l300   GSI 300 terminal
+     -l300s  GSI 300S terminal
+     -l450   GSI 450 terminal
+     -l4013  Tektronix 4013 terminal
+     -l4014  Tektronix 4014 and 4015 terminals with the Enhanced
+	     Graphics Module (Use -l4013 for 4014's or 4015's
+
+
+
+Printed 11/26/99	  May 15, 1986				1
+
+
+
+
+
+
+PLOT(3X)	    UNIX Programmer's Manual		 PLOT(3X)
+
+
+
+	     without the Enhanced Graphics Module)
+     -lplotaed
+	     AED 512 color graphics terminal
+     -lplotbg
+	     BBN bitgraph graphics terminal
+     -lplotdumb
+	     Dumb terminals without cursor addressing or line
+	     printers
+     -lplot  DEC Gigi terminals
+     -lvt0   DEC vt100 terminals
+     -lplot2648
+	     Hewlett Packard 2648 graphics terminal
+     -lplot7221
+	     Hewlett Packard 7221 graphics terminal
+     -lplotimagen
+	     Imagen laser printer (default 240 dots-per-inch
+	     resolution).
+
+     On many devices, it is necessary to pause after _e_r_a_s_e(),
+     otherwise plotting commands are lost.  The pause is normally
+     done by the tty driver if at login time, _t_s_e_t found a _d_f
+     field in the _t_e_r_m_c_a_p(5) entry for the terminal.  If a pause
+     is needed but not automatically being generated, add
+	  flush(stdout);
+	  sleep(1);
+     after each _e_r_a_s_e().
+
+SEE ALSO
+     plot(5), plot(1G), plot(3F), graph(1G)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1986				2
+
+
+

@@ -1,0 +1,66 @@
+
+
+
+ERF(3M)             UNIX Programmer's Manual		  ERF(3M)
+
+
+
+NAME
+     erf, erfc - error functions
+
+SYNOPSIS
+     #include <math.h>
+
+     double erf(x)
+     double x;
+
+     double erfc(x)
+     double x;
+
+DESCRIPTION
+     Erf(x) returns the error function of x; where
+
+     erf(x) = 2/sqrt(pi)*integral from 0 to x of exp(-t*t) dt.
+
+     Erfc(x) returns 1.0-erf(x).
+
+     The entry for erfc is provided because of the extreme loss
+     of relative accuracy if erf(x) is called for large x and the
+     result subtracted from 1.	(e.g. for x = 10, 12 places are
+     lost).
+
+SEE ALSO
+     math(3M)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

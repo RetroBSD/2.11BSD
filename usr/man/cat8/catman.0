@@ -1,0 +1,132 @@
+
+
+
+CATMAN(8)	    UNIX Programmer's Manual		CATMAN(8)
+
+
+
+NAME
+     catman - create the cat files for the manual
+
+SYNOPSIS
+     /usr/sbin/catman [ -p ] [ -n ] [ -w ] [ -M _p_a_t_h ] [ sections
+     ]
+
+DESCRIPTION
+     _C_a_t_m_a_n creates the preformatted versions of the on-line
+     manual from the nroff input files.  Each manual page is
+     examined and those whose preformatted versions are missing
+     or out of date are recreated.  If any changes are made, _c_a_t_-
+     _m_a_n will recreate the whatis database.
+
+     If there is one parameter not starting with a `-', it is
+     taken to be a list of manual sections to look in.	For exam-
+     ple
+
+	  catman 123
+
+     will cause the updating to only happen to manual sections 1,
+     2, and 3.
+
+     Options:
+
+     -n   prevents creations of the whatis database.
+
+     -p   prints what would be done instead of doing it.
+
+     -w   causes only the whatis database to be created.  No
+	  manual reformatting is done.
+
+     -M   updates manual pages located in the set of directories
+	  specified by _p_a_t_h (/usr/man by default).  _P_a_t_h has the
+	  form of a colon (`:') separated list of directory
+	  names, for example `/usr/local/man:/usr/man'.  If the
+	  environment variable `MANPATH' is set, its value is
+	  used for the default path.
+
+     If the nroff source file contains only a line of the form
+     `.so manx/yyy.x', a symbolic link is made in the catx direc-
+     tory to the appropriate preformatted manual page.	This
+     feature allows easy distribution of the preformatted manual
+     pages among a group of associated machines with _r_d_i_s_t(_1).
+     The nroff sources need not be distributed to all machines,
+     thus saving the associated disk space.  As an example, con-
+     sider a local network with 5 machines, called mach1 through
+     mach5.  Suppose mach3 has the manual page nroff sources.
+     Every night, mach3 runs _c_a_t_m_a_n via _c_r_o_n(_8) and later runs
+     _r_d_i_s_t with a distfile that looks like:
+
+
+
+
+
+Printed 11/26/99	October 23, 1996			1
+
+
+
+
+
+
+CATMAN(8)	    UNIX Programmer's Manual		CATMAN(8)
+
+
+
+	  MANSLAVES = ( mach1 mach2 mach4 mach5 )
+
+	  MANUALS = (/usr/man/cat[1-8no] /usr/man/whatis)
+
+	  ${MANUALS} -> ${MANSLAVES}
+		  install -R;
+		  notify root;
+
+
+FILES
+     /usr/man		    default manual directory location
+     /usr/man/man?/*.*	    raw (nroff input) manual sections
+     /usr/man/cat?/*.*	    preformatted manual pages
+     /usr/man/whatis	    whatis database
+     /usr/sbin/makewhatis   command script to make whatis database
+
+SEE ALSO
+     man(1), cron(8), rdist(1)
+
+BUGS
+     Acts oddly on nights with full moons.
+
+     The need for catman(8) is almost but not quite gone.  Most
+     of the manpages have been moved out of /usr/src/man into the
+     sourcecode hierarchy.  The recreation of the whatis database
+     is the main use of catman now.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	October 23, 1996			2
+
+
+

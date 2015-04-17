@@ -1,0 +1,83 @@
+#! /bin/sh -
+PATH=/usr/sbin:/usr/local:/usr/ucb:/bin:/usr/bin
+echo "Subject: daily run output"
+echo ""
+msgs -c
+
+echo ""
+echo "Rotating accounting records:"
+mv -f /usr/adm/acct.2.Z /usr/adm/acct.3.Z
+mv -f /usr/adm/acct.1.Z /usr/adm/acct.2.Z
+mv -f /usr/adm/acct.0.Z /usr/adm/acct.1.Z
+mv -f /usr/adm/acct /usr/adm/acct.0
+cp /dev/null /usr/adm/acct
+chmod 644 /usr/adm/acct
+accton /usr/adm/acct
+sa -s -f -v 10 /usr/adm/acct.0 > /dev/null
+compress /usr/adm/acct.0
+
+echo ""
+echo "Running calendar:"
+calendar -
+
+echo ""
+echo "Rotating mail syslog:"
+cd /usr/spool/mqueue
+rm syslog.7
+mv syslog.6  syslog.7
+mv syslog.5  syslog.6
+mv syslog.4  syslog.5
+mv syslog.3  syslog.4
+mv syslog.2  syslog.3
+mv syslog.1  syslog.2
+mv syslog.0  syslog.1
+mv syslog    syslog.0
+cp /dev/null syslog
+chmod 644    syslog
+
+echo ""
+echo "Rotating daemonlog:"
+cd /usr/adm
+rm daemonlog.7
+mv daemonlog.6  daemonlog.7
+mv daemonlog.5  daemonlog.6
+mv daemonlog.4  daemonlog.5
+mv daemonlog.3  daemonlog.4
+mv daemonlog.2  daemonlog.3
+mv daemonlog.1  daemonlog.2
+mv daemonlog.0  daemonlog.1
+mv daemonlog    daemonlog.0
+cp /dev/null daemonlog
+chmod 644    daemonlog
+
+echo ""
+echo "Rotating debuglog:"
+cd /usr/adm
+rm debuglog.7
+mv debuglog.6  debuglog.7
+mv debuglog.5  debuglog.6
+mv debuglog.4  debuglog.5
+mv debuglog.3  debuglog.4
+mv debuglog.2  debuglog.3
+mv debuglog.1  debuglog.2
+mv debuglog.0  debuglog.1
+mv debuglog    debuglog.0
+cp /dev/null debuglog
+chmod 644    debuglog
+
+kill -1 `cat /var/run/syslog.pid`
+cd /
+
+echo ""
+echo "Cleaning up UUCP:"
+su uucp << EOF
+	/etc/uucp/clean.daily
+EOF
+
+echo ""
+echo "mail:"
+mailq
+
+echo ""
+echo "uucp:"
+uusnap

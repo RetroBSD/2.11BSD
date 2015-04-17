@@ -1,0 +1,264 @@
+
+
+
+NTPDC(8)	    UNIX Programmer's Manual		 NTPDC(8)
+
+
+
+NAME
+     ntpdc - monitor operation of ntp daemon
+
+SYNOPSIS
+     ntpdc [-n] [-v] _h_o_s_t_s...
+
+DESCRIPTION
+     _n_t_p_d_c sends an INFO_QUERY packet to an ntp daemon running on
+     the given hosts.  Each daemon responds with information
+     about each of its peers, which _n_t_p_d_c formats on the standard
+     output.
+
+     Normally, the name of the responding host and its peers are
+     printed.  The -n switch disables this, printing only inter-
+     net addresses.
+
+     Default is a terse, table-style report.  The -t switch gen-
+     erates an alternate form of the terse report.  The -v switch
+     generates a verbose report.
+
+
+TERSE REPORT
+     A typical terse report looks like:
+
+	(rem)  Address	 (lcl)	    Strat Poll Reach	Delay	Offset	  Disp
+     ==========================================================================
+     -umd1	     128.8.10.14       1   64  266	 3.0	-65.0	   0.0
+     *DCN1.ARPA      128.8.10.14       1  256  332     155.0	 -4.0	   0.0
+      128.8.251.92   128.8.10.14       2   64  367     -16.0	-61.0	   0.0
+      idunno.Princeto 128.8.10.14	3   64	252	 60.0	 -53.0	    0.0
+      leo	128.8.10.14	  2   64  275	    4.0   -273.0   1536.2
+
+
+     The alternate form is only slightly different; it looks
+     like:
+
+	 Address      Reference     Strat Poll Reach	Delay	Offset	  Disp
+     ==========================================================================
+     -umd1	     WWVB	       1   64  266	 3.0	-65.0	   0.0
+     *DCN1.ARPA      WWVB	       1  256  332     155.0	 -4.0	   0.0
+      128.8.251.92   umd1	       2   64  367     -16.0	-61.0	   0.0
+      idunno.Prince trantor	      3   64  252      60.0    -53.0	  0.0
+      leo	umd1		  2   64  275	    4.0   -273.0   1536.2
+
+
+     Fields are interpreted as follows:
+
+     - or *:
+	  The - mark indicates a pre-configured peer (mentioned
+	  in ntp.conf).  the * mark shows which pre-configured
+	  peer (if any) is currently being used for synchroniza-
+	  tion.
+
+
+
+Printed 4/11/100	  10 March 1989                         1
+
+
+
+
+
+
+NTPDC(8)	    UNIX Programmer's Manual		 NTPDC(8)
+
+
+
+     (rem) address:
+	  The remote host name or internet address of a peer.
+
+     (lcl) address:
+	  The "local" host as specified as an argument to _n_t_p_d_c.
+
+     Reference:
+	  The reference time source being used for synchroniza-
+	  tion by the peer.
+
+     Strat:
+	  The stratum level of the peer (as perceived by the
+	  local host).
+
+     Poll:
+	  Current polling interval in seconds for this peer.
+
+     Reach:
+	  Octal value of a shift register indicating which
+	  responses were received from the previous 8 polls to
+	  this peer (see RFC-????).
+
+     Delay:
+	  Round-trip delay in milliseconds for this peer as of
+	  the latest poll.
+
+     Disp:
+	  Current value of dispersion (see RFC-????) in mil-
+	  liseconds for this peer.
+
+
+VERBOSE REPORTS
+     When the -v flag is given a series of verbose reports are
+     presented.  A typical one looks like this:
+
+     Neighbor address 128.4.0.6 port:123  local address 192.35.201.47
+     Reach: 0376 stratum: 1 poll int(HPI): 10 precision: -10
+     Sync distance: 0 disp: 0.014000 flags: 0 leap: 0
+     Reference clock ID: WWV  timestamp: a7c2832e.6f9d0000
+     Poll int(MPI): 10 threshold: 1024 timer: 1024 send: 266 received: 192 samples: 9
+     Delay(ms)	1144.00 1296.00 1118.00 1115.00 1225.00 1129.00 1086.00 1087.00
+     Offset(ms)   19.00   92.00  -17.00   12.00   41.00    4.00   -1.00  -14.00
+
+	  delay: 1086.000000 offset: -1.000000 dsp 0.014000
+
+
+     Fields are interpreted as follows:
+
+     Neighbor address...:
+	  The address and port number of this neighbor, followed
+	  by the local address.
+
+
+
+
+Printed 4/11/100	  10 March 1989                         2
+
+
+
+
+
+
+NTPDC(8)	    UNIX Programmer's Manual		 NTPDC(8)
+
+
+
+     Reach: _n_n
+	  Reachability in response to last 8 polls (octal value
+	  of shift register)
+
+     stratum: _n
+	  Stratum level.
+
+     poll interval: _t_i_m_e
+
+     precision: _n_n
+	  The precision of this clock, given in seconds as a
+	  power of 2.  _e._g A clock derived from the power line
+	  frequency (60 Hz) has a precision of 1/60 second (about
+	  2^-6) and would be indicated by a precision of -6.
+
+     Syn distance: 0
+	  Synchronizing distance.  Always zero in the current
+	  implementation.
+
+     disp: _n_n
+	  Dispersion.
+
+     flags: _n_n
+
+     leap: _f_l_a_g
+	  The leap second indicator.  Non-zero if there is to be
+	  a leap second added or subtracted at the new year.
+
+     Reference clock ID: [_a_d_d_r_e_s_s]
+
+     timestamp: _n_n
+
+     Poll interval: _t_i_m_e
+
+     threshold: _n_n
+
+     timer: _n_n
+
+     send: _n_n
+	  The number of ntp packets sent to this neighbor.
+
+     received: _n_n
+	  The number of ntp packets received from this neighbor.
+
+     samples: _n_n
+
+     Delay and Offset
+	  The round-trip delay and clock offset for the last
+	  eight ntp packet exchanges.  If there are fewer than
+	  eight valid samples, the delay field will be zero.
+
+     delay: _a_v_g-_d_e_l_a_y offset: _a_v_g-_o_f_f_s_e_t dsp ???
+
+
+
+Printed 4/11/100	  10 March 1989                         3
+
+
+
+
+
+
+NTPDC(8)	    UNIX Programmer's Manual		 NTPDC(8)
+
+
+
+	  Average delay, offset, and dispersion calculated from
+	  the above samples.  Meanings...???
+
+
+BUGS
+     Probably a few.  Report bugs to Louis A. Mamakos
+     (louie@trantor.umd.edu).
+
+
+SEE ALSO
+     RFC-???? _N_e_t_w_o_r_k _T_i_m_e _P_r_o_t_o_c_o_l(1), Dave Mills and ...
+     ntpd(8), ntp(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 4/11/100	  10 March 1989                         4
+
+
+

@@ -1,0 +1,105 @@
+INGRES 6.3 for 2.11BSD
+----------------------
+
+This is a port of University Ingres version 6.3 (as of February 1, 1981)
+to 2.11BSD on the PDP11.  The porting work basically had three phases:
+
+ 1 - Fix syntax errors due to archaic C code (=+ changed to += etc)
+ 2 - Modify to use the system libraries more.  For instance, Ingres
+     came with its own stdio-like package.
+ 3 - Get rid of warnings, mostly through introducing explicit casts
+     and declarations.
+
+This adds up to quite a bit of changed code, and while I hope that I
+haven't broken anything, this is, of course, quite possible...  :-)
+A few buglets were discovered and fixed during the process, but they
+were neither numerous nor serious.  Ingres now seems to work well,
+although I confess that I haven't used it very heavily yet.
+
+Thanks to Steven M Schultz for porting the "/dev/ingreslock" driver!
+
+CHANGES FROM INGRES 6.3:
+
+I've reinstated the process structure from before split I/D.  This
+is not because it is currently needed, but I figured that if I (or
+someone else) make changes to improve, extend or optimize Ingres in
+the future, it might grow out of the new process structure, and if
+that happens, the old one is available.  As distributed, I've set it
+up to use the new structure in /usr/ingres/files/proctab6.3, which
+is a copy of /usr/ingres/files/proc6.3_70, but the alternative setup
+is in /usr/ingres/files/proc6.3_40, and the binaries to run with that
+configuration are compiled and installed.
+
+The difference is that the old setup had separate "decomp" and "ovqp"
+processes, which in the new setup are combined into "decomp70", and
+four binaries of the main database engine, named "overlay[acim]",
+which in the new setup is just a single "overlayg".  They're named
+"overlay?" because they contain code to handle different parts of the
+Ingres command set, and know how to exec each other when needed.  In
+the "proc6.3_40" setup, then, the Ingres process chain is one process
+longer, and one of the processes will automatically switch between
+four different images on demand.
+
+DIRECTORY STRUCTURE:
+
+/usr/ingres/bin holds binaries executed by Ingres applications; the
+binaries run by users are installed in /usr/bin.
+
+/usr/ingres/lib holds libraries used during compilation of Ingres.
+
+/usr/ingres/data is the root of the database storage hierarchy.
+
+/usr/ingres/demo holds the distribution data and scripts for the
+demo database, which can be created by the "demodb" command.
+
+/usr/ingres/doc holds documentation, papers and the online manual.
+Some of these are outdated, and there are also references to geoquel,
+which unfortunately is not included in the distribution.
+
+/usr/ingres/files is where the configuration files reside.  Each of
+these is described by the READ_ME file in that directory.
+
+/usr/ingres/source contains the source code.  To recompile and
+install the system, first run a "make" in this directory as user ingres,
+and then run a "make sysinstall" as root.
+
+LOCAL SETUP:
+
+Ingres needs to be installed under the user "ingres", which normally
+is set up thus:
+
+/etc/passwd:	ingres:*:267:74:& Group:/usr/ingres:/bin/tcsh
+/etc/group:	ingres:*:74:
+
+(Actually, the shell is up to you, I just prefer tcsh.)  Then the
+Ingres user directory in /usr/ingres/files/users needs to be right,
+with an entry for each user who is to use Ingres.  This file is
+documented in /usr/ingres/doc/files/users.nr, and must contain at
+least the ingres user itself:
+
+ingres:ii:267:74:177777:::/usr/ingres/.ingres::
+
+If you'll ever have two users (or user processes) accessing the same
+database concurrently, you need to run a /unix kernel with the Ingres
+lock driver compiled in, and /dev/ingreslock created.
+
+OTHER NOTES:
+
+There are still some warnings produced by the compiler.  The reasons
+why I haven't cleaned up the remaining warnings are superstition and
+laziness:  I tried to tidy up yyyacc, and broke it.  Stared at the code
+for a very long time, and couldn't see that I'd done anything wrong,
+but it still crashed.  In the end I left it as it is now.  The other
+problem area is one of the yyyacc input files, which generates a y.tab.c
+that compiles with a number of warnings.  I started to clean this up,
+but the combination of having to use warnings referencing "y.tab.c" to
+debug "master.grammar", and the realization that adding the declarations
+that will remove the current warnings will cause oodles of new ones
+made me give up on it.  If anyone wants to do this, please go ahead!
+
+Also not done is the removal of the weird defines in the header file
+/usr/ingres/source/unix.h.  I notice that they left this in at least
+until version 8.9, where you still have to configure for Unix V7 (and
+*not* for Berkeley Unix) to compile Ingres 8.9 under 4.3BSD on a VAX.
+
+Bergen, Norway, April 1995, Tom Ivar Helbekkmo <tih@nhh.no>.

@@ -1,0 +1,17 @@
+The following are the documents unique to the 2.9/2.10 systems.
+Many of them are of historical interest only.
+
+2.9_kernel.ms	-- Description of changes between 2.8 and 2.9
+assembler	-- PDP-11 assembler guide
+f77		-- 2.9 FORTRAN compiler guide
+fsck		-- File system check program guide
+ovpap		-- Documentation of the 2.9/2.10 text overlay scheme.
+ovtutorial
+pascal		-- Documentation of the 2.9/2.10 Pascal system.
+px
+pxp
+rogue		-- Very old rogue description, see 4.3's for an update.
+setup		-- Setup documents for 2.9 system.
+setup.V7	-- Setup documents for V7 system.
+v7index		-- Index and summary for the V7 manuals.
+v7summary

@@ -1,0 +1,66 @@
+
+
+
+HYPOT(3M)	    UNIX Programmer's Manual		HYPOT(3M)
+
+
+
+NAME
+     hypot, cabs - Euclidean distance, complex absolute value
+
+SYNOPSIS
+     #include <math.h>
+
+     double hypot(x,y)
+     double x,y;
+
+     double cabs(z)
+     struct {double x,y;} z;
+
+DESCRIPTION
+     Hypot(x,y) and cabs(x,y) return sqrt(x*x+y*y) computed in
+     such a way that underflow will not happen, and overflow
+     occurs only if the final result deserves it.
+
+     hypot(infinity,v) = hypot(v,infinity) = +infinity for all v,
+     including _N_a_N.
+
+ERROR (due to Roundoff, etc.)
+     Below 0.97 _u_l_ps.  Consequently hypot(5.0,12.0) = 13.0
+     exactly; in general, hypot and cabs return an integer when-
+     ever an integer might be expected.
+
+     The same cannot be said for the shorter and faster version
+     of hypot and cabs that is provided in the comments in
+     cabs.c; its error can exceed 1.2 _u_l_ps.
+
+NOTES
+     As might be expected, hypot(v,_N_a_N) and hypot(_N_a_N,v) are _N_a_N
+     for all _f_i_n_i_t_e v; with "reserved operand" in place of "_N_a_N",
+     the same is true on a VAX.  But programmers on machines
+     other than a VAX (it has no infinity) might be surprised at
+     first to discover that hypot(+_infinity,_N_a_N) = +infinity.
+     This is intentional; it happens because hypot(infinity,v) =
+     +infinity for _a_l_l v, finite or infinite.  Hence
+     hypot(infinity,v) is independent of v.  Unlike the reserved
+     operand on a VAX, the IEEE _N_a_N is designed to disappear when
+     it turns out to be irrelevant, as it does in
+     hypot(infinity,_N_a_N).
+
+SEE ALSO
+     math(3M), sqrt(3M)
+
+AUTHOR
+     W. Kahan
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

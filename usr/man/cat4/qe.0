@@ -1,0 +1,66 @@
+
+
+
+QE(4)		    UNIX Programmer's Manual		    QE(4)
+
+
+
+NAME
+     qe - DEC DEQNA Q-bus 10 Mb/s Ethernet interface
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NQE  _q_e__c_o_n_t_r_o_l_l_e_r_s # DEQNA
+
+DESCRIPTION
+     The qe interface provides access to a 10 Mb/s Ethernet net-
+     work through the DEC DEQNA Q-bus controller.
+
+     Each of the host's network addresses is specified at boot
+     time with an SIOCSIFADDR ioctl.  The qe interface employs
+     the address resolution protocol described in arp(4P) to map
+     dynamically  between Internet and Ethernet addresses on the
+     local network.
+
+     The interface normally tries to use a ``trailer'' encapsula-
+     tion to minimize copying data on input and output.  The use
+     of trailers is negotiated with ARP.  This negotiation may be
+     disabled, on a per-interface basis, by setting the
+     IFF_NOTRAILERS flag with an SIOCSIFFLAGS ioctl.
+
+DIAGNOSTICS
+SEE ALSO
+     inet(4F), intro(4N), arp(4P)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 20, 1987			1
+
+
+

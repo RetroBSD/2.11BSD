@@ -1,0 +1,132 @@
+
+
+
+MAILP(1)                 USER COMMANDS                   MAILP(1)
+
+
+
+NAME
+     mailp - frontend to the mp PostScript pretty printer
+
+SYNOPSIS
+     mailp [ options] file ...
+
+     newsp [ options] file ...
+
+     digestp [ options] file ...
+
+     filep [ options] file ...
+
+     filofaxp [ options] file ...
+
+     franklinp [ options] file ...
+
+     timemanp [ options] file ...
+
+     timesysp [ options] file ...
+
+DESCRIPTION
+     mailp is a frontend to the mp PostScript pretty printer pro-
+     gram. It uses different names to provide various mp options:
+
+     mailp will print out mail messages.
+
+     newsp will print out USENET news articles.
+
+     digestp will print out USENET digest files.
+
+     filep will print out ordinary ASCII files.
+
+     filofaxp will print out in Filofax personal  organiser  for-
+     mat.
+
+     franklinp  will  print  out  in  Franklin  Planner  personal
+     organiser format.
+
+     timemanp will print out in Time Manager  personal  organiser
+     format.
+
+     timesysp will print out in  Time/System  International  per-
+     sonal organiser format.
+
+     mailp (and the associated programs) read  each  filename  in
+     sequence  and  generate a prettified version of the contents
+     in PostScript format. If no filename arguments are provided,
+     mailp reads the standard input.
+
+     mailp uses the PRINTER  environment  variable  to  determine
+     which  printer the output from the mp program is sent to. If
+     this environment variable is not found, then it defaults  to
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 1
+
+
+
+
+
+
+MAILP(1)                 USER COMMANDS                   MAILP(1)
+
+
+
+     the ps printer.
+
+OPTIONS
+     -F   Instead of printing who the mail article  is  for,  the
+          top header will contain who the mail article is from. A
+          useful  option  for  people  with  their  own  personal
+          printer.
+
+     -Pprinter
+          Send output to the named printer. Otherwise send output
+          to  the  printer named in the PRINTER environment vari-
+          able.
+
+     -h   Banner printing is disabled. Most  of  the  information
+          that typically appears on the banner sheet is output in
+          the mp banners.
+
+     -dprinter
+          Send output to the named printer. Otherwise send output
+          to  the  printer named in the PRINTER environment vari-
+          able.
+
+     -l   Format output in landscape mode.   Two  pages  of  text
+          will be printed per sheet of paper.
+
+     -s subject
+          Use  subject as the new subject for  the  printout.  If
+          you  are  printing ordinary ASCII files which have been
+          specified on the command line, the subject will default
+          to the name of each of these files.
+
+SEE ALSO
+     mp(1)
+
+AUTHORS
+     Original version by Bruno Pillard - October 1988.
+
+     Modified by Rich Burridge - June 1989 and October 1990.
+
+     Revisted by Larry W. Virden - August, September 1990.
+
+     Revisited by Bruno Pillard - September 1990.
+
+     Revisited by David W. Sanderson - August 1991.
+
+
+
+
+
+
+
+
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 2
+
+
+

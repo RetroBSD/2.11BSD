@@ -1,0 +1,22 @@
+Machine Type:		Sequent Dynix 3.*
+
+Make using:		make dynix3
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" dynix3
+
+Person(s) porting:	Peter Eriksson <pen@lysator.liu.se>
+			Frank Maas <maas@dutiws.tudelft.nl>
+
+Port date:		A long time ago...
+
+Verified working:	OS version(s)	Pident vers	Person
+			3.0.14		2.1beta10	<pen@lysator.liu.se>
+
+Build comments:		Nothing unusual
+
+Install comments:	Generally install into /usr/etc
+
+Usage comments:		Works as daemon (started from rc.local), or
+			from inetd (if you port an Inetd yourself
+			from for example 4.3BSD-net2).
+			We run as user root, but any user with read
+			access to /dev/kmem would be fine.

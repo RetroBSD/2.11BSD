@@ -1,0 +1,108 @@
+.\" Copyright (c) 1983 Regents of the University of California.
+.\" All rights reserved.  The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.\"
+.\"	@(#)newfs.8	2.0 (2.11BSD) 1996/04/12
+.\"
+.TH NEWFS 8 "April 12, 1996"
+.UC 5
+.SH NAME
+newfs \- construct a new file system
+.SH SYNOPSIS
+.B /sbin/newfs
+[
+.B \-N
+]
+[
+.B \-m free-gap
+]
+[
+.B \-n free-modulus
+]
+[
+.B \-i bytes
+]
+[
+.B \-s size
+]
+[
+.B \-T disk-type
+]
+.B special
+.SH DESCRIPTION
+.B Newfs
+is a ``friendly'' front-end to the
+.BR mkfs (8)
+program.
+.BR Newfs (8)
+will normally read the disklabel from the drive to determine the 
+partition sizes.  If the driver for the disk does not support 
+disklabels the \-T option must be used to force a search of
+.IR /etc/disktab
+for partition information about \fIdrive-type\fP.
+.B Newfs
+calculates the appropriate parameters to use in calling
+.BR mkfs ,
+then builds the file system by forking \fBmkfs\fP.
+.PP
+.B \-N
+causes the \fBmkfs\fP command which would be executed to be printed out
+without actually creating the file system.  The disk specified by \fBspecial\fP
+must be online though so that \fBnewfs\fP can read the disklabel.
+.PP
+.B \-m
+allows the specification of the block interleaving of the free list.
+If not specified or outside the range 1 thru 32 then 
+a value of 2 is used.
+.PP
+.B \-n
+parameter is the freelist modulus (when the \fB\-m\fP pattern repeats)
+and is calculated by
+.B newfs
+to be 1 cylinder in size by default.
+.PP
+.B \-i
+specifies how many bytes per inode to assume when calculating how many
+inodes to allocate.  The default is 4096 bytes per inode.  If this results
+in too few inodes being allocated (there is an absolute maximum of 65500)
+then decrease the \fIbytes\fP number (which must lie between 512 and 65536).
+.PP
+.B \-T
+must be used if the disk specified by \fIspecial\fP has not
+been labeled with the
+.BR disklabel (8)
+program.  In this case \fIdisk-type\fP is used by 
+.BR getdisklabel (3)
+when searching
+.IR /etc/disktab .
+This option is used when the underlying device driver does not
+support disklabels.  Care must be taken that the contents of
+/etc/disktab match the partition tables in the kernel.
+.PP
+.BR \-s
+specifies how many \fBsectors\fP the file system is to contain.
+There are two sectors per file system block, therefore \fIsize\fP should
+be even.
+This parameter must be less than or equal to the partition size (as 
+determined from the disklabel or /etc/disktab).  An error is printed and
+no action is taken if the partition size is 0 or too large.
+.PP
+.in +0.5i
+.B NOTE:
+Mkfs deals in units of filesystem blocks not sectors.  Newfs uses sectors.
+.in -0.5i
+.SH FILES
+/etc/disktab	disk geometry and partition information 
+.br
+mkfs	to actually build the file system
+.SH "SEE ALSO"
+getdisklabel(3), disklabel(8), disktab(5), diskpart(8), fs(5), fsck(8),
+mkfs(8)
+.SH BUGS
+.BR newfs (8)
+no longer places boot blocks on the filesystem.  That duty has been 
+moved to the 
+.BR disklabel (8)
+program.  If you must place a boot block on a disk whose driver does
+not support disklabels use 
+.BR dd (1).

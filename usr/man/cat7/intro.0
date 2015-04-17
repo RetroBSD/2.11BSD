@@ -1,0 +1,66 @@
+
+
+
+INTRO(7)	    UNIX Programmer's Manual		 INTRO(7)
+
+
+
+NAME
+     miscellaneous - miscellaneous useful information pages
+
+DESCRIPTION
+     This section contains miscellaneous documentation, mostly in
+     the area of text processing macro packages for _t_r_o_f_f(1).
+
+
+     ascii	 map of ASCII character set
+     environ	 user environment
+     eqnchar	 special character definitions for eqn
+     hier	 file system hierarchy
+     mailaddr	 mail addressing description
+     man	 macros to typeset manual pages
+     me          macros for formatting papers
+     ms          macros for formatting manuscripts
+     term	 conventional names for terminals
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1985				1
+
+
+

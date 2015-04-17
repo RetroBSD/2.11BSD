@@ -1,0 +1,66 @@
+
+
+
+GETPAGESIZE(2)	    UNIX Programmer's Manual	   GETPAGESIZE(2)
+
+
+
+NAME
+     getpagesize - get system page size
+
+SYNOPSIS
+     pagesize = getpagesize()
+     int pagesize;
+
+DESCRIPTION
+     _G_e_t_p_a_g_e_s_i_z_e returns the number of bytes in a page.  Page
+     granularity is the granularity of many of the memory manage-
+     ment calls.
+
+     The page size is a _s_y_s_t_e_m page size and may not be the same
+     as the underlying hardware page size.
+
+SEE ALSO
+     sbrk(2), pagesize(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

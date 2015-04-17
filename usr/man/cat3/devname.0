@@ -1,0 +1,66 @@
+
+
+
+DEVNAME(3)	    UNIX Programmer's Manual	       DEVNAME(3)
+
+
+
+NAME
+     devname - get device name
+
+SYNOPSIS
+     #include <sys/types.h>
+
+     char *
+     devname(dev, type)
+	 dev_t dev;
+	 mode_t type;
+
+DESCRIPTION
+     The devname function returns a pointer to the name of the
+     block or character device in /_d_e_v with a device number of
+     _d_e_v , and a file type matching the one encoded in _t_y_p_e which
+     must be one of S_IFBLK or S_IFCHR.  If no device matches the
+     specified values, or no information is available, the string
+     ?? is returned.
+
+SEE ALSO
+     stat(2), dev_mkdb(8)
+
+HISTORY
+     The devname function call appeared in 4.4BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 3, 1995			1
+
+
+

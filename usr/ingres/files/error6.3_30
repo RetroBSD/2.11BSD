@@ -1,0 +1,27 @@
+30210	GEO-QUEL is creating a MAPRELATION relation~
+30300	line %0, In attempting to do a MAP, SHADE, or OVERLAY the relation
+'%1' does not exist or is not owned by you~
+30301	line %0, Failed to obtain information to put a tuple in MAPRELATION
+relation~
+30310	line %0, Failed to complete MAP~
+30330	line %0, Failed while building temporary relation in SHADE command~
+30331	line %0, Maximum polygon value is 0.0 which causes floating point
+exception~
+30332	line %0, Too many sides (maxside) in polygon (zoneid: %1, groupid: %2)~
+30340	line %0, Failed while trying to obtain range limits for
+axes in POINTGRAPH or LINEGRAPH~
+30341	line %0, The linetype specified (%1) in the linegraph command
+does not make sense for the device~
+30342	line %0, %1 does not exist or cannot be accessed by you~
+30350	line %0, There is no current center definition for this map: %1~
+30400	line %0, Too many domains for SHADE(shadedoms)~
+30401	line %0, Too many domains for POINTGRAPH or LINEGRAPH (graphdoms)~
+30402	line %0, Invalid shade value: %1~
+30410	line %0, Error in creating destination file '%1' in SAVEMAP~
+30420	line %0, You may specify only one boundary when using
+'cellcount' and 'cellwidth'~
+30421	line %0, Only one cellwidth per command has meaning~
+30422	line %0, Only one cellcount per command has meaning~
+30423	line %0, Only one upper bound per command has meaning~
+30424	line %0, Only one lower bound per command has meaning~
+30425	line %0, %1 does not exist or cannot be accessed by you~

@@ -1,0 +1,66 @@
+
+
+
+welcome(1)	    UNIX Programmer's Manual	       welcome(1)
+
+
+
+NAME
+     welcome - prints out a nice welcome message with useful
+     statistics
+
+SYNTAX
+     welcome
+
+DESCRIPTION
+     The command makes a graphic box over box and prints out the
+     time, day, and system stats
+
+     assumes that the file /etc/motd exists.
+
+SEE ALSO
+     /etc/motd
+
+AUTHOR
+     Jim King (pulsar) Lincoln-Sudbury Regional High '88.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						1
+
+
+

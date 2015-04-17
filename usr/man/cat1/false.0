@@ -1,0 +1,66 @@
+
+
+
+FALSE(1)	    UNIX Programmer's Manual		 FALSE(1)
+
+
+
+NAME
+     false, true - provide truth values
+
+SYNOPSIS
+     true
+
+     false
+
+DESCRIPTION
+     _T_r_u_e and _f_a_l_s_e are usually used in a Bourne shell script.
+     They test for the appropriate status "true" or "false"
+     before running (or failing to run) a list of commands.
+
+EXAMPLE
+
+	       while false
+	       do
+		    command list
+	       done
+
+SEE ALSO
+     csh(1), sh(1), true(1)
+
+DIAGNOSTICS
+     _F_a_l_s_e has exit status nonzero.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

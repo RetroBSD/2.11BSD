@@ -1,0 +1,132 @@
+
+
+
+GETFSSTAT(2)	    UNIX Programmer's Manual	     GETFSSTAT(2)
+
+
+
+NAME
+     getfsstat - get list of all mounted filesystems
+
+SYNOPSIS
+     #include <sys/param.h>
+     #include <sys/mount.h>
+
+     _i_n_t
+     getfsstat(buf,bufsize,flags)
+     _s_t_r_u_c_t _s_t_a_t_f_s *_b_u_f;
+     _i_n_t _b_u_f_s_i_z_e;
+     _i_n_t _f_l_a_g_s;
+
+DESCRIPTION
+     Getfsstat() returns information about all mounted filesys-
+     tems.  _B_u_f is a pointer to _s_t_a_t_f_s structures defined as fol-
+     lows:
+
+
+     #define MNAMELEN 90       /* length of buffer for returned name */
+
+     struct statfs {
+     short   f_type;	       /* type of filesystem (see below) */
+     short   f_flags;	       /* copy of mount flags */
+     short   f_bsize;	       /* fundamental file system block size */
+     short   f_iosize;	       /* optimal transfer block size */
+     long    f_blocks;	       /* total data blocks in file system */
+     long    f_bfree;	       /* free blocks in fs */
+     long    f_bavail;	       /* free blocks avail to non-superuser */
+     ino_t   f_files;	       /* total file nodes in file system */
+     ino_t   f_ffree;	       /* free file nodes in fs */
+     u_long  f_fsid[2];        /* file system id */
+     long    f_spare[4];       /* spare for later */
+     char    f_mntonname[MNAMELEN];    /* mount point */
+     char    f_mntfromname[MNAMELEN];  /* mounted filesystem */
+     };
+     /*
+     * File system types. - Only UFS is supported so the other types are not
+     * given.
+     */
+     #define   MOUNT_NONE     0
+     #define   MOUNT_UFS 1    /* Fast Filesystem */
+
+     Fields that are undefined for a particular filesystem are
+     set to -1.  The buffer is filled with an array of _f_s_s_t_a_t
+     structures, one for each mounted filesystem up to the size
+     specified by _b_u_f_s_i_z_e.
+
+     If _b_u_f is given as NULL, getfsstat() returns just the number
+     of mounted filesystems.
+
+
+
+
+
+Printed 11/26/99	December 24, 1995			1
+
+
+
+
+
+
+GETFSSTAT(2)	    UNIX Programmer's Manual	     GETFSSTAT(2)
+
+
+
+     Normally _f_l_a_g_s is currently unused.  In 4.4BSD systems the
+     usage is specified as MNT_WAIT.  If _f_l_a_g_s is set to
+     MNT_NOWAIT, getfsstat() will return the information it has
+     available without requesting an update from each filesystem.
+     Thus, some of the information will be out of date, but
+     getfsstat() will not block waiting for information from a
+     filesystem that is unable to respond.
+
+RETURN VALUES
+     Upon successful completion, the number of _f_s_s_t_a_t structures
+     is returned.  Otherwise, -1 is returned and the global vari-
+     able _e_r_r_n_o is set to indicate the error.
+
+ERRORS
+     Getfsstat() fails if one or more of the following are true:
+
+
+     [EFAULT]		 _B_u_f points to an invalid address.
+
+     [EIO]		 An I/O error occurred while reading from
+			 or writing to the filesystem.
+
+SEE ALSO
+     statfs(2), fstab(5), mount(8)
+
+HISTORY
+     The getfsstat function first appeared in 4.4BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 24, 1995			2
+
+
+

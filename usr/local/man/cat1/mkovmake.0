@@ -1,0 +1,264 @@
+
+
+
+MKOVMAKE(8)	    UNIX Programmer's Manual	      MKOVMAKE(8)
+
+
+
+NAME
+     mkovmake - optimizing overlay makefile generator
+
+SYNOPSIS
+     mkovmake [-O_n [_b_a_s_e_s_i_z_e] [-n]] [-f _m_a_k_e_f_i_l_e] [-s _o_v_s_i_z_e]
+	  [-v _m_a_x _o_v'_s] [-o _p_r_o_g_r_a_m] [-l _l_i_b_r_a_r_i_e_s ...]
+	  [_a_r_c_h_i_v_e_s.a ...] _b_a_s_e_m_o_d_u_l_e_s.o ...  -Z _o_v_m_o_d_u_l_e_s.o ...
+
+DESCRIPTION
+     _M_k_o_v_m_a_k_e produces an overlay makefile (see _m_a_k_e(1)) for a
+     given set of object modules (see _l_d(1)).  It is intended to
+     be used inside makefiles in order to avoid computing module
+     sizes and base/overlay structures each time changes are made
+     in the source.  _M_k_o_v_m_a_k_e can be included, as shown in the
+     examples below, inside makefiles of distributed sources so
+     that the base and overlays would be automatically con-
+     structed whenever the program is made by a PDP-11.  The
+     makefile generated contains the _m_a_k_e entry necessary for
+     loading the modules together into an automatic-overlay exe-
+     cutable.
+
+     There are several options to allow various levels of user
+     involvement in the construction process.  These options set
+     the sizes of various components or the name of either the
+     generated makefile or the _m_a_k_e entry inside it.  If these
+     options are not used, _m_k_o_v_m_a_k_e will guess at the best sizes
+     and use standard names, respectively.
+
+OPTIONS
+     -O_n  Use optimizer level _n.
+
+	  -O1  Put only those modules listed before the -Z in the
+	       base, and construct optimal overlays for the
+	       remaining modules.  The algorithm of optimization
+	       for overlays is to iteratively add the module with
+	       the greatest number of "ties" with the modules
+	       currently on the overlay.  A "tie" is a match
+	       between a global undefined symbol (see _n_m(1)) in
+	       one module with a global text symbol in another.
+	       This measure is on a per-kbyte of text basis, and
+	       modules are added until no more will fit.  If _n is
+	       not specified, level 1 optimization is assumed.
+
+	  -O2  Optimize both the base and the overlays.  If a -Z
+	       flag is used, modules before it will be placed in
+	       the base, plus those modules with the greatest
+	       number of global text symbols per kbyte of text,
+	       until no more modules will fit.	If no -Z appears
+	       on the command line, _m_k_o_v_m_a_k_e will assume no ini-
+	       tial base preference and will examine all modules
+	       for base and overlay optimization.  This is recom-
+	       mended for beginners.
+
+
+
+Printed 11/24/99	  June 30, 1990                         1
+
+
+
+
+
+
+MKOVMAKE(8)	    UNIX Programmer's Manual	      MKOVMAKE(8)
+
+
+
+	  _b_a_s_e_s_i_z_e
+	       If level-2 optimization is specified and the fol-
+	       lowing argument begins with a number, it will be
+	       used as the size of the base, without libraries.
+	       If not used, _m_k_o_v_m_a_k_e will guess at how much room
+	       the libraries will take up, upto 24k. If _b_a_s_e_s_i_z_e
+	       is followed by the letter "k" or "K", it will be
+	       multiplied by 1024.  If it is less than 10, it
+	       will be multiplied by 8192.
+
+	  -n   List the global text and undefined symbols as they
+	       are encountered, preceded by the module name and a
+	       "T" for text or "U" for undefined.
+
+	  If no optimization is specified, modules will be packed
+	  on overlays as they appear in the command line until no
+	  more fit.
+
+     -f_m_a_k_e_f_i_l_e
+	  Specify the name of the generated makefile.  If not
+	  specified, stdout will be used.
+
+     -s_o_v_s_i_z_e
+	  Specify the maximum size of overlays.  Just as _b_a_s_e_s_i_z_e
+	  above, if followed by a "k" or "K", _o_v_s_i_z_e will be mul-
+	  tiplied by 1024, and if less than 10, it will be multi-
+	  plied by 8192.  If _o_v_s_i_z_e is not specified, _m_k_o_v_m_a_k_e
+	  will compute the total amount of text that is not
+	  already assigned to the base, and guess at the size of
+	  overlays.  _M_k_o_v_m_a_k_e guesses, pessimisticly, that 1/16th
+	  of each overlay will be left blank.
+
+     -v_m_a_x _o_v'_s
+	  Specify the maximum number of overlays to use.  The
+	  default is NOVL, 15.
+
+     -o_p_r_o_g_r_a_m
+	  The name of the program being made.  This is used in
+	  the _m_a_k_e entry generated after the base and overlay
+	  definitions.	If not used, the makefile macro $(PRO-
+	  GRAM) will be inserted.
+
+     -l_l_i_b_r_a_r_i_e_s ...
+     _a_r_c_h_i_v_e_s.a ...
+	  Extra libraries or archives, such as _t_e_r_m_l_i_b or _m can
+	  be specified, and will be placed in the generated _m_a_k_e
+	  entry preceding the _c library.  If not used, $(LIBS)
+	  will be inserted.  Multiple libraries and archives can
+	  be specified and will be placed together in the order
+	  they appear on the command line.
+
+     _b_a_s_e_m_o_d_u_l_e_s.o ... -Z _o_v_m_o_d_u_l_e_s.o ...
+
+
+
+Printed 11/24/99	  June 30, 1990                         2
+
+
+
+
+
+
+MKOVMAKE(8)	    UNIX Programmer's Manual	      MKOVMAKE(8)
+
+
+
+	  Specify modules to be placed in the base and overlays,
+	  respectively.  _M_k_o_v_m_a_k_e will ignore all redundancies,
+	  so _o_v_m_o_d_u_l_e_s.o may be a macro of all modules, while
+	  _b_a_s_e_m_o_d_u_l_e_s.o may be a subset.  If using level-2 optim-
+	  ization, only one list, the macro of all modules, is
+	  necessary.
+
+EXAMPLES
+     If _m_k_o_v_m_a_k_e is being used inside a makefile, the following
+     lines can be inserted to automatically construct the base
+     and overlay definitions and load the result.  The macro
+     $(OBJS) is the list of all modules, mybigprogram is the pro-
+     gram being made, and termlib is a library that has to be
+     loaded with the object modules:
+	  mkovmake -fOvmakefile -O2 $(OBJS) -omybigprogram -ltermlib
+	  make -f Ovmakefile
+
+     If it is known that $(BASE) is a macro of the only modules
+     that are wanted in the base, $(GAME) is the program being
+     made, and $(LIBS) contains libraries (with -l prefixed) to
+     be loaded with the modules, the following lines can be used:
+	  mkovmake -fOvmakefile -O -o$(GAME) $(LIBS) $(BASE) -Z $(OBJS)
+	  make -f Ovmakefile
+
+     If the user just wants a sample optimal makefile for the
+     modules in the current working directory,
+	  mkovmake -O2 *.o
+
+SEE ALSO
+     make(1), nm(1), ld(1), strip(1), a.out(5), nlist(3)
+
+DIAGNOSTICS
+     mkovmake:	unknown file type.
+	  A command-line argument not recognized as an option
+	  argument didn't end in .o or .a.
+
+     mkovmake:	not enough memory for ...
+	  _m_k_o_v_m_a_k_e failed to use _m_a_l_l_o_c(2) to clear space for a
+	  needed list.
+
+     mkovmake:	specified modules don't fit in base.
+	  Level-2 optimization was used, and some modules were
+	  specified to be put in the base.  But these modules
+	  were too big.  Use _b_a_s_e_s_i_z_e to increase the base allot-
+	  ment, or reduce the number of base modules.
+
+BUGS
+     Certain pathological cases may cause unpredictable results.
+     In particular, if the argument to an -f, -o, or -l option is
+     separated from the f, o, or l by a space or tab, and the
+     argument ends, for some reason, in .o, the second parsing of
+     the command line will think it's a name of an object module
+
+
+
+Printed 11/24/99	  June 30, 1990                         3
+
+
+
+
+
+
+MKOVMAKE(8)	    UNIX Programmer's Manual	      MKOVMAKE(8)
+
+
+
+     and attempt to open it.  Otherwise, options and names of
+     modules may be freely mixed.
+
+     _M_k_o_v_m_a_k_e assumes that all arguments ending with .o or .a are
+     simple object modules or archives, respectively, rather than
+     looking at the magic number and complaining if not.
+
+     There is no way to tell _m_k_o_v_m_a_k_e to put a certain group of
+     modules together on an overlay.
+
+     _M_k_o_v_m_a_k_e is incapable of telling how _o_f_t_e_n a routine is
+     called, or whether an executable could be loaded even
+     without overlays.
+
+AUTHOR
+     Dennis T. Flaherty,
+     U of Notre Dame
+     dennisf@ndcvx.cc.nd.edu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	  June 30, 1990                         4
+
+
+

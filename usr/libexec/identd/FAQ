@@ -1,0 +1,39 @@
+Q: Pidentd stopped working for some reason - help!
+
+A: Always as a first step get the latest version of Pidentd from:
+
+	ftp.lysator.liu.se:pub/ident/servers
+
+   and install that one.
+
+
+
+Q: I just upgraded to Solaris 2.x from Solaris 2.(x-1), now Pidentd
+   doesn't work anymore - why?
+
+A1: You did recompile Pidentd _on_ a machine running the new OS did you?
+
+A2: If you used Gcc to compile it: You did recompile and install a new
+    version of Gcc configured for the new OS version, didn't you?
+    (Gcc builds fixed include files which are used instead of the
+    system ones - and they are _not_ portable between OS releases).
+
+
+
+Q: I just compiled it on Solaris 2.4 - and it doesn't work. All I
+	get is "NO-USER".
+
+A: Make sure you have only installed _one_ of the patches:
+
+		102049-04	 (I recommend this one)
+		102303-05
+
+   You can't have both installed at the same time.
+
+
+Q: I'm running IRIX 6.2 and Pidentd doesn't work. Help!
+
+A: If you are using a 64 bit machine (R10000) then you might
+   have to compile with CC='cc -64' for it to work.
+
+

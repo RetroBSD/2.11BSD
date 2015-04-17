@@ -1,0 +1,66 @@
+
+
+
+ARP(8C)             UNIX Programmer's Manual		  ARP(8C)
+
+
+
+NAME
+     arp - address resolution display and control
+
+SYNOPSIS
+     arp _h_o_s_t_n_a_m_e
+     arp -a [ _v_m_u_n_i_x ] [ _k_m_e_m ]
+     arp -d _h_o_s_t_n_a_m_e
+     arp -s _h_o_s_t_n_a_m_e _e_t_h_e_r__a_d_d_r [ temp ] [ pub ] [ trail ]
+     arp -f _f_i_l_e_n_a_m_e
+
+DESCRIPTION
+     The _a_r_p program displays and modifies the Internet-to-
+     Ethernet address translation tables used by the address
+     resolution protocol (_a_r_p(4p)).
+
+     With no flags, the program displays the current ARP entry
+     for _h_o_s_t_n_a_m_e. The host may be specified by name or by
+     number, using Internet dot notation.  With the -a flag, the
+     program displays all of the current ARP entries by reading
+     the table from the file _k_m_e_m (default /dev/kmem) based on
+     the kernel file _v_m_u_n_i_x (default /vmunix).
+
+     With the -d flag, a super-user may delete an entry for the
+     host called _h_o_s_t_n_a_m_e.
+
+     The -s flag is given to create an ARP entry for the host
+     called _h_o_s_t_n_a_m_e with the Ethernet address _e_t_h_e_r__a_d_d_r. The
+     Ethernet address is given as six hex bytes separated by
+     colons.  The entry will be permanent unless the word temp is
+     given in the command. If the word pub is given, the entry
+     will be "published"; i.e., this system will act as an ARP
+     server, responding to requests for _h_o_s_t_n_a_m_e even though the
+     host address is not its own.  The word trail indicates that
+     trailer encapsulations may be sent to this host.
+
+     The -f flag causes the file _f_i_l_e_n_a_m_e to be read and multiple
+     entries to be set in the ARP tables.  Entries in the file
+     should be of the form
+
+	  _h_o_s_t_n_a_m_e _e_t_h_e_r__a_d_d_r [ temp ] [ pub ] [ trail ]
+
+     with argument meanings as given above.
+
+SEE ALSO
+     inet(3N), arp(4P), ifconfig(8C)
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 20, 1986				1
+
+
+

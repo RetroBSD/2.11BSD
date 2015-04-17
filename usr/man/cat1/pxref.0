@@ -1,0 +1,66 @@
+
+
+
+PXREF(1)	    UNIX Programmer's Manual		 PXREF(1)
+
+
+
+NAME
+     pxref - Pascal cross-reference program
+
+SYNOPSIS
+     pxref [ - ] name
+
+DESCRIPTION
+     _P_x_r_e_f makes a line numbered listing and a cross-reference of
+     identifier usage for the program in _n_a_m_e. The optional `-'
+     argument suppresses the listing.  The keywords goto and
+     label are treated as identifiers for the purpose of the
+     cross-reference.  Include directives are not processed, but
+     cause the placement of an entry indexed by `#include' in the
+     cross-reference.
+
+SEE ALSO
+     Berkeley Pascal User's Manual
+
+AUTHOR
+     Niklaus Wirth
+
+BUGS
+     Identifiers are trimmed to 10 characters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						1
+
+
+

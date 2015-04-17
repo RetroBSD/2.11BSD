@@ -1,0 +1,173 @@
+NNTP README		January 23, 1988	For version 1.5 NNTP package
+
+[See the file CHANGES to see differences between this version and
+older versions.]
+
+INTRODUCTION
+
+     This package contains everything (well, most of it, I hope) that
+you'll need to implement a remote news server running the NNTP protocol.
+
+     A brief tour of the directories and their programs:
+
+	server		Source for the NNTP news server daemon.
+
+	rrnpatches	Patches to rn #39 to allow remote news reading.
+
+	inews		A "mini-inews" written by Steven Grady
+			<grady@postgres.berkeley.edu> which allows
+		 	remote posting without changing much else.
+
+	xmit		An active transmission client for transferring
+			news, written by Erik Fair; see note below.
+
+	common		Common stuff (response codes, configuration info,
+			and some client library routines) for the
+			the news server and the clients.  The "conf.h"
+			file here needs to be edited to reflect
+			the peculiarities of your system.
+
+	support		Some support files and scripts.
+
+	doc		Documentation on the server, including manual
+			pages.  Manual pages for rrn are in rrn/.
+
+	xfer		A passive reception client which uses the
+			NEWNEWS command to retrieve news from a remote
+			server.  Written by Brian Kantor, this software
+			is UNSUPPORTED.
+
+     Each directory has associated with it a README file.
+This file will try to give enough information for you to get things
+running and installed, but the README in each directory has more
+details for each subset of the NNTP package.  You may also want to print
+a copy of doc/rfc977, which describes the NNTP protocol.
+
+INTRODUCTION TO NNTP INSTALLATION
+
+     First, figure out what you are trying to do (this is good
+advice under most circumstances, and it is especially apropos here).
+NNTP can be used for two things:  (1) Remote news reading, where news
+is stored on one machine and read from remote machines across a
+high-speed local area network such as Ethernet, and (2) News transfer,
+where news is transmitted to NNTP servers on remote machines over
+either local or long-haul networks.
+
+     NNTP "server" machines are machines that have a full installation
+of USENET news on them.  An NNTP process, the "server", allows remote
+sites to connect to the server machine and read or transfer news.
+The server machine DOES NOT NEED "reader client" software such as
+"rrn".  It MAY NEED "transmission client" software such as "nntpxmit"
+if you want to use NNTP to transfer news.
+
+     NNTP "client" machines do not have a full installation of USENET
+news on them.  They get their news from an NNTP server machine across
+the network.  They DO have NNTP "reader clients" such as "rrn" installed
+on them.
+
+     In summary,
+
+	>>> A full client installation of NNTP requires the following
+	    files (suitable for rdist, assuming standard directories):
+
+NEWS = ( /usr/local/{Pnews,Rnmail,inews,rn,rrn,newsetup,newsgroups,lib/rn}
+	/usr/man/catl/{Pnews,Rnmail,rn,newsetup,newsgroups}.1 )
+
+	    You DO NOT need any of the normal news junk (e.g.,
+	    /usr/lib/news, postnews, checknews, readnews) on CLIENT
+	    systems.
+
+	    You DO need these on SERVER systems.
+
+     An important note:
+
+	The NNTP server assumes that the history file format
+	is 2.11 or 2.10.3; therefore you need 2.11 news on your
+	server machine.
+
+	>>>>> Get 2.11 news if you don't have it.
+
+GENERAL INSTALLATION
+
+     Time for a general and cohesive Plan:
+
+     Regardless of whether you are making a server or a client NNTP
+setup, you will have to edit common/conf.h to reflect your system's
+setup.  So,
+
+     1. Look at common/README.  This will explain the stuff
+	needs to be tailored for your system in common/conf.h.
+	Make the necessary changes to reflect your system.
+
+	If you are running with System V or Excelan TCP/IP,
+	please read Stan Barber's instructions in common/README.SYSV
+
+	If you have an HPUX machine, please read common/README.HPUX
+
+     Now, at this point, what you do depends on whether you are
+installing a server system or a client system.
+
+SERVER INSTALLATION
+
+     2. Type "make server" in this directory.
+
+     3. Type "make install_server" in this directory.
+
+CLIENT INSTALLATION
+
+     2. You must configure "rrn", the remote newsreading client.
+        cd into "rrnpatches", and read README_RRN.  This will explain
+        how to apply the patches supplied to turn rn #39 into rrn #39.
+
+     3. Type "make client" in this directory.
+
+     4. Type "make install_client" in this directory.
+
+IF YOU HAVE PROBLEMS
+
+     You can get to me via electronic mail at the following addresses:
+
+	Internet:		phil@ucbvax.berkeley.edu
+	UUCP:			...!ucbvax!phil
+	Telephone (home):	(415) 848-8409
+	Telephone (work):	(415) 642-7447
+
+     I'm very interested in learning what hacks need to be made to
+nntpd to get it to work on various systems, and certainly, if there are
+outright bugs, please let me know.  Bug reports and fixes for nntp are
+posted to the newsgroup "news.software.nntp".  Announcements of new
+versions of nntp software are posted there too.
+
+     I'll support bugs caused by my additions/hacks to turn "rn" into
+"rrn" (hopefully Larry Wall will be supporting this soon...) but please
+don't send me reports about things that were already in rn itself.
+Also, if you add features to rrn, I probably am not interested in
+supporting them unless they are really necessary; every change I make
+to rrn is something that I have to hack into future releases of rn, so
+the fewer changes, the better.
+
+ACKNOWLEDGEMENTS
+
+     I'd like to thank the various people who both inspired and helped
+to make NNTP a reality:  Erik Fair, whose criticism and suggestions
+helped mold NNTP (and who wrote the active transmission client); Brian
+Kantor, who really got me motivated enough to finish the thing, and
+whose work on the RFC was *tremendous*; Steven Grady, who wrote the
+inews interface (and wasted countless hours only to have his work
+dashed periodically...); Mike Meyer, who beta tested the software and
+pointed out numerous problems; Bob Henry, who let me have the resources
+so that it got done; Peter Yee, who repeated enough good ideas to get
+me to include them; all the folks who had patience with me and didn't
+go off and write this themselves (jsq, you listening?  My thanks.);
+Chuq von Rospach and the members of lan-news; Gene Spafford for
+eliminating having to include 1 MB of source to rn by a set of patches;
+Matt Thomas for adding support for DECNET; Stan Barber for adding
+System V/Excelan support and putting up with my sloth; the kind folks
+who beta tested version 1.4 and put up with stupid bugs and provided
+helpful feedback, notably Craig Leres, Matt Thomas, Wengyik Yeong, and
+Stan Barber; all the individuals who have reported bugs or suggested
+improvements (see CHANGES for a list); and probably many other people
+I've neglected to mention.  My thanks to all.
+
+						Phil Lapsley
+						26 February 1988

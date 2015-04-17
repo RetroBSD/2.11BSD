@@ -1,0 +1,66 @@
+
+
+
+FORK(3F)	    UNIX Programmer's Manual		 FORK(3F)
+
+
+
+NAME
+     fork - create a copy of this process
+
+SYNOPSIS
+     integer function fork()
+
+DESCRIPTION
+     _F_o_r_k creates a copy of the calling process.  The only dis-
+     tinction between the 2 processes is that the value returned
+     to one of them (referred to as the `parent' process) will be
+     the process id of the copy.  The copy is usually referred to
+     as the `child' process.  The value returned to the `child'
+     process will be zero.
+
+     All logical units open for writing are flushed before the
+     fork to avoid duplication of the contents of I/O buffers in
+     the external file(s).
+
+     If the returned value is negative, it indicates an error and
+     will be the negation of the system error code.  See
+     perror(3F).
+
+     A corresponding _e_x_e_c routine has not been provided because
+     there is no satisfactory way to retain open logical units
+     across the exec.  However, the usual function of _f_o_r_k/_e_x_e_c
+     can be performed using _s_y_s_t_e_m(3F).
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     fork(2), wait(3F), kill(3F), system(3F), perror(3F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 27, 1986				1
+
+
+

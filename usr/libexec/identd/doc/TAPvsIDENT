@@ -1,0 +1,8 @@
+TAP is an alternative protocol specification for a successor to RFC931
+that Pidentd is compatible with. TAP is a more "clean" protocol and
+doesn't include as many new "features" as IDENT does, but the basic 
+functionality is more or less the same. If you don't use the extra
+features of the IDENT protocol (which has to be explicitly enabled in
+Pidentd), then it should be compatible.
+ 
+/Peter Eriksson <pen@lysator.liu.se>

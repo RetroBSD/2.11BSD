@@ -1,0 +1,66 @@
+
+
+
+RANLIB(1)	    UNIX Programmer's Manual		RANLIB(1)
+
+
+
+NAME
+     ranlib - table-of-contents for archive libraries
+
+SYNOPSIS
+     ranlib [-t] file ...
+
+DESCRIPTION
+     _R_a_n_l_i_b creates a table of external references for archive
+     libraries, normally used by the loader, _l_d(1).  This table
+     is is named ``__.SYMDEF'' and is prepended to the archive.
+     Files in the archive which are not executable and symbols
+     which are uninteresting to the loader are ignored.
+
+     The options are as follows:
+
+     -t   Set the modification time of the __.SYMDEF file.  This
+	  time is compared by the loader with the modification
+	  time of the archive to verify that the table is up-to-
+	  date with respect to the archive.  If the modification
+	  time has been changed without any change to the archive
+	  (for example, by a _c_p(1)), the -_t option can be used to
+	  ``touch'' the modification time so that it appears that
+	  the table is up-to-date.
+
+FILES
+     /tmp	   default temporary file directory
+
+     ranlib.XXXXXX temporary file names
+
+SEE ALSO
+     _a_r(1), _l_d(1), _l_o_r_d_e_r(1), _n_m(1), _r_a_n_l_i_b(5)
+
+HISTORY
+     A _r_a_n_l_i_b command appeared in Version 7 AT&T UNIX.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 9, 1991				1
+
+
+

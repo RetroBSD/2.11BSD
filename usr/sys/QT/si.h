@@ -1,0 +1,1 @@
+#define NSI	0

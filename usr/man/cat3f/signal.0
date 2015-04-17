@@ -1,0 +1,66 @@
+
+
+
+SIGNAL(3F)	    UNIX Programmer's Manual	       SIGNAL(3F)
+
+
+
+NAME
+     signal - change the action for a signal
+
+SYNOPSIS
+     integer function signal(signum, proc, flag)
+     integer signum, flag
+     external proc
+
+DESCRIPTION
+     When a process incurs a signal (see _s_i_g_n_a_l(3C)) the default
+     action is usually to clean up and abort.  The user may
+     choose to write an alternative signal handling routine.  A
+     call to _s_i_g_n_a_l is the way this alternate action is specified
+     to the system.
+
+     _S_i_g_n_u_m is the signal number (see _s_i_g_n_a_l(3C)).  If _f_l_a_g is
+     negative, then _p_r_o_c must be the name of the user signal han-
+     dling routine.  If _f_l_a_g is zero or positive, then _p_r_o_c is
+     ignored and the value of _f_l_a_g is passed to the system as the
+     signal action definition.	In particular, this is how previ-
+     ously saved signal actions can be restored.  Two possible
+     values for _f_l_a_g have specific meanings: 0 means "use the
+     default action" (See NOTES below), 1 means "ignore this sig-
+     nal".
+
+     A positive returned value is the previous action definition.
+     A value greater than 1 is the address of a routine that was
+     to have been called on occurrence of the given signal.  The
+     returned value can be used in subsequent calls to _s_i_g_n_a_l in
+     order to restore a previous action definition.  A negative
+     returned value is the negation of a system error code.  (See
+     _p_e_r_r_o_r(3F))
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     signal(3C), kill(3F), kill(1)
+
+NOTES
+     f77 arranges to trap certain signals when a process is
+     started.  The only way to restore the default f77 action is
+     to save the returned value from the first call to _s_i_g_n_a_l.
+
+     If the user signal handler is called, it will be passed the
+     signal number as an integer argument.
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

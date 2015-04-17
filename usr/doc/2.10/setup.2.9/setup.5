@@ -1,0 +1,814 @@
+.nr H1 5
+.nr H2 0
+.ds CF \*(DY
+.ds RH "Kernel configuration
+.bp
+.LG
+.B
+.ce
+5. CONFIGURING AND COMPILING THE KERNEL
+.sp 2
+.R
+.NL
+.PP
+This section describes procedures used to set up a PDP-11 UNIX kernel
+(operating system).
+It explains the layout of the kernel code, compile time options,
+how files for devices are made and drivers for the devices
+are configured into the system and how the kernel is rebuilt
+to include the needed drivers.
+Procedures described here are used when a system is first installed
+or when the system configuration changes.  Procedures for normal
+system operation are described in the next section.
+We also suggest ways to organize local changes to the kernel.
+.NH 2
+Kernel organization
+.PP
+The kernel source is kept in the subdirectories of /usr/src/sys.
+The directory /usr/src/sys/sys
+contains the mainline kernel code, implementing system calls, the
+file system, memory management, etc.
+The directory /usr/src/sys/dev
+contains device drivers and other low-level routines.
+The header files and scripts used to compile the kernel are kept
+in /usr/src/sys/conf, and are copied from there into a separate directory
+for each machine configuration.
+It is in this directory, /usr/src/sys/\fImachine\fP, that the kernel
+is compiled.
+.NH 2
+Configuring a System
+.PP
+The kernel configuration of each PDP-11 UNIX system is described by a
+set of header files (one for each device driver) and one file of
+magic numbers (ioconf.c) stored in a subdirectory of /usr/src/sys
+for each configuration.
+Pick a name for your machine (call it PICKLE).
+Then in the /usr/src/sys/conf directory, create a configuration file PICKLE
+describing the system you wish to build, using the format in
+.IR config (8).
+This is most easily done by making a copy of the GENERIC file used for
+the distributed UNIX binary.
+Many of the fields in the configuration file correspond to parameters
+listed in the remainder of this section, which should be scanned
+before proceeding.  See especially section 5.4.3 on how to set up
+automatic reboots and dumps.
+Then use \fIconfig\fP to create a system directory ../PICKLE
+with ``config PICKLE.''
+Note the difference between \fIconfig\fP and \fIautoconfig\fP.
+\fIConfig\fP sets up a directory in which the kernel will be compiled,
+with all of the system-specific files used in compilation,
+and specifies what devices will potentially be supported.
+\fIAutoconfig\fP adapts the running kernel to the hardware actually
+present, by testing and setting the register addresses and interrupt vectors.
+.PP
+\fIConfig\fP does most of the work of configuration,
+but local needs will dictate some changes in the options and
+parameters in the header files.
+All of the options are listed in the next section.
+Examine whoami.h, localopts.h, param.h, and param.c and make any changes
+required; it might also be wise to look through the header files
+for the devices that you have configured, to check any options
+specific to the device drivers that are listed there.
+After you have finished configuring a kernel and tested it,
+you should install whoami.h in /usr/include, and copy localopts.h
+and param.h into /usr/include/sys.
+This will allow user-level programs to stay in sync with the
+running kernel.
+.PP
+If you wish to change any disk partition tables or
+device control status register addresses (other than those configured
+at boot time by
+.IR autoconfig (8)),
+edit ioconf.c and change the appropriate line\|(s).
+The file l.s contains the interrupt vectors and interface code and
+may also be edited if necessary, but usually will require no change.
+Both c.c and l.s include support for all normal devices according
+to the header files per device, and with autoconfiguration,
+the actual vectors need not be specified in advance.
+Finally, examine the Makefile, especially the options near the top
+and the load rules.  If you have placed the include files in the standard
+directories, you shouldn't have to make any changes to the options there.
+.PP
+The following sections give short descriptions of the various compile-time
+options for the kernel, and more extensive information on the autoreboot
+and disk monitoring setup.
+After verifying that those features are configured correctly for
+your system, you can proceed to kernel compilation.
+.NH 2
+Compile Time Options
+.PP
+The 2.9BSD kernel is highly tunable.  This section gives a brief description
+of the many compile-time options available, and references to sections
+of the Berkeley PDP-11
+\s-2UNIX\s0
+Programmer's manual where more information can be found.
+Options fall into four categories; the letters following each will be
+used to mark the options throughout the rest of this section.
+.nr x \w'Configuration Dependent\ (C)\ \ \ \ 'u
+.IP "Standard (S)" \nxu
+These include options which we consider necessary for reasonable
+system performance or resiliency.
+.IP "Desirable (D)"
+These include many other features
+that are convenient but which may be turned off if system size is critical.
+The user programs and libraries distributed with 2.9BSD generally assume
+that these are turned on, so turning them off may necessitate recompiling
+libraries or programs.  These options, along with those designated ``standard'',
+have received the most thorough testing.
+.IP "Configuration Dependent (C)"
+Options that depend on such things as the physical configuration or
+speed issues fall into this category.
+.IP "Experimental (X)"
+New features that have not been well tested, options that have known problems,
+or ones that we do not normally use are listed as experimental.
+You should not use such options unless the problems listed
+are not considerations for your system, or you are willing to
+watch things closely and possibly do some debugging.
+.PP
+The following sections list the parameters and options
+used in the kernel.
+The parameters (section 5.3.2) have numeric values,
+usually table sizes, and most of them are in param.h or param.c.
+Those that are in param.h are typically not changed,
+with the possible exception of \fBMAXMEM\fP,
+as their values are set by convention.
+The option flags are either defined or undefined to enable or disable
+the corresponding feature,
+with the exception of \fBUCB_NKB\fP, which is unlikely to change.
+Each option is marked with a letter to indicate into
+which of the four categories above it falls.
+.NH 3
+Hardware
+.PP
+.nr x \w'\fBTEXAS_AUTOBAUD\fP\ \ X\ \ \ '
+.nr y \w'\fBTEXAS_AUTOBAUD\fP\ \ '
+.IP \fBENABLE34\h'|\nyu'X\fP \nxu
+Automatically detect and support Able Computer's ENABLE/34\(dg
+.FS
+\u\(dg\d\s-2ENABLE/34\s0 is a trademark of Able Computer, Inc.
+.FE
+memory management board.  This option implies \fBUNIBUS_MAP\fP.
+.IP \fBNONFP\h'|\nyu'C\fP
+Do not compile in code to automatically detect and support an FP11
+floating point processor.
+Also, include a fast illegal-instruction trap handler
+and modify the signal routines to make it possible to run
+programs using the floating-point interpreter under trace.
+.IP \fBNONSEPARATE\h'|\nyu'C\fP
+Do not attempt to support separate I/D user programs.
+.IP \fBPARITY\h'|\nyu'C\fP
+Recognize and deal with cache and memory parity traps.
+.IP \fBPDP11\h'|\nyu'C\fP
+This should be set to the CPU type of the target machine (23, 24,
+34, 40, 44, 45, 60, 70, or GENERIC).  You should use 34 for an 11/34A
+and 45 for an 11/55.  GENERIC should be used
+to build a system which runs on a variety of CPUs.  It was used
+to make the distributed kernels.  \fBMENLO_KOV\fP and \fBNONSEPARATE\fP
+are defined if \fBPDP11\fP is 23, 24, 34, 40, or 60.
+\fBMENLO_KOV\fP is also defined if \fBPDP11\fP is GENERIC.
+\fBUNIBUS_MAP\fP is defined if \fBPDP11\fP is 44, 70, or GENERIC.
+.IP \fBSMALL\h'|\nyu'C\fP
+Use smaller (by about a factor of 8) queues and hash tables.
+.IP \fBUNIBUS_MAP\h'|\nyu'C\fP
+Compile in code to detect (and support if present) a UNIBUS map.
+.NH 3
+Parameters
+.NH 4
+Global configuration
+.IP \fBMAXUSERS\fP \nxu
+This is the maximum number of users the system should normally
+expect to support.
+\fIConfig\fP sets this from the corresponding field in the description
+file;
+the definition is copied into the system Makefile rather than a header file.
+It is not intended to be a hard limit.  It is
+used in sizing other parameters (\fBCMAPSIZ\fP, \fBNFILE\fP,
+\fBNINODE\fP, \fBNPROC\fP, \fBNTEXT\fP, and \fBSMAPSIZ\fP).
+The formulae are found in \fIparam.c\fP.
+Reasonable values for \fBMAXUSERS\fP might be 3 or 4 on
+a small system (11/34, 11/40),
+15 for an 11/44 with a reasonable amount of memory,
+and 15-30 for an 11/70 system.
+.IP \fBTIMEZONE\fP
+The number of minutes westward from Greenwich.
+\fIConfig\fP sets this from the corresponding field in the description file.
+Examples:  for Pacific Standard time, 8 (* 60); for EST, 5.
+.IP \fBDSTFLAG\fP
+Should be 1 if daylight savings time applies in your locality
+and 0 otherwise.
+\fIConfig\fP sets this from the field in the description file.
+.IP \fBHZ\fP
+This is the line clock frequency (e.g. 50 for a 50 Hz. clock).
+.NH 4
+Tunable parameters
+.IP \fBCMAPSIZ\fP \nxu
+This is the number of fragments into which memory can be broken.  If this number
+is too low, the kernel's memory allocator may be forced to throw away a section
+of memory being freed because there is no room in the map to hold it.  In
+this case, a diagnostic message is printed on the console.
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBMAXMEM\fP
+This sets an administrative limit on the amount of memory a process
+may have.
+It is specified as (\fInn\fP*16), where the first number is the desired
+value in kilobytes (the product is in clicks).
+This number is usually considerably lower than the theoretical maximum
+(304 Kb for a nonseparate I/D CPU, 464 Kb for a separate I/D CPU, assuming
+\fBMENLO_OVLY\fP is defined).
+Normal values are 128 Kb if there is no UNIBUS map (maximum physical memory
+248 Kb), otherwise 200 Kb.
+.IP \fBNBUF\fP
+This sets the size of the system buffer cache.  It can be no greater than 248.
+If \fBUCB_NKB\fP is defined, these are 1024 byte buffers.
+Otherwise, they are 512 byte buffers.
+The buffers are not in kernel data space, but are allocated at boot time.
+Normally scaled automatically according to \fBMAXUSERS\fP,
+but should be examined
+in the light of the disk load and amount of memory.
+For a small to medium system, around 20 buffers should be sufficient;
+a large system with many disks might use 40 to 60 or more.
+.IP \fBNCALL\fP
+This is the maximum number of simultaneous callouts (kernel event timers).
+Callouts are used to time events such as tab or carriage return delays.
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBNCLIST\fP
+This is the maximum number of clist segments.  Clists are small buffer
+areas, used to hold tty characters while they are being processed.
+If \fBUCB_CLIST\fP is defined, they are not in kernel data space, and
+this number must be less than 512 if you are using 14 character clists
+(the default), or 256 for 30 character clists.
+(The clist size, \fBCBSIZE\fP, is in param.h.)
+.IP \fBNDISK\fP
+This is the maximum number of disks and controllers
+for which I/O statistics can be gathered.  See \fIiostat\fP\|(8).
+Care must be taken that this is large enough for the parameters
+for each disk (\fIXX\^\fP_DKN and number of disks; see the section
+on disk monitoring).
+.IP \fBNFILE\fP
+This sets the maximum number of open files.  An entry is made in this table
+each time a file is ``opened'' (see \fIcreat\fP\|(2)), \fIopen\fP\|(2)).
+Processes share these table entries across forks (see \fIfork\fP\|(2),
+\fIvfork\fP\|(2)).
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBNINODE\fP
+This sets the size of the inode table.  There is one entry in the inode table
+for each open file or device, current working or root directory,
+saved text segment, active quota node (if \fBUCB_QUOTAS\fP is defined),
+and mounted file system.
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBNMOUNT\fP
+This indicates the maximum number of mountable file systems.
+It should be large enough that you don't run out at inconvenient times.
+.IP \fBNPROC\fP
+This sets the maximum number of active processes.
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBNTEXT\fP
+This sets the maximum number of active shared text images (including
+inactive saved text segments).
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.IP \fBSMAPSIZ\fP
+This is the analogy of \fBCMAPSIZ\fP for secondary memory (swap space).
+Normally scaled automatically according to \fBMAXUSERS\fP.
+.NH 4
+Parameters that are set by convention
+.IP \fBCANBSIZ\fP \nxu
+This sets the maximum size of a terminal line input buffer.
+If using the old tty line
+discipline, exceeding this bound causes \fIall\fP characters to be lost. In
+the new tty line discipline, no more characters are accepted until
+there is room.
+Normally 256.
+.IP \fBMAXSLP\fP
+This is the maximum time a process can sleep before it is no longer
+considered a ``short term sleeper.''  It is used only if \fBUCB_METER\fP
+is defined.
+Normally 20.
+.IP \fBMAXUPRC\fP
+This sets the maximum number of processes each user is allowed.
+Normally 20, but can be lower on heavily loaded systems.
+.IP \fBMSGBUFS\fP
+This is the number of characters saved from system error messages.
+It is actually the size of circular buffer into which messages
+are temporarily saved.  It is expected that \fIdmesg\fP\|(8) will
+be run by \fIcron\fP\|(8) frequently enough that no message is
+overwritten before it can be saved in the system error log.
+Normally 128.
+.IP \fBNCARGS\fP
+This is the maximum size of an \fIexec\fP\|(2) argument list (in bytes).
+Normally 5120.
+.IP \fBNOFILE\fP
+This sets the maximum number of open files each process is allowed.
+Normally 20.
+.IP \fBSINCR\fP
+The increment (in clicks) by which a process's stack is expanded
+when a stack overflow segmentation fault occurs.
+Normally 20.
+.IP \fBSSIZE\fP
+The initial size (in clicks) of a process's stack.  This should be made
+larger if commonly run processes have large data areas on their stacks.
+Normally 20.
+.NH 3
+General Options
+.PP
+.IP \fBACCT\h'|\nyu'D\fP \nxu
+Enable code which (optionally) writes an accounting record for each process
+at exit.  See \fIlastcomm\fP\|(1), \fIsa\fP\|(1), \fIacct\fP\|(2),
+\fIaccton\fP\|(8).
+.IP \fBCGL_RTP\h'|\nyu'C\fP
+Support a system call which marks a process as a ``real time'' process,
+giving it higher priority than all others.  See \fIrtp\fP\|(2).
+.IP \fBDIAGNOSTIC\h'|\nyu'C\fP
+Turn on more stringent error checking.  This enables various kernel
+consistency checks which are considered extremely unlikely to fail.
+It is useful when the system is inexplicably crashing.
+.IP \fBINSECURE\h'|\nyu'C\fP
+Do not turn off the set-user-id or set-group-id permissions on a file
+when it is written.
+.IP \fBMENLO_JCL\h'|\nyu'D\fP
+Support reliable signal handling and enhanced process control features.
+See \fIsigsys\fP\|(2j), \fIjobs\fP\|(3j), \fIsigset\fP\|(3j).
+This option requires \fBUCB_NTTY\fP.
+.IP \fBMENLO_KOV\h'|\nyu'C\fP
+Support automatic kernel text overlays.  This is required for nonseparate
+I/D systems and is defined automatically if \fBPDP11\fP
+is defined to be 23, 24, 34, 40, 60, or GENERIC.
+.IP \fBMENLO_OVLY\h'|\nyu'D\fP
+Support automatic user text overlays.  This is required in order to run
+certain programs (e.g. \fIex\fP version 3.7 or, on nonseparate I/D systems,
+the process control C shell).
+.IP \fBOLDTTY\h'|\nyu'C\fP
+Support the standard V7 tty line discipline (see \fItty\fP\|(4)).
+This must be defined if \fBUCB_NTTY\fP is not defined.
+.IP \fBUCB_AUTOBOOT\h'|\nyu'D\fP
+Allows the kernel to automatically reboot itself, either on demand
+(see \fIreboot\fP\|(2) and \fIreboot\fP\|(8)) or after \fIpanic\fP\^s.
+This option requires a little planning; see section 5.4.3.
+.B
+This option requires UCB_FSFIX.
+.R
+.IP \fBUCB_CLIST\h'|\nyu'C\fP
+Map clists out of kernel virtual data space.
+If there is sufficient space in kernel data for an adequate number of clists,
+this option should not used.
+Mostly used on large systems, or on systems where kernel data space is tight.
+.IP \fBUCB_GRPMAST\h'|\nyu'C\fP
+Allow one user to be designated a ``group super-user,'' able to perform
+various functions previously restricted to root or the file's owner
+alone.  In the kernel, users whose group and user ids are the same are
+granted the same permissions with respect to files in the same group as
+is the owner.  User level software implements other permissions, allowing
+the group super-user to change the password of a user in the same
+group.  The most common use for this is in allowing teaching assistants
+to oversee students.
+.IP \fBUCB_NET\h'|\nyu'X\fP
+Enable code implementing a PDP-11 port of Berkeley's version of TCP/IP.
+The code is experimental and the implementation is incomplete.
+.IP \fBUCB_NTTY\h'|\nyu'S\fP
+Support the Berkeley tty line discipline
+(see \fItty\fP\|(4) and \fInewtty\fP\|(4)).
+This must be defined if \fBOLDTTY\fP is not defined.
+.IP \fBUCB_PGRP\h'|\nyu'C\fP
+Fix a bug in the way standard V7 counts a user's processes.
+This should be enabled only if \fBMENLO_JCL\fP is undefined, since the notion
+of process groups is completely different in the two cases.  If \fBUCB_PGRP\fP
+and \fBMENLO_JCL\fP are both defined, the limit on the number of processes
+allowed per user (\fBMAXUPRC\fP) is effectively eliminated.
+.IP \fBUCB_SCRIPT\h'|\nyu'X\fP
+Allow scripts to specify their own interpreters.
+For example, executing a script beginning with ``#! /bin/sh'' causes /bin/sh to
+be executed to interpret the script.
+This is not (yet) the same as the facility on 4.1BSD VMUNIX,
+and probably needs a little work.
+The Bourne shell, /bin/sh, would need modification also.
+.IP \fBUCB_UPRINTF\h'|\nyu'D\fP
+Write error messages directly on a user's terminal when the user causes
+a file system to run out of inodes or free blocks, or on certain mag
+tape errors.
+.IP \fBUCB_VHANGUP\h'|\nyu'D\fP
+Support a system call which allows \fIinit\fP\|(8) to revoke access to a
+user's terminal when the user has logged out.  This is used to give new
+users ``clean'' terminals on login.
+.IP \fBVIRUS_VFORK\h'|\nyu'D\fP
+Implement a much more efficient version of fork in which parent and
+child share resources until the child \fIexec\fP\^s.  See \fIvfork\fP\|(2).
+Note that this changes the way processes appear in memory.
+It makes swap operations slower, and thus might not be desirable
+on systems which swap heavily.
+.NH 3
+File system
+.PP
+.IP \fBINTRLVE\h'|\nyu'X\fP \nxu
+Allows interleaving of file systems across devices.  See \fIintrlve\fP\|(4).
+.IP \fBMPX_FILS\h'|\nyu'X\fP
+Include code for the V7 multiplexer.  The code is buggy and unsupported.
+.IP \fBUCB_FSFIX\h'|\nyu'S\fP
+Ensure that file system updates are done in the correct order, thus
+making damaged file systems less likely and more easily repairable.
+.B
+This option is required by UCB_AUTOBOOT (actually, by the \-p
+option of \fIfsck\fP\|(8), which makes certain assumptions about
+the state of the file systems).
+.R
+.IP \fBUCB_SYMLINKS\h'|\nyu'C\fP
+Add a new inode type to the file system:  the symbolic link.
+Symbolic links cause string substitution during the pathname
+interpretation process.  See \fIln\fP\|(1), \fIreadlink\fP\|(2),
+and \fIsymlink\fP\|(2).
+.IP \fBUCB_NKB\h'|\nyu'S\fP
+Use file system blocks of \fIN\fP KB, normally 1.
+Changes the fundamental file system unit from 512 byte blocks to 1024
+byte blocks (with a corresponding reduction in the size of in-core inodes).
+This increases file system bandwidth by 100%.
+Note that \fBUCB_NKB\fP is not boolean, but is defined as 1 for 1KB blocks.
+Other values are possible, but require additional macro definitions.
+All file systems would have to be remade with new versions of
+\fImkfs\fP and \fIrestor\fP.
+.B
+All supplied software
+expects this option to be enabled.
+.R
+.IP \fBUCB_QUOTAS\h'|\nyu'C\fP
+Support a simplistic (and easily defeated) dynamic disk quota scheme.  See
+\fIls\fP\|(1), \fIpq\fP\|(1), \fIquota\fP\|(2), and \fIsetquota\fP\|(8).
+.NH 3
+Performance Monitoring
+.PP
+.IP \fBDISKMON\h'|\nyu'C\fP \nxu
+Keep statistics on the buffer cache.  They are printed by the \-\fIb\fP
+option of \fIiostat\fP\|(8).
+.IP \fBUCB_LOAD\h'|\nyu'D\fP
+Enable code that computes a Tenex style load average.  See \fIla\fP\|(1),
+\fIgldav\fP\|(2), \fIloadav\fP\|(3).
+.IP \fBUCB_METER\h'|\nyu'D\fP
+Keep statistics on memory, queue sizes, process states, interrupts,
+traps, and many other (possibly useful) things.  See \fIvmstat\fP\|(1) and
+section 7.5 of this paper.
+.NH 3
+Device Drivers
+.PP
+In this section, an \fBXX_\fP prefix refers to the UNIX name of the
+device for which the option is intended to be enabled.  For example,
+\fBTM_IOCTL\fP refers to mag tape \fIioctl\fP\^s in tm.c.
+Most of these definitions go in the header file \fIxx.h\fP for the device.
+The exceptions are \fBBADSECT\fP, \fBMAXBAD\fP,
+\fBUCB_DEVERR\fP, and \fBUCB_ECC\fP.
+.IP \fBBADSECT\h'|\nyu'C\fP \nxu
+Enable bad-sector forwarding.  Sectors marked bad by the disk formatter
+are transparently replaced when read or written.
+Currently, only the hk driver's code has been thoroughly tested.
+.IP \fBDDMT\h'|\nyu'C\fP
+Currently used only by the tm driver.  Should be defined if you have
+a TM-11 emulator which supports 800/1600 bpi dual density drives with
+software selection.
+.IP \fBDZ_PDMA\h'|\nyu'C\fP
+Configure the dz driver to do pseudo-dma.
+.IP \fBMAXBAD\h'|\nyu'C\fP
+This sets the maximum number of replacement sectors available on a disk
+supporting DEC standard bad sector forwarding.  It can be no larger
+than 126 but may be smaller to reduce the size of kernel data space.
+See the include file /\fIusr\fP/\fIinclude\fP/\fIsys\fP/\fIdkbad.h\fP.
+.IP \fBTEXAS_AUTOBAUD\h'|\nyu'C\fP
+Support an \fIioctl\fP which defeats detection of framing or parity
+errors.  This is used by \fIgetty\fP\|(8) to accurately guess a line's
+speed when a carriage return is typed.
+.IP \fBUCB_DEVERR\h'|\nyu'D\fP
+Print device error messages in a human readable (mnemonic) format.
+.IP \fBUCB_ECC\h'|\nyu'C\fP
+Recognize and correct soft ecc disk transfer errors.
+.IP \fBVP_TWOSCOMPL\h'|\nyu'C\fP
+Used in the Versatec (vp) driver.  If defined, the byte count register
+will be loaded with the twos-complement of the byte count,
+rather than the byte count itself.  Check your controller manual
+to see whether your controller requires this.
+.IP \fBXX_IOCTL\h'|\nyu'D\fP
+Turn on optional \fIioctl\^\fPs for the corresponding device.  See
+section 4 of the Berkeley PDP-11
+\s-2UNIX\s0
+Programmer's manual for details.
+.IP \fBXX_SILO\h'|\nyu'D\fP
+Used in the dh and dz drivers.  If defined, the drivers will use silo
+interrupts to avoid taking an interrupt for each character received.
+.IP \fBXX_SOFTCAR\h'|\nyu'C\fP
+Currently used only by the dh and dz drivers.  Should be defined if
+not all of the lines on a DH-11 or DZ-11 use modem control.  It allows one to
+select lines on which modem control will be disabled.  See \fIdh\fP\|(4)
+and \fIdz\fP\|(4).
+It can also be used with escape-code autodialers to allow modem control
+to be ignored while talking to the dialer.
+.IP \fBXX_TIMEOUT\h'|\nyu'D\fP
+Enable a watchdog timer.  This is used to kick devices prone to
+losing interrupts.  It is currently available only for the tm driver.
+.NH 3
+Miscellaneous System Calls
+.PP
+.IP \fBUCB_LOGIN\h'|\nyu'C\fP \nxu
+Support a system call which can mark a process as a ``login process''
+and set its recharge number
+(for accounting purposes).  This is usually done by \fIlogin\fP\|(1).
+See \fIlogin\fP\|(2).
+.IP \fBUCB_RENICE\h'|\nyu'D\fP
+Support a system call which allows a user to dynamically change a
+process's ``nice'' value over the entire range (-127 to 127) of values.
+See \fIrenice\fP\|(1) and \fIrenice\fP\|(2).
+.IP \fBUCB_SUBM\h'|\nyu'C\fP
+Support a system call to mark a process as having been ``submitted,''
+permitting it to run after the user has logged out and enabling
+special accounting for its CPU use.  See \fIsubmit\fP\|(1)
+and \fIsubmit\fP\|(2).  If this option is enabled, \fIinit\fP\|(8) sends a
+SIGKILL signal to a user's unsubmitted processes when that user logs out.
+It is ineffective if \fBMENLO_JCL\fP is defined.
+.NH 3
+Performance Tuning
+.PP
+.IP \fBNOKA5\h'|\nyu'C\fP \nxu
+Simplify the code for kernel remapping by assuming that KDSA5 will
+not be used for normal kernel data.
+Kernel data space must end before 0120000 if this option is enabled.
+It is unfortunate but unavoidable
+that one must first make a kernel and size it to determine whether
+this option may be safely defined.
+It is usually possible on all but the largest separate I/D kernels,
+and on the small-to-medium nonseparate, overlaid kernels.
+The \fIchecksys\fP utility will print a warning message
+if the data limit is exceeded when a new kernel is loaded.
+.IP \fBPROFIL\h'|\nyu'C\fP
+Turn on system profiling.  This requires a separate I/D cpu
+equipped with a KW11-P clock.  It cannot be used on machines
+with ENABLE/34 boards since they have no spare page address registers.
+If profiling is enabled, 
+you should change the definition of SPLFIX in the corresponding machine
+Makefile to \fI:splfix.profil\fP.
+The directory /\fIusr\fP/\fIcontrib\fP/\fIgetsyspr\fP
+contains a program for extracting the profiling information from the kernel.
+.IP \fBUCB_BHASH\h'|\nyu'D\fP
+Compile in code to hash buffer headers (and cut the time required by the
+\fIgetblk\fP routine by 50% or more on large systems).
+.IP \fBUCB_FRCSWAP\h'|\nyu'C\fP
+Force swaps on all forks and expands (but not vforks).
+This is used to transfer some of the load
+from a compute-bound CPU to an idle disk controller.
+This is probably not a good idea with \fBVIRUS_VFORK\fP defined,
+but then the load is better reduced by using vfork instead of fork.
+.IP \fBUCB_IHASH\h'|\nyu'D\fP
+Compile in code to hash in-core inodes (and cut the time required by the
+\fIiget\fP routine by 50% or more on large systems).
+.IP \fBUNFAST\h'|\nyu'C\fP
+Do not use inline macro expansions designed to speed up file system
+accesses at the cost of a larger text segment.
+.NH 2
+Additional configuration details
+.PP
+A few of the parameters and options require a little care to
+set up; those considerations are discussed here.
+.NH 3
+Alternate disk drivers
+.PP
+There are several disk drivers provided for SMD disks.
+The \fBhp\fP driver supports RP04/05/06 disks; \fBrm\fP supports RM02/03 disks,
+and \fBdvhp\fP supports 300 Mbyte drives on Diva controllers.
+In addition, there is an \fBxp\fP driver which handles any of the above,
+plus RM05 disks, multiple controllers, and disks which are similar
+to those listed but with different geometry (e.g. Fujitsu 160 Mbyte drives).
+It can be used with UNIBUS or MASSBUS controllers or both.
+In general, if you have only one type of disk and one controller,
+the \fBhp\fP, \fBrm\fP or \fBdvhp\fP drivers are the best choices,
+since they are smaller and simpler.
+If you use the \fBxp\fP driver, it can be set up in one of two ways.
+If \fBXP_PROBE\fP is defined in xp.h, the driver will attempt to determine the
+type of each disk and controller by probing and using the drive type
+register.  To save the space occupied by this routine, or to specify
+different drive parameters, the drive and controller structures can
+be initialized in ioconf.c if \fBXP_PROBE\fP is not defined.
+The controller addresses will have to be initialized in either case
+(at least the first, if it is a boot device).
+The file /usr/include/sys/hpreg.h 
+provides the definitions for the flags and sizes.  Ioconf.c has
+an example of initialized structures.
+.IR Xp (4)
+gives more information about drive numbering, etc.
+.NH 3
+Disk monitoring parameters
+.PP
+The kernel is capable of maintaining
+statistics about disk activity for specified
+disks; this information can be printed by
+.IR iostat (8).
+This involves some setup, however, and if parameters are set incorrectly
+can cause the kernel monitoring routines to overrun their array bounds.
+To set this up correctly, choose the disks to be monitored.
+\fIIostat\fP is configured for a maximum of 4 disks,
+but that could be changed by editing the headers.
+The drivers that do overlapped seeks (hk, hp, rm and xp)
+use one field for each drive (N\fIXX\fP) plus one for the controller;
+the others use only one field, for the controller.
+When both drives and controllers are monitored, the drives come first,
+starting at \fIDK\^\fP_DKN, followed by the controller (or controllers,
+in the case of xp).
+Then set \fBNDISK\fP in param.c to the desired number.
+The number of the first slot to use for each driver is defined as
+\fIDK\fP_DKN in the device's header file, or is undefined if that driver
+is not using monitoring.
+\fIIostat\fP currently expects that if overlapped seeks are being metered,
+those disks are first in the array (i.e., DKN for that driver is 0).
+As an example, for 3 RP06 disks using the hp driver plus 1 RL02,
+HP_DKN should be 0, RL_DKN should be 4, and \fBNDISK\fP should be 5
+(3 hp disks + 1 hp controller + 1 rl).
+The complete correspondence for \fIiostat\fP would then be:
+.DS
+.TS
+l l.
+0 (HP_DKN + 0)	hp0 seeks
+1 (HP_DKN + 1)	hp1 seeks
+2 (HP_DKN + 2)	hp2 seeks
+3 (HP_DKN + NHP)	hp controller transfers
+4 (RL_DKN + 0)	rl transfers
+.TE
+.DE
+.B
+It is very important that NDISK be large enough, since the drivers
+do not check for overflow.
+.P
+.PP
+After the kernel disk monitoring is set up, \fIiostat\fP itself needs
+to be edited to reflect the numbers and types of the disks.
+The source is in /usr/src/cmd.
+.NH 3
+Automatic reboot
+.PP
+The automatic reboot facility (\fBUCB_AUTOBOOT\fP)
+includes a number of components, several of which must know details
+of the boot configuration.
+The kernel has an integral boot routine, found in boot.s in the
+configuration directory for the machine, which reads in a block 0 bootstrap
+from the normal boot device and executes it.
+The block 0 bootstrap normally loads \fBboot\fP from the first file system
+on drive 0 of the disk; this can be changed if necessary.
+The second-stage bootstrap,
+/boot, needs to know where to find unix.
+.PP
+The first step is to determine which kernel boot to use.
+Currently, there are boot modules supplied for the following disk types:
+hk, rl, rm, rp, dvhp, sc11 and sc21 (the last two are for Emulex SC11 and SC21
+controllers, using the boot command).
+If one of these will work with your boot disk, place that entry in the
+\fBbootdev\fP field in the device configuration file before running
+\fIconfig\fP, or simply copy ../conf/\fIdk\^\fPboot.s to boot.s in the
+machine configuration directory.
+If no boot module supplied will work, it is not too difficult to create
+one for your machine.  The easiest way to do this is to copy one of the
+other boot modules, and modify the last section which actually reads
+the boot block.  If you have a bootstrap ROM, you can simply jump to
+the correct entry with any necessary addresses placed in registers first.
+Or, you can write a small routine to read in the first disk block.
+If you don't have a boot module, \fBbootdev\fP in the configuration
+file should be specified as \fBnone\fP, and noboot.s will be installed.
+This is a dummy file that keeps the load rules from changing.
+The \fBUCB_AUTOBOOT\fP option should not be defined
+until a boot module is obtained.
+.PP
+The other change that is normally required is to specify where
+/unix will be found.  This is done by changing the definition
+of \fBRB_DEFNAME\fP in /usr/include/sys/reboot.h.  The definition
+is a string in the same format as the manual input to boot,
+for example "xp(0,0)unix".  After making this change, boot
+will need to be recompiled (in /usr/src/sys/stand/bootstrap) and installed.
+It can be installed initially as /newboot, and the original boot can be used
+to load it for testing:
+.DS
+.B
+>boot
+
+\fInn\fPBoot
+.R
+\fB:\fP \fIdk\|\fP(0,0)newboot
+
+.B
+\fInn\fPBoot
+.R
+\fB:\fP \fIdk\|\fP(0,0)unix
+.DE
+.PP
+If you want to have core dumps made after crashes,
+this must be specified in the configuration file as well.
+Dumps are normally taken on the end of the swap device before
+rebooting, and after the system is back up and the file systems
+are checked, the dump will be copied into /usr/sys by
+.IR savecore (8).
+Dump routines are available for the hk, hp, rm and xp drivers.
+To install, change the \fBdumpdev\fP entry to the same value as the swap
+device.  Then set \fBdumplo\fP to a value that will allow as much as possible
+of memory to be saved.  The dump routine will start the dump at dumplo
+and continue to the end of memory or the end of the swap device partition,
+whichever comes first.  Dumplo should be larger than swplo so that any
+early swaps will not overwrite the dump, but if possible, should
+be low enough that there is room for all of memory.
+The \fBdumproutine\fP entry in the configuration file is then
+set to \fIdk\^\fPdump, where \fIdk\fP is the disk type.
+Finally, after running \fIconfig\fP, edit the header file \fIdk\fP.h
+in the new configuration directory to define \fIDK\^\fP_DUMP, so that that
+dump routine will be included when the driver is compiled.
+.NH 3
+Considerations on a PDP-11/23
+.PP
+If setting up a kernel on a PDP-11/23, it is necessary to consider
+the interrupt structure of the hardware.
+If there are any single-priority boards on the bus, they must be behind
+all multiple-priority devices.
+Otherwise, they may accept interrupts meant for another, higher-priority
+device farther from the processor, at a time when the system has
+set the processor priority to block the single-level device.
+The alternative is to use spl6 uniformly for any high processor priority
+(spl4, spl5, spl6).
+This may be accomplished by changing the _spl routines in mch.s, the definitions
+of br4 and br5 in l.s, and by changing the script :splfix.mtps (in the
+\fIconf\fP directory).
+.PP
+Berkeley \s-2UNIX\s0 does not support more than 256K bytes of memory on
+the 11/23.  If you have extra memory and a way to use it (e.g. a disk driver
+capable of 22-bit addressing) you will want to change this.
+.NH 2
+Compiling the kernel
+.PP
+Once you have made any local changes, you are ready to compile the kernel.
+If you have made any changes which will affect the dependency rules in
+the Makefile, run ``make depend'' (the output of this command is best
+appreciated on a crt).
+Then, ``make unix.''  Note: although several shortcuts have been
+built into the makefile, the nonseparate I/D
+\fImake\fP occasionally runs out of space
+while recompiling the kernel.  If this happens, just restart it
+and it will generally make it through the second time.
+The split I/D version of \fImake\fP in /usr/70 should have no problem.
+Also note, it is imperative that overlaid kernels be compiled with
+the 2.9BSD versions of \fIcc\fP, \fIas\fP (and \fIas2\fP) and \fIld\fP.
+Use of older C preprocessors or assemblers will result in compile-time
+errors or (worse) systems that will almost run, but crash after a short time.
+.PP
+After the unix binary is loaded, the makefile runs a small program
+called \fIchecksys\fP which checks for size overflows.
+If you are building an overlaid system, check
+the size of the object file (see \fIsize\fP\|(1))
+and overlay layout.  The overlay structure may
+be changed by editing the makefile.
+For a non-separate I/D system,
+the base segment size must be between 8194 and 16382 bytes
+and each overlay must be at most 8192 bytes.
+The final object file ``unix'' should be
+copied to the root, and then booted to try it out.
+It is best to name it /newunix so as not to destroy
+the working system until you're sure it does work:
+.DS
+\fB#\fP cp unix /newunix
+\fB#\fP sync
+.DE
+It is also a good idea to keep the old system around under some other
+name.  In particular, we recommend that you save the generic distribution
+version of the system permanently as /genericunix for use in emergencies.
+.PP
+To boot the new version of the system you should follow the
+bootstrap procedures outlined in section 2.4 above.
+A systematic scheme for numbering and saving old versions
+of the system is best.
+.PP
+You can repeat these steps whenever it is necessary to change
+the system configuration.
+.NH 2
+Making changes to the kernel
+.PP
+If you wish to make local mods to the kernel you should bracket them with
+.DS
+#ifdef PICKLE
+\&...
+#endif
+.DE
+perhaps saving old code between
+.DS
+#ifndef PICKLE
+\&...
+#endif
+.DE
+This will allow you to find changed code easily.
+.PP
+To add a device not supported by the distribution system you will have to place
+the driver for the device in the directory /usr/src/sys/dev,
+edit a line into the block and/or character device table in
+/usr/src/sys/PICKLE/c.c, add the name of the device to
+the OPTIONAL line of the file Depend, and to the makefile
+load rules.
+Place the device's address and interrupt vector in the files
+ioconf.c and l.s respectively if it is not going to be configured
+by
+.IR autoconfig (8);
+otherwise, l.s will only need the normal interface to the C interrupt routine.
+If you use autoconfiguration, you will need an attach routine in the driver,
+and a probe routine in the driver or in \fIautoconfig\fP.
+Use the entries for a similar device as an example.
+If the device driver uses the UNIBUS map or system buffers,
+it will probably need modifications.
+Check ``Changes in the Kernel in 2.9BSD'' for more technical information
+regarding driver interfacing.
+You can then rebuild the system (be sure to make \fIdepend\fP first).
+After rebooting
+the resulting kernel and making appropriate entries in the /dev
+directory, you can test out the new device and driver.
+Section 7.1 explains shutdown and reboot procedures.

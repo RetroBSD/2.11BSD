@@ -1,0 +1,205 @@
+From hao!cires!david Mon Nov 25 19:33:46 1985
+From: hao!cires!david
+Date: Mon, 25 Nov 85 14:50:27 mst
+To: hao!seismo!bostic
+
+Also, I've attached a fast Tektronix driver that seems to work -- the only
+change I made from the old USGS version was to add the UCB_DEVERR stuff.
+It doesn't autoconfigure so l.s and c.c have to be modified appropriately.
+
+Thanks again for your help,
+	David
+
+------------- cut here for fast_tek.c --------------
+#include <sys/param.h>
+#include <sys/conf.h>
+#include <sys/dir.h>
+#include <sys/user.h>
+#include <sys/tty.h>
+#include <sys/proc.h>
+#include <sys/buf.h>
+
+/*
+ *	fast_tty:
+ *		Special device driver to utilize the USGS fast
+ *		tektronix interface (DR11-B to Minibus). Essentially,
+ *		the tektronix is connected by both a serial line
+ *		and a parallel line. If the output requires no
+ *		translation, then raw dma from the user's buffer is
+ *		done via the dr11-b. Ordinary output and input are
+ *		routed through the serial line and the serial line's
+ *		device driver.The association table of which serial
+ *		line goes with which parallel unit is given in conf.c
+ */
+
+#define NDR11	1	/* number of fast tty's */
+#define DRPRI	(PZERO+20)
+#define SYN	026	/* ascii "syn" char-- invisable to tek's */
+/* drst control bits */
+#define GO	1
+#define WRITE	0400	/* actually unused */
+#define IE	0100
+/* internal state bits */
+#define ACTIVE	1	/* output via dr11-b */
+#define ODDB	2	/* single byte output via dr11-b */
+
+struct	device
+{
+	int	drwc;
+	caddr_t	drba;
+	int	drst;
+	int	drdb;
+}	*fast_dr[NDR11] = { 0172410 };
+
+/* last number (11) in following line is tty port mapping */
+dev_t	fast_map[NDR11] = { (4<<8)+11 };
+
+struct {
+	int state;
+	int bc;
+}	fast[NDR11];
+int wd;
+
+struct buf	fast_buf;
+extern fast_start();
+
+fast_open(dev, flag)
+dev_t	dev;
+int	flag;
+{
+
+	int	d;
+
+	d=minor(dev);
+	if(d >= NDR11) {
+		u.u_error = ENXIO;
+		return;
+	}
+
+	(*cdevsw[major(fast_map[d])].d_open)(fast_map[d],flag);
+	fast[d].state = 0;
+	fast_buf.b_flags = B_DONE;
+}
+
+fast_close(dev,flag)
+dev_t	dev;
+int	flag;
+{
+	int	d;
+
+	d = minor(dev);
+
+	fast[d].state = 0;
+	(*cdevsw[major(fast_map[d])].d_close)(fast_map[d],flag);
+}
+
+
+fast_read(dev)
+dev_t	dev;
+{
+	register d;
+
+	d = minor(dev);
+	(*cdevsw[major(fast_map[d])].d_read)(fast_map[d]);
+}
+
+fast_write(dev, uio)
+dev_t	dev;
+struct uio *uio;
+{
+	register d;
+	register struct device *addr;
+
+	d = minor(dev);
+
+	if(fast[d].state&ACTIVE)
+	{
+		addr = fast_dr[d];
+		if(u.u_base&1)
+		{	/* odd base address */
+			wd = fuword(u.u_base)& ~0377 + SYN;
+			fast[d].state |= ODDB;
+			addr->drba = &wd;
+			addr->drwc = -1;
+			addr->drst = WRITE+GO+IE;
+			while( fast[d].state&ODDB)
+				sleep((caddr_t)&fast[d].state,DRPRI);
+			u.u_base++; u.u_count--;
+		}
+		if(u.u_count)
+		{
+			fast[d].bc = u.u_count;
+			if(u.u_count&1)
+				u.u_count++;
+			physio(fast_start, &fast_buf, dev, B_WRITE, uio);
+		}
+	}
+	else
+	{	/* do it via the serial line */
+		(*cdevsw[major(fast_map[d])].d_write)(fast_map[d]);
+	}
+}
+
+fast_ioctl(dev, cmd, addr, flag)
+dev_t	dev;
+int	cmd;
+caddr_t	addr;
+int	flag;
+{
+
+	switch(cmd)
+	{
+
+	case ('x'<<8)+0:
+		fast[minor(dev)].state = ACTIVE;
+		break;
+
+	case ('x'<<8)+1:
+		fast[minor(dev)].state = 0;
+		break;
+
+	default:
+		(*cdevsw[major(fast_map[minor(dev)])].d_ioctl)
+			(fast_map[minor(dev)], cmd, addr, flag);
+	}
+}
+ 
+fast_start(bp)
+register struct buf *bp;
+{
+	register struct device *addr;
+
+	if(bp->b_flags&B_PHYS)
+		mapalloc(bp);
+	addr=fast_dr[minor(bp->b_dev)];
+	addr->drba = bp->b_un.b_addr;
+	addr->drwc = - (bp->b_bcount>>1);
+	addr->drst =  ((bp->b_xmem&3)<<4)+IE+WRITE+GO;
+}
+
+fast_intr(dev)
+dev_t	dev;
+{
+	register struct device *addr;
+	register struct buf *bp = &fast_buf;
+
+	addr = fast_dr[dev];
+
+	if(addr->drst <0)
+#ifdef	UCB_DEVERR
+	{
+		harderr(bp, "fast");
+		printf("st=%o wc=%o\n", addr->drst, addr->drwc);
+	}
+#else
+		deverror(bp, addr->drst, addr->drwc);
+#endif	UCB_DEVERR
+	if(fast[dev].state&ODDB)
+	{
+		fast[dev].state &= ~ODDB;
+		wakeup(&fast[dev].state);
+	}
+	else
+		iodone(bp);
+	addr->drst=0;   /* resets dr11b status, ewh, cires 5-29-80 */
+}

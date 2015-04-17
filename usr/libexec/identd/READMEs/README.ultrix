@@ -1,0 +1,75 @@
+I got the following message about the problems with Ultrix and connections
+that suddenly are closed:
+
+From sendmail-r8-request@CS.Berkeley.EDU Tue Oct 12 15:55:12 1993
+Flags: 000000000001
+Received: from hofmann.CS.Berkeley.EDU (hofmann.CS.Berkeley.EDU [128.32.131.12]) by godot.lysator.liu.se (8.5/8.5) with ESMTP id PAA02066; Tue, 12 Oct 1993 15:55:02 +0100
+Received: from mastodon.CS.Berkeley.EDU (mastodon.CS.Berkeley.EDU [128.32.149.68]) by hofmann.CS.Berkeley.EDU (8.6.beta.13/8.6.beta.4) with ESMTP id HAA02072 for <sendmail-r8@CS.Berkeley.EDU>; Tue, 12 Oct 1993 07:45:15 -0700
+Received: from localhost (eric@localhost) by mastodon.CS.Berkeley.EDU (8.5/8.5) id HAA19535; Tue, 12 Oct 1993 07:47:26 -0700
+Message-Id: <199310121447.HAA19535@mastodon.CS.Berkeley.EDU>
+To: sendmail-r8@CS.Berkeley.EDU
+From: Eric Allman <eric@CS.Berkeley.EDU>
+Subject: IDENT protocol info
+Date: Tue, 12 Oct 1993 07:47:26 -0700
+Sender: eric@mastodon.CS.Berkeley.EDU
+Keywords: pidentd
+
+I received the following describing the changes needed to run IDENT
+on Ultrix.
+
+eric
+
+------- Forwarded Message
+
+From: Dan Mosedale <mosedale@genome.stanford.edu>
+Message-Id: <199310111806.AA06654@aeffle.Stanford.EDU>
+Subject: Re: anonymous mail
+To: eric@CS.Berkeley.EDU
+Date: Mon, 11 Oct 1993 11:06:25 +119303928 (PDT)
+Newsgroups: comp.security.misc
+Organization: Stanford University Genetics Department
+
+In article <294d8i$il8@agate.berkeley.edu> you write:
+>In article <2948np$6eu@usenet.INS.CWRU.Edu>, mcn@nostromo.cwru.edu (Michael Neuman) writes:
+>|> 2) Hack up sendmail to use rfc931.
+>
+>Unfortunately, TCP/IP bugs in many operating systems make it impossible
+>to implement RFC931 (actually RFC 1413 -- 931 has been obsoleted).  In
+>particular, I've had problems with HP-UX and Ultrix, among others.
+
+FWIW, I've got pidentd 2.1.2 running under Ultrix 4.3 with a few
+caveats.  For one thing, it doesn't work properly from inetd, it has
+to be run in daemon mode.  However, the fact that it runs at all is
+probably due to the fact that I've got the following patch installed:
+
+/usr/sys/MIPS/BINARY/in_pcb.o                   (CLD CXO-8919)
+CHECKSUM:  56412 72
+/usr/sys/MIPS/BINARY/ip_icmp.o
+CHECKSUM:  30060 43
+/usr/sys/MIPS/BINARY/tcp_subr.o
+CHECKSUM:  58085 56 
+/usr/sys/MIPS/BINARY/udp_usrreq.o
+CHECKSUM:  24862 74
+/usr/sys/MIPS/BINARY/uipc_domain.o
+CHECKSUM:  29573 17
+- ----------------------------------
+
+Establish an ftp session with a host across the gateway and put the
+process in background. Telnet to the same host using an unused port to
+force a "Host Unreachable" situation. Go back to the ftp session and
+it is dead.
+
+In order to fix the problem, the in_pcbnotify() routine in in_pcb.c should
+be aware of the local and foreign ports for a given connection. To fascilitate
+this the lport and fport parameters were added to in_pcbnotify. This required
+the calling routines (tcp_ctlinput and udp_ctlinput) to be called with an
+additional parameter, a pointer to the ip structure. The tcp header can be
+accessed in this ip structure.  The tcp header yields the foreign and local
+ports.
+
+- -Dan
+
+------- End of Forwarded Message
+
+
+

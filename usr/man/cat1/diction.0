@@ -1,0 +1,66 @@
+
+
+
+DICTION(1)	    UNIX Programmer's Manual	       DICTION(1)
+
+
+
+NAME
+     diction, explain - print wordy sentences; thesaurus for dic-
+     tion
+
+SYNOPSIS
+     diction [ -ml ] [ -mm ] [ -n ] [ -f pfile ] file ...
+     explain
+
+DESCRIPTION
+     _D_i_c_t_i_o_n finds all sentences in a document that contain
+     phrases from a data base of bad or wordy diction.	Each
+     phrase is bracketed with [ ].  Because _d_i_c_t_i_o_n runs _d_e_r_o_f_f
+     before looking at the text, formatting header files should
+     be included as part of the input.	The default macro package
+     -ms may be overridden with the flag -mm. The flag -ml which
+     causes deroff to skip lists, should be used if the document
+     contains many lists of non-sentences.  The user may supply
+     her/his own pattern file to be used in addition to the
+     default file with -f _p_f_i_l_e. If the flag -n is also supplied
+     the default file will be suppressed.
+
+     _E_x_p_l_a_i_n is an interactive thesaurus for the phrases found by
+     diction.
+
+SEE ALSO
+     deroff(1)
+
+BUGS
+     Use of non-standard formatting macros may cause incorrect
+     sentence breaks.  In particular, _d_i_c_t_i_o_n doesn't grok -me.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 10, 1986				1
+
+
+

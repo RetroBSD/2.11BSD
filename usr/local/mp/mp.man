@@ -1,0 +1,296 @@
+.\" @(#)mp.man 1.8 92/02/17
+.TH MP 1 "17 February 1992"
+.ds Ps P\s-2OST\s+2S\s-2CRIPT\s+2
+.SH NAME
+.\" don't use Ps register in line below; goofs up output from whatis command
+mp \- POSTSCRIPT pretty printer
+.SH SYNOPSIS
+.B mp
+.RB [ \-A4 ]
+.RB [ \-C ]
+.RB [ \-F ]
+.RB [ \-PS ]
+.RB [ \-US ]
+.RB [ \-a ]
+.RB [ \-d ]
+.RB [ \-e ]
+.RB [ \-ff ]
+.RB [ \-fp ]
+.RB [ \-l ]
+.RB [ \-m ]
+.RB [ \-o ]
+.RB [ \-p
+.IR prologue ]
+.RB [ \-s
+.IR subject ]
+.RB [ \-tm ]
+.RB [ \-ts ]
+.RB [ \-v ]
+.RB [ \-? ]
+.RI [ filename .\|.\|.]
+.SH DESCRIPTION
+The
+.I mp
+program reads each
+.I filename
+in sequence and generates a prettified version of the contents in
+\*(Ps format, sent to standard output.
+If no filename argument is provided,
+.I mp
+reads the standard input.
+If the standard input is a terminal, input is terminated by an
+.SM EOF
+signal, usually
+.SM Ctrl-D\s0.
+.PP
+Mail items, news articles, ordinary ASCII files, complete mail folders,
+and digests are all acceptable input formats for
+.IR mp .
+The output format includes grayscale lozenges containing banner information
+at the top and bottom of every page.
+.PP
+The program is conveniently used in conjunction with the print button of the
+.RI SunView/ xnews (1)
+.IR mailtool (1)
+programs, or the
+.I pipe
+command provided by
+.IR mail (1).
+Add the following two lines to your
+.I .mailrc
+file:
+.br
+.in +1.0i
+.nf
+\fLset printmail='mp | lpr'
+set cmd="mp | lpr &"\fP
+.fi
+.in -1.0i
+.PP
+Source the
+.I .mailrc
+file, and you are ready to use
+.IR mp .
+For printing ordinary ASCII files, the following alias (to be placed in your
+.I .cshrc
+file) may also prove useful:
+.br
+.in +1.0i
+.nf
+\fLalias print 'mp -o -s "\\!*" <\\!* | lpr'\fP
+.fi
+.in -1.0i
+.SH OPTIONS
+.TP
+.B \-A4
+Use A4 paper size (8.5 x 11.4 inches).
+.TP
+.B \-C
+Instead of using "\\nFrom" to denote the start of new mail messages, mp will
+look for (and use) the value of the Content-Length: mail header. If the
+Content-Length doesn't take you to the next "\\nFrom", then it's wrong, and
+mp falls back to looking for the next "\\nFrom" in the mail folder.
+.TP
+.B \-F
+Instead of printing who the mail article is for, the top header will
+contain who the mail article is from. A useful option for people with
+their own personal printer.
+.TP
+.B \-PS
+If the mail or digest message just has PostScript as the text of the message,
+then this is normally just passed straight through. Specifying this option,
+causes PostScript to be printed as text.
+.TP
+.B \-US
+Use US paper size (8.5 x 11 inches).
+.TP
+.B \-a
+Format the file as a news article.
+The top banner contains the text:
+"Article from
+.I newsgroup
+", where
+.I newsgroup
+is the first news group found on the Newsgroups: line.
+.TP
+.B \-d
+Format the file as a digest.
+.TP
+.B \-e
+Assume the ELM mail frontend intermediate file format. Used when printing
+messages from within ELM (using the "p" command), especially for printing
+tagged messages. This option must be specified in your ELM option setup.
+.TP
+.B \-ff
+Format the file for use with a Filofax personal organiser.
+.TP
+.B \-fp
+Format the file for use with a Franklin Planner personal organiser.
+.TP
+.B \-l
+Format output in landscape mode.
+Two pages of text will be printed per sheet of paper.
+.TP
+.B \-m
+Format the file as a mail folder, printing multiple messages.
+.TP
+.B \-o
+Format the file as an ordinary ASCII file.
+.TP
+.BI \-p " prologue"
+Employ the file
+.I prologue
+as the \*(Ps prologue file,
+overriding any previously defined file names.
+.TP
+.BI \-s " subject"
+Use
+.I " subject"
+as the new subject for the printout. If you are printing ordinary ASCII
+files which have been specified on the command line, the the subject will
+default to the name of each of these files.
+.TP
+.B \-tm
+Format the file for use with the Time Manager personal organiser.
+.TP
+.B \-ts
+format the file for use with the Time/System International personal organiser.
+.TP
+.B \-v
+Print the version number of this release of
+.IR mp .
+.TP
+.B \-?
+Print the usage line for
+.I mp
+(note that the
+.B ?
+character must be escaped if using
+.IR csh (1)).
+.SH "ENVIRONMENT VARIABLES"
+The
+.I mp
+prologue file is determined by first looking for the environment variable
+.IR MP_PROLOGUE ,
+which specifies the directory where
+.I mp
+prologue files are to be found.
+If
+.I MP_PROLOGUE
+is not found, then the default directory is assumed
+.RI ( LIBDIR/mp.pro.ps ).
+.SH "SUPPLIED PROLOGUE FILES"
+The following prologue files are provided:
+.RS
+.TP
+.I mp.pro.ps
+Used by default
+.TP
+.I mp.pro.l.ps
+Used by the
+.B \-l
+landscape mode option
+.TP
+.I mp.pro.ff.ps
+Used if the
+.B \-ff
+option is in effect
+.TP
+.I mp.pro.fp.ps
+Used if the
+.B \-fp
+option is in effect
+.TP
+.I mp.pro.tm.ps
+Used if the
+.B \-tm
+option is in effect
+.TP
+.I mp.pro.ts.ps
+Used if the
+.B \-ts
+option is in effect
+.TP
+.I mp.pro.alt.ps
+An alternative modification of the default prologue file which outputs the
+page number in the right corner of the bottom banner.
+.TP
+.I mp.pro.altl.ps
+An alternative landscape option mode prologue file.
+.RE
+.SH FILES
+.TP
+.I .cshrc
+initialization file for
+.IR csh (1)
+.TP
+.I .mailrc
+initialization file for
+.IR mail (1)
+.TP
+.I BINDIR/mp
+executable
+.TP
+.I LIBDIR/mp.pro.ps
+\*(Ps prologue for mail printing
+.TP
+.I LIBDIR/mp.pro.l.ps
+\*(Ps prologue for landscape format
+.TP
+.I LIBDIR/mp.pro.alt.ps
+alternative "default" \*(Ps prologue, inserts page
+numbers in the bottom right corner of each page
+.TP
+.I LIBDIR/mp.pro.altl.ps
+alternative "landscape" \*(Ps prologue.
+.TP
+.I LIBDIR/mp.pro.ff.ps
+\*(Ps prologue for Filofax format
+.TP
+.I LIBDIR/mp.pro.fp.ps
+\*(Ps prologue for Franklin Planner format.
+.TP
+.I LIBDIR/mp.pro.tm.ps
+\*(Ps prologue for Time Manager format
+.TP
+.I LIBDIR/mp.pro.ts.ps
+\*(Ps prologue for Time/System International
+format.
+.SH "SEE ALSO"
+.IR mail (1),
+.IR mailtool (1),
+.IR xnews (1)
+.SH AUTHORS
+Original version by Steve Holden.
+.PP
+Converted to C, modified and maintained by Rich Burridge, Sun Microsystems,
+Australia.
+.PP
+Original modified to handle net news articles and MH mail by Bruno Pillard, Chorus Systemes, France.
+.PP
+Handling of mail digests added by Dave Glowacki of Public Works Computer Services, St Paul, MN.
+.PP
+Manual page revised by Rick Rodgers, UCSF School of Pharmacy, San Francicso.
+.PP
+Support for Personal Organiser printing style added by Douglas Buchanan,
+Sun Microsystems Europe.
+.PP
+Substantial modifications to header parsing by Jeremy Webber,
+Computer Science Department, University of Adelaide, Australia.
+.PP
+Support for printing multiple files and subject line filename print for
+ordinary ASCII files added by Sam Manoharan, Edinburgh University.
+.PP
+Support for landscape mode written by Michael Tuchiarone.
+.PP
+Revision of the \*(Ps structuring and the way that the prologue files
+are handled was included by Johan Vromans.
+.PP
+New style \*(Ps prologue files by John Macdonald.
+.PP
+Support for the ISO8859 character set by Bertrand DeCouty.
+.PP
+.nf
+Rich Burridge.  PHONE: +61 2 413 2666  MAIL: richb@Aus.Sun.COM
+.fi
+.\" end of man page

@@ -1,0 +1,132 @@
+
+
+
+LISP(1)             UNIX Programmer's Manual		  LISP(1)
+
+
+
+NAME
+     lisp - lisp interpreter
+
+SYNOPSIS
+     lisp
+
+DESCRIPTION
+     _L_i_s_p is a provisional lisp interpreter.  It only runs in
+     eval mode. Built in functions are named in lower case, and
+     case is distinguished.  It is being transmuted from a subset
+     of lisp as provided by the Harvard UNIX lisp in use at UCB,
+     to a subset of MIT's MACLISP.
+
+     The following functions are provided as machine code:
+
+     Lambda functions:
+
+     atom	  dptr	       load	    putd	 rplacd
+     bcdp	  drain        null	    putprop	 set
+     car	  eq	       numberp	    ratom	 terpr
+     cdr	  equal        outfile	    read
+     close	  eval	       patom	    readc
+     concat	  get	       pntlen	    retbrk
+     cons	  getd	       portp	    return
+     cont	  infile       print	    rplaca
+
+     Nlambda functions (possibly simulating ones which are nor-
+     mally lambdas):
+
+     add1	  difference   onep	    quotient	 zerop
+     and	  exit	       or	    reset
+     break	  go	       plus	    setq
+     cond	  minus        product	    sub1
+     cond	  mod	       prog	    sum
+     def	  not	       quote	    times
+
+     The following functions are provided as lisp code (and at
+     the moment must be read in by saying (load 'auxfns):
+
+     add	  copy	       length	    numbp
+     append	  defevq       linelength   pp_etc
+     apply*	  defprop      member	    reverse
+     charcnt	  defprop      memcar	    terpri
+     chrct	  diff	       memcdr
+     conc	  last	       nconc
+
+     All of the above functions are documented in the ``Harvard
+     Lisp Manual.''
+
+     The following functions are provided as in MIT's MACLISP.
+
+     alphalessp   do	       mapc	    setsyntax
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+LISP(1)             UNIX Programmer's Manual		  LISP(1)
+
+
+
+     apply	  explodec     mapcar	    throw
+     ascii	  exploden     prog2	    tyi
+     catch	  funcall      progn	    tyipeek
+     defun	  implode      progv	    tyo
+
+     ``Hairy control structure'' is provided by the Nlambda
+     (process _c_o_m_m_a_n_d _i_n_p_o_r_t _o_u_t_p_o_r_t) where _c_o_m_m_a_n_d is an atom
+     whose print name is some command that you would wish typed
+     at the terminal, e.g. ``neqn | nroff -ms''; where _i_n_p_o_r_t and
+     _o_u_t_p_o_r_t are atoms which will be bound to port descriptors
+     for use in communication with the subprocess.  _I_n_p_o_r_t is a
+     port to a pipe which will be read by the subprocess as its
+     standard input. If _I_n_p_o_r_t is _n_i_l (or not present), the sub-
+     process inherits the standard input, and lisp waits for the
+     subprocess to die.  If _I_n_p_o_r_t is the atom _t lisp continues
+     without waiting.
+
+AUTHORS
+     Originally written by Jeff Levinsky, Mike Curry, and John
+     Breedlove.  Keith Sklower made it work and is maintaining
+     the current version.  The garbage collector was implemented
+     by Bill Rowan.
+
+SEE ALSO
+     Harvard UNIX Lisp Manual
+     MACLISP Manual
+     UCB Franz Lisp Manual
+
+BUGS
+     The status bits for _s_e_t_s_y_n_t_a_x are not the same as for
+     MACLISP.
+
+     Closing down a pipe doesn't always seem to work correctly.
+
+     Arrays are not implemented in version 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						2
+
+
+

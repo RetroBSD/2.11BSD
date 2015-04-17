@@ -1,0 +1,14 @@
+To build the libident library for a supported target, just type:
+
+	make <target>
+
+where target can be one of:
+
+	sunos5, sunos4, svr4, bsd, linux, nextstep3.0 or nextstep3.1
+
+For other systems you'll need to hack the Makefile (please do send
+me any patches you make so I can include them into the next version!)
+
+			- Peter Eriksson <pen@lysator.liu.se>, 18 Oct 1994
+
+

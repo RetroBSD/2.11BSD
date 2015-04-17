@@ -1,0 +1,66 @@
+
+
+
+RWHO(1C)	    UNIX Programmer's Manual		 RWHO(1C)
+
+
+
+NAME
+     rwho - who's logged in on local machines
+
+SYNOPSIS
+     rwho [ -a ]
+
+DESCRIPTION
+     The _r_w_h_o command produces output similar to _w_h_o, but for all
+     machines on the local network.  If no report has been
+     received from a machine for 5 minutes then _r_w_h_o assumes the
+     machine is down, and does not report users last known to be
+     logged into that machine.
+
+     If a users hasn't typed to the system for a minute or more,
+     then _r_w_h_o reports this idle time.	If a user hasn't typed to
+     the system for an hour or more, then the user will be omit-
+     ted from the output of _r_w_h_o unless the -a flag is given.
+
+FILES
+     /usr/spool/rwho/whod.*   information about other machines
+
+SEE ALSO
+     ruptime(1C), rwhod(8C)
+
+BUGS
+     This is unwieldy when the number of machines on the local
+     net is large.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

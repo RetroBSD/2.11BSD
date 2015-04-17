@@ -1,0 +1,66 @@
+
+
+
+UNLINK(3F)	    UNIX Programmer's Manual	       UNLINK(3F)
+
+
+
+NAME
+     unlink - remove a directory entry
+
+SYNOPSIS
+     integer function unlink (name)
+     character*(*) name
+
+DESCRIPTION
+     _U_n_l_i_n_k causes the directory entry specified by pathname _n_a_m_e
+     to be removed.  If this was the last link to the file, the
+     contents of the file are lost.  The returned value will be
+     zero if successful; a system error code otherwise.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     unlink(2), link(3F), filsys(5), perror(3F)
+
+BUGS
+     Pathnames can be no longer than MAXPATHLEN as defined in
+     <_s_y_s/_p_a_r_a_m._h>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

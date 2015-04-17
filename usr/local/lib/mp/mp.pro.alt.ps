@@ -1,0 +1,112 @@
+%!PS-Adobe-1.0
+%%Creator: Steve Holden
+%%Modified: Rich Burridge
+%%Title: @(#)mp.pro.alt.ps 1.5 92/02/17
+%%CreationDate: see above
+%%PageLength 60
+%%LineLength 80
+%%DocumentFonts: Times-Bold Times-Roman Courier
+%%Pages: (atend)
+%%EndComments
+
+/FontSize 9 def
+
+/font1d /Times-Bold           reencodeISO
+/font2d /Times-Roman          reencodeISO
+/CourierISO /Courier          reencodeISO
+/fontHd /Helvetica-BoldOblique        reencodeISO
+/fontH2 /Helvetica-BoldOblique        reencodeISO
+/fontNd /Times-Bold           reencodeISO
+/font3d backspacefont
+ 
+/BoldFont      { /font1d findfont FontSize scalefont setfont } def
+/pf            { /font2d findfont FontSize scalefont setfont } def
+/sf            { /font3d findfont FontSize scalefont setfont } def
+/fontH         { /fontHd findfont 14 scalefont setfont } def
+/fontD         { /fontH2 findfont 10 scalefont setfont } def
+/fontN         { /fontNd findfont 12 scalefont setfont } def
+
+/graybox	% x1 y1 x2 y2 graybox --
+{
+    newpath
+      4 -1 roll 2 copy			% y2 x1
+      10 sub exch moveto
+      4 -1 roll 2 copy			% x1 y1
+      10 180 270 arc
+      4 -1 roll 1 copy 3 -1 roll	% x2 y1
+      10 270 0 arc
+      3 -1 roll 1 copy 3 1 roll		% x1 y2 x2 y2
+      10 0 90 arc
+      10 90 180 arc
+    closepath
+    0.75 setgray fill
+} def
+
+/endpage		% page_number endpage --
+{
+  pop                   % unused
+  PageSave restore      % restore *always* before showpage
+  showpage		% display it
+} def
+
+/endcol			% page_number col_number endcol --
+{
+  pop			% get rid of col_number
+  gsave
+    fontH
+    leftedge 50 add topedge 56 sub	% bottom lt corner
+    rightedge 50 sub topedge 36 sub	% top rt corner
+    graybox
+    0 setgray stroke
+    leftedge 50 add topedge 52 sub moveto
+    MailFor show
+    User show
+    fontD
+    rightedge 50 sub TimeNow stringwidth pop sub
+    topedge 52 sub moveto TimeNow show
+    fontH
+    leftedge 50 add bottomedge 50 add	% bottom lt corner
+    rightedge 50 sub bottomedge 70 add	% top rt corner
+    graybox
+    0 setgray
+    leftedge 50 add bottomedge 54 add moveto Subject show
+    % page number of the left corner
+    dup stringwidth
+       bottomedge 54 add exch sub		% y-centered
+       exch 2 div rightedge 54 sub exch sub	% x-centered
+       exch moveto show
+  grestore
+} def
+
+/newpage	% page_number newpage --
+{
+  pop		% pageno
+  /PageSave save def
+  LandscapeMode {setlandscape} if
+  /lct 0 def
+  /ypos topedge 92 sub def
+  /xpos leftedge 50 add def
+  xpos ypos moveto
+  sf
+} def
+
+/setlandscape
+{
+  612 0 translate
+  90 rotate
+  /FontSize 7 def
+} def
+
+/Landscape
+{
+  /LandscapeMode true def
+  /rightedge fullheight def
+  /topedge fullwidth def
+} def
+
+/showline
+{
+  show
+  /ypos ypos FontSize sub def
+  xpos ypos moveto
+} def

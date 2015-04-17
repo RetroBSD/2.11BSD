@@ -1,0 +1,357 @@
+.ds RH Recompiling system software
+.bp
+.nr H1 6
+.nr H2 0
+.bp
+.LG
+.B
+.ce
+6. RECOMPILING SYSTEM SOFTWARE
+.sp 2
+.R
+.NL
+.PP
+We now describe how to recompile system programs and install them.
+Some programs must be modified for the local system at this time,
+and other local changes may be desirable now or later.
+Before any of these procedures are begun, be certain that the
+include files <whoami.h>, <sys/localopts.h> and <sys/param.h> are correct
+for the kernel that has been installed.
+This is important for commands that wish to know the name of the local
+machine or that size their data areas appropriately for the type of
+CPU.
+The general procedures are given first, followed by more detailed
+information about some of the major systems that require some setup.
+.NH 2
+Recompiling and reinstalling system software
+.PP
+It is easy to regenerate the system, and it is a good
+idea to try rebuilding pieces of the system to build confidence
+in the procedures.
+The system consists of three major parts:
+the kernel itself, along with the bootstrap
+and standalone utilities (/usr/src/sys), the user programs
+(/usr/src/cmd, /usr/src/ucb, and subdirectories), and the libraries
+(/usr/src/lib).
+The major part of this is /usr/src/cmd.
+.PP
+We have already seen how to recompile the system itself.
+The commands and libraries can be recompiled in their
+respective source directories using the Makefile (or Ovmakefile
+if there are both overlaid and non-overlaid versions).
+However, it is generally easier to use one of the MAKE scripts
+set up for /usr/src/lib, /usr/src/cmd, and /usr/src/ucb.
+These are used in a similar fashion, such as
+.DS
+\fB#\fP ./MAKE\|\| \-40\|\| [ \-cp ]\|\| [ \-f ]\|\| file ...
+.DE
+The first, required flag sets the CPU class for which to compile.
+Three classes are used to used to set requirements for separate
+instruction and data and for floating point.
+``MAKE\|\| \-40'' makes nonseparate I/D versions that load the floating point
+interpreter as required.  ``MAKE\|\| \-34'' is similar but assumes a hardware
+floating point unit.  ``MAKE\|\| \-70'' is used for separate I/D machines and
+also assumes floating point hardware.  ``MAKE\|\| \-70\|\| \-f'' is used for
+separate I/D machines without floating point hardware.
+The use of these MAKE scripts automates the selection of CPU-dependent
+options and makes the optimal configuration of each program for the target
+computer.
+The optional argument \-cp causes each program to be installed as it is
+made.  They are installed in the normal directories, unless the
+environment variable DESTDIR is set, in which case the normal path
+is prepended by DESTDIR.  This can be used to compile and create
+a new set of binary directories, e.g. /nbsd/bin, /nbsd/lib, etc.
+Running the command ``MAKE\|\| \-70\|\| \-cp *'' in /usr/src/lib, /usr/src/cmd
+and /usr/src/ucb would thus create a whole new tree of system binaries.
+The six major libraries are the C library in /usr/src/lib/c,
+the jobs library, /usr/src/lib/jobs,
+the \s-2FORTRAN\s0 libraries /usr/src/lib/libF77, /usr/src/lib/libI77,
+and /usr/src/lib/libU77,
+and the math library /usr/src/lib/m.
+Most libraries are made in two versions, one each for use
+with and without process overlays.
+In each
+case the library is remade by changing into /usr/src/lib
+and doing
+.DS
+\fB#\fP ./MAKE\|\| \-\fIcpu\fP\|\| \fIlibname\fP
+.DE
+or made and installed by
+.DS
+\fB#\fP ./MAKE\|\| \-\fIcpu\fP\|\| \-cp\|\| \fIlibname\fP
+.DE
+Similar to the system,
+.DS
+\fB#\fP make clean
+.DE
+cleans up in each subdirectory.
+.PP
+To recompile individual commands, change to /usr/src/cmd
+or /usr/src/ucb, as appropriate, and use the MAKE script in the same way.
+Thus to compile adb, do
+.DS
+\fB#\fP ./MAKE \-\fIcpu\fP adb
+.DE
+where cpu is 34, 40, or 70.
+To recompile everything, use
+.DS
+\fB#\fP ./MAKE \-\fIcpu\fP *
+.DE
+After installing new binaries, you can use the script in /usr/src
+to link files together as necessary and to set all the right set-user-id
+bits.
+.DS
+\fB#\fP cd /usr/src
+\fB#\fP ./MAKE aliases
+\fB#\fP ./MAKE modes
+.DE
+.NH 2
+Making local modifications
+.PP
+To keep track of changes to system source we migrate changed
+versions of commands in /usr/src/cmd in through the directory /usr/src/new
+and out of /usr/src/cmd into /usr/src/old for a time before removing them.
+Locally written commands that aren't distributed are kept in /usr/src/local
+and their binaries are kept in /usr/local.  This allows /usr/bin, /usr/ucb,
+and /bin to correspond to the distribution tape (and to the manuals that
+people can buy).  People wishing to use /usr/local commands are made
+aware that they aren't in the base manual.  As manual updates incorporate
+these commands they are moved to /usr/ucb.
+.PP
+A directory /usr/junk to throw garbage into, as well as binary directories
+/usr/old and /usr/new are useful.  The \fIman\fP\|(1) command supports manual
+directories such as /usr/man/mann for new and /usr/man/manl for local
+to make this or something similar practical.
+.NH 2
+Setting up the mail system
+.PP
+The mail system can be set up in at least two ways.  One strategy uses the
+.IR delivermail (8)
+program to sort out network addresses according to the local network
+topology.  It is not perfect, especially in the light of changing ARPAnet
+conventions.  However, if you use the Berkeley network or are connected
+directly or indirectly to the ARPAnet, it is probably the method of choice
+for the time being.
+On the other hand, if you use only local mail and UUCP mail, /bin/mail (\c
+.IR mail (1))
+will suffice as a mail deliverer.
+In that case, you will only need to recompile
+.IR mail (1)
+and
+.IR Mail (1).
+.PP
+The entire mail system consists of the following commands:
+.DS
+.TS
+l l.
+/bin/mail	old standard mail program (from V7 or System III)
+/usr/ucb/Mail	UCB mail program, described in Mail(1)
+/usr/lib/Mail.rc	aliases and defaults for Mail(1)
+/etc/delivermail	mail routing program
+/usr/net/bin/v6mail	local mailman for berknet
+/usr/spool/mail	mail spooling directory
+/usr/spool/secretmail	secure mail directory
+/usr/bin/xsend	secure mail sender
+/usr/bin/xget	secure mail receiver
+/usr/lib/aliases	mail forwarding information for delivermail
+/usr/ucb/newaliases	command to rebuild binary forwarding database
+.TE
+.DE
+Mail is normally sent and received using the
+.IR Mail (1)
+command, which provides a front-end to edit the messages sent
+and received, and passes the messages to
+.IR delivermail (8)
+or
+.IR mail (1)
+for routing and/or delivery.
+.PP
+Mail is normally accessible in the directory /usr/spool/mail and is readable
+by all users.\(dg
+.FS
+\u\(dg\d You can make your mail unreadable by others by changing the mode
+of the file /usr/spool/mail/\fIyourname\fR to 600 and putting the line
+``set keep'' in your .mailrc file.
+The directory /usr/spool/mail must not be writable (mode 755) for this to work.
+.FE
+To send mail which is secure against any possible
+perusal (except by a code-breaker) you should
+use the secret mail facility, which encrypts the mail
+so that no one can read it.
+.NH 3
+Setting up mail and Mail
+.PP
+Both /bin/mail and /usr/ucb/Mail should be recompiled
+to make local versions.
+Remake mail in /usr/src/cmd with the command
+.DS
+\fB#\fP ./MAKE \-\fIcpu\fP mail
+.DE
+Install the new binary in /bin after testing; it must be setuserid root.
+Section 6.1 gives more details on the use of the MAKE scripts.
+To configure \fIMail\fP, change directories to /usr/src/ucb/Mail.
+Edit the file v7.local.h to assign a letter to your machine
+with the definition of LOCAL; if you do not have a local area network,
+the choice is arbitrary as long as you pick an unused letter.
+If you wish to use \fIdelivermail\fP, the definition of SENDMAIL should
+be uncommented.
+Then add your machine to the table in config.c; configdefs.h gives
+some information on this.  The network field should specify which
+networks (if any) you are connected to (note: the Schmidt net, SN,
+is Berknet).
+After the changes are made, move to /usr/src/ucb and
+.DS
+\fB#\fP ./MAKE \-40 Mail	(on a nonseparate I/D machine)
+  or
+\fB#\fP ./MAKE \-70 Mail	(on a separate I/D machine)
+.DE
+Install \fIMail\fP in /usr/ucb; it should \fBnot\fP be setuserid.
+The Mail.rc file in /usr/lib can be used to set up limited distribution
+lists or aliases if you are not using \fIdelivermail\fP.
+.NH 3
+Setting up delivermail
+.PP
+To set up the \fIdelivermail\fP facility you should read the instructions in the
+file READ_ME in the directory /usr/src/ucb/delivermail and then adjust
+and recompile the \fIdelivermail\fP program, installing it as /etc/delivermail.
+The routing algorithm uses knowledge of network name syntax built
+into its tables and aliasing and forwarding information built into
+the file /usr/lib/aliases to process each piece of mail.
+Local mail is delivered by giving it to the program /usr/net/bin/v6mail
+which adds it to the mailboxes in the directory /usr/spool/mail/\fIusername\fP,
+using a locking protocol to avoid problems with simultaneous updates.
+You should also set up the file /usr/lib/aliases for your installation,
+creating mail groups as appropriate.
+.NH 2
+Setting up a uucp connection
+.PP
+To connect two UNIX machines with a \fIuucp\fP network link using modems,
+one site must have a automatic call unit and the other must have a
+dialup port.  It is better if both sites have both.
+.PP
+You should first read the paper in volume 2B of the UNIX Programmers Manual:
+``Uucp Implementation Description.''  It describes in detail the file
+formats and conventions, and will give you a little context.
+For any configuration, you must recompile all system dependent programs.
+.PP
+Change directory to /usr/src/cmd/uucp and examine uucp.h, making any necessary
+changes.
+Recompile uucp with ``make'' and su to ``make install.''
+.PP
+You should ensure that the directories
+/usr/spool/uucp and /usr/spool/uucppublic exist.
+The former should be owned by uucp, mode 755 (or 777 is OK) and the
+latter should be mode 777 (and the home directory for login uucp).
+.PP
+Periodically you should clean out /usr/spool/uucp and /usr/spool/uucppublic,
+as they can accumulate junk, especially if you don't have a dialer.
+Run ``uulog'' once a day, and ``/usr/lib/uucp/uuclean'' periodically with
+appropriate options to get rid of old stuff.\(dg
+.FS
+\u\(dg\d The
+\fIcron\fP\|(8)
+program can arrange to execute these commands periodically.
+.FE
+You can also just remove
+some of the files in /usr/spool/uucp, but if you do this blindly you
+will cause some error messages to be generated when uucp tries to access
+a file another file claims is there.  (For instance, each mail transaction
+creates three files.)
+The /usr/spool/uucppublic directory
+is a place for people at other sites to send to when sending
+files to users on your machine.  You should clean it out by hand when
+it gets excessive.
+.PP
+If both sites have both a dialer and dialup:  follow
+the directions in the volume 2B paper \- this is the intended
+mode of operation and the directions fit well.  You
+have to configure the following files in /usr/lib/uucp:
+.DS
+.TS
+l l.
+L\|.sys	setup all fields \- this lists the other sites
+L-devices	your dialer
+USERFILE	permissions \- this can be left alone
+.TE
+.DE
+You must also establish a login ``uucp'' in /etc/passwd with shell
+/usr/lib/uucp/uucico.  Each site must know the other site's phone
+number, login, and password.
+.PP
+If you have only a dialup:
+you can be a second-class citizen on the uucp net.  You must find
+another site that has a dialer, and have them poll you regularly.
+(Once a day is about the minimum that is reasonable.)  When you send
+mail to another site, you must wait for them to call you.
+You must set up /usr/lib/uucp/USERFILE and /usr/lib/uucp/L\|.sys.
+Only the first 4 fields of L\|.sys
+are necessary, and in practice only the first field (site name) is
+looked at.  A typical L\|.sys for a passive node might be:
+.DS
+.TS
+l l.
+ucbvax	Any \fIACU\fP 300
+research	Any \fIACU\fP 300
+.TE
+.DE
+where the first field on each line is a site that will poll you
+and \fIACU\fP is either ``ACU'' or ``DIR.''
+You need to put a password on the uucp login and let the other site know
+your phone number, uucp login name (which is usually uucp), and password.
+It doesn't matter whether they call you at 300 or 1200 baud.
+.PP
+If you have a dialer and want to poll another site:  normally,
+uucp will call the other site when it has anything to send it,
+and while it's at it will check to see if anything should come back.
+The command
+.DS
+/usr/lib/uucp/uucico \-r1 \-sucbvax
+.DE
+will force \fIuucp\fP to poll ucbvax, even if there is nothing waiting.
+This command can be conveniently put in /usr/lib/crontab to run
+early each morning.
+If you are having trouble with the connection, invoke uucico by hand:
+.DS
+/usr/lib/uucp/uucico \-r1 \-sucbvax \-x7
+.DE
+where the \fB-x\fP option turns on debugging output.  The higher the number,
+the more debugging output you get; 1, 4, and 7 are reasonable choices.
+.NH 2
+Miscellaneous software
+.PP
+The directory /usr/contrib contains programs and packages that you may wish to
+install on your system.  Also, some programs or libraries in the \fIucb\fP
+directory are sufficiently unique to be noteworthy.
+Here is a brief summary.
+.NH 3
+Ape
+.PP
+\fIApe\fP (\fIA\fPrbitrary \fIP\fPrecision \fIE\fPxtended) is a replacement
+for the multiple precision arithmetic routines (\fImp\fP\|(3)).  It is much
+faster and contains numerous bug fixes.
+.NH 3
+L11, M11
+.PP
+\fIM11\fP is a Macro-11 assembler.  It recognizes and emulates almost all
+of the directives of standard DEC Macro-11 assemblers.  \fIL11\fP is its
+loader.
+.NH 3
+Jove
+.PP
+\fIJove\fP (\fIJ\fPonathan's \fIO\fPwn \fIV\fPersion of \fIE\fPMACS)
+is an EMACS style editor developed at Lincoln Sudbury Regional High School.
+.NH 3
+News
+.PP
+The network bulletin board system developed at Duke University
+and the University of North Carolina and since heavily modified at Berkeley.
+.NH 3
+Notes
+.PP
+The network bulletin board system developed at the University of Illinois.
+This version contains many enhancements and clean \fInews\fP interfaces.
+.NH 3
+Ranm
+.PP
+\fIRanm\fP is a fast uniform pseudorandom number generator package
+developed at Berkeley.

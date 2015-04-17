@@ -1,0 +1,132 @@
+
+
+
+SETJMP(3)	    UNIX Programmer's Manual		SETJMP(3)
+
+
+
+NAME
+     setjmp, longjmp - non-local goto
+
+SYNOPSIS
+     #include <setjmp.h>
+
+     setjmp(env)
+     jmp_buf env;
+
+     longjmp(env, val)
+     jmp_buf env;
+
+     _setjmp(env)
+     jmp_buf env;
+
+     _longjmp(env, val)
+     jmp_buf env;
+
+DESCRIPTION
+     These routines are useful for dealing with errors and inter-
+     rupts encountered in a low-level subroutine of a program.
+
+     _S_e_t_j_m_p saves its stack environment in _e_n_v for later use by
+     _l_o_n_g_j_m_p. It returns value 0.
+
+     _L_o_n_g_j_m_p restores the environment saved by the last call of
+     _s_e_t_j_m_p.  It then returns in such a way that execution con-
+     tinues as if the call of _s_e_t_j_m_p had just returned the value
+     _v_a_l to the function that invoked _s_e_t_j_m_p, which must not
+     itself have returned in the interim.  All accessible data
+     have values as of the time _l_o_n_g_j_m_p was called.
+
+     _S_e_t_j_m_p and _l_o_n_g_j_m_p save and restore the signal mask _s_i_g_-
+     _m_a_s_k(2), while __s_e_t_j_m_p and __l_o_n_g_j_m_p manipulate only the C
+     stack and registers.
+
+ERRORS
+     If the contents of the jmp_buf are corrupted, or correspond
+     to an environment that has already returned, _l_o_n_g_j_m_p calls
+     the routine _l_o_n_g_j_m_p_e_r_r_o_r.	If _l_o_n_g_j_m_p_e_r_r_o_r returns the pro-
+     gram is aborted.  The default version of _l_o_n_g_j_m_p_e_r_r_o_r prints
+     the message ``longjmp botch'' to standard error and returns.
+     User programs wishing to exit more gracefully can write
+     their own versions of _l_o_n_g_j_m_p_e_r_r_o_r.
+
+SEE ALSO
+     sigvec(2), sigstack(2), signal(3)
+
+NOTES  (PDP-11)
+     On the PDP-11, _l_o_n_g_j_m_p_e_r_r_o_r is called as __l_j_e_r_r.  This
+     difference stems from the limited name size of the PDP-11
+     that requires all external names to be unique within the
+
+
+
+Printed 11/26/99	 January 9, 1986			1
+
+
+
+
+
+
+SETJMP(3)	    UNIX Programmer's Manual		SETJMP(3)
+
+
+
+     first seven characters.  However, <_s_e_t_j_m_p._h> automatically
+     translates _l_o_n_g_j_m_p_e_r_r_o_r to _l_j_e_r_r_o_r and should be included
+     before any definition _l_o_n_g_j_m_p_e_r_r_o_r.
+
+     The PDP-11 implementation also contains a subtle bug that
+     occurs when a routine containing a _s_e_t_j_m_p has _r_e_g_i_s_t_e_r vari-
+     ables.  The bug sometimes causes those variables to be given
+     invalid values when a longjmp is made back to the routine.
+     _R_e_g_i_s_t_e_r variables should therefore be avoided in routines
+     containing _s_e_t_j_m_p_s.
+
+     And finally, _longjmp may sometimes die fatally.  Sorry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 January 9, 1986			2
+
+
+

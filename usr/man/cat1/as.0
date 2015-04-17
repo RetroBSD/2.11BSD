@@ -1,0 +1,132 @@
+
+
+
+AS(1)		    UNIX Programmer's Manual		    AS(1)
+
+
+
+NAME
+     as - assembler
+
+SYNOPSIS
+     as [ -u ] [ -V ] [ -o objfile ] file ...
+
+DESCRIPTION
+     _A_s assembles the concatenation of the named files.  The
+     options are:
+
+     -u   Treat all undefined symbols in the assembly as external
+	  globals.
+
+     -V   Produce an object suitable for loading into an
+	  automatic text overlaid program.
+
+     -o   Use _o_b_j_f_i_l for the name of the resultant object.  If
+	  this is omitted, _a._o_u_t is used.  If no errors occurred
+	  during the assembly and if there were no unresolved
+	  external references, it is made executable.
+
+     The special file name -- serves two purposes.  It signals
+     the end of all options and causes _s_t_d_i_n to be read for
+     input.  Thus it is now possible to pipe data to the assem-
+     bler:
+
+     /lib/cpp -E foo.s | sed -e ';^#;/;' | as -o foo.o --
+
+     The file name -- may be placed between normal files, when
+     EOF is detected on _s_t_d_i_n the next file in the argument list
+     is opened and read.
+
+     If no input files are specified then _s_t_d_i_n is read.
+
+FILES
+     /tmp/atm1 temporary
+     a.out     object
+
+SEE ALSO
+     adb(1), ld(1), nm(1), a.out(5)
+     _U_N_I_X _A_s_s_e_m_b_l_e_r _M_a_n_u_a_l by D. M. Ritchie
+
+DIAGNOSTICS
+     When an input file cannot be read, its name followed by a
+     question mark is typed and assembly ceases.  When syntactic
+     or semantic errors occur, a single-character diagnostic is
+     typed out together with the line number and the file name in
+     which it occurred.  Errors in pass 1 cause cancellation of
+     pass 2.  The possible errors are:
+
+     )	Parentheses error
+     ]	Parentheses error
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+AS(1)		    UNIX Programmer's Manual		    AS(1)
+
+
+
+     <	String not terminated properly
+     *	Indirection used illegally
+     .	Illegal assignment to `.'
+     a	Error in address
+     b	Branch instruction is odd or too remote
+     e	Error in expression
+     f	Error in local (`f' or `b') type symbol
+     g	Garbage (unknown) character
+     i	End of file inside an if
+     m	Multiply defined symbol as label
+     o	Word quantity assembled at odd address
+     p	`.' different in pass 1 and 2
+     r	Relocation error
+     u	Undefined symbol
+     x	Syntax error
+
+BUGS
+     Syntax errors can cause incorrect line numbers in following
+     diagnostics.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						2
+
+
+

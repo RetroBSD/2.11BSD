@@ -1,0 +1,5 @@
+
+echo "#define NVP	$NVP"		> ../$MACHINE/vp.h
+if [ $VP_TWOSCOMPL = YES ] ; then
+	echo "#define VP_TWOSCOMPL"	>> ../$MACHINE/vp.h
+fi

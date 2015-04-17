@@ -1,0 +1,66 @@
+
+
+
+SQRT(3M)	    UNIX Programmer's Manual		 SQRT(3M)
+
+
+
+NAME
+     cbrt, sqrt - cube root, square root
+
+SYNOPSIS
+     #include <math.h>
+
+     double cbrt(x)
+     double x;
+
+     double sqrt(x)
+     double x;
+
+DESCRIPTION
+     Cbrt(x) returns the cube root of x.
+
+     Sqrt(x) returns the square root of x.
+
+DIAGNOSTICS
+     On a VAX, sqrt(negative) returns the reserved operand and
+     sets _e_r_r_n_o to EDOM .
+
+ERROR (due to Roundoff etc.)
+     Cbrt is accurate to within 0.7 _u_l_ps.
+     Sqrt on a VAX is accurate to within 0.501 _u_l_ps.
+     Sqrt on a machine that conforms to IEEE 754 is correctly
+     rounded in accordance with the rounding mode in force; the
+     error is less than half an _u_l_p in the default mode
+     (round-to-nearest).  An _u_l_p is one _Unit in the _Last _Place
+     carried.
+
+SEE ALSO
+     math(3M), infnan(3M)
+
+AUTHOR
+     W. Kahan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 12, 1986				1
+
+
+

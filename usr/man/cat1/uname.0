@@ -1,0 +1,66 @@
+
+
+
+UNAME(1)	    UNIX Programmer's Manual		 UNAME(1)
+
+
+
+NAME
+     uname - display information about the system
+
+SYNOPSIS
+     uname [-amnrsv]
+
+DESCRIPTION
+     The uname command writes the name of the operating system
+     implementation to standard output.  When options are speci-
+     fied, strings representing one or more system characteris-
+     tics are written to standard output.
+
+     The options are as follows:
+
+     -a        Behave as though the options -m, -n, -r , -s, and
+	       -v were specified.
+
+     -m        Write the type of the current hardware platform to
+	       standard output.
+
+     -n        Write the name of the system to standard output.
+
+     -r        Write the current release level of the operating
+	       system to standard output.
+
+     -s        Write the name of the operating system implementa-
+	       tion to standard output.
+
+     -v        Write the version level of this release of the
+	       operating system to standard output.
+
+     If the -a flag is specified, or multiple flags are speci-
+     fied, all output is written on a single line, separated by
+     spaces.
+
+     The uname utility exits 0 on success, and >0 if an error
+     occurs.
+
+SEE ALSO
+     sysctl(8), sysctl(3), uname(3)
+
+HISTORY
+     The uname command appeared in 4.4BSD.
+
+STANDARDS
+     The command is expected to conform to the IEEE Std1003.2
+     (``POSIX'') specification.
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 4, 1995			1
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+LSEEK(2)	    UNIX Programmer's Manual		 LSEEK(2)
+
+
+
+NAME
+     lseek - move read/write pointer
+
+SYNOPSIS
+     #include <sys/file.h>
+
+     #define L_SET   0 /* set the seek pointer */
+     #define L_INCR  1 /* increment the seek pointer */
+     #define L_XTND  2 /* extend the file size */
+
+     pos = lseek(d, offset, whence)
+     off_t pos;
+     int d;
+     off_t offset;
+     int whence;
+
+DESCRIPTION
+     The descriptor _d refers to a file or device open for reading
+     and/or writing.  _L_s_e_e_k sets the file pointer of _d as fol-
+     lows:
+
+	  If _w_h_e_n_c_e is L_SET, the pointer is set to _o_f_f_s_e_t bytes.
+
+	  If _w_h_e_n_c_e is L_INCR, the pointer is set to its current
+	  location plus _o_f_f_s_e_t.
+
+	  If _w_h_e_n_c_e is L_XTND, the pointer is set to the size of
+	  the file plus _o_f_f_s_e_t.
+
+     Upon successful completion, the resulting pointer location
+     as measured in bytes from beginning of the file is returned.
+     Some devices are incapable of seeking.  The value of the
+     pointer associated with such a device is undefined.
+
+NOTES
+     Seeking far beyond the end of a file, then writing, creates
+     a gap or "hole", which occupies no physical space and reads
+     as zeros.
+
+RETURN VALUE
+     Upon successful completion, the current file pointer value
+     is returned.  Otherwise, a value of -1 is returned and _e_r_r_n_o
+     is set to indicate the error.
+
+ERRORS
+     _L_s_e_e_k will fail and the file pointer will remain unchanged
+     if:
+
+     [EBADF]	    _F_i_l_d_e_s is not an open file descriptor.
+
+     [ESPIPE]	    _F_i_l_d_e_s is associated with a pipe or a socket.
+
+
+
+
+Printed 11/26/99	February 24, 1986			1
+
+
+
+
+
+
+LSEEK(2)	    UNIX Programmer's Manual		 LSEEK(2)
+
+
+
+     [EINVAL]	    _W_h_e_n_c_e is not a proper value.
+
+SEE ALSO
+     dup(2), open(2)
+
+BUGS
+     This document's use of _w_h_e_n_c_e is incorrect English, but
+     maintained for historical reasons.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 24, 1986			2
+
+
+

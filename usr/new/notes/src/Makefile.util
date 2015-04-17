@@ -1,0 +1,76 @@
+MKNF	= buildnf.o check.o cursor.o gname.o gtime.o misc.o \
+	  miscio.o startup.o acssort.o recsio.o perms.o strcasecmp.o
+NFACCESS = acssort.o check.o cursor.o gname.o gtime.o misc.o miscio.o \
+	  pattern.o permit.o perms.o recsio.o startup.o expand.o strcasecmp.o
+NFADMIN = check.o cursor.o gname.o gtime.o misc.o miscio.o \
+	pattern.o permit.o recsio.o startup.o times.o expand.o \
+	perms.o strcasecmp.o
+NFARCHIVE = archiver.o buildnf.o check.o compress.o cursor.o dmpnote.o \
+	  dmpresp.o gname.o gtime.o lrsp.o misc.o miscio.o \
+	  next.o nfalias.o note.o pagein.o pageout.o pattern.o permit.o \
+	  perms.o recsio.o resp.o startup.o expand.o acssort.o find.o \
+	  pagemove.o strcasecmp.o
+NFMAIL	= gname.o gtime.o note.o pagein.o recsio.o resp.o startup.o \
+	  tsearch.o check.o cursor.o misc.o miscio.o perms.o parsepath.o \
+	  strcasecmp.o
+NFTIMESTAMP = check.o cursor.o datein.o gname.o gtime.o misc.o miscio.o \
+	  pattern.o permit.o recsio.o startup.o times.o expand.o \
+	  getdate.o perms.o strcasecmp.o
+RMNF	= check.o cursor.o misc.o miscio.o startup.o gname.o \
+	  expand.o pattern.o strcasecmp.o
+
+#
+#	Utility programs - create/delete notesfiles, news gateways,
+#	and archiving
+#
+
+mknf:	mknf.o $(MKNF) libnfcom.a
+	@echo loading mknf
+	@${CC} $(CFLAGS) $(LFLAGS) -o mknf mknf.o $(MKNF) \
+		libnfcom.a $(TERMCAP)
+
+rmnf:	rmnf.o $(RMNF) libnfcom.a
+	@echo loading rmnf
+	@${CC} $(CFLAGS) $(LFLAGS) -o rmnf rmnf.o $(RMNF) \
+		libnfcom.a $(TERMCAP)
+
+nfarchive: nfarchive.o $(NFARCHIVE) libnfcom.a
+	@echo loading nfarchive
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfarchive nfarchive.o $(NFARCHIVE) \
+		libnfcom.a $(TERMCAP)
+
+nfaccess: nfaccess.o $(NFACCESS) libnfcom.a
+	@echo loading nfaccess
+	@${CC} $(CFLAGS) $(LFLAGS) -o nfaccess nfaccess.o $(NFACCESS) \
+		libnfcom.a $(TERMCAP)
+
+nfadmin:	nfadmin.o $(NFADMIN) libnfcom.a
+	@echo loading nfadmin
+	@$(CC) $(CFLAGS) $(LFLAGS) -o nfadmin nfadmin.o $(NFADMIN) \
+		 libnfcom.a $(TERMCAP)
+
+nftimestamp: nftimestamp.o $(NFTIMESTAMP) libnfcom.a
+	@echo loading nftimestamp
+	@${CC} $(CFLAGS) $(LFLAGS) -o nftimestamp nftimestamp.o $(NFTIMESTAMP) \
+		libnfcom.a $(TERMCAP)
+
+nfmail:	nfmail.o $(NFMAIL) libnfcom.a
+	@echo loading nfmail
+	@${CC} ${CFLAGS} ${LFLAGS} -o nfmail nfmail.o ${NFMAIL} \
+		libnfcom.a ${TERMCAP}
+
+install: mknf rmnf nfarchive nfaccess nfadmin nftimestamp nfmail
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 4710 \
+		mknf $(UTILITY)/mknf
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 4710 \
+		rmnf $(UTILITY)/rmnf
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6755 \
+		nfarchive $(UTILITY)/nfarchive
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 6755 \
+		nfaccess $(UTILITY)/nfaccess
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 4755 \
+		nfadmin $(UTILITY)/nfadmin
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+		nftimestamp $(UTILITY)/nftimestamp
+	install -s -c -o $(NOTES) -g $(NOTESGRP) -m 2755 \
+		nfmail $(UTILITY)/nfmail

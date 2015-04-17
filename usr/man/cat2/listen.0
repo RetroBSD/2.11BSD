@@ -1,0 +1,66 @@
+
+
+
+LISTEN(2)	    UNIX Programmer's Manual		LISTEN(2)
+
+
+
+NAME
+     listen - listen for connections on a socket
+
+SYNOPSIS
+     listen(s, backlog)
+     int s, backlog;
+
+DESCRIPTION
+     To accept connections, a socket is first created with
+     _s_o_c_k_e_t(2), a willingness to accept incoming connections and
+     a queue limit for incoming connections are specified with
+     _l_i_s_t_e_n(2), and then the connections are accepted with
+     _a_c_c_e_p_t(2).  The _l_i_s_t_e_n call applies only to sockets of type
+     SOCK_STREAM or SOCK_SEQPACKET.
+
+     The _b_a_c_k_l_o_g parameter defines the maximum length the queue
+     of pending connections may grow to.  If a connection request
+     arrives with the queue full the client may receive an error
+     with an indication of ECONNREFUSED, or, if the underlying
+     protocol supports retransmission, the request may be ignored
+     so that retries may succeed.
+
+RETURN VALUE
+     A 0 return value indicates success; -1 indicates an error.
+
+ERRORS
+     The call fails if:
+
+     [EBADF]		 The argument _s is not a valid descrip-
+			 tor.
+
+     [ENOTSOCK]          The argument _s is not a socket.
+
+     [EOPNOTSUPP]	 The socket is not of a type that sup-
+			 ports the operation _l_i_s_t_e_n.
+
+SEE ALSO
+     accept(2), connect(2), socket(2)
+
+BUGS
+     The _b_a_c_k_l_o_g is currently limited (silently) to 5.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 14, 1986				1
+
+
+

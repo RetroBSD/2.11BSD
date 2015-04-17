@@ -1,0 +1,462 @@
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+NAME
+     less - opposite of more
+
+SYNOPSIS
+     less [-cdepstwmMqQuU] [-h_N] [-b[fp]_N] [-x_N] [-[z]_N]
+	  [-P[mM]_s_t_r_i_n_g] [-l_l_o_g_f_i_l_e] [+_c_m_d]  [_f_i_l_e_n_a_m_e]...
+
+DESCRIPTION
+     _L_e_s_s is a program similar to _m_o_r_e (1), but which allows
+     backwards movement in the file as well as forward movement.
+     Also, _l_e_s_s does not have to read the entire input file
+     before starting, so with large input files it starts up fas-
+     ter than text editors like _v_i (1).  _L_e_s_s uses termcap, so it
+     can run on a variety of terminals.  There is even limited
+     support for hardcopy terminals.  (On a hardcopy terminal,
+     lines which should be printed at the top of the screen are
+     prefixed with an up-arrow.)
+
+     Commands are based on both _m_o_r_e and _v_i. Commands may be pre-
+     ceeded by a decimal number, called N in the descriptions
+     below.  The number is used by some commands, as indicated.
+
+
+COMMANDS
+     In the following descriptions, ^X means control-X.
+
+     h	  Help: display a summary of these commands.  If you for-
+	  get all the other commands, remember this one.
+
+     SPACE
+	  Scroll forward N lines, default one window (see option
+	  -z below).  If N is more than the screen size, only the
+	  final screenful is displayed.
+
+     f or ^F
+	  Same as SPACE.
+
+     b or ^B
+	  Scroll backward N lines, default one window (see option
+	  -z below).  If N is more than the screen size, only the
+	  final screenful is displayed.
+
+     RETURN
+	  Scroll forward N lines, default 1.  The entire N lines
+	  are displayed, even if N is more than the screen size.
+
+     e or ^E
+	  Same as RETURN.
+
+     j or ^J
+	  Also the same as RETURN.
+
+
+
+
+Printed 11/24/99						1
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+     y or ^Y
+	  Scroll backward N lines, default 1.  The entire N lines
+	  are displayed, even if N is more than the screen size.
+
+     k or ^K
+	  Same as y.
+
+     d or ^D
+	  Scroll forward N lines, default 10.  If N is specified,
+	  it becomes the new default for subsequent d and u com-
+	  mands.
+
+     u or ^U
+	  Scroll backward N lines, default 10.	If N is speci-
+	  fied, it becomes the new default for subsequent d and u
+	  commands.
+
+     r or ^R or ^L
+	  Repaint the screen.
+
+     R	  Repaint the screen, discarding any buffered input.
+	  Useful if the file is changing while it is being
+	  viewed.
+
+     g	  Go to line N in the file, default 1 (beginning of
+	  file).  (Warning: this may be slow if N is large.)
+
+     G	  Go to line N in the file, default the end of the file.
+	  (Warning: this may be slow if standard input, rather
+	  than a file, is being read.)
+
+     p	  Go to a position N percent into the file.  N should be
+	  between 0 and 100.  (This is possible if standard input
+	  is being read, but only if _l_e_s_s has already read to the
+	  end of the file.  It is always fast, but not always
+	  useful.)
+
+     %	  Same as p.
+
+     m	  Followed by any lowercase letter, marks the current
+	  position with that letter.
+
+     '	  (Single quote.) Followed by any lowercase letter,
+	  returns to the position which was previously marked
+	  with that letter.  Followed by another single quote,
+	  returns to the postion at which the last "large" move-
+	  ment command was executed.  All marks are lost when a
+	  new file is examined.
+
+     /pattern
+	  Search forward in the file for the N-th line containing
+	  the pattern.	N defaults to 1.  The pattern is a
+
+
+
+Printed 11/24/99						2
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+	  regular expression, as recognized by _e_d. The search
+	  starts at the second line displayed (but see the -t
+	  option, which changes this).
+
+     ?pattern
+	  Search backward in the file for the N-th line contain-
+	  ing the pattern.  The search starts at the line immedi-
+	  ately before the top line displayed.
+
+     n	  Repeat previous search, for N-th line containing the
+	  last pattern.
+
+     E	  Examine a new file.  If the filename is missing, the
+	  "current" file (see the N and P commands below) from
+	  the list of files in the command line is re-examined.
+
+     N	  Examine the next file (from the list of files given in
+	  the command line).  If a number N is specified (not to
+	  be confused with the command N), the N-th next file is
+	  examined.
+
+     P	  Examine the previous file.  If a number N is specified,
+	  the N-th previous file is examined.
+
+     = or ^G
+	  Prints some information about the file being viewed,
+	  including its name and the byte offset of the bottom
+	  line being displayed.  If possible, it also prints the
+	  length of the file and the percent of the file above
+	  the last displayed line.
+
+     -	  Followed by one of the command line option letters (see
+	  below), this will toggle the setting of that option and
+	  print a message describing the new setting.
+
+     +cmd Causes the specified cmd to be executed each time a new
+	  file is examined.  For example, +G causes _l_e_s_s to ini-
+	  tially display each file starting at the end rather
+	  than the beginning.
+
+     V	  Prints the version number of _l_e_s_s being run.
+
+     q	  Exits _l_e_s_s.
+
+     The following two commands may or may not be valid, depend-
+     ing on your particular installation.
+
+     v	  Invokes an editor to edit the current file being
+	  viewed.  The editor is taken from the environment vari-
+	  able EDITOR, or defaults to "vi".
+
+
+
+
+
+Printed 11/24/99						3
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+     ! shell-command
+	  Invokes a shell to run the shell-command given.
+
+OPTIONS
+     Command line options are described below.	Most options may
+     be changed while _l_e_s_s is running, via the "-" command.
+
+     Options are also taken from the environment variable "LESS".
+     For example, if you like more-style prompting, to avoid typ-
+     ing "less -m ..." each time _l_e_s_s is invoked, you might tell
+     _c_s_h:
+
+     setenv LESS m
+
+     or if you use _s_h:
+
+     LESS=m; export LESS
+
+     The environment variable is parsed before the command line,
+     so command line options override the LESS environment vari-
+     able.  A dollar sign ($) may be used to signal the end of an
+     option string.  This is important only for options like -P
+     which take a following string.
+
+     -s   The -s option causes consecutive blank lines to be
+	  squeezed into a single blank line.  This is useful when
+	  viewing _n_r_o_f_f output.
+
+     -t   Normally, forward searches start just after the top
+	  displayed line (that is, at the second displayed line).
+	  Thus forward searches include the currently displayed
+	  screen.  The -t option causes forward searches to start
+	  just after the bottom line displayed, thus skipping the
+	  currently displayed screen.
+
+     -m   Normally, _l_e_s_s prompts with a colon.	The -m option
+	  causes _l_e_s_s to prompt verbosely (like _m_o_r_e), with the
+	  percent into the file.
+
+     -M   The -M option causes _l_e_s_s to prompt even more verbosely
+	  than _m_o_r_e.
+
+     -P   The -P option provides a way to tailor the three prompt
+	  styles to your own preference.  You would normally put
+	  this option in your LESS environment variable, rather
+	  than type it in with each less command.  Such an option
+	  must either be the last option in the LESS variable, or
+	  be terminated by a dollar sign.  -P followed by a
+	  string changes the default (short) prompt to that
+	  string.  -Pm changes the medium (-m) prompt to the
+	  string, and -PM changes the long (-M) prompt.  The
+	  string consists of a sequence of letters which are
+
+
+
+Printed 11/24/99						4
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+	  replaced with certain predefined strings, as follows:
+	       F    file name
+	       f    file name, only once
+	       O    file n of n
+	       o    file n of n, only once
+	       b    byte offset
+	       p    percent into file
+	       P    percent if known, else byte offset
+	  Angle brackets, < and >, may be used to surround a
+	  literal string to be included in the prompt.	The
+	  defaults are "fo" for the short prompt, "foP" for the
+	  medium prompt, and "Fobp" for the long prompt.
+	  Example: Setting your LESS variable to "PmFOP$PMFObp"
+	  would change the medium and long prompts to always
+	  include the file name and "file n of n" message.
+	  Another example: Setting your LESS variable to
+	  "mPm<--Less-->FoPe" would change the medium prompt to
+	  the string "--Less--" followed by the file name and
+	  percent into the file.  It also selects the medium
+	  prompt as the default prompt (because of the first
+	  "m").
+
+     -q   Normally, if an attempt is made to scroll past the end
+	  of the file or before the beginning of the file, the
+	  terminal bell is rung to indicate this fact.	The -q
+	  option tells _l_e_s_s not to ring the bell at such times.
+	  If the terminal has a "visual bell", it is used
+	  instead.
+
+     -Q   Even if -q is given, _l_e_s_s will ring the bell on certain
+	  other errors, such as typing an invalid character.  The
+	  -Q option tells _l_e_s_s to be quiet all the time; that is,
+	  never ring the terminal bell.  If the terminal has a
+	  "visual bell", it is used instead.
+
+     -e   Normally the only way to exit less is via the "q" com-
+	  mand.  The -e option tells less to automatically exit
+	  the second time it reaches end-of-file.
+
+     -u   If the -u option is given, backspaces are treated as
+	  printable characters; that is, they are sent to the
+	  terminal when they appear in the input.
+
+     -U   If the -U option is given, backspaces are printed as
+	  the two character sequence "^H".
+
+	  If neither -u nor -U is given, backspaces which appear
+	  adjacent to an underscore character are treated spe-
+	  cially: the underlined text is displayed using the
+	  terminal's hardware underlining capability.  Also,
+	  backspaces which appear between two identical charac-
+	  ters are treated specially: the overstruck text is
+
+
+
+Printed 11/24/99						5
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+	  printed using the terminal's hardware boldface capabil-
+	  ity.	Other backspaces are deleted, along with the
+	  preceeding character.
+
+     -w   Normally, _l_e_s_s uses a tilde character to represent
+	  lines past the end of the file.  The -w option causes
+	  blank lines to be used instead.
+
+     -d   Normally, _l_e_s_s will complain if the terminal is dumb;
+	  that is, lacks some important capability, such as the
+	  ability to clear the screen or scroll backwards.  The
+	  -d option suppresses this complaint (but does not oth-
+	  erwise change the behavior of the program on a dumb
+	  terminal).
+
+     -p   Normally, _l_e_s_s will repaint the screen by scrolling
+	  from the bottom of the screen.  If the -p option is
+	  set, when _l_e_s_s needs to change the entire display, it
+	  will clear the screen and paint from the top line down.
+
+     -h   Normally, _l_e_s_s will scroll backwards when backwards
+	  movement is necessary.  The -h option specifies a max-
+	  imum number of lines to scroll backwards.  If it is
+	  necessary to move backwards more than this many lines,
+	  the screen is repainted in a forward direction.  (If
+	  the terminal does not have the ability to scroll back-
+	  wards, -h0 is implied.)
+
+     -[z] When given a backwards or forwards window command, _l_e_s_s
+	  will by default scroll backwards or forwards one
+	  screenful of lines. The -z_n option changes the default
+	  scrolling window size to _n lines.  If _n is greater than
+	  the screen size, the scrolling window size will be set
+	  to one screenful. Note that the "z" is optional for
+	  compatibility with _m_o_r_e.
+
+     -x   The -x_n option sets tab stops every _n positions.  The
+	  default for _n is 8.
+
+     -l   The -l option, followed immediately by a filename, will
+	  cause _l_e_s_s to copy its input to the named file as it is
+	  being viewed.  This applies only when the input file is
+	  a pipe, not an ordinary file.
+
+     -b   The -b_n option tells _l_e_s_s to use a non-standard buffer
+	  size.  There are two standard (default) buffer sizes,
+	  one is used when a file is being read and the other
+	  when a pipe (standard input) is being read.  The
+	  current defaults are 5 buffers for files and 12 for
+	  pipes.  (Buffers are 1024 bytes.) The number _n speci-
+	  fies a different number of buffers to use.  The -b may
+	  be followed by "f", in which case only the file default
+
+
+
+Printed 11/24/99						6
+
+
+
+
+
+
+LESS(LOCAL)	    UNIX Programmer's Manual	      LESS(LOCAL)
+
+
+
+	  is changed, or by "p" in which case only the pipe
+	  default is changed.  Otherwise, both are changed.
+
+     -c   Normally, when data is read by _l_e_s_s, it is scanned to
+	  ensure that bit 7 (the high order bit) is turned off in
+	  each byte read, and to ensure that there are no null
+	  (zero) bytes in the data (null bytes are turned into
+	  "@" characters).  If the data is known to be "clean",
+	  the -c option will tell _l_e_s_s to skip this checking,
+	  causing an imperceptible speed improvement.  (However,
+	  if the data is not "clean", unpredicatable results may
+	  occur.)
+
+     +	  If a command line option begins with +, the remainder
+	  of that option is taken to be an initial command to
+	  _l_e_s_s. For example, +G tells _l_e_s_s to start at the end of
+	  the file rather than the beginning, and +/xyz tells it
+	  to start at the first occurence of "xyz" in the file.
+	  As a special case, +<number> acts like +<number>g; that
+	  is, it starts the display at the specified line number
+	  (however, see the caveat under the "g" command above).
+	  If the option starts with ++, the initial command
+	  applies to every file being viewed, not just the first
+	  one.	The + command described previously may also be
+	  used to set (or change) an initial command for every
+	  file.
+
+
+BUGS
+     When used on standard input (rather than a file), you can
+     move backwards only a finite amount, corresponding to that
+     portion of the file which is still buffered.  The -b option
+     may be used to expand the buffer space.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						7
+
+
+

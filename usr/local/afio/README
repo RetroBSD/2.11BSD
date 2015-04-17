@@ -1,0 +1,17 @@
+
+Afio is a better way of dealing with cpio-format archives. It is
+generally faster than cpio, provides more diverse magnetic tape
+options and deals somewhat gracefully with input data corruption.
+
+Afio is quite portable. It is now running under 4.2BSD, System V
+and even one or two UNIX-like operating systems. Please see the
+beginning of afio.c for a brief description of the compile-time
+configuration options.
+
+Discussion of features (including those unintended ones commonly
+referred to as "bugs") may be sent to ..!{ihnp4, sun}!laidbak!mdb.
+
+				Mark Brukhartz
+				Lachman Associates, Inc.
+				..!{ihnp4, sun}!laidbak!mdb
+

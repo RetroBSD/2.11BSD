@@ -1,0 +1,41 @@
+This is a patched up RT-11 binary which ran on an LSI-11.
+This program was originally distributed on a Purdue mailing and
+was full of bugs.  Many bugs in that distribution have been fixed.
+This is not a pristine, elegent implemention but it works!
+
+DUNGEON expects following files:
+
+/usr/chris/dungeon/zork		UNIX a.out file for Dungeon root
+				segment and RT-11 Fortran Runtime
+/usr/chris/dungeon/dtext.dat	Text file in random access-format
+/usr/chris/dungeon/dindex.dat	Indicies (probably into dtext.dat)
+/usr/chris/dungeon/doverlay	Original RT-11 DUNGEO.SAV
+				(reads overlays from here)
+
+
+If you don't like these pathnames, "dungeon.c" may be modified to
+reflect the desired names.  Pathnames were originally in "o.s" but
+"dungeon.c" was implemented at Purdue as an easier way to change them
+than patching binaries.  However, we have standardized the d/o.s
+interface.  It now would be an simple task to put pathnames in o.s 
+if one so desired.
+
+Other files of interest:
+
+dungeon.c       C program with date and UID check and exec of dungeon.
+
+o.s             Assembler driver to make dungeon run under UNIX.
+		Loads overlays, save/restore games, etc.  This must
+		be relocated to 0146000 and stuck on the end of the
+		dungeon binary file "d". (We don't have sources)
+
+p1              sh file to patch up a.out file "dung" so interface
+		between "d" and "o.s" works.
+
+1.s             kludge file to achive . = .+ 0146000
+
+mkovl           sh file to make overlay driver, attach it to "d",
+		and make a UNIX a.out file by attaching the
+		proper header.
+
+--ccw

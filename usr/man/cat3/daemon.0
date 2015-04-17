@@ -1,0 +1,66 @@
+
+
+
+DAEMON(3)	    UNIX Programmer's Manual		DAEMON(3)
+
+
+
+NAME
+     daemon - run in the background
+
+SYNOPSIS
+     int
+     daemon(nochdir, noclose)
+	 int nochdir, noclose;
+
+DESCRIPTION
+     The daemon function is for programs wishing to detach them-
+     selves from the controlling terminal and run in the back-
+     ground as system daemons.
+
+     Unless the argument _n_o_c_h_d_i_r is non-zero, daemon changes the
+     current working directory to the root (``/'').
+
+     Unless the argument _n_o_c_l_o_s_e is non-zero, daemon will
+     redirect standard input, standard output and standard error
+     to ``/dev/null''.
+
+ERRORS
+     The function daemon may fail and set _e_r_r_n_o for any of the
+     errors specified for the library functions _f_o_r_k(2).
+
+SEE ALSO
+     fork(2), ioctl(2).
+
+HISTORY
+     The daemon function first appeared in 4.4BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 3, 1995			1
+
+
+

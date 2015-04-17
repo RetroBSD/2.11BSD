@@ -1,0 +1,21 @@
+/globl[ 	]*_yyexca/d
+s/data/text /
+a
+.text 
+.
+/globl[ 	]*_yyact/d
+s/data/text /
+/globl[ 	]*_yypact/d
+s/data/text /
+/globl[ 	]*_yypgo/d
+s/data/text /
+/globl[ 	]*_yyr1/d
+s/data/text /
+/globl[ 	]*_yyr2/d
+s/data/text /
+/globl[ 	]*_yychk/d
+s/data/text /
+/globl[ 	]*_yydef/d
+s/data/text /
+w
+q

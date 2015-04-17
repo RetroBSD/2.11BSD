@@ -1,0 +1,132 @@
+
+
+
+PXP(1)		    UNIX Programmer's Manual		   PXP(1)
+
+
+
+NAME
+     pxp - Pascal execution profiler
+
+SYNOPSIS
+     pxp [ -acdefjnstuw_ ] [ -23456789 ] [ -z [ name ... ] ]
+     name.p
+
+DESCRIPTION
+     _P_x_p can be used to obtain execution profiles of Pascal pro-
+     grams or as a pretty-printer.  To produce an execution pro-
+     file all that is necessary is to translate the program
+     specifying the z option to _p_i or _p_i_x, to execute the pro-
+     gram, and to then issue the command
+
+	  pxp -z name.p
+
+     A reformatted listing is output if none of the c, t, or z
+     options are specified; thus
+
+	  pxp old.p > new.p
+
+     places a pretty-printed version of the program in `old.p' in
+     the file `new.p'.
+
+     The use of the following options of _p_x_p is discussed in sec-
+     tions 2.6, 5.4, 5.5 and 5.10 of the _B_e_r_k_e_l_e_y _P_a_s_c_a_l _U_s_e_r'_s
+     _M_a_n_u_a_l.
+
+     -a    Print the bodies of all procedures and functions in
+	   the profile; even those which were never executed.
+
+     -c    Extract profile data from the file _c_o_r_e.
+
+     -d    Include declaration parts in a profile.
+
+     -e    Eliminate include directives when reformatting a file;
+	   the include is replaced by the reformatted contents of
+	   the specified file.
+
+     -f    Fully parenthesize expressions.
+
+     -j    Left justify all procedures and functions.
+
+     -n    Eject a new page as each file is included; in pro-
+	   files, print a blank line at the top of the page.
+
+     -s    Strip comments from the input text.
+
+     -t    Print a table summarizing procedure and function call
+	   counts.
+
+     -u    Card image mode; only the first 72 characters of input
+
+
+
+Printed 11/26/99						1
+
+
+
+
+
+
+PXP(1)		    UNIX Programmer's Manual		   PXP(1)
+
+
+
+	   lines are used.
+
+     -w    Suppress warning diagnostics.
+
+     -z    Generate an execution profile.  If no _n_a_m_es, are given
+	   the profile is of the entire program.  If a list of
+	   names is given, then only any specified procedures or
+	   functions and the contents of any specified include
+	   files will appear in the profile.
+
+     -_    Underline keywords.
+
+     -_d    With _d a digit, 2 <_ _d <_ 9, causes _p_x_p to use _d spaces
+	   as the basic indenting unit.  The default is 4.
+
+FILES
+     name.p		 input file
+     name.i		 include file(s)
+     pmon.out		 profile data
+     core		 profile data source with -c
+     /usr/share/pascal/how_pxpinformation on basic usage
+
+SEE ALSO
+     Berkeley Pascal User's Manual
+     pi(1), px(1)
+
+DIAGNOSTICS
+     For a basic explanation do
+
+	     pxp
+
+     Error diagnostics include `No profile data in file' with the
+     c option if the z option was not enabled to _p_i; `Not a Pas-
+     cal system core file' if the core is not from a _p_x execu-
+     tion; `Program and count data do not correspond' if the pro-
+     gram was changed after compilation, before profiling; or if
+     the wrong program is specified.
+
+AUTHOR
+     William N. Joy
+
+BUGS
+     Does not place multiple statements per line.
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99						2
+
+
+

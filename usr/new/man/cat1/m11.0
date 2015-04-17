@@ -1,0 +1,264 @@
+
+
+
+M11(1)		    UNIX Programmer's Manual		   M11(1)
+
+
+
+NAME
+     m11 - Macro-11 assembler for UNIX
+
+SYNOPSIS
+     m11 [ option1 option2 ...	] file1 file2 ...  filen
+
+DESCRIPTION
+     _M_1_1 assembles the concatenation of the specified files
+     (_f_i_l_e_1, etc.) and terminates when an ``.end'' statement is
+     encountered.  The resulting object file is usually named
+     _f_i_l_e_n._o_b_j (see below).  If a file argument, _f_i_l_e_i does not
+     contain a ``.'' in its name, the file _f_i_l_e_i._m_1_1 will be
+     sought before _f_i_l_e_i itself.
+
+
+     Options, if desired, may appear anywhere in the command, and
+     are chosen from the following list.  All options are inter-
+     preted before any files are read.
+
+
+     -ls  Produce an assembly listing and place in _f_i_l_e_n.lst
+
+     -lt  Produce an assembly listing on the standard output.
+
+     -fl  If coupled with the -_l_s or -_l_t directives, makes the
+	  listing have a shortened format.  It is shorthand for
+	  -_n_l:_s_e_q:_l_o_c:_b_i_n:_b_e_x:_m_e:_m_e_b:_t_t_m:_t_o_c:_s_y_m.
+
+     -uc  Simulate an initial ._d_s_a_b_l _l_c directive.  Force all
+	  characters in macro definitions to be upper case.  This
+	  flag makes lower-case handling in _m_1_1 compatable with
+	  the DEC Macro-11 assemblers.
+
+     -um  Force all characters in macro definitions to be upper
+	  case.  This flag makes lower-case handling in this
+	  release of _m_1_1 compatable with previous versions of
+	  _m_1_1.
+
+     -de  Make all option choices needed to make assembly mimic
+	  DEC Macro-11.  Implies (_i_n_t_e_r _a_l_i_a) the -_u_c flag.  This
+	  includes the Johns Hopkins _a_s_m assembler.
+
+     -ha  Make all option choices needed to make assembly mimic
+	  earlier (Harvard) releases of m11.  This implies the
+	  -_u_m flag.  Default .psect and .csect attributes are set
+	  up in the funny Harvard way.
+
+     -mx  Produce a listing of the source program as it appears
+	  _a_f_t_e_r macro expansion.  Macro calls, conditional direc-
+	  tives and so on appear in the listing as comments.
+	  Listing appears on standard output. No machine code is
+	  generated or listed.	This option is meant to
+
+
+
+Printed 11/24/99						1
+
+
+
+
+
+
+M11(1)		    UNIX Programmer's Manual		   M11(1)
+
+
+
+	  correspond to the -E or -P options of the C compiler
+	  _c_c(_1).
+
+     -my  Like -_m_x, except that macro calls and conditional
+	  directives do not show up in the listing.
+
+     -10  Generate an error whenever op codes not in the PDP-11
+	  ``standard instruction set'' are encountered.  Program-
+	  mers writing for a PDP 11/10 can catch instructions
+	  illegal for that machine by using this argument.
+
+     -dp:args
+	  The default attributes for a ._p_s_e_c_t or unnamed ._c_s_e_c_t
+	  are redefined, using	the colon-separated list _a_r_g_s of
+	  valid .psect attributes.
+
+     -da:args
+	  The default attributes for an ._a_s_e_c_t are redefined.
+
+     -dp:c
+	  The default attributes for a named ._c_s_e_c_t are rede-
+	  fined.
+
+     -li:arglist
+	  Simulate an initial ._l_i_s_t _a_r_g_l_i_s_t directive.	All ._l_i_s_t
+	  and ._n_l_i_s_t directives in the program text which attempt
+	  to change the settings established with the -_l_i flag
+	  will be ignored.
+
+     -nl:arglist
+	  Like -_l_i:_a_r_g_l_i_s_t, but for the ._n_l_i_s_t directive.
+
+     -en:arglist
+	  Similarly, for the ._e_n_a_b_l directive.
+
+     -ds:arglist
+	  Similarly, but for the ._d_s_a_b_l directive.
+
+     -cr:arglist
+	  Produces a cross-reference listing.  If the -_l_s option
+	  is also included, the cross-reference listing will fol-
+	  low the assembly listing in _f_i_l_e_n.lst.  References
+	  which are tagged with the symbol # are definitions.
+	  References tagged with * are destuctive references: the
+	  value of the symbol or variable in question is changed.
+	  _A_r_g_l_i_s_t consists of colon-separated keywords from the
+	  following set.  The keywords may be prefix abbreviated:
+
+	  sym  All user-defined symbols are indexed.
+
+	  mac  All macro names are indexed.
+
+
+
+
+Printed 11/24/99						2
+
+
+
+
+
+
+M11(1)		    UNIX Programmer's Manual		   M11(1)
+
+
+
+	  per  All uses of permanent symbols - op codes, direc-
+	       tives, etc - are indexed.
+
+	  pse  All psect names are indexed.  For compatability
+	       with the RT-11 _C_R_E_F program, the argument _c_s_e is
+	       synonymous with _p_s_e.
+
+	  err  All errors are indexed.
+
+	  reg  All register uses are indexed.
+
+	  If no _a_r_g_l_i_s_t is specified the default _s_y_m:_m_a_c:_e_r_r is
+	  used.  In the listing page and line numbers for uses of
+	  symbols are followed by a # sign if the symbol is
+	  defined and by a * sign if the symbol is modified.
+
+     -lp  Same as -ls, but also spools _f_i_l_e_n.lst for printing
+	  upon completion.
+
+     -no  No object file is produced.  This is useful for syntax
+	  checking or list producing.
+
+     -xs:n
+	  Allots nK words of extra space for symbol table and
+	  macro storage.  NOTE: This option is currently inopera-
+	  tive: _m_1_1 automatically allots core for its tables as
+	  needed.
+
+     -xx  Debug flag: generate all kinds of wierd hack flack.
+
+     -ns  No symbol table is included in the object file (thus
+	  ddt knows of no symbols from this assembly).
+
+     -sx  Make the symbol table contain ``local symbols'' as well
+	  as ordinary symbols.
+
+     -u   Treat form feed characters as spaces.  This will make
+	  _m_1_1's idea of line numbers coincide with the UNIX text
+	  editors.  Macro-11 statements containing imbedded form
+	  feed characters will be parsed differently when the -_u
+	  flag is in effect.
+
+     -na:file
+	  Override the convention of using last name as file
+	  name.  Instead, use names _f_i_l_e._o_b_j and _f_i_l_e._l_s_t for
+	  object and listing files.
+
+NOTES
+     This implementation of Macro-11 is a distant hand-me down
+     from an old DEC Macro-11 modified at Harvard University in
+     the early 1970's.	It is grubby with smudges by Brent Byer,
+     F. J. Howard, Bob Bowering, and Jim Reeds.  It does not
+
+
+
+Printed 11/24/99						3
+
+
+
+
+
+
+M11(1)		    UNIX Programmer's Manual		   M11(1)
+
+
+
+     implement keyword arguments such as are described in section
+     7.3.6 of the DEC manual.  The .enabl abs option does not
+     work.  Listing control is by default .list ttm.  Unlike ear-
+     lier editions of m11 at UCB and at Harvard, it does treat
+     immediate constants of floating point operations correctly:
+     see the last paragraph of section 6.4.2 on the middle of
+     page 6-27 of the DEC manual.  M11 has several directives not
+     described in the DEC manual.  See the _N_e_w _U_C_B _M_1_1 _M_a_n_u_a_l.
+     The default attributes for ._p_s_e_c_t_s are different from those
+     described in the DEC manual, but may be changed by the -_d_p
+     flag.  The ._e_n_a_b_l _g_l_b feature is implemented: undefined sym-
+     bols are taken as undefined global externals.
+
+FILES
+     /usr/share/misc/sysmac.smlsystem macro library (for .mcall
+     directive)
+     filen.xrf		 intermediate cross-reference temporary
+     file
+     lpr(1)		 spooler
+     /usr/ucb/macxrf	 cross-reference post-processor
+
+SEE ALSO
+     _P_D_P-_1_1 _M_A_C_R_O-_1_1 _L_a_n_g_u_a_g_e _R_e_f_e_r_e_n_c_e _M_a_n_u_a_l , Digital Equip-
+     ment Corp. Order No. AA-5075A-TC, August 1977.
+     _N_e_w _U_C_B _M_1_1 _M_a_n_u_a_l , notional document by Jim Reeds.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99						4
+
+
+

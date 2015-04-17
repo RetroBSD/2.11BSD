@@ -1,0 +1,14 @@
+Offsets of note in dsave.dat file:
+
+	11266:	number of moves taken
+	42020:	score
+
+   The offsets within the program would be:
+
+	22410 + 11266 = 33676 (moves)
+	22410 + 42020 = 64430 (score)
+
+EMTs to fix:
+
+	.CSISPC  (EMT ^O345) at 05642
+

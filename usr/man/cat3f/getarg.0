@@ -1,0 +1,66 @@
+
+
+
+GETARG(3F)	    UNIX Programmer's Manual	       GETARG(3F)
+
+
+
+NAME
+     getarg, iargc - return command line arguments
+
+SYNOPSIS
+     subroutine getarg (k, arg)
+     character*(*) arg
+
+     function iargc ()
+
+DESCRIPTION
+     A call to _g_e_t_a_r_g will return the k_t_h command line argument
+     in character string _a_r_g. The 0_t_h argument is the command
+     name.
+
+     _I_a_r_g_c returns the index of the last command line argument.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     getenv(3F), execve(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

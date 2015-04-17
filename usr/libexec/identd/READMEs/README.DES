@@ -1,0 +1,209 @@
+This README.DES file should probably be cleaned up. But for an alpha
+release of Pidentd it might do for now.. :-)
+
+Also see the file DES-DOC (included last in this file) for more
+information, especially regarding the format of the identd.key file.
+Don't believe all I say below about it. DES-DOC is more correct. I'll
+write better documentation for a Beta verison of Pidentd 2.3 ...
+
+Do install an encrypting version of Pidentd you'll need to create a
+1024 byte big file "/etc/identd.key" that should contain the DES key
+Pidentd should use. I created one with:
+
+	dd if=/bin/passwd of=/etc/identd.key bs=1024 count=1
+
+which seemed to work. But then again, I'm not really into this crypto
+thing. Anybody know the a correct way to generate a DES key?
+
+Then use the 'idecrypt' command to decrypt to identifier returned.
+
+You can test your Pidentd by installing it and then typing:
+
+	telnet lysator.liu.se 114 | idecrypt
+
+That should translate the encrypted identifier returned into
+some usable information (date, uid, local and foreign port and addresses).
+
+/Peter Eriksson <pen@lysator.liu.se>, 23 Feb 1994
+
+
+Below follows the original letter:
+
+
+From doligez@lix.polytechnique.fr Wed Feb 23 14:09:41 1994
+Flags: 000000000001
+Received: from polytechnique.polytechnique.fr (root@polytechnique.polytechnique.fr [129.104.30.1]) by godot.lysator.liu.se (8.6.6.Beta2/8.6.6.Beta2) with ESMTP id OAA12199 for <pen@lysator.liu.se>; Wed, 23 Feb 1994 14:09:22 +0100
+Received: from lix.polytechnique.fr (lix.polytechnique.fr [129.104.11.2]) by polytechnique.polytechnique.fr (8.6.4/8.6.4) with SMTP id OAA03246 for <pen@lysator.liu.se>; Wed, 23 Feb 1994 14:16:56 +0100
+Received: by lix.polytechnique.fr (5.65/5.65c-IDA-polytechnique)
+	id AA10927; Wed, 23 Feb 1994 14:07:56 +0100
+Date: Wed, 23 Feb 1994 14:07:56 +0100
+From: doligez@lix.polytechnique.fr (Damien Doligez)
+Message-Id: <9402231307.AA10927@lix.polytechnique.fr>
+To: pen@lysator.liu.se
+Subject: Re: pidentd
+Keywords: pidentd-crypt
+
+
+>Yes, please send me the diffs! I would very much like to integrate
+>them into the standard pidentd distribution!
+
+I was hoping you would say that.
+
+This is the patch, along with a list of things that I should have done :-)
+
+
+How to install the patch:
+^^^^^^^^^^^^^^^^^^^^^^^^^
+- Extract the pidentd-2.2 directory from its distribution.
+
+- Move this file into the pidentd-2.2 directory under the name
+  "patch-crypto".
+
+- Go to the pidentd-2.2 directory and type:  patch -p <patch.crypto
+
+- remove the patch.crypto file.
+
+
+How to compile:
+^^^^^^^^^^^^^^^
+- Transfer libdes.tar.92-10-13.Z from
+         ftp.funet.fi:/pub/crypt/libdes/libdes.tar.92-10-13.Z
+  create a pidentd-2.2/libdes directory and extract the tar file in
+  that directory.
+
+- Type "make" in the libdes directory.
+
+- Type "make <ostype>" in the pidentd-2.2 directory.
+
+
+Things to do:   (If you insist, I can do some of these myself.)
+^^^^^^^^^^^^^
+- Document the crypto option and how it uses libdes in the INSTALL file.
+
+- Do something to #include <des.h> and link with -ldes if libdes is
+  already installed on the machine (see libdes/INSTALLATION).
+
+- Change the man page to document the -C option and the format of the
+  key file.
+
+- Document the idecrypt command.  The output fields are:
+    <date> <uid> <local-IP> <local-port> <remote-IP> <remote-port>
+
+- Change the TODO file to remove the line about encryption.
+
+- Tell the user to compare the outputs of "make" and "make | idecrypt" in
+  testdir (in INSTALL).
+
+- Check the portability of the encryption code.  (esp. on 64-bit machines).
+
+- Integrate the make in libdes into the main Makefile.
+
+- Rework the "why-encrypt" document.  Some parts of it should be in the
+  man page.
+
+- Find out how secure the CBC encryption without an IV really is.
+
+- crypto.h should have an #ifdef KEY_FILE #endif around it.
+
+- Test the make without the crypto option.  Did I break something ?
+
+
+
+==== DES-DOC =================================================================
+
+
+From doligez@lix.polytechnique.fr Thu Mar 31 13:55:09 1994
+Flags: 000000000001
+Received: from polytechnique.polytechnique.fr (root@polytechnique.polytechnique.fr [129.104.30.1]) by godot.lysator.liu.se (8.6.7/8.6.6) with ESMTP id NAA04629 for <pen@lysator.liu.se>; Thu, 31 Mar 1994 13:55:01 +0200
+Received: from lix.polytechnique.fr (lix.polytechnique.fr [129.104.11.2]) by polytechnique.polytechnique.fr (8.6.4/8.6.4) with SMTP id OAA18795 for <pen@lysator.liu.se>; Thu, 31 Mar 1994 14:04:47 +0200
+Received: by lix.polytechnique.fr (5.65/5.65c-IDA-polytechnique)
+	id AA26554; Thu, 31 Mar 1994 13:55:19 +0200
+Date: Thu, 31 Mar 1994 13:55:19 +0200
+From: doligez@lix.polytechnique.fr (Damien Doligez)
+Message-Id: <9403311155.AA26554@lix.polytechnique.fr>
+To: pen@lysator.liu.se
+Subject: pidentd-2.3alpha1
+
+I have just read the README.DES file from the alpha release of
+pidentd.  I'm afraid I have not been clear in describing the format of
+the key file.
+
+What follows is a more thorough description.  Feel free to ask me for
+more details, I am not too good at writing documentation.
+
+>>>
+You write that the key file has to be 1024 bytes long.  This is not
+quite true.  The key file is a text file.  Each line of text is a key.
+The 1024-byte limit is the maximum length of a key, so each line in
+the key file must be less than 1024 characters in length (or maybe
+1023).
+
+The key file is used by the programs as follows:
+
+The pidentd daemon will use the first line of the file as a key to
+encrypt its responses, and ignore the rest of the file.
+
+The decryption utility (idecrypt) will try every key in the file on
+each encrypted packet, until it finds the right one.  (Decrypted
+packets have a checksum, so the decryption utility knows when it has
+found the right key.)
+
+The intended use of the key file is as follows:
+
+When you want to change your key, you add a new line at the top of the
+key file.  Since this is a text file and the line can be quite long,
+it might be a good idea to include the date, the name of the machine,
+and maybe your own name.  Don't forget to add a good number of random
+characters, or your key will be too easy to find.  The daemon will use
+the new key as soon as you save the file.  idecrypt will also know
+about this new key, but it will still be able to try the old ones as
+well.  Thus if you have to decrypt an old log, it will work
+transparently.
+
+An other limitation of the key file is that only the 1024 fist keys
+are taken into account by idecrypt.  And since the decryption utility
+tries all the keys on every packet that it cannot decrypt, it will be
+slowed down by a big key file.  So it is a good idea to remove very
+old keys from this file.
+
+Also, if you have several machines, it is better to use a different
+key on each machine, in case one of the machines is compromised, and
+you can add the keys for all the machines on your central (most
+secure) machine so that you can decrypt ident responses from all your
+machines by running idecrypt on that central machine.
+
+An example:
+
+At first, my key file looked like this:
+----
+1994.02.20 titus.polytechnique.fr doligez 624153126351241562
+----
+The series of digits at the end of the line was generated by rolling a
+dice.  (And it is too short for good security.)
+
+Two weeks later, I felt paranoid and I decided to change my key, so
+the file looked like:
+----
+1994.03.07 titus.polytechnique.fr doligez 215656215656361252
+1994.02.20 titus.polytechnique.fr doligez 624153126351241562
+----
+Note that I kept the old key, which allows idecrypt to interpret my
+old ident responses.
+
+Then I noticed a break-in on my machine, and (after cleaning up and
+plugging the holes) changed the key file to:
+----
+1994.03.19 titus.polytechnique.fr doligez 564125642156124665
+1994.03.19 vlsi.polytechnique.fr doligez 635245623415621251
+1994.03.07 titus.polytechnique.fr doligez 215656215656361252
+----
+I removed the key dated 1994.02.20, because I'm not interested in
+1-month-old log entries, and I added the key for my second machine,
+because I am logged on titus as root most of the time, so if I get a
+mail from another administrator about a security problem, I can
+decrypt the log even if the attempts came from vlsi.
+
+
+You may use any part of this text for the user documentation for
+pidentd/idecrypt.
+

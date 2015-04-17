@@ -1,0 +1,66 @@
+
+
+
+COLRM(1)	    UNIX Programmer's Manual		 COLRM(1)
+
+
+
+NAME
+     colrm - remove columns from a file
+
+SYNOPSIS
+     colrm [ startcol [ endcol ] ]
+
+DESCRIPTION
+     _C_o_l_r_m removes selected columns from a file.  Input is taken
+     from standard input.  Output is sent to standard output.
+
+     If called with one parameter the columns of each line will
+     be removed starting with the specified column.  If called
+     with two parameters the columns from the first column to the
+     last column will be removed.
+
+     Column numbering starts with column 1.
+
+SEE ALSO
+     expand(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 7, 1986				1
+
+
+

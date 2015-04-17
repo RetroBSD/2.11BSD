@@ -1,0 +1,2 @@
+/usr/adm/messages must be writable by the world so that syslog(3) can write
+on it for non-network kernels.

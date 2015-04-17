@@ -1,0 +1,66 @@
+
+
+
+GROUPS(1)	    UNIX Programmer's Manual		GROUPS(1)
+
+
+
+NAME
+     groups - show group memberships
+
+SYNOPSIS
+     groups [_u_s_e_r]
+
+DESCRIPTION
+     The groups utility has been obsoleted by the id(1) utility,
+     and is equivalent to ``id -Gn [_u_s_e_r]''.  The command
+     ``id -p'' is suggested for normal interactive use.
+
+     The groups utility displays the groups to which you (or the
+     optionally specified user) belong.
+
+     The groups utility exits 0 on success, and >0 if an error
+     occurs.
+
+SEE ALSO
+     id(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  June 25, 1997                         1
+
+
+

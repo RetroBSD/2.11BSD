@@ -1,0 +1,244 @@
+A	Version.c	/^CMU-CS-A (nee CMU-10A) was doing this after the DA/
+Amos	Version.c	/^George Goble, via Kirk Smith, via Miriam Amos (why/
+Copyright	Version.c	/^Copyright (c) 1980 Regents of the University of Ca/
+DATUM	alias.c	63
+DOFORK	deliver.c	/^# define DOFORK(fORKfN) \\$/
+ECONNRESET	Version.c	/^take ECONNRESET (Connection reset by peer) as a te/
+ENETUNREACH	Version.c	/^take ENETUNREACH (Network unreachable) as a transi/
+H_DELETE	Version.c	/^drop unnecessary H_FORCE bits in conf.c; delete H_/
+KBYTES	stats.c	/^#define KBYTES(x)	(((x) + (ONE_K - 1)) \/ ONE_K)$/
+MVersion	Version.c	/^off all future events; diagnose reentry of main()./
+Mmain	main.c	/^main(argc, argv, envp)$/
+PLURAL	convtime.c	/^# define PLURAL(n)	((n) == 1 ? "" : "s")$/
+REPLYCLASS	usersmtp.c	/^#define REPLYCLASS(r)	(((r) \/ 10) % 10)	\/* second /
+REPLYTYPE	usersmtp.c	/^#define REPLYTYPE(r)	((r) \/ 100)		\/* first digit o/
+Standard	Version.c	/^Format Standard (Draft Report)", prepared for NBS./
+VAX	Version.c	/^fill up the inode or file tables on this VAX (but /
+WORK	queue.c	40
+X	Version.c	/^$=X (class match) in the matching; this will allow/
+XXctime	ctime.c	/^XXctime()$/
+accept	Version.c	/^recreate a socket after every failed accept()$/
+addheader	headers.c	/^addheader(field, value, e)$/
+address	Version.c	/^the correct address (i.e., the Errors-To: address)/
+addresses	Version.c	/^Fix botch of putting incorrect full names on some /
+alarm	Version.c	/^alarm() and sleep() calls {arg was unsigned, is no/
+alias	alias.c	/^alias(a, sendq)$/
+aliasing	Version.c	/^fixed ANOTHER bug in aliasing (this is getting dul/
+aliaslookup	alias.c	/^aliaslookup(name)$/
+arpadate	arpadate.c	/^arpadate(ud)$/
+asctime	ctime.c	/^asctime(tp)$/
+atobool	util.c	/^atobool(s)$/
+atooct	util.c	/^atooct(s)$/
+bitintersect	util.c	/^bitintersect(a, b)$/
+bitzerop	util.c	/^bitzerop(map)$/
+buildaddr	parseaddr.c	/^buildaddr(tv, a)$/
+buildfname	util.c	/^buildfname(p, login, buf)$/
+c	Version.c	/^throughout for consistency; bzero is now in bcopy./
+capitalize	util.c	/^capitalize(s)$/
+cataddr	parseaddr.c	/^cataddr(pvp, buf, sz)$/
+cbosgd	Version.c	/^cleanup from cbosgd (Mark Horton) testing; some in/
+changes	Version.c	/^should be almost no externally visible changes (ot/
+checkcompat	conf.c	/^checkcompat(to)$/
+chompheader	headers.c	/^chompheader(line, def)$/
+clearenvelope	envelope.c	/^clearenvelope(e, fullclear)$/
+closexscript	envelope.c	/^closexscript(e)$/
+clrdaemon	daemon.c	/^clrdaemon()$/
+clrevent	clock.c	/^clrevent(ev)$/
+collect	collect.c	/^collect(sayok)$/
+commaize	headers.c	/^commaize(h, p, fp, oldstyle, m)$/
+convtime	convtime.c	/^convtime(p)$/
+copyplist	util.c	/^copyplist(list, copycont)$/
+crackaddr	headers.c	/^crackaddr(addr)$/
+ctime	ctime.c	/^ctime(t)$/
+curtime	util.c	/^curtime()$/
+date	Version.c	/^Change version stamp to have no date (so that it l/
+define	macro.c	/^define(n, v, e)$/
+defined	conf.c	/^#if !defined(lint) && !defined(NOSCCS)$/
+delimiters	Version.c	/^Ignore delimiters (e.g., commas) inside quotes$/
+deliver	deliver.c	/^deliver(e, firstto)$/
+dfopen	util.c	/^dfopen(filename, mode)$/
+disconnect	main.c	/^disconnect(fulldrop)$/
+dofork	deliver.c	/^dofork()$/
+dowork	queue.c	/^dowork(w)$/
+dropenvelope	envelope.c	/^dropenvelope(e)$/
+early	Version.c	/^Ignore SIGPIPE early (in main rather than in deliv/
+eatfrom	collect.c	/^eatfrom(fm)$/
+eatheader	headers.c	/^eatheader(e)$/
+efo	Version.c	/^that the alias database is as current as possible;/
+em	Version.c	/^improve "version:" entry in makefile; fix -em (mai/
+endmailer	deliver.c	/^endmailer(pid, name)$/
+endsleep	clock.c	/^endsleep()$/
+errbody	savemail.c	/^errbody(fp, m, e)$/
+error	Version.c	/^error (or other error that would call smtpquit abn/
+errstring	err.c	/^errstring(errno)$/
+expand	macro.c	/^expand(s, buf, buflim, e)$/
+fclose	Version.c	/^cause another QUIT command, and thus an fclose(NUL/
+fconvert	arpadate.c	/^fconvert(a, b)$/
+fdopen	conf.c	/^fdopen(fd, type)$/
+fgetfolded	util.c	/^fgetfolded(buf, n, f)$/
+file	Version.c	/^allow continuation lines in .cf file (particularly/
+fileclass	readcf.c	/^fileclass(class, filename, fmt)$/
+files	Version.c	/^arrange to not lose temporary queue control files /
+finduser	recipient.c	/^finduser(name)$/
+finis	main.c	/^finis()$/
+fix	Version.c	/^fix (one more time!) long line wrapping.....$/
+fixcrlf	util.c	/^fixcrlf(line, stripnl)$/
+flag	Version.c	/^flag (M_FULLSMTP) in the local mailer's flags to g/
+fmtmsg	err.c	/^fmtmsg(eb, to, num, eno, fmt, a, b, c, d, e)$/
+forever	Version.c	/^the connection will be lost forever (at least, as /
+forward	alias.c	/^forward(user, sendq)$/
+freeze	main.c	/^freeze(freezefile)$/
+from	Version.c	/^full name to be added when called from (e.g.) MH. /
+getb	ctime.c	/^getb(f, p, n)$/
+getctladdr	recipient.c	/^getctladdr(a)$/
+getegid	conf.c	/^getegid()$/
+geteuid	conf.c	/^geteuid()$/
+getla	conf.c	/^getla()$/
+getrequests	daemon.c	/^getrequests()$/
+getrgid	conf.c	/^getrgid()$/
+getruid	conf.c	/^getruid()$/
+giveresponse	deliver.c	/^giveresponse(stat, m, e)$/
+gmtime	ctime.c	/^gmtime(tp)$/
+greettimeout	usersmtp.c	/^greettimeout()$/
+h	Version.c	/^print queue.  Move compile conf into conf.h (still/
+hacking	Version.c	/^Original-From: hacking (oh so ugly).  There's got /
+half	Version.c	/^an SMTP transcript, only send the last half (i.e.,/
+help	srvrsmtp.c	/^help(topic)$/
+hvalue	headers.c	/^hvalue(field)$/
+include	recipient.c	/^include(fname, msg, ctladdr, sendq)$/
+index	conf.c	/^index(s, c)$/
+initaliases	alias.c	/^initaliases(aliasfile, init)$/
+initmacros	main.c	/^initmacros()$/
+initsys	envelope.c	/^initsys()$/
+intsig	main.c	/^intsig()$/
+isatword	headers.c	/^isatword(p)$/
+isheader	headers.c	/^isheader(s)$/
+iswiz	srvrsmtp.c	/^iswiz()$/
+line	Version.c	/^line (completely contrary to the intent).  Many th/
+lines	Version.c	/^add E mailer flag to > escape From lines (for file/
+localtime	ctime.c	/^localtime(tp)$/
+log	Version.c	/^have auto-queueups print a polite message in the l/
+logdelivery	deliver.c	/^logdelivery(stat)$/
+lower	util.c	/^lower(c)$/
+loweraddr	parseaddr.c	/^loweraddr(a)$/
+macvalue	macro.c	/^macvalue(n, e)$/
+mail	Version.c	/^errors.  we use it for returning mail (to dead.let/
+mailers	Version.c	/^only apply to expensive mailers (regardless of sen/
+mailfile	deliver.c	/^mailfile(filename, ctladdr)$/
+makeargv	readcf.c	/^makeargv(p)$/
+makeconnection	daemon.c	/^makeconnection(host, port, outfile, infile)$/
+makelower	util.c	/^makelower(p)$/
+makemailer	readcf.c	/^makemailer(line)$/
+maphostname	daemon.c	/^maphostname(hbuf, hbsize)$/
+markfailure	deliver.c	/^markfailure(e, q, rcode)$/
+markstats	stats.c	/^markstats(e, to)$/
+message	err.c	/^message(num, msg, a, b, c, d, e)$/
+minutes	Version.c	/^date.  Times out after five minutes (is this reaso/
+mode	Version.c	/^add test mode (MD_TEST, -bt)$/
+munchstring	readcf.c	/^munchstring(p)$/
+myhostname	daemon.c	/^myhostname(hostbuf, size)$/
+names	Version.c	/^output both pre- and post-expanded names (only out/
+netnews	Version.c	/^from the queue.  This avoids the wild process prob/
+newenvelope	envelope.c	/^newenvelope(e)$/
+newstr	Version.c	/^fix CRLF problem when sending SMTP commands; make /
+nmessage	err.c	/^nmessage(num, msg, a, b, c, d, e)$/
+oeq	Version.c	/^code to run on non-4.1c systems; fix use of -oeq (/
+offtime	ctime.c	/^offtime(clock, offset)$/
+openmailer	deliver.c	/^openmailer(m, pvp, ctladdr, clever, pmfile, prfile/
+openxscript	envelope.c	/^openxscript(e)$/
+optimizations	Version.c	/^assorted optimizations (no functional changes)$/
+orderq	queue.c	/^orderq(doall)$/
+parameter	Version.c	/^Make mailer size limits a per-mailer parameter (M /
+parseaddr	parseaddr.c	/^parseaddr(addr, a, copyf, delim)$/
+password	Version.c	/^Arrange for a wizards password (the W option).  Th/
+pause	Version.c	/^pause() after reply error if 18.100 set -- so that/
+pintvl	convtime.c	/^pintvl(intvl, brief)$/
+poststats	stats.c	/^poststats(sfile)$/
+prescan	parseaddr.c	/^prescan(addr, delim, pvpbuf)$/
+priencode	headers.c	/^priencode(p)$/
+printaddr	parseaddr.c	/^printaddr(a, follow)$/
+printav	util.c	/^printav(av)$/
+printqueue	queue.c	/^printqueue()$/
+printrules	readcf.c	/^printrules()$/
+processing	Version.c	/^"at" processing (put it in .cf file)$/
+putbody	deliver.c	/^putbody(fp, m, e)$/
+puterrmsg	err.c	/^puterrmsg(msg)$/
+putfromline	deliver.c	/^putfromline(fp, m)$/
+putheader	headers.c	/^putheader(fp, m, e)$/
+putline	util.c	/^putline(l, fp, m)$/
+putmsg	err.c	/^putmsg(msg, holdmsg)$/
+qstrlen	util.c	/^qstrlen(s)$/
+queue	Version.c	/^Debug, _verbose to set verbose, and _showq to show/
+queuename	queue.c	/^queuename(e, type)$/
+queueup	queue.c	/^queueup(e, queueall, announce)$/
+readaliases	alias.c	/^readaliases(aliasfile, init)$/
+readcf	readcf.c	/^readcf(cfname)$/
+readqf	queue.c	/^readqf(e, full)$/
+readtimeout	util.c	/^readtimeout()$/
+reapchild	conf.c	/^reapchild()$/
+recipient	recipient.c	/^recipient(a, sendq)$/
+recipients	Version.c	/^a recipient if there were no other recipients (e.g/
+refreezing	Version.c	/^fix freeze mode to do something more interesting t/
+refused	Version.c	/^at which incoming TCP connections are refused (def/
+remotename	parseaddr.c	/^remotename(name, m, senderaddress, canonical)$/
+repeatable	Version.c	/^fix hostname mapping to be repeatable (as required/
+reply	usersmtp.c	/^reply(m)$/
+returntosender	savemail.c	/^returntosender(msg, returnq, sendbody)$/
+rewrite	parseaddr.c	/^rewrite(pvp, ruleset)$/
+runinchild	srvrsmtp.c	/^runinchild(label)$/
+runqueue	queue.c	/^runqueue(forkflag)$/
+safefile	util.c	/^safefile(fn, uid, mode)$/
+sameaddr	parseaddr.c	/^sameaddr(a, b)$/
+sameword	util.c	/^sameword(a, b)$/
+savemail	savemail.c	/^savemail(e)$/
+sendall	deliver.c	/^sendall(e, mode)$/
+sendoff	deliver.c	/^sendoff(e, m, pvp, ctladdr)$/
+sendtoargv	recipient.c	/^sendtoargv(argv)$/
+sendtolist	recipient.c	/^sendtolist(list, ctladdr, sendq)$/
+setclass	readcf.c	/^setclass(class, word)$/
+setdefaults	conf.c	/^setdefaults()$/
+setevent	clock.c	/^setevent(intvl, func, arg)$/
+setoption	readcf.c	/^setoption(opt, val, safe, sticky)$/
+setproctitle	conf.c	/^setproctitle(fmt, a, b, c)$/
+setsender	envelope.c	/^setsender(from)$/
+settime	envelope.c	/^settime()$/
+sewer	ctime.c	/^sewer()$/
+sfgets	util.c	/^sfgets(buf, siz, fp)$/
+shouldqueue	conf.c	/^shouldqueue(pri)$/
+skipword	srvrsmtp.c	/^skipword(p, w)$/
+sleep	clock.c	/^sleep(intvl)$/
+smtp	srvrsmtp.c	/^smtp()$/
+smtpdata	usersmtp.c	/^smtpdata(m, e)$/
+smtpinit	usersmtp.c	/^smtpinit(m, pvp)$/
+smtpmessage	usersmtp.c	/^smtpmessage(f, m, a, b, c)$/
+smtpquit	usersmtp.c	/^smtpquit(m)$/
+smtprcpt	usersmtp.c	/^smtprcpt(to, m)$/
+spontaneously	Version.c	/^connection that is going down spontaneously (with /
+stab	stab.c	/^stab(name, type, op)$/
+statstring	sysexits.c	/^statstring(stat)$/
+stripquotes	util.c	/^stripquotes(s, qf)$/
+syserr	err.c	/^syserr(fmt, a, b, c, d, e)$/
+tTflag	trace.c	/^tTflag(s)$/
+tTsetup	trace.c	/^tTsetup(vect, size, defflags)$/
+tferror	collect.c	/^tferror(tf)$/
+thaw	main.c	/^thaw(freezefile)$/
+tick	clock.c	/^tick()$/
+toktype	parseaddr.c	/^toktype(c)$/
+toomany	readcf.c	/^toomany(id, maxcnt)$/
+trusteduser	envelope.c	/^trusteduser(user)$/
+ttyname	conf.c	/^ttyname(fd)$/
+ttypath	conf.c	/^ttypath()$/
+tzset	ctime.c	/^tzset()$/
+umask	conf.c	/^umask(nmask)$/
+unlockqueue	queue.c	/^unlockqueue(e)$/
+username	conf.c	/^username()$/
+usrerr	err.c	/^usrerr(fmt, a, b, c, d, e)$/
+variable	Version.c	/^Adds yet another configuration variable (should th/
+wait	Version.c	/^I'm sure this doesn't work -- if only because the /
+waitfor	util.c	/^waitfor(pid)$/
+workcmpf	queue.c	/^workcmpf(a, b)$/
+writable	recipient.c	/^writable(s)$/
+xalloc	util.c	/^xalloc(sz)$/
+xputs	util.c	/^xputs(s)$/
+xunlink	util.c	/^xunlink(f)$/
+yourself	Version.c	/^Refuse to talk to yourself (i.e., reject HELO pack/

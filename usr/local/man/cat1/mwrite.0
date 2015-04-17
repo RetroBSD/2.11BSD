@@ -1,0 +1,66 @@
+
+
+
+MWRITE(1)           UNIX Programmer's Manual            MWRITE(1)
+
+
+
+NAME
+     mwrite - low level write (copy) a Unix file to MSDOS
+
+SYNOPSIS
+     mwrite [ -tnvm ] unixfile msdosfile
+
+     mwrite [ -tnvm ] unixfile [ unixfiles... ] msdosdirectory
+
+DESCRIPTION
+     In the first form, _m_w_r_i_t_e copies the specified Unix file to
+     the named MSDOS file.  The second form of the command copies
+     multiple Unix files to the named MSDOS directory.
+
+     _M_w_r_i_t_e will allow the following command line options:
+
+     t    Text file transfer.  _M_w_r_i_t_e will translate incoming
+          line feeds to carriage return/line feeds.
+
+     n    No warning.  _M_w_r_i_t_e will not warn the user when
+          overwriting an existing file.
+
+     v    Verbose mode.  Display the new filename if the Unix
+          filename requires conversion.
+
+     m    Preserve the file modification times.
+
+     If the target file already exists, and the -_n option is not
+     in effect, _m_w_r_i_t_e asks whether or not to overwrite the file.
+
+     Reasonable care is taken to create a valid MSDOS filename.
+     If an invalid name is specified, _m_w_r_i_t_e will change the name
+     (and display the new name if the verbose mode is set).
+
+     MSDOS subdirectory names are are supported with either the
+     '/' or '\' separator.  The use of the '\' separator or wild-
+     cards will require the names to be enclosed in quotes to
+     protect them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1), mcopy(1), mread(1)
+
+BUGS
+     Unlike MSDOS, the destination directory may not be omitted.
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

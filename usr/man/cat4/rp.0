@@ -1,0 +1,198 @@
+
+
+
+XP(4)		    UNIX Programmer's Manual		    XP(4)
+
+
+
+NAME
+     xp - generic SMD moving-head disk
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NXPC	  _x_p__c_o_n_t_r_o_l_l_e_r_s # Number of controllers
+	  NXPD	  _x_p__d_r_i_v_e_s	 # RM02/03/05, RP04/05/06,
+				 # CDC 9766, Fuji 160, etc.
+	  BADSECT _N_O		 # Bad sector handling (see BUGS)
+
+     /etc/dtab:
+	  #Name Unit# Addr   Vector Br Handler(s)      # Comments
+	  xp	?     176700 254    5  xpintr	       # xp driver
+
+     major device number(s):
+	  raw: 19
+	  block: 10
+     minor device encoding:
+	  bits 0007 specify partition of XP drive
+	  bits 0370 specify XP drive
+
+DESCRIPTION
+     The _x_p driver is a generic SMD storage module disk driver.
+     It can be adapted to most SMD controllers although
+     bootstrapping will not necessarily be directly possible.
+     The drives are numbered from 0 to _n on controller 0, from
+     _n+1 to _m on controller 1, etc.  The drives may have dif-
+     ferent geometries.
+
+     The _x_p driver is unique amoungst 2BSD drivers in its number-
+     ing of drives.  Other drivers (_r_a for example) number drives
+     0 thru 7 on controller 1, 8 thru 15 on controller 2 and so
+     on.  _x_p on the other hand can have drives 0 and 1 on con-
+     troller 1, drives 2, 3, 4 and 5 on controller 2 and drives
+     6, 7 and 8 on controller 3.  This is different from boot's
+     view of the world, so if you are booting from other than
+     unit 0 you may have to experiment a bit.
+
+     Files with minor device numbers 0 through 7 refer to various
+     portions of drive 0; minor devices 8 through 15 refer to
+     drive 1, etc.  The standard device names begin with ``xp''
+     followed by the drive number and then a letter a-h for par-
+     titions 0-7 respectively.	The character ? stands here for a
+     drive number in the range 0-7.
+
+     The block files access the disk via the system's normal
+     buffering mechanism and may be read and written without
+     regard to physical disk records.  There is also a `raw'
+     interface which provides for direct transmission between the
+     disk and the user's read or write buffer.	A single read or
+     write call results in exactly one I/O operation and there-
+     fore raw I/O is considerably more efficient when many words
+
+
+
+Printed 11/26/99	 August 14, 1995			1
+
+
+
+
+
+
+XP(4)		    UNIX Programmer's Manual		    XP(4)
+
+
+
+     are transmitted.  The names of the raw files conventionally
+     begin with an extra `r.'
+
+     In raw I/O the buffer must begin on a word (even) boundary,
+     and counts should be a multiple of 512 bytes (a disk sec-
+     tor).  Likewise _l_s_e_e_k calls should specify a multiple of 512
+     bytes.
+
+DISK SUPPORT
+     Disks must be labeled using either the standalone _d_i_s_k_l_a_b_e_l
+     program on the boot tape or with the _d_i_s_k_l_a_b_e_l(8) program.
+     The kernel no longer attempts to determine the drive type
+     and geometry, instead reading this information from the
+     disklabel.  There are no partition tables coded into the _x_p
+     driver, these must be placed on the drive with _d_i_s_k_l_a_b_e_l.
+
+     Special files should only be created for the partitions that
+     are actually used, as the overlap in these addresses could
+     lead to confusion otherwise.  Traditionally the xp?a parti-
+     tion is normally used for the root file system, the xp?b
+     partition as a swap area, and the xp?c partition for pack-
+     pack copying (it maps the entire disk).
+
+FILES
+     /dev/xp[0-7][a-h]	 block files
+     /dev/rxp[0-7][a-h]  raw files
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+SEE ALSO
+     hk(4), ra(4), ram(4), rk(4), rl(4), rp(4), rx(4), si(4),
+     dtab(5), autoconfig(8), newfs(8)
+
+DIAGNOSTICS
+     xp%d%c: hard error sn%d cs2=%b er1=%b.  An unrecoverable
+     error occurred during transfer of the specified sector of
+     the specified disk partition.  The contents of the two error
+     registers are also printed in octal and symbolically with
+     bits decoded.  The error was either unrecoverable, or a
+     large number of retry attempts (including offset positioning
+     and drive recalibration) could not recover the error.
+
+     xp%d: write locked.  The write protect switch was set on the
+     drive when a write was attempted.	The write operation is
+     not recoverable.
+
+     xp%d%c: soft ecc sn%d.  A recoverable ECC error occurred on
+     the specified sector of the specified disk partition.  This
+     happens normally a few times a week.  If it happens more
+     frequently than this the sectors where the errors are occur-
+     ring should be checked to see if certain cylinders on the
+     pack, spots on the carriage of the drive or heads are
+
+
+
+Printed 11/26/99	 August 14, 1995			2
+
+
+
+
+
+
+XP(4)		    UNIX Programmer's Manual		    XP(4)
+
+
+
+     indicated.
+
+     xp%d: unknown device type 0%o.  The number in the drive's
+     drive type register is unknown to the xp driver.
+
+BUGS
+     In raw I/O _r_e_a_d and _w_r_i_t_e(2) truncate file offsets to 512-
+     byte block boundaries, and _w_r_i_t_e scribbles on the tail of
+     incomplete blocks.  Thus, in programs that are likely to
+     access raw devices, _r_e_a_d, _w_r_i_t_e and _l_s_e_e_k(2) should always
+     deal in 512-byte multiples.
+
+     DEC-standard error logging should be supported.
+
+     The kernel uses partition 'h' to access the badblock infor-
+     mation.  This should have been 'c' except that almost all of
+     the /etc/disktab entries (and thus existing systems) use 'h'
+     for this purpose.	Unless you are very careful with _d_i_s_k_l_a_-
+     _b_e_l|(8) (to make certain that no data partition overlaps the
+     badblock area) you should probably leave BADSECT undefined
+     in the kernel config file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 August 14, 1995			3
+
+
+

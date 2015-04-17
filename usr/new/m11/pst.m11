@@ -1,0 +1,286 @@
+	.title	pst   v095a11	permanent symbol table
+
+	.ident	/03apr4/
+
+;	copyright 1972  digital equipment corporation
+;       15 nov 72
+
+	.mcall	(at) always
+	always
+
+	.globl	wrdsym		;pointer to .word
+
+dr1=	200			;destructive reference in first field
+dr2=	100			;destructive reference in second field
+
+	.globl	dflgdg,	dflgev,	dflgbm,	dflcnd,	dflmac,	dflsmc
+
+dflgdg=	040			;data generating directive
+dflgev=	020			;directive requires even location
+dflgbm=	010			;directive uses byte mode
+dflcnd=	004			;conditional directive
+dflmac=	002			;macro directive
+dflsmc=	001			;mcall
+
+	.if df	pal11r		;pal11r subset
+xmacro=	0
+x40=	0
+x45=	0
+	.endc
+
+	.if df	x40&x45
+	xfltg=	0
+	x4045=	0
+	.endc
+
+	.iif df x45!xfltg,	x45flt=	0
+
+	.iif df x40!xfltg,	x40flt=	0
+
+	.iif df	xmacro,	xsml=	0
+
+	.macro	opcdef	name,	class,	value,	flags,	cond
+	aaaa = 0
+	.if	nb	cond
+	aaaa = 1
+	.endc
+	;.if ndf	cond	; this assembler can assemble for any pdp-11
+	.rad50	/name/
+	.byte	flags+aaaa
+	.globl	opcl'class
+	.byte	200+opcl'class
+	.word	value
+	;.endc
+	.endm
+
+	.macro	dirdef	name,	flags,	cond
+	.rad50	/.'name/
+	.byte	flags+0,	0
+	.if df	cond
+	.globl	opcerr
+	.word	opcerr
+	.iff
+	.globl	name
+	.word	name
+	.endc
+	.endm
+
+	;.psect	pstsec	con, shr	;pst is shareable
+	.psect	pstsec	con		; << not in v7 unix it aint!
+
+	entsec	pstsec
+	opcdef	<absd  >,	01,	170600,	dr1,	x45flt
+	opcdef	<absf  >,	01,	170600,	dr1,	x45flt
+	opcdef	<adc   >,	01,	005500,	dr1
+	opcdef	<adcb  >,	01,	105500,	dr1
+	opcdef	<add   >,	02,	060000,	dr2
+	opcdef	<addd  >,	11,	172000,	dr2,	x45flt
+	opcdef	<addf  >,	11,	172000,	dr2,	x45flt
+	opcdef	<ash   >,	09,	072000,	dr2,	x4045
+	opcdef	<ashc  >,	09,	073000,	dr2,	x4045
+	opcdef	<asl   >,	01,	006300,	dr1
+	opcdef	<aslb  >,	01,	106300,	dr1
+	opcdef	<asr   >,	01,	006200,	dr1
+	opcdef	<asrb  >,	01,	106200,	dr1
+	opcdef	<bcc   >,	04,	103000,
+	opcdef	<bcs   >,	04,	103400,
+	opcdef	<beq   >,	04,	001400,
+	opcdef	<bge   >,	04,	002000,
+	opcdef	<bgt   >,	04,	003000,
+	opcdef	<bhi   >,	04,	101000,
+	opcdef	<bhis  >,	04,	103000,
+	opcdef	<bic   >,	02,	040000,	dr2
+	opcdef	<bicb  >,	02,	140000,	dr2
+	opcdef	<bis   >,	02,	050000,	dr2
+	opcdef	<bisb  >,	02,	150000,	dr2
+	opcdef	<bit   >,	02,	030000,
+	opcdef	<bitb  >,	02,	130000,
+	opcdef	<ble   >,	04,	003400,
+	opcdef	<blo   >,	04,	103400,
+	opcdef	<blos  >,	04,	101400,
+	opcdef	<blt   >,	04,	002400,
+	opcdef	<bmi   >,	04,	100400,
+	opcdef	<bne   >,	04,	001000,
+	opcdef	<bpl   >,	04,	100000,
+	opcdef	<bpt   >,	00,	000003,	 
+	opcdef	<br    >,	04,	000400,
+	opcdef	<bvc   >,	04,	102000,
+	opcdef	<bvs   >,	04,	102400,
+	opcdef	<call  >,	01,	004700,
+	opcdef	<ccc   >,	00,	000257,
+	opcdef	<cfcc  >,	00,	170000,	   ,	x45flt
+	opcdef	<clc   >,	00,	000241,
+	opcdef	<cln   >,	00,	000250,
+	opcdef	<clr   >,	01,	005000,	dr1
+	opcdef	<clrb  >,	01,	105000,	dr1
+	opcdef	<clrd  >,	01,	170400,	dr1,	x45flt
+	opcdef	<clrf  >,	01,	170400,	dr1,	x45flt
+	opcdef	<clv   >,	00,	000242,
+	opcdef	<clz   >,	00,	000244,
+	opcdef	<cmp   >,	02,	020000,
+	opcdef	<cmpb  >,	02,	120000,
+	opcdef	<cmpd  >,	11,	173400,	   ,	x45flt
+	opcdef	<cmpf  >,	11,	173400,	   ,	x45flt
+	opcdef	<cnz   >,	00,	000254,
+	opcdef	<com   >,	01,	005100,	dr1
+	opcdef	<comb  >,	01,	105100,	dr1
+	opcdef	<dec   >,	01,	005300,	dr1
+	opcdef	<decb  >,	01,	105300,	dr1
+	opcdef	<div   >,	07,	071000,	dr2,	x4045
+	opcdef	<divd  >,	11,	174400,	dr2,	x45flt
+	opcdef	<divf  >,	11,	174400,	dr2,	x45flt
+	opcdef	<emt   >,	06,	104000,
+	opcdef	<fadd  >,	03,	075000,	dr1,	x40flt
+	opcdef	<fdiv  >,	03,	075030,	dr1,	x40flt
+	opcdef	<fmul  >,	03,	075020,	dr1,	x40flt
+	opcdef	<fsub  >,	03,	075010,	dr1,	x40flt
+	opcdef	<halt  >,	00,	000000,
+	opcdef	<inc   >,	01,	005200,	dr1
+	opcdef	<incb  >,	01,	105200,	dr1
+	opcdef	<iot   >,	00,	000004,
+	opcdef	<jmp   >,	01,	000100,
+	opcdef	<jsr   >,	05,	004000,	dr1
+	opcdef	<ldcdf >,	11,	177400,	dr2,	x45flt
+	opcdef	<ldcfd >,	11,	177400,	dr2,	x45flt
+	opcdef	<ldcid >,	14,	177000,	dr2,	x45flt
+	opcdef	<ldcif >,	14,	177000,	dr2,	x45flt
+	opcdef	<ldcld >,	14,	177000,	dr2,	x45flt
+	opcdef	<ldclf >,	14,	177000,	dr2,	x45flt
+	opcdef	<ldd   >,	11,	172400,	dr2,	x45flt
+	opcdef	<ldexp >,	14,	176400,	dr2,	x45flt
+	opcdef	<ldf   >,	11,	172400,	dr2,	x45flt
+	opcdef	<ldfps >,	01,	170100,	   ,	x45flt
+	opcdef	<ldsc  >,	00,	170004,	   ,	x45flt
+	opcdef	<ldub  >,	00,	170003,	   ,	x45flt
+	opcdef	<mark  >,	10,	006400,	   ,	x45
+	opcdef	<mfpd  >,	01,	106500,	   ,	x45
+	opcdef	<mfpi  >,	01,	006500,	   ,	x4045
+	opcdef	<modd  >,	11,	171400,	dr2,	x45flt
+	opcdef	<modf  >,	11,	171400,	dr2,	x45flt
+	opcdef	<mov   >,	02,	010000,	dr2
+	opcdef	<movb  >,	02,	110000,	dr2
+	opcdef	<mtpd  >,	01,	106600,	dr1,	x45
+	opcdef	<mtpi  >,	01,	006600,	dr1,	x4045
+	opcdef	<mul   >,	07,	070000,	dr2,	x4045
+	opcdef	<muld  >,	11,	171000,	dr2,	x45flt
+	opcdef	<mulf  >,	11,	171000,	dr2,	x45flt
+	opcdef	<neg   >,	01,	005400,	dr1
+	opcdef	<negb  >,	01,	105400,	dr1
+	opcdef	<negd  >,	01,	170700,	dr1,	x45flt
+	opcdef	<negf  >,	01,	170700,	dr1,	x45flt
+	opcdef	<nop   >,	00,	000240,
+	opcdef	<reset >,	00,	000005,
+	opcdef	<return>,	00,	000207,
+	opcdef	<rol   >,	01,	006100,	dr1
+	opcdef	<rolb  >,	01,	106100,	dr1
+	opcdef	<ror   >,	01,	006000,	dr1
+	opcdef	<rorb  >,	01,	106000,	dr1
+	opcdef	<rti   >,	00,	000002,
+	opcdef	<rts   >,	03,	000200,	dr1
+	opcdef	<rtt   >,	00,	000006,
+	opcdef	<sbc   >,	01,	005600,	dr1
+	opcdef	<sbcb  >,	01,	105600,	dr1
+	opcdef	<scc   >,	00,	000277,
+	opcdef	<sec   >,	00,	000261,
+	opcdef	<sen   >,	00,	000270,
+	opcdef	<setd  >,	00,	170011,	   ,	x45flt
+	opcdef	<setf  >,	00,	170001,	   ,	x45flt
+	opcdef	<seti  >,	00,	170002,	   ,	x45flt
+	opcdef	<setl  >,	00,	170012,	   ,	x45flt
+	opcdef	<sev   >,	00,	000262,
+	opcdef	<sez   >,	00,	000264,
+	opcdef	<sob   >,	08,	077000,	dr1,	x4045
+	opcdef	<spl   >,	13,	000230,	   ,	x45
+	opcdef	<sta0  >,	00,	170005,	   ,	x45flt
+	opcdef	<stb0  >,	00,	170006,	   ,	x45flt
+	opcdef	<stcdf >,	12,	176000,	dr2,	x45flt
+	opcdef	<stcdi >,	12,	175400,	dr2,	x45flt
+	opcdef	<stcdl >,	12,	175400,	dr2,	x45flt
+	opcdef	<stcfd >,	12,	176000,	dr2,	x45flt
+	opcdef	<stcfi >,	12,	175400,	dr2,	x45flt
+	opcdef	<stcfl >,	12,	175400,	dr2,	x45flt
+	opcdef	<std   >,	12,	174000,	dr2,	x45flt
+	opcdef	<stexp >,	12,	175000,	dr2,	x45flt
+	opcdef	<stf   >,	12,	174000,	dr2,	x45flt
+	opcdef	<stfps >,	01,	170200,	dr1,	x45flt
+	opcdef	<stq0  >,	00,	170007,	   ,	x45flt
+	opcdef	<stst  >,	01,	170300,	dr1,	x45flt
+	opcdef	<sub   >,	02,	160000,	dr2
+	opcdef	<subd  >,	11,	173000,	dr2,	x45flt
+	opcdef	<subf  >,	11,	173000,	dr2,	x45flt
+	opcdef	<swab  >,	01,	000300,	dr1
+	opcdef	<sxt   >,	01,	006700,	dr1,	x4045
+	opcdef	<trap  >,	06,	104400,
+	opcdef	<tst   >,	01,	005700,
+	opcdef	<tstb  >,	01,	105700,
+	opcdef	<tstd  >,	01,	170500,	   ,	x45flt
+	opcdef	<tstf  >,	01,	170500,	   ,	x45flt
+	opcdef	<wait  >,	00,	000001,
+	opcdef	<xor   >,	05,	074000,	dr2,	x4045
+	
+	dirdef	<ascii>,	dflgbm
+	dirdef	<asciz>,	dflgbm!dflgdg
+	dirdef	<asect>,	,	xrel
+	dirdef	<blkb >
+	dirdef	<blkw >,	dflgev
+	dirdef	<byte >,	dflgbm!dflgdg
+	dirdef	<csect>,	,	xrel
+	dirdef	<dsabl>
+	dirdef	<enabl>
+	dirdef	<end  >
+	dirdef	<endc >,	dflcnd
+	dirdef	<endm >,	dflmac,	xmacro
+	dirdef	<endr >,	dflmac,	xmacro
+	dirdef	<eot  >
+	dirdef	<error>
+	dirdef	<even >
+	dirdef	<flt2 >,	dflgev!dflgdg,	xfltg
+	dirdef	<flt4 >,	dflgev!dflgdg,	xfltg
+	dirdef	<globl>,	,	xrel
+	dirdef	<ident>
+	dirdef	<if   >,	dflcnd
+	dirdef	<ifdf >,	dflcnd
+	dirdef	<ifeq >,	dflcnd
+	dirdef	<iff  >,	dflcnd
+	dirdef	<ifg  >,	dflcnd
+	dirdef	<ifge >,	dflcnd
+	dirdef	<ifgt >,	dflcnd
+	dirdef	<ifl  >,	dflcnd
+	dirdef	<ifle >,	dflcnd
+	dirdef	<iflt >,	dflcnd
+	dirdef	<ifndf>,	dflcnd
+	dirdef	<ifne >,	dflcnd
+	dirdef	<ifnz >,	dflcnd
+	dirdef	<ift  >,	dflcnd
+	dirdef	<iftf >,	dflcnd
+	dirdef	<ifz  >,	dflcnd
+	dirdef	<iif  >
+	dirdef	<irp  >,	dflmac,	xmacro
+	dirdef	<irpc >,	dflmac,	xmacro
+	dirdef	<limit>,	dflgev!dflgdg,	xrel
+	dirdef	<list >
+	dirdef	<macr >,	dflmac, xmacro
+	dirdef	<macro>,	dflmac,	xmacro
+	dirdef	<mcall>,	dflsmc,	xsml
+	dirdef	<mexit>	,	,	xmacro
+	dirdef	<narg >	,	,	xmacro
+	dirdef	<nchr >	,	,	xmacro
+	dirdef	<nlist>
+	dirdef	<ntype>	,	,	xmacro
+	dirdef	<odd  >
+	dirdef	<page >
+	dirdef	<print>
+	dirdef	<psect>
+	dirdef	<radix>
+	dirdef	<rad50>,	dflgev!dflgdg
+	dirdef	<rem  >
+	dirdef	<rept >,	dflmac,	xmacro
+	dirdef	<sbttl>
+	dirdef	<title>
+wrdsym:
+	dirdef	<word >,	dflgev!dflgdg
+
+
+	xitsec
+
+	.end

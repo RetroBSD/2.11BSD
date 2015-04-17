@@ -1,0 +1,330 @@
+
+
+
+BOOT(8)             UNIX Programmer's Manual		  BOOT(8)
+
+
+
+NAME
+     boot - 2.11BSD bootstrap proceedure
+
+DESCRIPTION
+     The 2.11BSD system is started by a two-stage process.  The
+     first is a primary bootstrap (limited to 512 bytes) which is
+     able to read in relatively small stand-alone programs; the
+     second (called _b_o_o_t) is used to read in the system itself.
+
+     The primary bootstrap must reside in block zero of the boot
+     device (the disklabel resides in block one).  It can be read
+     in and started by standard ROM cold boot routines or, if
+     necessary, by keying in a small startup routine.  The pri-
+     mary bootstrap is capable of loading only type 0407 execut-
+     able files (impure (non-shared), non-separate I&D.) Copies
+     of the block zero bootstraps are kept in the directory
+     /_m_d_e_c.  _D_i_s_k_l_a_b_e_l(8) is normally used to place a copy of the
+     appropriate bootstrap in block zero of new file systems.
+
+     The primary bootstrap loads _b_o_o_t from the file system that
+     starts at block 0 of the drive specified to the boot ROM.
+     Normally the boot device is automatically used as the root
+     filesystem.  This action can be overriden by specifying the
+     -R command to _b_o_o_t.  If _b_o_o_t is not found the system will
+     hang as the primary boot spins in an endless loop trying to
+     find _b_o_o_t.  No diagnostic message results if the file cannot
+     be found.
+
+     o+	  In an emergency, the bootstrap methods described in the
+	  paper _I_n_s_t_a_l_l_i_n_g _a_n_d _O_p_e_r_a_t_i_n_g _2._1_1_B_S_D can be used to
+	  boot from a distribution tape.
+
+     The secondary boot program, called _b_o_o_t, actually brings in
+     the system.  When read into location 0 and executed, _b_o_o_t
+     sets up memory management, relocates itself into high
+     memory, and types its name and a `:' on the console.  If
+     this is an automatic, unattended reboot, _b_o_o_t will use a
+     default file specification for the installation, typing the
+     file's name after the prompt.  Otherwise, it reads a file
+     specification from the console.  Normal line editing charac-
+     ters can be used to make corrections while typing this (see
+     below for file specification format).  If only a carriage
+     return is typed, a default name (/unix) will be used.  _B_o_o_t
+     finds the [specified] file and loads it into memory location
+     zero, sets up memory management as required, and calls the
+     program by executing a `trap' instruction.
+
+     For the system to boot, /_e_t_c/_i_n_i_t must exist and be execut-
+     able; if it is not, the kernel will print a message to that
+     effect and loop.  Further, for a single user boot, the files
+     /_b_i_n/_s_h and /_d_e_v/_c_o_n_s_o_l_e must also exist and /_b_i_n/_s_h must be
+     executable (if either of these is missing, _i_n_i_t will attempt
+
+
+
+Printed 11/26/99	  May 24, 1996				1
+
+
+
+
+
+
+BOOT(8)             UNIX Programmer's Manual		  BOOT(8)
+
+
+
+     multi-user operation).  For a multi-user boot the file
+     /_e_t_c/_t_t_y_s must exist (if missing, _i_n_i_t will attempt single
+     user operation).
+
+     _I_n_i_t runs the _a_u_t_o_c_o_n_f_i_g(8) program to probe for and ini-
+     tialize devices.  _A_u_t_o_c_o_n_f_i_g only knows to look in /_u_n_i_x,
+     thus if an alternate kernel name was specified none of the
+     devices except /_d_e_v/_c_o_n_s_o_l_e and the boot disk will be known.
+
+     If _a_u_t_o_c_o_n_f_i_g problems are suspected (or if  you are simply
+     voyeuristic) the debug flag can be turned on by specifying
+     -D to _b_o_o_t (see below).
+
+     When the system is running in single user mode, it starts a
+     single user shell on the console which types a `#' prompt.
+     After doing any file system checks and setting the date
+     (_d_a_t_e(1)) a multi-user system can be brought up by typing an
+     EOT (control-d) in response to the `#' prompt.
+
+     Boot file specification format: The file specifications used
+     with _b_o_o_t are of the form:
+
+	  _d_e_v_i_c_e(_c_t_l_r,_u_n_i_t,_p_a_r_t)_p_a_t_h [-_a_R_r_D_s]
+
+     or
+
+	  -_b_o_o_t_c_o_m_m_a_n_d
+
+     where
+
+     _d_e_v_i_c_e
+	  is the type of the device to be searched;
+
+     _c_t_l_r is the controller number of the disk
+
+     _u_n_i_t is the unit number of the disk or tape;
+
+     _p_a_r_t is the partition number of a filesystem on the speci-
+	  fied disk or the tape file number if the device is a
+	  tape.  The underlying device driver must support disk-
+	  labels and a valid disklabel must be present if _p_a_r_t is
+	  anything except 0.
+
+     _p_a_t_h is the path name of a disk file to be loaded with all
+	  mount prefixes stripped off (_p_a_t_h must be omitted for
+	  tape files.)	Tape files are separated by single tape
+	  marks.
+
+     Flags to _b_o_o_t may be specified in either of two places.  At
+     the : prompt and after the _f_i_l_e name.  The options are:
+
+     -a   Ask for a kernel name.  This is present for symmetry
+
+
+
+Printed 11/26/99	  May 24, 1996				2
+
+
+
+
+
+
+BOOT(8)             UNIX Programmer's Manual		  BOOT(8)
+
+
+
+	  only because in order to specify this option you
+	  already have to be at the : prompt.
+
+     -D   Turn on the _a_u_t_o_c_o_n_f_i_g debug flag.
+
+     -R   force the kernel to use its compiled in root device
+	  rather than adapting to the boot device.
+
+     -s   tell _i_n_i_t to enter single user state rather than bring-
+	  ing the system all the way up to multi-user mode.  -r
+	  mount the root filesystem read-only.	This is not
+	  currently supported by the kernel mostly because pipes
+	  are implemented in the filesystem.
+
+     Commands (-_b_o_o_t_c_o_m_m_a_n_d) to _b_o_o_t are:
+
+     -bootflags N	 where N is a decimal number.
+
+     -bootflags flag	 where flag is from the list above.
+
+     -bootdebug N	 where N is a decimal number.  This is a
+			 general purpose flag word used by _b_o_o_t
+			 and is not passed to the loaded program
+			 or kernel.
+
+     _D_e_v_i_c_e is one of the following
+
+	  xp   RM02/03/05, RP04/05/06, DIVA, SI Eagle, CDC 9766, Fuji 160
+	  rp   RP03
+	  rk   RK05
+	  hk   RK06/7
+	  rl   RL01/2
+	  si   RM05, CDC 9766
+	  ra   RA60/80/81, RX50, RD51/52/53, RC25
+	  ht   TU/TE16
+	  tm   TU/TE10
+	  ts   TS-11
+
+     The stand alone tape drive unit number is specially encoded
+     to specify both unit number and tape density (BPI).  Most
+     tape subsystems either automatically adjust to tape density
+     or have switches on the drives to force the density to a
+     particular setting, but for those which don't the following
+     density select mechanisms may be necessary.  The ts only
+     operates at 1600BPI, so there is no special unit density
+     encoding.	The ht will operate at either 800BPI or 1600BPI.
+     Units 0 through 3 correspond to 800BPI, and 4 through 7 to
+     1600BPI on drives 0 through 3 respectively.  The standard
+     DEC tm only supports 800BPI (and hence can't be used with
+     the standard  distribution tape), but several widely used tm
+     emulators support 1600BPI and even 6250BPI.  Units 0 through
+     3 correspond to 800BPI, 4 through 7 to 1600BPI, and 8
+
+
+
+Printed 11/26/99	  May 24, 1996				3
+
+
+
+
+
+
+BOOT(8)             UNIX Programmer's Manual		  BOOT(8)
+
+
+
+     through 11 to 6250BPI on drives 0 through 3 respectively.
+
+     For example, to boot a system from unit 0 on an RK07, type
+     "hk(0,0)unix" to the boot prompt.	The specification
+     "ra(1,0)unix" indicates an MSCP disk, unit 1.  The specifi-
+     cation "ra(1,0,0)unix" indicates an MSCP disk, unit 0 but on
+     controller 1.  And finally the specification "ts(0,3)" would
+     cause the fourth file on a tape threaded on `ts' tape drive
+     0 to be loaded and executed.
+
+     Cold boot loaders: The following programs to load and exe-
+     cute the primary bootstrap may be installed in read-only
+     memories or manually keyed into main memory.  Each program
+     is position-independent but should be placed well above
+     location 0 so it will not be overwritten.	Each reads a
+     block from the beginning of a device into core location
+     zero.  The octal words constituting the program are listed
+     on the left.
+
+     RK (drive 0):
+	012700	    mov     $rkda,r0
+	177412
+	005040	    clr     -(r0)	   / rkda cleared by start
+	010040	    mov     r0,-(r0)
+	012740	    mov     $5,-(r0)
+	000005
+	105710	1:  tstb    (r0)
+	002376	    bge     1b
+	005007	    clr     pc
+
+     RP (drive 0)
+	012700	    mov     $rpmr,r0
+	176726
+	005040	    clr     -(r0)
+	005040	    clr     -(r0)
+	005040	    clr     -(r0)
+	010040	    mov     r0,-(r0)
+	012740	    mov     $5,-(r0)
+	000005
+	105710	1:  tstb    (r0)
+	002376	    bge     1b
+	005007	    clr     pc
+
+     TM (drive 0):
+	012700	    mov     $tmba,r0
+	172526
+	010040	    mov     r0,-(r0)
+	012740	    mov     $60003,-(r0)
+	060003
+	000777	    br	    .
+
+
+
+
+
+Printed 11/26/99	  May 24, 1996				4
+
+
+
+
+
+
+BOOT(8)             UNIX Programmer's Manual		  BOOT(8)
+
+
+
+FILES
+     /unix	     system code
+     /boot	     system bootstrap
+     /etc/init	     system process dispatcher
+     /mdec/xxuboot   sector 0 boot blocks, xx is disk type
+
+SEE ALSO
+     crash(8V), autoconfig(8), reboot(2), disklabel(8), fsck(8),
+     init(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 24, 1996				5
+
+
+

@@ -1,0 +1,132 @@
+
+
+
+LP(4)		    UNIX Programmer's Manual		    LP(4)
+
+
+
+NAME
+     lp - line printer
+
+SYNOPSIS
+     /sys/conf/SYSTEM:
+	  NLP	     _l_p__p_r_i_n_t_e_r_s  # Line Printer
+	  LP_MAXCOL  _1_3_2	  # Maximum number of columns on line printers
+
+     /etc/dtab:
+	  #Name Unit# Addr   Vector Br Handler(s)      # Comments
+	  lp	?     177514 200    4  lpintr	       # lp-11 line printer
+
+     major device number(s):
+	  raw: 5
+     minor device encoding:
+	  bit 01 specifies 64-character set (instead of 96-character set)
+	  bits 06 are reserved
+	  bits 0370 specify line printer unit: <lp_unit> * 8
+
+DESCRIPTION
+     _L_p provides the interface to any of the standard DEC line
+     printers on an LP-11 parallel interface.  When it is opened
+     or closed, a suitable number of page ejects is generated.
+     Bytes written are printed.
+
+     The unit number of the printer is specified by the minor
+     device after removing the low 3 bits, which act as per-
+     device parameters.  Currently only the lowest of the low
+     three bits is interpreted: if it is set, the device is
+     treated as having a 64-character set, rather than a full
+     96-character set.	In the resulting half-ASCII mode, lower
+     case letters are turned into upper case and certain charac-
+     ters are escaped according to the following table:
+
+     {	       -(
+     }	       -)
+     `	       -'
+     |	       -!
+     ~	       -^
+
+     The driver correctly interprets carriage returns, back-
+     spaces, tabs, and form feeds.  Lines longer than the maximum
+     page width are truncated.	The page width is specified via
+     the LP_MAXCOL definition, set to 132 in the GENERIC distri-
+     bution.
+
+FILES
+     /dev/lp
+     /dev/MAKEDEV	 script to create special files
+     /dev/MAKEDEV.local  script to localize special files
+
+
+
+
+
+Printed 11/26/99	January 28, 1988			1
+
+
+
+
+
+
+LP(4)		    UNIX Programmer's Manual		    LP(4)
+
+
+
+SEE ALSO
+     lpr(1), dtab(5), autoconfig(8)
+
+DIAGNOSTICS
+     None.
+
+BUGS
+     Although the driver supports multiple printers this has
+     never been tried.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 28, 1988			2
+
+
+

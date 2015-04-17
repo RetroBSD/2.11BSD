@@ -1,0 +1,66 @@
+
+
+
+CRON(8)             UNIX Programmer's Manual              CRON(8)
+
+
+
+NAME
+     cron - daemon to execute scheduled commands (Vixie Cron)
+
+SYNOPSIS
+     cron
+
+DESCRIPTION
+     _C_r_o_n should be started from /etc/rc or /etc/rc.local.  It
+     will return immediately, so you don't need to start it with
+     '&'.
+
+     _C_r_o_n searches /var/cron/tabs for crontab files which are
+     named after accounts in /etc/passwd; crontabs found are
+     loaded into memory.  _C_r_o_n also searches for /etc/crontab
+     which is in a different format (see _c_r_o_n_t_a_b(_5)).  _C_r_o_n then
+     wakes up every minute, examining all stored crontabs, check-
+     ing each command to see if it should be run in the current
+     minute.  When executing commands, any output is mailed to
+     the owner of the crontab (or to the user named in the MAILTO
+     environment variable in the crontab, if such exists).
+
+     Additionally, _c_r_o_n checks each minute to see if its spool
+     directory's modtime (or the modtime on /_e_t_c/_c_r_o_n_t_a_b) has
+     changed, and if it has, _c_r_o_n will then examine the modtime
+     on all crontabs and reload those which have changed.  Thus
+     _c_r_o_n need not be restarted whenever a crontab file is modi-
+     fied.  Note that the _C_r_o_n_t_a_b(1) command updates the modtime
+     of the spool directory whenever it changes a crontab.
+
+SEE ALSO
+     crontab(1), crontab(5)
+
+AUTHOR
+     Paul Vixie <paul@vix.com>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99        20 December 1993                        1
+
+
+

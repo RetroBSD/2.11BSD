@@ -1,0 +1,22 @@
+Here are some tips&tricks for IBM users:
+
+From Chris Moller (moller@vnet.ibm.com, moller@futserv.austin.ibm.com):
+
+"Under IBM weirdness, after you modify /etc/services or /etc/inetd.conf,
+you have to update the ODM by running, from root, the following:
+
+        inetimp
+        chrctcp -S -c inetd -f debug='no' -f file='/etc/inetd.conf'
+
+or the changes don't take effect.  Other than that, everything worked
+fine out of the box."
+
+
+
+From James Carlson <carlson@xylogics.com>:
+
+One minor note, this program suffers from the same problem that a lot
+of other kernel-reading programs do on AIX.  Gcc doesn't align the
+contents of the user structure correctly.  Users have to add a "long
+foo" element right before U_irss in a private copy of sys/user.h in
+order to make it work.

@@ -1,0 +1,16 @@
+	.title	xpcor
+
+;this file must be linked last to ensure that it is the last
+;sector in the BSS area.
+
+
+	.globl	inicor
+
+	inicor=	3000.		;initial minimum # words for symbol table, etc.
+
+	.psect	xpcor, con, bss, gbl
+
+
+	.blkw	inicor
+
+	.end

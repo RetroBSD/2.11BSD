@@ -1,0 +1,15 @@
+#!/bin/sh
+if test "$1" = ""; then
+	echo "usage: demodb name"
+	echo "   (where name is what you wish to call the database)"
+	exit
+fi
+echo "creating database $1 -- please wait"
+if creatdb $2 $1; then
+	echo "loading demo relations -- this will take some time"
+	ingres -s $1 < /usr/ingres/demo/qry
+	echo "database $1 created and filled with demo data"
+else
+	echo "database creation failed -- sorry"
+fi
+exit

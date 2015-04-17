@@ -1,0 +1,59 @@
+.\" Copyright (c) 1987 Regents of the University of California.
+.\" All rights reserved.  The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.\"
+.\"	@(#)shortc.1	1.1 (Berkeley) 9/05/88
+.\"
+.TH SHORTC 1 "September 5, 1988"
+.UC 2
+.SH NAME
+shortc \- generate short preprocessor definitions for long C identifiers
+.SH SYNOPSIS
+.B shortc
+[
+.I -symlen
+] [
+.B -p
+] [
+.B -s
+]
+.I file ...
+.SH DESCRIPTION
+.I Shortc
+searches for instances of long identifiers
+in the specified
+.IR files.
+In its normal mode of operation
+.I shortc
+generates a list of preprocessor definitions that are unique in their first
+seven characters.
+.PP
+The 
+.I shortc
+output is then included into each file (or a common header file) which
+is processed using a flexnames version of cpp.
+.PP
+If no files are given
+.I shortc
+reads from the standard input.
+.PP
+The
+.IR symlen
+argument may be used to change the default long identifier length
+from seven characters.
+.PP
+The \-s
+option generates a sed script instead of preprocessor definitions.
+The \-p
+option causes
+.I shortc
+to parse preprocessor lines.
+These options are most useful together
+when flexnames support is not available from cpp.
+.SH BUGS
+When using cpp, preprocessor symbols must be weeded out by hand.  Otherwise
+they will cause (innocuous) redefinition messages.
+.PP
+The \-p
+option will incorrectly parse include file names which must be removed by
+hand from the output.

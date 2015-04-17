@@ -1,0 +1,27 @@
+Mtools (1) - a collection of tools for manipulating MSDOS files
+afio (1) - manipulate archives and files
+cxref (1) - cross reference C source files
+ddd (1L) - double-speed data dumper
+less (LOCAL) - opposite of more
+mailp (1) - frontend to the mp PostScript pretty printer
+mattrib (1) - change MSDOS file attribute flags
+mcd (1) - change MSDOS directory
+mcopy (1) - copy MSDOS files to/from Unix
+mdel (1) - delete an MSDOS file
+mdir (1) - display an MSDOS directory
+mformat (1) - add an MSDOS filesystem to a low-level formatted diskette.
+mkmanifest (1) - create a shell script to restore Unix filenames
+mkovmake (8) - optimizing overlay makefile generator
+mlabel (1) - make an MSDOS volume label
+mmd (1) - make an MSDOS subdirectory
+mp (1) - POSTSCRIPT pretty printer
+mrd (1) - remove an MSDOS subdirectory
+mread (1) - low level read (copy) an MSDOS file to Unix
+mren (1) - rename an existing MSDOS file
+mtype (1) - display contents of an MSDOS file
+mwrite (1) - low level write (copy) a Unix file to MSDOS
+popper (8) - pop 3 server
+qterm (1) - Query Terminal
+rx, rb, rz (1) - XMODEM, YMODEM, ZMODEM (Batch) file receive
+sx, sb, sz (1) - XMODEM, YMODEM, ZMODEM file send
+welcome (1) - prints out a nice welcome message with useful statistics

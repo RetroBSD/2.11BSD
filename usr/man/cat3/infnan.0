@@ -1,0 +1,132 @@
+
+
+
+INFNAN(3M)	    UNIX Programmer's Manual	       INFNAN(3M)
+
+
+
+NAME
+     infnan - signals invalid floating-point operations on a VAX
+     (temporary)
+
+SYNOPSIS
+     #include <math.h>
+
+     double infnan(iarg)
+     int iarg;
+
+DESCRIPTION
+     At some time in the future, some of the useful properties of
+     the Infinities and _N_a_Ns in the IEEE standard 754 for Binary
+     Floating-Point Arithmetic will be simulated in UNIX on the
+     DEC VAX by using its Reserved Operands.  Meanwhile, the
+     Invalid, Overflow and Divide-by-Zero exceptions of the IEEE
+     standard are being approximated on a VAX by calls to a pro-
+     cedure _i_n_f_n_a_n in appropriate places in _l_i_b_m.  When better
+     exception-handling is implemented in UNIX, only _i_n_f_n_a_n among
+     the codes in _l_i_b_m will have to be changed.  And users of
+     _l_i_b_m can design their own _i_n_f_n_a_n now to insulate themselves
+     from future changes.
+
+     Whenever an elementary function code in _l_i_b_m has to simulate
+     one of the aforementioned IEEE exceptions, it calls
+     infnan(iarg) with an appropriate value of _i_a_r_g.  Then a
+     reserved operand fault stops computation.	But _i_n_f_n_a_n could
+     be replaced by a function with the same name that returns
+     some plausible value, assigns an apt value to the global
+     variable _e_r_r_n_o, and allows computation to resume.	Alterna-
+     tively, the Reserved Operand Fault Handler could be changed
+     to respond by returning that plausible value, etc.  instead
+     of aborting.
+
+     In the table below, the first two columns show various
+     exceptions signaled by the IEEE standard, and the default
+     result it prescribes.  The third column shows what value is
+     given to _i_a_r_g by functions in _l_i_b_m when they invoke
+     infnan(iarg) under analogous circumstances on a VAX.
+     Currently _i_n_f_n_a_n stops computation under all those cir-
+     cumstances.  The last two columns offer an alternative; they
+     suggest a setting for _e_r_r_n_o and a value for a revised _i_n_f_n_a_n
+     to return.  And a C program to implement that suggestion
+     follows.
+	  IEEE	    IEEE
+	  Signal    Default   _i_a_r_g    _e_r_r_n_o		_i_n_f_n_a_n
+	  __________________________________________________
+	  Invalid   _N_a_N       EDOM    EDOM		0
+	  Overflow  +_Infinity ERANGE  ERANGE		HUGE
+	  Div-by-0  +_Infinity +_ERANGE ERANGE or EDOM	+_HUGE
+		    (HUGE = 1.7e38 ... nearly  2.0**127)
+
+
+
+
+Printed 11/26/99	  May 27, 1986				1
+
+
+
+
+
+
+INFNAN(3M)	    UNIX Programmer's Manual	       INFNAN(3M)
+
+
+
+     ALTERNATIVE  _i_n_f_n_a_n:
+     #include	<math.h>
+     #include	<errno.h>
+     extern int errno ;
+     double	infnan(iarg)
+     int	iarg ;
+     {
+		switch(iarg) {
+		case	  ERANGE: errno = ERANGE; return(HUGE);
+		case	 -ERANGE: errno = EDOM;   return(-HUGE);
+		default:	  errno = EDOM;   return(0);
+		}
+     }
+
+SEE ALSO
+     math(3M), intro(2), signal(3).
+
+     ERANGE and EDOM are defined in <errno.h>.	See intro(2) for
+     explanation of EDOM and ERANGE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 27, 1986				2
+
+
+

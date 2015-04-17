@@ -1,0 +1,66 @@
+
+
+
+PAGESIZE(1)	    UNIX Programmer's Manual	      PAGESIZE(1)
+
+
+
+NAME
+     pagesize - print system page size
+
+SYNOPSIS
+     pagesize
+
+DESCRIPTION
+     _P_a_g_e_s_i_z_e prints the size of a page of memory in bytes, as
+     returned by _g_e_t_p_a_g_e_s_i_z_e(2).  This program is useful in con-
+     structing portable shell scripts.
+
+SEE ALSO
+     getpagesize(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

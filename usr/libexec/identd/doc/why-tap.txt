@@ -1,0 +1,127 @@
+``Why TAP?'' A White Paper
+Daniel J. Bernstein
+draft 3
+920820
+
+
+1. Introduction
+
+Hundreds of hosts around the Internet run TAP servers. If there's a TCP
+connection from one of those hosts, say host H, to host Z, then host Z
+can use TAP to find out certain information from H about the connection.
+That's all the protocol does.
+
+What's the information? That's up to H. A typical TAP server runs on a
+multi-user host and announces the username on that host's side of the
+connection. Some hosts use the protocol to announce other kinds of
+information. And a few hosts run a server but don't announce any useful
+information at all.
+
+The purpose of this white paper is to show the reader two ways in which
+TAP is useful (and used!) in today's Internet: remote auditing and
+selective blocking. These applications work even though _you can't tell
+the difference_ between the different types of TAP servers mentioned
+above on a network of hosts you don't know---between a server which
+tries to be honest and a server which lies through its teeth.
+
+It is occasionally stated that TAP is useless on the Internet as a
+whole, or that it is useful in stopping attacks only because attackers
+(supposedly) don't know about it, or that it provides no ``real''
+security at all. These criticisms are usually justified by repetition
+rather than by a proper security analysis. At their heart they are based
+on the assumption that a host running a TAP server is trying to benefit
+the rest of the community. In fact the benefits of a TAP server _accrue
+to the host running the server_. This theme will show up again in the
+examples below.
+
+
+2. Remote auditing
+
+Say you manage a large computer, often supporting dozens of simultaneous
+users. One day you are informed of a series of network attacks emanating
+from your machine, by a very serious security officer who sounds ready
+to call the Secret Service. What do you do?
+
+If your machine has extraordinarily powerful logging facilities, perhaps
+you can figure out who was using the network at a given time. TAP
+provides a simpler solution: _remote auditing_. If you run a TAP server,
+then remote sites can find out which of your users was responsible for
+any given TCP connection (unless, of course, your machine has been
+compromised, in which case you have bigger problems). A remote site is
+probably better equipped to decide whether a connection from your
+machine is or is not a security problem, and can decide for itself what
+to do with the TAP data.
+
+You may not want to give away free information about your users. You may
+also want to verify, without having to keep your own logs, that the guy
+on the other end is telling the truth about what he heard from your TAP
+server. An easy solution to both problems is to encrypt your usernames
+(along with a timestamp, perhaps, though this defeats the selective
+blocking application outlined in the next section) in a secret key.
+
+Of course the scenario outlined above is a worst case. Less serious
+cases in which remote auditing is useful include mail forgery via SMTP
+and news forgery via NNTP. Or perhaps your host is the TCP Toaster, and
+you want an easy way to track down malfunctions. In all of these cases
+TAP at least removes the minor nuisances which constitute 99% of all
+network problems. In particular, it completely stops the problem of
+above-TCP mail forgery: anyone can send an anonymous message (through
+the post office if all else fails!), but, with TAP, normal users on your
+machine can't send messages which look like they came from other users.
+
+Notice that the benefit of running a TAP server comes right back to you.
+Certainly the security officer on the other end can't tell whether your
+TAP server is providing useful information---but if you are running a
+valid TAP server then you can assign blame properly. If you run a TAP
+server which provides useless information then you don't get this
+benefit.
+
+
+3. Selective blocking
+
+Now say you're that serious security officer, and you see someone
+attacking your machine. If your data is at stake then your first
+instinct may be to cut off service to the remote host while you track
+down the proper administrator. But what if you are providing valuable
+services to that host at the same time? Or, less dramatically, what if
+you want to keep an anonymous ftp archive as open as possible but find
+that someone is abusing your FTP server?
+
+You could cut off all access from any host until the problem is fixed.
+You could simply cut off service to the remote host and watch to make
+sure that the attacker doesn't start using another host. Or---if the
+remote host runs TAP---you can cut off the one userid causing trouble,
+and watch to make sure that other identifiers don't start attacking.
+This is _selective blocking_. The more selectivity your software
+provides, the more options you have.
+
+Notice that, once again, the benefit of a TAP server comes back to the
+host running the server. If the guy on the other end is running an
+honest TAP server, he's giving you the option of being nice to him---of
+keeping service open to most of his users even if one user is attacking.
+If he runs a useless TAP server then he doesn't get this benefit.
+
+
+4. Pointers to further information
+
+Everything mentioned here has been implemented. A recent BSD TAP server
+implementation, along with support for sendmail to catch forgeries, is
+available from ftp.lysator.liu.se:pub/tap. You can implement selective
+blocking with log_tcp, available from ftp.win.tue.nl. You can add TAP
+to BSD talkd from gatekeeper.dec.com:pub/bsd-sources/src/network/talk.tar.Z
+with wuarchive.wustl.edu:usenet/alt.sources/articles/2687.Z. nntpd
+support is in wuarchive.wustl.edu:usenet/alt.sources/articles/2746.Z.
+ftpd support is in wuarchive.wustl.edu:packages/ftpd.wuarchive.shar. For
+IRC support see cs.bu.edu:pub/irc/servers.
+
+There's a mailing list, rfc931-users, for people who want to use RFC 931
+(and its variants, including TAP) to solve problems. To join, contact
+rfc931-users-request@kramden.acf.nyu.edu. rfc931-users maintains a list
+of known server hosts, as well as current information on implementations
+and other useful items.
+
+In June 1992, approximately one out of every 7000 packets across the
+NSFNET T1 backbone was for port 113, the TAP port; only thirty named
+ports had higher packet counts. This information comes from
+nic.merit.edu:nsfnet/statistics/1992/t1-9206.ports.
+

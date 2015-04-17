@@ -1,0 +1,34 @@
+Machine Type:		SunOS 3.5 (other v3 SunOSs may work)
+
+Make using:		make sunos3
+Make optimised:		make "CFLAGS=-O" "LDFLAGS=-s" sunos3
+
+Person(s) porting:	Nigel Metheringham <nigelm@ohm.york.ac.uk>
+			[We are disposing of our Sun3s soon, so no further
+			support will be done for this architecture]
+
+Port date:		5 April, 1993
+Verified working:	OS version	Pident vers	Person
+			3.5		2.1beta10	<nigelm@ohm.york.ac.uk>
+
+Build comments:		A link is needed to allow compilation (due to code in
+			the sys/file.h include file).  This can be put in
+			place by executing:
+				ln -s /usr/include/sys h
+			in the current directory (ie top directory of pidentd).
+			Gcc works OK - probably rather better than system cc.
+
+Install comments:	Generally install into /usr/etc
+			Start from inetd (/etc/servers) (or as daemon if you
+			prefer) Since this is an *old* BSD system, several of
+			the inetd options are missing.  You can only start it
+			as a one shot daemon from inetd (edit /etc/servers),
+			and you can specify no parameters.
+			Remember there are limits on the number of lines in
+			/etc/servers
+
+Usage comments:		Since inetd calls identd with a parameter made up of
+			the calling IP and port address (identd does not use
+			this parameter), identd drops one argument if there
+			are no options set!  To get round this (ie from the
+			command line) specify at least one option.

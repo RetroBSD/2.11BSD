@@ -1,0 +1,66 @@
+
+
+
+PMERGE(1)	    UNIX Programmer's Manual		PMERGE(1)
+
+
+
+NAME
+     pmerge - pascal file merger
+
+SYNOPSIS
+     pmerge name.p ...
+
+DESCRIPTION
+     _P_m_e_r_g_e assembles the named Pascal files into a single stan-
+     dard Pascal program.  The resulting program is listed on the
+     standard output.  It is intended to be used to merge a col-
+     lection of separately compiled modules so that they can be
+     run through pi , or exported to other sites.
+
+FILES
+     /usr/tmp/MG*   default temporary files
+
+SEE ALSO
+     pc(1), pi(1),
+     Auxiliary documentation _B_e_r_k_e_l_e_y _P_a_s_c_a_l _U_s_e_r'_s _M_a_n_u_a_l.
+
+AUTHOR
+     M. Kirk McKusick
+
+BUGS
+     Very minimal error checking is done, so incorrect programs
+     will produce unpredictable results.  Block comments should
+     be placed after the keyword to which they refer or they are
+     likely to end up in bizarre places.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

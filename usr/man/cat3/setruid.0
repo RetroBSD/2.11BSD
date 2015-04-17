@@ -1,0 +1,66 @@
+
+
+
+SETRUID(3)	    UNIX Programmer's Manual	       SETRUID(3)
+
+
+
+NAME
+     setruid, setrgid - set user and group ID
+
+SYNOPSIS
+     #include <sys/types.h>
+     _i_n_t
+     setruid(ruid)
+	 uid_t ruid
+
+     _i_n_t
+     setrgid(rgid)
+	 gid_t rgid
+
+DESCRIPTION
+     The setruid function (setrgid) sets the real user ID (group
+     ID) of the current process.
+
+RETURN VALUES
+     Upon success, these functions return 0; otherwise -1 is
+     returned.
+
+     If the user is not the super user, or the uid specified is
+     not the real or effective ID, these functions return -1.
+
+     The use of these calls is not portable.  Their use is
+     discouraged; they will be removed in the future.
+
+SEE ALSO
+     setuid(2), setgid(2), seteuid(2), setegid(2), getuid(2),
+     getgid(2)
+
+HISTORY
+     The setruid and setrgid syscalls appeared in 4.2BSD and were
+     dropped in 4.4BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 3, 1997			1
+
+
+

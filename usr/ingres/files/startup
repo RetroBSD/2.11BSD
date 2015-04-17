@@ -1,0 +1,4 @@
+{define; {shell}; /bin/sh}
+{define; {editor}; /usr/ucb/vi}
+\eval
+\reset

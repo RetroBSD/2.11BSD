@@ -1,0 +1,66 @@
+
+
+
+LONG(3F)	    UNIX Programmer's Manual		 LONG(3F)
+
+
+
+NAME
+     long, short - integer object conversion
+
+SYNOPSIS
+     integer*4 function long (int2)
+     integer*2 int2
+
+     integer*2 function short (int4)
+     integer*4 int4
+
+DESCRIPTION
+     These functions provide conversion between short and long
+     integer objects.  _L_o_n_g is useful when constants are used in
+     calls to library routines and the code is to be compiled
+     with ``-i2''.  _S_h_o_r_t is useful in similar context when an
+     otherwise long object must be passed as a short integer.
+
+FILES
+     /usr/lib/libF77.a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

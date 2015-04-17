@@ -1,0 +1,132 @@
+
+
+
+CHFLAGS(2)	    UNIX Programmer's Manual	       CHFLAGS(2)
+
+
+
+NAME
+     chflags, fchflags - set file flags
+
+SYNOPSIS
+     #include <sys/stat.h>
+
+     int
+     chflags(path, flags)
+     char *path;
+     u_short flags;
+
+     int
+     fchflags(fd, flags)
+     int fd;
+     u_short flags;
+
+DESCRIPTION
+     The file whose name is given by path or referenced by the
+     descriptor fd has its flags changed to flags .
+
+     The flags specified are formed by or'ing the following
+     values
+
+     UF_NODUMP	    Do not dump the file.
+
+     UF_IMMUTABLE   The file may not be changed.
+
+     UF_APPEND	    The file may only be appended to.
+
+     ARCHIVED	    File is archived.
+
+     SF_IMMUTABLE   The file may not be changed.
+
+     SF_APPEND	    The file may only be appended to.
+
+     The UF_IMMUTABLE and UF_APPEND flags may be set or unset by
+     either the owner of a file or the super-user.
+
+     The SF_IMMUTABLE and SF_APPEND flags may only be set or
+     unset by the super-user.  They may be set at any time, but
+     normally may only be unset when the system is in single-user
+     mode.  (See _i_n_i_t(_8) for details.)
+
+RETURN VALUES
+     Upon successful completion, a value of 0 is returned.  Oth-
+     erwise, -1 is returned and the global variable errno is set
+     to indicate the error.
+
+ERRORS
+     Chflags will fail if:
+
+     ENOTDIR	    A component of the path prefix is not a
+
+
+
+Printed 11/26/99	November 28, 1994			1
+
+
+
+
+
+
+CHFLAGS(2)	    UNIX Programmer's Manual	       CHFLAGS(2)
+
+
+
+		    directory.
+
+     EINVAL	    The pathname contains a character with the
+		    high-order bit set.
+
+     ENAMETOOLONG   A component of a pathname exceeded 63 charac-
+		    ters, or an entire path name exceeded 255
+		    characters.
+
+     ENOENT	    The named file does not exist.
+
+     EACCES	    Search permission is denied for a component
+		    of the path prefix.
+
+     ELOOP	    Too many symbolic links were encountered in
+		    translating the pathname.
+
+     EPERM	    The effective user ID does not match the
+		    owner of the file and the effective user ID
+		    is not the super-user.
+
+     EROFS	    The named file resides on a read-only file
+		    system.
+
+     EFAULT	    path points outside the process's allocated
+		    address space.
+
+     EIO	    An I/O error occurred while reading from or
+		    writing to the file system.
+
+     fchflags will fail if:
+
+     EBADF	    The descriptor is not valid.
+
+     EINVAL	    fd refers to a socket, not to a file.
+
+     EPERM	    The effective user ID does not match the
+		    owner of the file and the effective user ID
+		    is not the super-user.
+
+     EROFS	    The file resides on a read-only file system.
+
+     EIO	    An I/O error occurred while reading from or
+		    writing to the file system.
+
+SEE ALSO
+     chflags(1), init(8)
+
+HISTORY
+     The chflags and fchflags functions first appeared in 4.4BSD.
+
+
+
+
+
+Printed 11/26/99	November 28, 1994			2
+
+
+

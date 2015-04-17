@@ -1,0 +1,16 @@
+From dual!amd!megatest!cadvax.roman Sat Oct 12 18:34:56 1985
+Date: Thu, 10 Oct 85 10:49:07 pdt
+From: dual!amd!megatest!cadvax.roman (Roman Rycerz)
+To: lll-crg!seismo!keith
+Subject: FUJI160 xp driver
+
+here is the modified xp driver for FUJI-160's on sc01b and sc03b (emulex)
+disk controllers...
+basicly its a double density rm02 disk...
+
+also the are changes in the standalone driver as well
+
+-roman
+
+{lbl-csam,decvax!decwrl![sun|amd|fortune]}!megatest!roman
+

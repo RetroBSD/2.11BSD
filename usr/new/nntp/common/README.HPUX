@@ -1,0 +1,6 @@
+
+If you're compiling this under hpux, you'll need to edit
+server/Makefile and add
+
+	LIBS = -lbsdipc -lBSD
+

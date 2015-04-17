@@ -1,0 +1,28 @@
+#
+# Internet server configuration database
+#
+ftp	stream	tcp	nowait	root	/usr/libexec/ftpd -l
+telnet	stream	tcp	nowait	root	/usr/libexec/telnetd
+shell	stream	tcp	nowait	root	/usr/libexec/rshd
+login	stream	tcp	nowait	root	/usr/libexec/rlogind
+#exec	stream	tcp	nowait	root	/usr/libexec/rexecd
+uucpd	stream	tcp	nowait	root	/usr/libexec/uucpd	uucpd
+#nntp	stream	tcp	nowait	usenet	/usr/libexec/nntpd	nntpd
+finger	stream	tcp	nowait	nobody	/usr/libexec/fingerd	fingerd -s -l
+#tftp	dgram	udp	wait	nobody		/usr/libexec/tftpd
+comsat	dgram	udp	wait	root	/usr/libexec/comsat	comsat
+#talk	dgram	udp	wait	root	/usr/libexec/talkd	talkd
+#ntalk   dgram   udp     wait    root    /usr/libexec/ntalkd     ntalkd
+ident	stream	tcp	wait	sys	/usr/libexec/identd	identd -l -w -t120
+echo	stream	tcp	nowait	root	internal
+discard	stream	tcp	nowait	root	internal
+#chargen	stream	tcp	nowait	root	internal
+#daytime	stream	tcp	nowait	root	internal
+tcpmux	stream	tcp	nowait	root	internal
+tcpmux/+date	stream	tcp	nowait	nobody	/bin/date	date
+#time	stream	tcp	nowait	root	internal
+echo	dgram	udp	wait	root	internal
+#discard	dgram	udp	wait	root	internal
+#chargen	dgram	udp	wait	root	internal
+#daytime	dgram	udp	wait	root	internal
+time	dgram	udp	wait	root	internal

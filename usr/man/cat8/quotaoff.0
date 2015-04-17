@@ -1,0 +1,66 @@
+
+
+
+QUOTAON(8)	    UNIX Programmer's Manual	       QUOTAON(8)
+
+
+
+NAME
+     quotaon, quotaoff - turn filesystem quotas on and off
+
+SYNOPSIS
+     quotaon [-v] _f_i_l_e_s_y_s_t_e_m ...
+     quotaon [-v] -a
+     quotaoff [-v] _f_i_l_e_s_y_s_t_e_m ...
+     quotaoff [-v] -a
+
+DESCRIPTION
+     Quotaon announces to the system that disk quotas should be
+     enabled on one or more filesystems.  Quotaoff announces to
+     the system that the specified filesystems should have any
+     disk quotas diskquotas turned off.  The filesystems speci-
+     fied must have entries in /_e_t_c/_f_s_t_a_b and be mounted.  Quo-
+     taon expects each filesystem to have a quota file named _q_u_o_-
+     _t_a_s located at the root of the associated file system.
+     These defaults may be overridden in /_e_t_c/_f_s_t_a_b.
+
+     Available options:
+
+
+     -a             If the -a flag is supplied in place of any
+		    filesystem names, quotaon/quotaoff will
+		    enable/disable all the filesystems indicated
+		    in /_e_t_c/_f_s_t_a_b to be read-write with disk quo-
+		    tas.
+
+     -v             Causes quotaon and quotaoff to print a mes-
+		    sage for each filesystem where quotas are
+		    turned on or off.
+
+FILES
+     _q_u_o_t_a_s	    at the filesystem root with user quotas
+
+     /_e_t_c/_f_s_t_a_b     filesystem table
+
+SEE ALSO
+     quota(1), setquota(2), fstab(5), edquota(8), quotacheck(8),
+     repquota(8)
+
+HISTORY
+     The quotaon command appeared in 4.2BSD.
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 21, 1996			1
+
+
+

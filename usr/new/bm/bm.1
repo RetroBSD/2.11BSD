@@ -1,0 +1,109 @@
+.TH BM PUBLIC "8 July 1985"
+.UC 4
+.SH NAME
+bm \- search a file for a string
+.SH SYNOPSIS
+.B /usr/public/bm
+[ option ] ...
+[ strings ]
+[ file ]
+.SH DESCRIPTION
+.I Bm
+searches the input
+.I files
+(standard input default) for lines matching a string.
+Normally, each line found is copied to the standard output.
+It is blindingly fast.
+.I Bm
+strings are fixed sequences of characters:
+there are no wildcards, repetitions, or other features
+of regular expressions.
+Bm is also case sensitive.
+The following options are recognized.
+.TP
+.B \-x
+(Exact) only lines matched in their entirety are printed
+.TP
+.B \-l
+The names of files with matching lines are listed (once) separated by newlines.
+.TP
+.B \-c
+Only a count of the number of matches
+is printed
+.TP
+.B \-e "string"
+The string is the next argument after the
+.B \-e
+flag. This allows strings beginning with '-'.
+.TP
+.B \-h
+No filenames are printed, even if multiple files are searched.
+.TP
+.B \-n
+Each line is preceded by the number
+of characters from the beginning of the file
+to the match.
+.TP
+.B \-s
+Silent mode.  Nothing is printed (except error messages).
+This is useful for checking the error status.
+.TP
+.BI \-f " file"
+The string list
+is taken from the
+.I file.
+.LP
+Unless the
+.B \-h
+option is specified
+the file name is shown if there is more than one input file.
+Care should be taken when using the characters $ * [ ^ | ( ) and \\ in the
+.I strings
+(listed on the command line)
+as they are also meaningful to the Shell.  It is safest to enclose the entire
+.I expression
+argument in single quotes \' \'.
+.LP
+.I Bm
+searches for lines that contain one of the (newline-separated)
+.I strings,
+using
+the Boyer-Moore algorithm.
+It is far superior in terms of speed to the grep (egrep, fgrep)
+family of pattern matchers for fixed-pattern searching,
+and its speed increases with pattern length.
+.SH "SEE ALSO"
+grep(1)
+.SH DIAGNOSTICS
+Exit status is 0 if any matches are found,
+1 if none, 2 for syntax errors or inaccessible files.
+.SH AUTHOR
+Peter Bain (pdbain@wateng), with modifications suggested by John Gilmore
+.SH BUGS
+Only 100 patterns are allowed.
+.LP
+Patterns may not contain newlines.
+.LP
+If a line (delimited by newlines, and the beginning and end of the file)
+is longer than 8000 charcters (e.g. in a core dump),
+it will not be completely printed.
+.LP
+If multiple patterns are specified, the order of the ouput lines is not
+necessarily the same as the order of the input lines.
+.LP
+A line will be printed once for each different string on that line.
+.LP
+The algorithm cannot count lines.
+.LP
+The
+.B -n
+and
+.B -c
+work differently from fgrep.
+.LP
+The
+.B -v,
+.B -i,
+and
+.B -b
+are not available.

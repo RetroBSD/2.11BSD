@@ -1,0 +1,216 @@
+Information on NTP Time Servers and Radio Timecode Receivera
+
+Last updated 1 March 1989
+
+Time Servers
+
+Following is a list of Fuzzball time servers known to be connected to the
+Internet and in operation. When more than one address is given, preference
+should given to each in order.
+
+Primary Servers
+
+dcn1.arpa (128.4.0.1, 10.2.0.96), U Delaware, Newark, DE
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: ARPANET east (IMP 96), SURANET
+Access policy: open access
+Contact: Dave Mills (mills@udel.edu)
+Note: shares access with dcn5.udel.edu to a single WWVB clock
+
+dcn5.udel.edu (128.4.0.5), U Delaware, Newark, DE
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: ARPANET east (IMP 96), SURANET
+Access policy: open access
+Contact: Dave Mills (mills@udel.edu)
+Note: shares access with dcn1.udel.edu to a single WWVB clock
+
+dcn6.udel.edu (128.4.0.6, 10.2.1.96), Backroom Test Facility, Newark, DE
+Synchronization: NTP primary (Precision Standard Time WWV clock)
+Service area: ARPANET east (IMP 96), SURANET
+Access policy: development test only; please do not access on continuous basis
+Contact: Dave Mills (mills@udel.edu)
+
+fordgw.srl.ford.com (128.5.192.1), Ford Research Labs, Dearborn, MI
+Synchronization: NTP primary (True Time GOES clock)
+Service area: ARPANET east (IMP 111), SURANET
+Access policy: closed access; for use only by prior arrangement
+Contact: Fred Ball (ball@srlvx0.srl.ford.com)
+
+umd1.umd.edu (128.8.10.1), U Maryland, College Park, MD
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: NSFNET, SURANET
+Access policy: open access
+Contact: Mike Petry (petry@trantor.umd.edu) or Louie Mamakos
+(louie@trantor.umd.edu)
+
+wwvb.isi.edu (128.9.2.129), USC-ISI, Marina del Rey, CA
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: ARPANET west (IMP 27)
+Access policy: open access
+Contact Steve Casner (casner@isi.edu)
+
+ncarfuzz.ucar.edu (128.116.64.3), NCAR Supercomputer Ctr., Boulder, CO
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: NSFNET, USAN
+Access policy: open access
+Contact: Don Morris (morris@windom.ucar.edu)
+
+truechimer.cso.uiuc.edu (130.126.174.40), U Illinois, Champaign, IL
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: NSFNET, MIDNET, CICNET, ARPANET central (IMP 94)
+Access policy: open access
+Contact: Paul Pomes (paul@uxc.cso.uiuc.edu)
+
+fuzz.sdsc.edu (192.12.207.1), SDSC Supercomputer Ctr., San Diego, CA
+Synchronization: NTP primary (Spectracom WWVB clock)
+Service area: NSFNET
+Access policy: open access
+Contact: Gerard Newman (gkn@opus.sdsc.edu)
+
+clepsydra.dec.com (128.45.9.54), DEC Western Research Labs, Palo Alto, CA
+Synchronization: NTP primary (True Time GOES clock)
+Service area: DEC, ARPANET east (IMP 37)
+Access policy: closed access; for use only by prior arrangement
+Contact: Jeff Mogul (mogul@decwrl.dec.com)
+
+Secondary Servers
+
+fuzzgate.psc.edu (192.5.146.42), PSC Supercomputer Ctr., Pittsburgh, PA
+Synchronization: NTP secondary (stratum 2)
+Service area: NSFNET
+Access policy: open access
+Contact: Eugene Hastings (hastings@morgul.psc.edu)
+
+lilben.tn.cornell.edu (192.35.82.50), Cornell U, Ithaca, NY
+Synchronization: NTP secondary (stratum 2)
+Service area: NSFNET
+Access policy: open access
+Contact: Dave Mills (mills@udel.edu) on behalf of the Cornell staff
+
+fuzz.csc.org (128.121.54.20), JVNC Supercomputer Ctr., Princeton, NJ
+Synchronization: NTP secondary (stratum 2)
+Service area: NSFNET
+Access policy: open access
+Contact: Joanne Boyle (boyle@jvnca.csc.org)
+
+nsfnet-gw.umd.edu (192.41.177.92), U Maryland, College Park, MD
+Synchronization: NTP secondary (stratum 2)
+Service area: NSFNET, SURANET
+Access policy: open access
+Contact: Mike Petry (petry@trantor.umd.edu) or Louie Mamakos
+(louie@trantor.umd.edu)
+
+libra.rice.edu (128.42.1.64), Rice University
+Synchronization: NTP secondary (stratum 2)
+Service area: NSFNET, SESQUINET
+Access policy: open access
+Contact: Farrell Gerbode (gerbode@rice.edu)
+
+Other Servers
+
+macom1.arpa (10.0.0.111, 192.5.8.1), SAIC, Vienna, VA
+Synchronization: NTP secondary (stratum 2); line-frequency clock
+Service area: ARPANET east (IMP 111), SURANET
+Access policy: not recommended, except for testing
+Contact: Mike Little (little@macom2.arpa)
+
+swamprat.arpa (192.5.8.6), SAIC, Vienna, VA
+Synchronization: local net (stratum 0), line-frequency clock
+Service area: ARPANET east (IMP 111), SURANET
+Access policy: not recommended, except for testing
+Contact: Mike Little (little@macom2.arpa)
+
+patch.arpa (26.6.0.2), USECOM Patch Barracks, Stuttgart, W Germany
+Synchronization: NTP secondary (stratum 2), line-frequency clock
+Service area: MILNET Europe (IMP 2)
+Access policy: not recommended, except for testing
+Contact: Buzz Shaw (hshaw@dca-eur.arpa)
+
+dcn3.udel.edu (128.4.0.3), U Delaware, Newark, DE
+Synchronization: local net (stratum 0), line-frequency clock
+Service area: ARPNET east (IMP 96), SURANET
+Access policy: not recommended, except for testing
+Contact: Dave Mills (mills@udel.edu)
+
+Radio Timecode Receivers
+
+Following is a list of radio timecode receivers currently on the market. These
+devices are attached via a serial asynchronous line, which is used to send
+poll messages and receive responses in the following example formats:
+
+Spectracom clock:	<cr><lf>q  ddd hh:mm:ss  tz=zz<cr>	(22 chars)
+Truetime clock:		<cr><lf><ctrl-a>ddd:hh:mm:ssq<cr>	(13 chars)
+Heath clock:		<cr>hh:mm:ss.f     dd/mm/yr<cr>		(23 chars)
+PST clock:		hh:mm:ss.fff  yy/dd/mm/ddd status<cr>	(49 chars)
+
+These formats are exhibited for example only. In some clocks an extensive
+repitoire of commands and formats are available.
+
+In the Fuzzball implementation the Spectracom and PST clocks are polled, which
+return the time-code string shown, while the other clocks run continuously. In
+the Truetime clock the start bit of the last <cr> represents on-time, while in
+the other clocks the first <cr> represents on-time. In the time code ddd is
+day of year, hh:mm:ss is time of day, f is fractions of seconds, and dd/mm/yr
+is conventional (US) date. In the Spectracom clock, q is " " for in-synch or
+"?" for off-synch and zz is the time zone (always 00 for UT). In the Truetime
+clock, q is a precision estimate in milliseconds and coded as follows: "?"
++-500 msec, "#" +-50 msec, "*" +-5 msec, "." +-1 msec, <sp> less than 1 msec.
+In the Heath clock, the hh:mm:ss.f field is displayed as 0?:??:??.? before
+synch is first established and hh:mm:ss.? once synch is established and then
+lost again.
+
+Model 8170 WWVB Synchronized Clock
+Spectracom Corporation
+101 Despatch Drive
+East Rochester, NY 14445
+(716) 381-4827
+
+	This is a LF receiver and decoder for the WWVB station. Several of the
+	Fuzzball time servers use this clock. There is no known Unix driver at
+	this time. For expected accuracies less than 10 ms, a special
+	one-second on-time signal produced by the clock must be used to
+	fine-tune the indication.
+
+Model 468-DC Satellite Synchronized Clock
+True Time Division, Kinemetrics
+3243 Santa Rosa Avenue
+Santa Rosa, CA 95401
+(707) 528-1230
+
+	This is a UHF receiver and decoder for the GOES satellite. Two
+	Fuzzball time servers (ford1.ford.com and bitsy.mit.edu) use this
+	clock. Jeff Mogul of DECWRL (mogul@decwrl.dec.com) may provide info
+	on a Unix driver.
+
+Model 1020 Integrated Time Source
+Precision Standard Time, Inc.
+105 Fourier Avenue
+Fremont, CA 94539
+(415) 656-4447
+
+	This is an HF receiver and decoder for the WWV/WWVH stations. One
+	Fuzzball (dcn6.udel.edu) uses this clock. Support for this clock
+	was written by Jeff Schiller (schiller@bitsy.mit.edu) of MIT and is
+	included in the latest version of the ntpd daemon.
+
+Model GC-1000 Most Accurate Clock
+Heath Company
+Benton Harbor, MI 49022
+(616) 982-3411
+
+	This is an HF receiver and decoder for the WWV/WWVH stations. One
+	Fuzzball (dcn6.udel.edu) uses this clock for backup. So far as known,
+	there is no Unix driver available. This receiver may no longer be in
+	production.
+
+8101 Automated Computer Time Service (ACTS)
+Time and Frequency Division, National Bureau of Standards
+US Department of Commerce
+Gaithersburg, MD 20899
+
+	This is a package of C software for the IBM Personal Computer. It
+	can be used to call a special NBS number using either 300-Hz or
+	1200-Hz modem and set the computer clock. The latest version has been
+	adapted to run on Unix workstations.
+
+Dave Mills sends

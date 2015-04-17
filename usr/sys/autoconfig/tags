@@ -1,0 +1,42 @@
+Mmain	main.c	/^main(argc,argv)$/
+STRSAVE	read_dtab.c	/^#define STRSAVE(str)	(strcpy(malloc((u_int)(strlen/
+add_nlist	read_nlist.c	/^add_nlist(name)$/
+addent	read_dtab.c	/^addent(listp, cp)$/
+attach	attach.c	/^attach(dp)$/
+auto_config	do_config.c	/^auto_config()$/
+brprobe	brauto.c	/^brprobe(addr, vector)$/
+clear_vec	do_config.c	/^clear_vec(dp)$/
+cnprobe	cnauto.c	/^cnprobe(addr, vector)$/
+dhprobe	dhauto.c	/^dhprobe(addr,vector)$/
+dhuprobe	dhuauto.c	/^dhuprobe(addr,vector)$/
+dhvprobe	dhvauto.c	/^dhvprobe(addr,vector)$/
+dmprobe	dhauto.c	/^dmprobe(addr,vector)$/
+dnprobe	dnauto.c	/^dnprobe(addr,vector)$/
+do_probe	do_config.c	/^do_probe(dp)$/
+drprobe	drauto.c	/^drprobe(addr,vector)$/
+dzprobe	dzauto.c	/^dzprobe(addr,vector)$/
+expect_intr	do_config.c	/^expect_intr(dp)$/
+find_unit	attach.c	/^find_unit(dp)$/
+grab	do_config.c	/^grab(where)$/
+have_set	attach.c	/^have_set(vec)$/
+hkprobe	hkauto.c	/^hkprobe(addr,vector)$/
+htprobe	htauto.c	/^htprobe(addr,vector)$/
+init_lowcore	do_config.c	/^init_lowcore(val)$/
+intval	do_config.c	/^intval()$/
+lpprobe	lpauto.c	/^lpprobe(addr,vector)$/
+prdev	do_config.c	/^prdev(dp)$/
+pry	attach.c	/^pry(dp)$/
+raprobe	raauto.c	/^raprobe(addr,vector)$/
+read_dtab	read_dtab.c	/^read_dtab()$/
+read_nlist	read_nlist.c	/^read_nlist()$/
+rkprobe	rkauto.c	/^rkprobe(addr,vector)$/
+rlprobe	rlauto.c	/^rlprobe(addr,vector)$/
+rxprobe	rxauto.c	/^rxprobe(addr,vector)$/
+set_unused	do_config.c	/^set_unused()$/
+siprobe	siauto.c	/^siprobe(addr,vector)$/
+stuff	do_config.c	/^stuff(var, where)$/
+tmprobe	tmauto.c	/^tmprobe(addr,vector)$/
+tmsprobe	tmsauto.c	/^tmsprobe(addr,vector)$/
+tsprobe	tsauto.c	/^tsprobe(addr,vector)$/
+write_vector	attach.c	/^write_vector(addr,value,pri)$/
+xpprobe	xpauto.c	/^xpprobe(addr,vector)$/

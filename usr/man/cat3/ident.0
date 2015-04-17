@@ -1,0 +1,264 @@
+
+
+
+IDENT(3)	    UNIX Programmer's Manual		 IDENT(3)
+
+
+
+NAME
+     ident_lookup, ident_id, ident_free, id_open, id_close,
+     id_query, id_parse, id_fileno - query remote IDENT server
+
+SYNOPSIS
+     #include <ident.h>
+
+     _H_i_g_h-_l_e_v_e_l _c_a_l_l_s
+
+     IDENT *ident_lookup(int fd, int timeout)
+
+     char *ident_id(int fd, int timeout)
+
+     void ident_free(IDENT *id)
+
+     _L_o_w-_l_e_v_e_l _c_a_l_l_s
+
+     id_t *id_open(laddr, faddr, timeout)
+     struct in_addr *laddr, *faddr;
+     struct timeval *timeout;
+
+     int id_close(id)
+     id_t *id;
+
+     id_query(id, lport, fport, timeout)
+     id_t *id;
+     int lport, fport;
+     struct timeval *timeout;
+
+     int id_parse(id, timeout, lport, fport, identifier,
+	  opsys, charset)
+     id_t *id;
+     struct timeval *timeout;
+     int *lport, *fport;
+     char **identifier, **opsys, **charset;
+
+     int id_fileno(id)
+     id_t *id;
+
+DESCRIPTION
+     ident_lookup tries to connect to a remote IDENT server to
+     establish the identity of the peer connected on _f_d, which
+     should be a socket file descriptor.  _t_i_m_e_o_u_t is the longest
+     permissible time to block waiting for an answer, and is
+     given in seconds. A value of 0 (zero) means wait indefin-
+     itely (which in the most extreme case will normally be until
+     the underlying network times out).  ident_lookup returns a
+     pointer to an _I_D_E_N_T struct, which has the following con-
+     tents:
+
+	  typedef struct {
+	       int lport;	   /* Local port */
+
+
+
+Printed 11/24/99	  4 April 1993				1
+
+
+
+
+
+
+IDENT(3)	    UNIX Programmer's Manual		 IDENT(3)
+
+
+
+	       int fport;	   /* Far (remote) port */
+	       char *identifier;   /* Normally user name */
+	       char *opsys;	   /* OS */
+	       char *charset;	   /* Charset (what did you expect?) */
+	  } IDENT;
+
+     For a full description of the different fields, refer to
+     _R_F_C-_1_4_1_3.
+
+     All data returned by ident_lookup (including the IDENT
+     struct) points to malloc'd data, which can be freed with a
+     call to ident_free. ident_lookup returns 0 on error or
+     timeout. Presently, this should normally be taken to mean
+     that the remote site is not running an IDENT server, but it
+     might naturally be caused by other network related problems
+     as well.  Note that all fields of the IDENT struct need not
+     necessarily be set.
+
+     ident_id takes the same parameters as ident_lookup but only
+     returns a pointer to a malloc'd area containing the _i_d_e_n_t_i_f_-
+     _i_e_r string, which is probably the most wanted data from the
+     IDENT query.
+
+     ident_free frees all data areas associated with the IDENT
+     struct pointed to by _i_d, including the struct itself.
+
+			 _L_o_w-_l_e_v_e_l _c_a_l_l_s
+
+     The low-level calls can be used when greater flexibility is
+     needed. For example, if non-blocking I/O is needed, or mul-
+     tiple queries to the same host are to be made.
+
+     id_open opens a connection to the remote IDENT server
+     referred to by _f_a_d_d_r. The timeout is specified by _t_i_m_e_o_u_t. A
+     null-pointer means wait indefinitely, while a pointer to a
+     zero-valued _t_i_m_e_v_a_l struct sets non-blocking I/O, in the
+     same way as for select(2). id_open returns a pointer to an
+     id_t datum, which is an opaque structure to be used as
+     future reference to the opened connection. When using non-
+     blocking I/O it might however be useful to access the under-
+     lying socket file descriptior, which can be gotten at
+     through the id_fileno macro described below.
+
+     id_close closes the connection opened with id_open and frees
+     all data associated with _i_d.
+
+     id_query sends off a query to a remote IDENT server.  _l_p_o_r_t
+     and _f_p_o_r_t are sent to the server to identify the connection
+     for which identification is needed.  _t_i_m_e_o_u_t is given as for
+     id_open. If successful, id_query returns the number of bytes
+     sent to the remote server. If not, -1 is returned and errno
+     is set.
+
+
+
+Printed 11/24/99	  4 April 1993				2
+
+
+
+
+
+
+IDENT(3)	    UNIX Programmer's Manual		 IDENT(3)
+
+
+
+     id_parse parses the reply to a query sent off by id_query
+     and returns information to the locations pointed to by
+     _l_p_o_r_t, _f_p_o_r_t, _i_d_e_n_t_i_f_i_e_r, _o_p_s_y_s and _c_h_a_r_s_e_t. For string data
+     (_i_d_e_n_t_i_f_i_e_r, _o_p_s_y_s and _c_h_a_r_s_e_t) pointers to malloc'd space
+     are returned.
+
+     id_parse returns:
+
+	   1   If completely successful.
+
+	  -3   Illegal reply type from remote server.  _i_d_e_n_t_i_f_i_e_r
+	       is set to the illegal reply.
+
+	  -2   Cannot parse the reply from the server.	_i_d_e_n_t_i_f_-
+	       _i_e_r is normally set to the illegal reply.
+
+	  -1   On general errors or timeout.
+
+	   0   When non-blocking mode is set and id_parse has not
+	       finished parsing the reply from the remote server.
+
+	   2   Indicates the query/reply were successful, but the
+	       remote server experienced some error.  _i_d_e_n_t_i_f_i_e_r
+	       is set to the error message from the remote
+	       server.
+
+     For all errors, _e_r_r_n_o is set as appropriate.
+
+     id_fileno is a macro that takes an id_t handle and returns
+     the actual socket file descriptor used for the connection to
+     the remote server.
+
+ERRORS
+     ETIMEDOUT	    The call timed out and non-blocking I/O was
+		    not set.
+
+EXAMPLES
+     Here's an example how to handle the reply from id_reply() in
+     the case that non-blocking I/O is set. Note that id_reply()
+     will return 0 as long as it's not finished parsing a reply.
+
+	  int rcode;
+
+	   ...
+
+	  idp = id_open(...)
+
+	   ...
+
+	  while ((rcode = id_parse(idp, timeout,
+			  &lport, &fport, &id, &op, &cs)) == 0)
+	       ;
+
+
+
+Printed 11/24/99	  4 April 1993				3
+
+
+
+
+
+
+IDENT(3)	    UNIX Programmer's Manual		 IDENT(3)
+
+
+
+	  if (rcode < 0)
+	  {
+	    if (errno == ETIMEDOUT)
+	      foo();	 /* Lookup timed out */
+	    else
+	      bar();	  /* Fatal error */
+	  }
+	  else if (rcode == 1)
+	  {
+	    /* Valid USERID protocol reply */
+	  }
+	  else if (rcode == 2)
+	  {
+	    /* Protocol ERROR reply */
+	  }
+
+SEE ALSO
+     RFC-1413, socket(2), select(2)
+
+AUTHORS
+     Peter Eriksson <_p_e_n@_l_y_s_a_t_o_r._l_i_u._s_e>
+     P"ar Emanuelsson <_p_e_l_l@_l_y_s_a_t_o_r._l_i_u._s_e>
+
+BUGS
+     For ident_lookup and ident_id the blocking time in extreme
+     cases might be as much as three times the value given in the
+     _t_i_m_e_o_u_t parameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	  4 April 1993				4
+
+
+

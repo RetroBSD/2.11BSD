@@ -1,0 +1,132 @@
+
+
+
+FSTAT(8)	    UNIX Programmer's Manual		 FSTAT(8)
+
+
+
+NAME
+     fstat - file status
+
+SYNOPSIS
+     fstat [ -u user ] [ -p pid ] [ filename... ]
+
+DESCRIPTION
+     _F_s_t_a_t identifies open files.  A file is considered open if a
+     process has it open, if it is the working directory for a
+     process, or if it is an active pure text file.  If no
+     options are specified, _f_s_t_a_t reports on all open files.
+
+     Options:
+
+     -u    Report all files open by a specified user.
+
+     -p    Report all files open by a specified process id.
+
+     filename...
+	   Restrict reports to the specified files.  If the file
+	   is a block special file, _f_s_t_a_t additionally reports on
+	   any open files on that device, treating it as a
+	   mounted file system.
+
+     The following fields are printed
+
+     USER  The username of the owner of the process.
+
+     CMD   The command name of the process.
+
+     PID   The process id.
+
+     FD    The file number in the per-process open file table.
+	   The special names "text" and "wd" mean that the file
+	   is the pure text inode or the working directory for
+	   the process.  If the file number is followed by an
+	   asterick (*), then the file is not an inode, but
+	   either a socket, fifo, or has an error of some kind.
+	   In this case the rest of the entry is variable format,
+	   doesn't correspond to the rest of the headings, and is
+	   enclosed in parenthesis.  The following paragraph
+	   describing sockets will explain the variable format.
+
+     DEVICE
+	   Major minor number of the device this file exists on.
+
+     INODE The inode number of the file.
+
+     SIZE  The size in bytes of the file.
+
+     TYPE  The type of the file. (see sys/file.h)
+
+
+
+
+Printed 11/26/99	December 12, 1987			1
+
+
+
+
+
+
+FSTAT(8)	    UNIX Programmer's Manual		 FSTAT(8)
+
+
+
+     Sockets
+
+     The formating of open sockets depends on the protocol
+     domain.  In all cases the first field is the domain name,
+     the second field is the socket type (stream, dgram, etc),
+     and the third is the socket flags field (in hex).	The
+     remaining fields are protocol dependent.  For tcp, it is the
+     address of the tcpcb, and for udp, the inpcb (socket pcb).
+     For unix domain sockets, its the address of the socket pcb
+     and the address of the connected pcb (if connected).  Other-
+     wise the protocol number and address of the socket itself
+     are printed. The idea is not to duplicate netstat, but to
+     make available enough information for further analysis.  For
+     example, the addresses mentioned above are the addresses
+     which the "netstat -A" command would print for tcp, udp, and
+     unixdomain.  Note that since pipe(2) is implemented with
+     sockets, a pipe appears as a connected unix domain stream
+     socket.  A unidirectional unix domain socket indicates the
+     direction of flow with an arrow ("<-" or "->"), and a full
+     duplex socket shows a double arrow ("<->").
+
+BUGS
+     Socket information clutters the output.
+
+     Since _f_s_t_a_t takes a snapshot of the system, it is only
+     correct for a very short period of time.
+
+SEE ALSO
+     ps(1), pstat(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	December 12, 1987			2
+
+
+

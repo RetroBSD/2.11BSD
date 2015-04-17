@@ -1,0 +1,66 @@
+
+
+
+UNAME(3)	    UNIX Programmer's Manual		 UNAME(3)
+
+
+
+NAME
+     uname - get system identification
+
+SYNOPSIS
+     #include <sys/utsname.h>
+
+     int
+     uname(name)
+     struct utsname *name
+
+DESCRIPTION
+     The uname function stores nul-terminated strings of informa-
+     tion identifying the current system into the structure
+     referenced by _n_a_m_e.
+
+     The _u_t_s_n_a_m_e structure is defined in the <_s_y_s/_u_t_s_n_a_m_e._h>
+     header file, and contains the following members:
+
+     sysname	    Name of the operating system implementation.
+
+     nodename	    Network name of this machine.
+
+     release	    Release level of the operating system.
+
+     version	    Version level of the operating system.
+
+     machine	    Machine hardware platform.
+
+RETURN VALUES
+     If uname is successful, 0 is returned, otherwise, -1 is
+     returned and _e_r_r_n_o is set appropriately.
+
+ERRORS
+     The uname function may fail and set _e_r_r_n_o for any of the
+     errors specified for the library functions sysctl(3).
+
+SEE ALSO
+     uname(1), sysctl(3)
+
+STANDARDS
+     The uname function conforms to IEEE Std1003.1-88
+     (``POSIX'').
+
+HISTORY
+     The uname function first appeared in 4.4BSD.
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	February 4, 1995			1
+
+
+

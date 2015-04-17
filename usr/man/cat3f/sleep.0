@@ -1,0 +1,66 @@
+
+
+
+SLEEP(3F)	    UNIX Programmer's Manual		SLEEP(3F)
+
+
+
+NAME
+     sleep - suspend execution for an interval
+
+SYNOPSIS
+     subroutine sleep (itime)
+
+DESCRIPTION
+     _S_l_e_e_p causes the calling process to be suspended for _i_t_i_m_e
+     seconds.  The actual time can be up to 1 second less than
+     _i_t_i_m_e due to granularity in system timekeeping.
+
+FILES
+     /usr/lib/libU77.a
+
+SEE ALSO
+     sleep(3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

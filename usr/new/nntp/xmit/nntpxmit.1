@@ -1,0 +1,187 @@
+.TH NNTPXMIT 1 netnews/NNTP
+.SH NAME
+.I nntpxmit
+\- transmit netnews articles to a remote NNTP server
+.SH SYNOPSIS
+.I nntpxmit
+[
+.B \-a
+]
+[
+.B \-d
+]
+[
+.B \-s
+]
+[
+.B \-r
+]
+[
+.B \-T
+]
+[
+.B \-F
+]
+[
+.B \-D
+] hostname|hostname:file [...]
+.SH DESCRIPTION
+.PP
+.I Nntpxmit
+offers netnews articles [RFC850] named in a queue file (a file of
+filenames) to a remote NNTP (Network News Transfer Protocol,
+[RFC977]) server, transmitting those articles that the remote server
+indicates that it does not already have.
+.PP
+The command line arguments a processed sequentially, and the flags
+can thus be toggled several times during one invocation of the
+program, by giving the options more than once.
+The options are:
+.IP hostname|hostname:file
+The name of the remote host, and the name of the queue file of
+articles destined for that host.
+The hostname may be an internet address in dotted
+format (e.g. 10.2.0.78, [10.0.0.78]).
+If the hostname is given without an associated file, it is assumed
+that the hostname is also the name of the queue file.
+If the separator is "::" instead of ":", it is assumed that the
+remote host speaks DECNET, instead of the default, IP/TCP.
+.IP -s
+Toggles reporting of transfer statistics (how many articles we
+offered them, how many they accepted, etc).
+.br
+Default is
+.B ON.
+.IP -d
+Toggles DEBUG output on stderr.
+This can be used to see exactly what the two systems are saying to
+each other, except for the actual article text.
+.br
+Default is
+.B OFF.
+.IP -r
+Toggles requeuing of failed articles.
+A failed article is an article that we (client) offer them (remote server),
+they accept, we transmit, and then they report that they "failed"
+or dropped the article (i.e. inews(1) on the remote returned non-zero).
+If we have requeuing set, we save the list of articles that they
+failed on, and rewrite the queue file with them, so that they get
+reoffered the next time we initiate transmission to them.
+.br
+Default is
+.B ON.
+.IP -a
+This flag says that the next queue file on the command line isn't
+a queue file, but is a single netnews
+article to be transmitted to the remote in a single operation.
+.IP
+.B NOTE:
+this option causes
+.I nntpxmit
+to exit immediately after this transfer is done (regardless of
+whatever else is on the command line), and to exit with a code
+indicating whether the articles was successfully accepted by the
+remote server (zero exit for success, non-zero for failure).
+.PP
+The next options set the underlying transport protocol that
+.I nntpxmit
+uses.
+The NNTP specification assumes a TCP-style transport protocol
+underlies it (i.e. a reliable, flow-controlled, full-duplex byte
+stream).
+.I Nntpxmit
+assumes that after doing some magic to get a descriptor, 
+it can do read(2) and write(2) calls (and use stdio) to move data
+and check for errors.
+By default, 
+.I nntpxmit
+will use IP/TCP (DoD Internet Protocol suite).
+.IP -T
+Sets transport protocol to IP/TCP for all remaining
+transfers (unless reset by other transport flags).
+Default transport.
+.IP -D
+Sets transport protocol to DECNET for all remaining
+transfers (unless reset by other transport flags).
+.B NOTE:
+using "::" as the hostname/queue filename separator has the
+same effect.
+.IP -F
+This says that the hostname is a file descriptor number, already
+open to a remote server (with some reliable protocol underneath)
+that was passed to
+.I nntpxmit
+through a fork(2).
+.SH "THEORY OF OPERATION"
+.PP
+.I Nntpxmit
+implements an interactive ihave/sendme transmission system.
+Roughly, the protocol is
+.IP 1.
+open the article,
+fetch out the message-id (required on all netnews articles),
+and send the command IHAVE <message-id> to the remote.
+.IP 2.
+The remote will then say either "I've seen it already" or "please send
+that article to me."
+.IP 3.
+If the response was negative,
+.I nntpxmit
+loops back to step 1 and offers the next article (until queue file EOF).
+Otherwise,
+.I nntpxmit
+will send the article, using SMTP [RFC821] text transmission conventions
+(i.e. CRLF line terminators, and dot escaping).
+.IP 4.
+.I Nntpxmit
+waits for the remote to say whether the article was successfully
+accepted or not.
+If the answer is negative and requeuing of failed articles is enabled,
+.I nntpxmit
+will queue this article's filename to be
+written back to the queue file at the end of the session with this
+remote.
+.PP
+If the communcation link should fail (and
+.I nntpxmit
+detects it through a system call error return),
+.I nntpxmit
+will rewrite the queue file with the article filenames of the
+articles that it did not transmit (that is, we don't retransmit
+stuff we've already successfully sent and gotten back an positive
+confirmation that they got it).
+.SH FILES
+/tmp/nntpxmitXXXXXX
+.SH AUTHOR
+Erik E. Fair
+.SH "SEE ALSO"
+inews(1),
+.br
+RFC977 \- Network News Transfer Protocol (NNTP),
+.br
+RFC850 \- USENET Article Format standard,
+.br
+RFC821 \- Simple Mail Transfer Protocol (SMTP),
+.SH BUGS
+.PP
+Always requeuing failed articles can lead to beating the remote to
+death with a list of articles that he can't accept for come structural
+reason.
+How many of these have to pile up before you should declare that
+something is seriously wrong with the remote system and stop trying?
+.PP
+While
+.B nntpxmit
+will lock a queue file (your version of UNIX permitting) against
+multiple invocations of itself, there is no locking with inews(1),
+which is what writes the queue files in the first place.
+Therefore, never use
+.B nntpxmit
+on the queue files that inews(1) writes, because two processes
+writing into the same file without some kind of cooperation will
+almost certainly trash the file; move them to some other name that
+inews(1) knows nothing about, so that you won't lose articles to
+races between inews and nntpxmit.
+.PP
+Adding inews(1) compatible locking to the C code would be much more
+trouble than it's worth, and violates the KISS principle besides.

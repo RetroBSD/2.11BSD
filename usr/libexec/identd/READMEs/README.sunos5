@@ -1,0 +1,32 @@
+Please note that the Solaris 2 port of Pidentd is very dependant
+on the version of Solaris. So when you upgrade to a new version of Solaris
+you most probably also must upgrade the Pidentd server. You can always
+find the latest version of Pidentd on ftp.lysator.liu.se in pub/ident/servers.
+
+Some common problems that may occur when compiling under Solaris 2:
+
+	* You use /usr/ucb/cc - NEVER ever EVER use that compiler
+
+	* You use GCC, but didn't run "fixincludes" correctly when
+	  installing it
+
+	* You use GCC and have just upgraded from Solaris 2.3 to 2.4
+	  (for example) and have forgotten to RERUN the "fixincludes".
+	  This just *MUST* do or things will fail in mysterious ways.
+
+You may have to enable the "SOLARIS24_WORKAROUND" feature in the
+file "src/kernel/sunos5.c" if you have problems getting "-b" and/or "-w"
+to work correctly under Solaris 2.4. Please tell me if you do and it helps
+you (send an email to pen@lysator.liu.se).
+
+Casper Dik <casper@fwi.uva.nl> says:
+
+  I found a bug in Solaris 2.x inetd which may affect identd
+  installations:  if you change a tcp service from "nowait" to "wait" mode,
+  inetd will still pass the connected socket (as happens in nowait
+  mode) instead of the socket to do accept() on.  The workaround
+  is to first comment out the service and -HUP inetd, then reinstall
+  the service as wait service and resend -HUP.  Inetd apparently needs
+  to forget all about this service.  The symptom is accept returing
+  errno 22.
+

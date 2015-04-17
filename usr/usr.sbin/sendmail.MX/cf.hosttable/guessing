@@ -1,0 +1,150 @@
+From karels Mon Oct 21 14:09:27 1985
+Received: by monet.berkeley.edu (5.29/1.2)
+	id AA02031; Mon, 21 Oct 85 14:09:13 PDT
+Date: Mon, 21 Oct 85 14:09:13 PDT
+From: karels (Mike Karels)
+Message-Id: <8510212109.AA02031@monet.berkeley.edu>
+To: miriam
+Subject: guessing games?
+Status: R
+
+Is sendmail now engaging us in guessing games?  I just got this back
+after sending to a mailing list; I wonder which of the 30 addresses is bad.
+
+		Mike
+
+------- Forwarded Message
+
+Received: by monet.berkeley.edu (5.29/1.2)
+	id AA01352; Mon, 21 Oct 85 12:03:32 PDT
+Date: Mon, 21 Oct 85 12:03:32 PDT
+From: MAILER-DAEMON (Mail Delivery Subsystem)
+Subject: Returned mail: Host unknown
+Message-Id: <8510211903.AA01352@monet.berkeley.edu>
+To: karels
+
+  ----- Transcript of session is unavailable -----
+
+   ----- Unsent message follows -----
+Received: by monet.berkeley.edu (5.29/1.2)
+	id AA01342; Mon, 21 Oct 85 12:03:32 PDT
+Date: Mon, 21 Oct 85 12:03:32 PDT
+From: karels (Mike Karels)
+Message-Id: <8510211903.AA01342@monet.berkeley.edu>
+To: beta43_sites
+Subject: beta test status
+
+Thanks for all of the feedback so far.  It appears that things are running
+fairly succesfully at the sites that I've heard from.  I've summarized
+the more useful bug fixes here, so not everyone will have to deal with the
+same problems.
+
+Incidentally, some of the bug reports have been sent using sendbug
+to 4bsd-bugs@ucbarpa.  As much as I hate to discourage using sendbug,
+I would prefer that beta test bugs be sent to beta43_bugs@monet.berkeley.edu
+or ucbvax!beta43_bugs@monet.  Sendbug could be modified to use that address
+for now if you prefer.
+
+I would like to get status reports from the sites that haven't yet sent
+anything, just to have an idea of how far the testing is proceeding.
+Thanks for all of your help.
+
+		Mike
+
+
+1. There were two versions of sendmail on the tape, both with some problems.
+Eric sent a message about this earlier with the fix for the one in /usr/src.
+The newer, more experimental version on the end of the tape has been updated,
+and is available by anonymous ftp from ucbarpa in pub/sendmail.tar.
+
+2. The binary of /usr/ucb/mail was mysteriously broken.  Recompilation fixes
+the problem.
+
+3. There was a bug fix for config in the printed change list; unfortunately
+it was incomplete.  The problem was multiple inclusions of files like if_uba.o
+which have multiple entries in files.* with different dependencies.
+A diff containing the complete fix follows; it includes an unrelated change
+to allow .o files to be configured:
+8c8
+< static char sccsid[] = "@(#)mkmakefile.c	5.2 (Berkeley) 9/17/85";
+- ---
+> static char sccsid[] = "@(#)mkmakefile.c	5.5 (Berkeley) 10/14/85";
+34c34
+<  * Lookup a file, by make.
+- ---
+>  * Lookup a file, by name.
+192c192
+< 	register struct file_list *tp;
+- ---
+> 	register struct file_list *tp, *pf;
+238c238
+< 	if ((tp = fl_lookup(this)) && (tp->f_type != INVISIBLE || tp->f_flags))
+- ---
+> 	if ((pf = fl_lookup(this)) && (pf->f_type != INVISIBLE || pf->f_flags))
+288c288,289
+< 	tp = new_fent();
+- ---
+> 	if (tp == 0)
+> 		tp = new_fent();
+323c324,325
+< 	tp = new_fent();
+- ---
+> 	if (tp == 0)
+> 		tp = new_fent();
+334a337,338
+> 	if (pf && pf->f_type == INVISIBLE)
+> 		pf->f_flags = 1;		/* mark as duplicate */
+448a453,456
+> 	if (och == 'o') {
+> 		fprintf(f, "%so:\n\t-cp ../%so .\n", tail(np), np);
+> 		continue;
+> 	}
+
+4. The change to syslog priorities didn't get made in the bbnnet directory.
+Each occurrence of KERN_RECOV should be changed to LOG_INFO.
+
+5. The binary of arp was out of date.  Recompilation will fix it.
+This was due to a change in <netinet/if_ether.h>.
+
+6. There was a bug in ftp, finger and probably other programs that tried
+to fill in a hostent structure when given an address in dot notation
+rather than a hostname.  The diff for ftp was sent earlier, but is included
+here; the others can be fixed similarly:
+
+Oct  5 18:40 1985  SCCS/s.ftp.c: -r5.1 vs. -r5.2 Page 1
+
+49a50
+> 		static char *addrbuf;
+59a61
+> 		def.h_addr_list = &addrbuf;
+
+7. The driver for the Proteon ring interfaces (vaxif/if_vv.c) was omitted
+in error.  If anyone who needs it hasn't gotten a copy, let me know and I'll
+send it.
+
+8. There was an obscure problem with TCP (netinet).  Under certain
+circumstances, it would incorrectly consider the window closed and refuse
+to accept data.  Under these conditions, FTP, etc. would create a zero-length
+file and then wait forever.  The fixes are as follows:
+
+Oct 14 17:43 1985  SCCS/s.tcp_seq.h: -r6.2 vs. -r6.3 Page 1
+
+25c25
+< 	(tp)->rcv_nxt = (tp)->irs + 1
+- ---
+> 	(tp)->rcv_adv = (tp)->rcv_nxt = (tp)->irs + 1
+
+
+Oct 14 17:41 1985  SCCS/s.tcp_input.c: -r6.13 vs. -r6.14 Page 1
+
+329c329
+< 	tp->rcv_wnd = MAX(sbspace(&so->so_rcv), tp->rcv_adv - tp->rcv_nxt);
+- ---
+> 	tp->rcv_wnd = sbspace(&so->so_rcv);
+331a332
+> 	tp->rcv_wnd = MAX(tp->rcv_wnd, (short)(tp->rcv_adv - tp->rcv_nxt));
+
+
+
+------- End of Forwarded Message
+

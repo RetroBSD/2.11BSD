@@ -1,0 +1,5 @@
+/^\.comm	_PROC,/s/comm	\(.*\),\([0-9]*\)/globl _proc;.bss;_proc:.=.+\2;.data/
+/^\.comm	_TEXT,/s/comm	\(.*\),\([0-9]*\)/globl _text;.bss;_text:.=.+\2;.data/
+/^\.comm	_FILE,/s/comm	\(.*\),\([0-9]*\)/globl _file;.bss;_file:.=.+\2;.data/
+w
+q

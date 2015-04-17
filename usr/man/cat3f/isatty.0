@@ -1,0 +1,66 @@
+
+
+
+TTYNAM(3F)	    UNIX Programmer's Manual	       TTYNAM(3F)
+
+
+
+NAME
+     ttynam, isatty - find name of a terminal port
+
+SYNOPSIS
+     character*(*) function ttynam (lunit)
+
+     logical function isatty (lunit)
+
+DESCRIPTION
+     _T_t_y_n_a_m returns a blank padded path name of the terminal dev-
+     ice associated with logical unit _l_u_n_i_t.
+
+     _I_s_a_t_t_y returns .true. if _l_u_n_i_t is associated with a terminal
+     device, .false. otherwise.
+
+FILES
+     /dev/*
+     /usr/lib/libU77.a
+
+DIAGNOSTICS
+     _T_t_y_n_a_m returns an empty string (all blanks) if _l_u_n_i_t is not
+     associated with a terminal device in directory `/dev'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

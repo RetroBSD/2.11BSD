@@ -1,0 +1,66 @@
+
+
+
+UTIME(3C)	    UNIX Programmer's Manual		UTIME(3C)
+
+
+
+NAME
+     utime - set file times
+
+SYNOPSIS
+     #include <sys/types.h>
+
+     utime(file, timep)
+     char *file;
+     time_t timep[2];
+
+DESCRIPTION
+     This interface is obsoleted by utimes(2).
+
+     The _u_t_i_m_e call uses the `accessed' and `updated' times in
+     that order from the _t_i_m_e_p vector to set the corresponding
+     recorded times for _f_i_l_e.
+
+     The caller must be the owner of the file or the super-user.
+     The `inode-changed' time of the file is set to the current
+     time.
+
+SEE ALSO
+     utimes(2), stat(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	   May 9, 1985				1
+
+
+

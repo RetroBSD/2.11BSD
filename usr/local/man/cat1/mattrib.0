@@ -1,0 +1,66 @@
+
+
+
+MATTRIB(1)          UNIX Programmer's Manual           MATTRIB(1)
+
+
+
+NAME
+     mattrib - change MSDOS file attribute flags
+
+SYNOPSIS
+     mattrib [ -a|+a ] [ -h|+h ] [ -r|+r ] [ -s|+s ] msdosfile [
+     msdosfiles... ]
+
+DESCRIPTION
+     _M_a_t_t_r_i_b will add attribute flags to an MSDOS file (with the
+     '+' operator) or remove attribute flags (with the '-' opera-
+     tor).
+
+     _M_a_t_t_r_i_b will allow the following command line options:
+
+     a    Archive bit.  Used by some backup programs to indicate
+          a new file.
+
+     r    Read-only bit.  Used to indicate a read-only file.
+          Files with this bit set cannot be erased by DEL.  How-
+          ever, _m_d_e_l is more cunning.
+
+     s    System bit.  Used by MSDOS to indicate a operating sys-
+          tem file.
+
+     h    Hidden bit.  Used to make files hidden from DIR.  How-
+          ever, _m_d_i_r is more cunning.
+
+     MSDOS subdirectory names are supported with either the '/'
+     or '\' separator.  The use of the '\' separator or wildcards
+     will require the names to be enclosed in quotes to protect
+     them from the shell.
+
+     The _m_c_d command may be used to establish the device and the
+     current working directory (relative to MSDOS), otherwise the
+     default is A:/.
+
+SEE ALSO
+     mcd(1)
+
+BUGS
+     Most versions of ATTRIB don't allow this many options.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99              local                             1
+
+
+

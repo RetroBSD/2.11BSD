@@ -1,0 +1,66 @@
+
+
+
+FLUSH(3F)	    UNIX Programmer's Manual		FLUSH(3F)
+
+
+
+NAME
+     flush - flush output to a logical unit
+
+SYNOPSIS
+     subroutine flush (lunit)
+
+DESCRIPTION
+     _F_l_u_s_h causes the contents of the buffer for logical unit
+     _l_u_n_i_t to be flushed to the associated file.  This is most
+     useful for logical units 0 and 6 when they are both associ-
+     ated with the control terminal.
+
+FILES
+     /usr/lib/libI77.a
+
+SEE ALSO
+     fclose(3S)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 15, 1985				1
+
+
+

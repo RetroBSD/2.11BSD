@@ -1,0 +1,160 @@
+*** 2.1.old		Wed Jul  1 16:23:05 1987
+--- 2.1			Wed Jul  1 16:23:14 1987
+***************
+*** 268,274 ****
+  .ix
+  Read the policy note.
+  .ix
+! Check on anonymous and networked status.
+  .ix
+  Register a complaint/suggestion about notesfiles.
+  .ix
+--- 268,274 ----
+  .ix
+  Read the policy note.
+  .ix
+! Check on anonymous, networked, local, and moderated status.
+  .ix
+  Register a complaint/suggestion about notesfiles.
+  .ix
+***************
+*** 522,534 ****
+  After the prompt,
+  type the insert command along with the text you wish to enter.
+  Write the text to the disk and leave the editor.  The system will prompt
+! you for various options if they are available:  anonymity, director
+! message status, and the note's title.
+  
+  	To write a response to a note type ``w'' while that note or any of
+  its responses is displayed. 
+  The same steps used to write a base note
+  should then be followed.
+  
+  .ss "Mailing Notesfile Text"
+  
+--- 522,549 ----
+  After the prompt,
+  type the insert command along with the text you wish to enter.
+  Write the text to the disk and leave the editor.  The system will prompt
+! you for various options if they are available:  signature block, anonymity,
+! director message status, and the note's title.
+  
+  	To write a response to a note type ``w'' while that note or any of
+  its responses is displayed. 
+  The same steps used to write a base note
+  should then be followed.
++ 
++ 	In the case of moderated notesfiles where submissions should be
++ sent to the notesfile topic administrator, the behavior of ``w'' is
++ changed slightly.
++ When writing a new note the notesfile system will prompt to
++ say, ``Moderated, send mail to moderator?''
++ A response of ``y'' will invoke the mail program with the To: line set
++ to the moderator's name.
++ The text entered will not be entered into the notesfile.
++ Instead a mail message with the text is sent to the topic administrator.
++ He or she will check the submission for appropriateness, then insert it
++ into the notesfile for distribution.
++ 
++ Writing a response in a moderated notesfile invokes the mail program without
++ prompting.
+  
+  .ss "Mailing Notesfile Text"
+  
+*** 2.2.old		Wed Jul  1 16:23:51 1987
+--- 2.2			Wed Jul  1 16:23:54 1987
+***************
+*** 321,326 ****
+--- 321,334 ----
+  If unspecified, the system uses a standard set which usually includes
+  ``general'' and ``net.general''.
+  .ix
++ ``NFSIG'' specifies the file name containing a signature block to be included
++ at the end of a note or response.
++ If this variable is set, notes will prompt whether to include this file
++ when the user writes a new note or response.
++ The signature block typically contains the user's name and various mail paths
++ back to him or her.
++ It should be kept small and concise.
++ .ix
+  ``PAGER'' is the paging program (``more'', ``pg'') which is used for scrolling
+  the help files.
+  The default paging program is /usr/ucb/more.
+*** 3.1.old		Wed Jul  1 16:24:09 1987
+--- 3.1			Wed Jul  1 16:24:11 1987
+***************
+*** 28,33 ****
+--- 28,35 ----
+  .ix
+  Allow the notesfile to be networked.
+  .ix
++ Toggle the notesfile's moderated and local flags.
++ .ix
+  Permit or restrict anonymous notes.
+  .ix
+  Compress the notesfile.
+***************
+*** 56,61 ****
+--- 58,65 ----
+  (o) Notesfile:   OPEN	Next note in slot: 1
+  (n) Networked:   YES	Deleted Notes (holes): 0  
+  (A) Is Archive:  NO	Deleted Responses (holes): 0  
++ (M) Moderated:   YES
++ (L) Local:       NO
+  (e) Expiration Threshold: Default
+  (E) Expiration Action:    ARCHIVE
+  (D) Archive with Dirmsg:  NOCARE   
+***************
+*** 78,83 ****
+--- 82,88 ----
+  
+  	Options available on this page include:  access lists, policy
+  note writing, title & director messages, open/close notesfile,
++ moderated & local notesfiles,
+  network enabling, anonymous notes, notesfile compress, and delete
+  a list of notes.
+  
+***************
+*** 194,199 ****
+--- 199,220 ----
+  Arrangements must be made with the notesfile system ``owner'' to do the network
+  transfers.
+  
++ .ss "Moderated Notesfiles"
++ 
++ 	Type ``M'' (``moderated'') to toggle whether a notesfile is moderated
++ or not.
++ Moderated notesfiles do not allow direct submissions.
++ Instead the text entered with a ``w'' command is enclosed in a mail message
++ and sent to the topic moderator.
++ A list of notesfiles and moderator mail addresses is kept in ~notes/moderators.
++ 
++ .ss "Local Notes"
++ 
++ 	Type ``L'' (``local'') to toggle whether the notesfile is local
++ to the site.
++ Local notesfiles don't prompt to include signature files if the NFSIG
++ environment variable is set.
++ 
+  .ss "Anonymous Notes"
+  
+  	Type ``a'' (``anonymous'') to toggle the availability of
+***************
+*** 599,602 ****
+--- 620,635 ----
+  
+  	Mapping is performed by the transmission program ``nfxmit''.
+  The ``nfrcv'' program does not consult this table.
++ 
++ .ss "Moderated Notesfiles"
++ 
++ 	Moderated notesfiles don't allow direct submission of new notes
++ or responses.
++ The text entered by a user after a ``w'' command is collected by the mail
++ program of choice and sent to the topic moderator.
++ A list of notesfile names and moderator mail addresses is kept in the
++ file /usr/spool/notes/.utilities/moderators.
++ Each line of the file has a notesfile name, white space (tabs or blanks),
++ then the mail address of the moderator.
++ Any text following a ``#'' is considered a comment.
+  

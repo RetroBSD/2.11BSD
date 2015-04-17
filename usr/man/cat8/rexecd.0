@@ -1,0 +1,132 @@
+
+
+
+REXECD(8)	    UNIX Programmer's Manual		REXECD(8)
+
+
+
+NAME
+     rexecd - remote execution server
+
+SYNOPSIS
+     /usr/libexec/rexecd
+
+DESCRIPTION
+     _R_e_x_e_c_d is the server for the _r_e_x_e_c(3) routine.  The server
+     provides remote execution facilities with authentication
+     based on user names and passwords.
+
+     _R_e_x_e_c_d listens for service requests at the port indicated in
+     the ``exec'' service specification; see _s_e_r_v_i_c_e_s(5).  When a
+     service request is received the following protocol is ini-
+     tiated:
+
+     1)   The server reads characters from the socket up to a
+	  null (`\0') byte.  The resultant string is interpreted
+	  as an ASCII number, base 10.
+
+     2)   If the number received in step 1 is non-zero, it is
+	  interpreted as the port number of a secondary stream to
+	  be used for the stderr.  A second connection is then
+	  created to the specified port on the client's machine.
+
+     3)   A null terminated user name of at most 16 characters is
+	  retrieved on the initial socket.
+
+     4)   A null terminated, unencrypted password of at most 16
+	  characters is retrieved on the initial socket.
+
+     5)   A null terminated command to be passed to a shell is
+	  retrieved on the initial socket.  The length of the
+	  command is limited by the upper bound on the size of
+	  the system's argument list.
+
+     6)   _R_e_x_e_c_d then validates the user as is done at login time
+	  and, if the authentication was successful, changes to
+	  the user's home directory, and establishes the user and
+	  group protections of the user.  If any of these steps
+	  fail the connection is aborted with a diagnostic mes-
+	  sage returned.
+
+     7)   A null byte is returned on the initial socket and the
+	  command line is passed to the normal login shell of the
+	  user.  The shell inherits the network connections esta-
+	  blished by _r_e_x_e_c_d.
+
+DIAGNOSTICS
+     Except for the last one listed below, all diagnostic mes-
+     sages are returned on the initial socket, after which any
+     network connections are closed.  An error is indicated by a
+
+
+
+Printed 11/24/99	November 16, 1996			1
+
+
+
+
+
+
+REXECD(8)	    UNIX Programmer's Manual		REXECD(8)
+
+
+
+     leading byte with a value of 1 (0 is returned in step 7
+     above upon successful completion of all the steps prior to
+     the command execution).
+
+     ``username too long''
+     The name is longer than 16 characters.
+
+     ``password too long''
+     The password is longer than 16 characters.
+
+     ``command too long ''
+     The command line passed exceeds the size of the argument
+     list (as configured into the system).
+
+     ``Login incorrect.''
+     No password file entry for the user name existed.
+
+     ``Password incorrect.''
+     The wrong was password supplied.
+
+     ``No remote directory.''
+     The _c_h_d_i_r command to the home directory failed.
+
+     ``Try again.''
+     A _f_o_r_k by the server failed.
+
+     ``<shellname>: ...''
+     The user's login shell could not be started.  This message
+     is returned on the connection associated with the stderr,
+     and is not preceded by a flag byte.
+
+SEE ALSO
+     rexec(3)
+
+BUGS
+     Indicating ``Login incorrect'' as opposed to ``Password
+     incorrect'' is a security breach which allows people to
+     probe a system for users with null passwords.
+
+     A facility to allow all data and password exchanges to be
+     encrypted should be present.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	November 16, 1996			2
+
+
+

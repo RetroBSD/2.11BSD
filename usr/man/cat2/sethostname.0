@@ -1,0 +1,66 @@
+
+
+
+GETHOSTNAME(2)	    UNIX Programmer's Manual	   GETHOSTNAME(2)
+
+
+
+NAME
+     gethostname, sethostname - get/set name of current host
+
+SYNOPSIS
+     gethostname(name, namelen)
+     char *name;
+     int namelen;
+
+     sethostname(name, namelen)
+     char *name;
+     int namelen;
+
+DESCRIPTION
+     _G_e_t_h_o_s_t_n_a_m_e returns the standard host name for the current
+     processor, as previously set by _s_e_t_h_o_s_t_n_a_m_e.  The parameter
+     _n_a_m_e_l_e_n specifies the size of the _n_a_m_e array.  The returned
+     name is null-terminated unless insufficient space is pro-
+     vided.
+
+     _S_e_t_h_o_s_t_n_a_m_e sets the name of the host machine to be _n_a_m_e,
+     which has length _n_a_m_e_l_e_n.	This call is restricted to the
+     super-user and is normally used only when the system is
+     bootstrapped.
+
+RETURN VALUE
+     If the call succeeds a value of 0 is returned.  If the call
+     fails, then a value of -1 is returned and an error code is
+     placed in the global location _e_r_r_n_o.
+
+ERRORS
+     The following errors may be returned by these calls:
+
+     [EFAULT]	    The _n_a_m_e or _n_a_m_e_l_e_n parameter gave an invalid
+		    address.
+
+     [EPERM]	    The caller tried to set the hostname and was
+		    not the super-user.
+
+SEE ALSO
+     gethostid(2)
+
+BUGS
+     Host names are limited to MAXHOSTNAMELEN (from
+     <_s_y_s/_p_a_r_a_m._h>) characters, currently 64.
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	  May 22, 1986				1
+
+
+

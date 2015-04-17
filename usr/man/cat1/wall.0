@@ -1,0 +1,66 @@
+
+
+
+WALL(1)             UNIX Programmer's Manual		  WALL(1)
+
+
+
+NAME
+     wall - write to all users
+
+SYNOPSIS
+     wall
+
+DESCRIPTION
+     _W_a_l_l reads its standard input until an end-of-file.  It then
+     sends this message, preceded by `Broadcast Message ...', to
+     all logged in users.
+
+     The sender should be super-user to override any protections
+     the users may have invoked.
+
+FILES
+     /dev/tty?
+     /var/run/utmp
+
+SEE ALSO
+     mesg(1), write(1)
+
+DIAGNOSTICS
+     `Cannot send to ...' when the open on a user's tty file
+     fails.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	November 27, 1996			1
+
+
+

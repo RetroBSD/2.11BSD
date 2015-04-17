@@ -1,0 +1,66 @@
+
+
+
+TOUCH(1)	    UNIX Programmer's Manual		 TOUCH(1)
+
+
+
+NAME
+     touch - update date last modified of a file
+
+SYNOPSIS
+     touch [ -c ] [ -f ] file ...
+
+DESCRIPTION
+     _T_o_u_c_h attempts to set the modified date of each _f_i_l_e.  If a
+     _f_i_l_e exists, this is done by reading a character from the
+     file and writing it back.	If a _f_i_l_e does not exist, an
+     attempt will be made to create it unless the -c option is
+     specified.  The -f option will attempt to force the touch in
+     spite of read and write permissions on a _f_i_l_e.
+
+SEE ALSO
+     utimes(2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	 April 29, 1985                         1
+
+
+

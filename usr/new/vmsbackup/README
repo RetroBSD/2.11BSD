@@ -1,0 +1,19 @@
+This progam reads a VMS backuptape.
+
+The tape program is orginally written by John Douglas Carey and
+the pattern matching routine by some unknown on the net. 
+
+The remote tape option use the rmtlib from mod.sources.
+
+A good way to archive remotetape access for users with only
+a local account is to create a "netwide" user tar and let
+the remote tape programs do suid to user tar.
+
+The program is tested on vax and sun.
+
+
+Sven-Ove Westberg 
+Lulea University of Technology
+S-951 87  Lulea,  Sweden
+UUCP:  sow@luthcad.UUCP
+UUCP:  {decvax,philabs,seismo}!mcvax!enea!luthcad!sow

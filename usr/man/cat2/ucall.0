@@ -1,0 +1,66 @@
+
+
+
+UCALL(2)	    UNIX Programmer's Manual		 UCALL(2)
+
+
+
+NAME
+     ucall - call a kernel subroutine from user mode (2BSD)
+
+SYNOPSIS
+     #include <pdp/psl.h>
+     #include <sys/types.h>
+
+     ucall(priority, function, arg0, arg1)
+     int priority, arg0, arg1;
+     caddr_t function;
+
+DESCRIPTION
+     _U_c_a_l_l causes the processor priority to be set to _p_r_i_o_r_i_t_y
+     and the specified kernel _f_u_n_c_t_i_o_n to be called with argu-
+     ments _a_r_g_0 and _a_r_g_1.  _P_r_i_o_r_i_t_y is one of PSL_BR0, ...,
+     PSL_BR7.  Processor priority is reset to PSL_BR0 when _f_u_n_c_-
+     _t_i_o_n returns.
+
+     _U_c_a_l_l is allowed only if the user is the superuser.  It is
+     obviously extremely dangerous if misused.	It's only current
+     use is at system boot time to configure system devices by
+     calling device drivers ...
+
+ERRORS
+     [EPERM]	    The caller is not the super-user.
+
+SEE ALSO
+     autoconfig(8)
+
+BUGS
+     No address validations are attempted.
+
+     _U_c_a_l_l is unique to the PDP-11 and 2BSD; its use is
+     discouraged.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/26/99	January 22, 1987			1
+
+
+

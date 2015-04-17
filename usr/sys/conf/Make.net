@@ -1,0 +1,69 @@
+#
+# Copyright (c) 1988 Regents of the University of California.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms are permitted
+# provided that this notice is preserved and that due credit is given
+# to the University of California at Berkeley. The name of the University
+# may not be used to endorse or promote products derived from this
+# software without specific prior written permission. This software
+# is provided ``as is'' without express or implied warranty.
+#
+#	Make.net 2.0 (2.11BSD) 1996/6/8
+#
+N1=	../net
+N1C=	${N1}/af.c ${N1}/if.c ${N1}/if_loop.c ${N1}/if_sl.c		\
+	${N1}/raw_cb.c ${N1}/raw_usrreq.c ${N1}/route.c
+N1O=	af.o if.o if_loop.o if_sl.o raw_cb.o raw_usrreq.o route.o
+
+N2=	../netimp
+N2C=	${N2}/if_imp.c ${N2}/if_imphost.c ${N2}/raw_imp.c
+N2O=	if_imp.o if_imphost.o raw_imp.o
+
+N3=	../netinet
+N3C=	${N3}/if_ether.c ${N3}/in.c ${N3}/in_pcb.c ${N3}/in_proto.c	\
+	${N3}/ip_icmp.c ${N3}/ip_input.c ${N3}/ip_output.c		\
+	${N3}/raw_ip.c ${N3}/tcp_debug.c ${N3}/tcp_input.c		\
+	${N3}/tcp_output.c ${N3}/tcp_subr.c ${N3}/tcp_timer.c		\
+	${N3}/tcp_usrreq.c ${N3}/udp_usrreq.c
+N3O=	if_ether.o in.o in_pcb.o in_proto.o ip_icmp.o ip_input.o	\
+	ip_output.o raw_ip.o tcp_debug.o tcp_input.o tcp_output.o	\
+	tcp_subr.o tcp_timer.o tcp_usrreq.o udp_usrreq.o
+
+N5=	../netns
+N5C=	${N5}/ns.c ${N5}/ns_pcb.c ${N5}/ns_proto.c ${N5}/ns_error.c	\
+	${N5}/ns_ip.c ${N5}/ns_input.c ${N5}/ns_output.c 		\
+	${N5}/idp_usrreq.c ${N5}/spp_usrreq.c ${N5}/spp_debug.c
+N5O=	ns.o ns_pcb.o ns_proto.o ns_error.o ns_ip.o ns_input.o		\
+	ns_output.o idp_usrreq.o spp_usrreq.o spp_debug.o
+
+N6=	../pdpif
+N6C=	${N6}/if_acc.c ${N6}/if_css.c ${N6}/if_de.c ${N6}/if_dmc.c	\
+	${N6}/if_ec.c ${N6}/if_en.c ${N6}/if_il.c ${N6}/if_qe.c		\
+	${N6}/if_qt.c ${N6}/if_sri.c ${N6}/if_uba.c ${N6}/if_vv.c
+N6O=	if_acc.o if_css.o if_de.o if_dmc.o if_ec.o if_en.o if_il.o	\
+	if_qe.o if_qt.o if_sri.o if_uba.o if_vv.o
+
+S=	../sys
+SC=	${S}/sys_socket.c ${S}/sys_net.c ${S}/uipc_domain.c		\
+	${S}/uipc_mbuf.c ${S}/uipc_proto.c ${S}/uipc_socket.c		\
+	${S}/uipc_socket2.c ${S}/uipc_usrreq.c
+SO=	sys_socket.o sys_net.o uipc_domain.o uipc_mbuf.o uipc_proto.o	\
+	uipc_socket.o uipc_socket2.o uipc_usrreq.o
+
+VPATH=	../net:../netimp:../netinet:../netns:../pdpif:../sys
+SRCS=	${N1C} ${N2C} ${N3C} ${N5C} ${N6C} ${SC}
+OBJS=	${N1O} ${N2O} ${N3O} ${N5O} ${N6O} ${SO}
+
+.c.o:
+	${CC} ${CFLAGS} -S $*.c
+	${SED} -f NETSPLFIX $*.s | ${AS} -u -o $*.o
+	rm -f $*.s
+
+all: ${OBJS}
+
+depend:
+	mkdep -f Make.net ${CFLAGS} ${SRCS}
+
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

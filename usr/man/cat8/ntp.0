@@ -1,0 +1,198 @@
+
+
+
+NTP(8)		    UNIX Programmer's Manual		   NTP(8)
+
+
+
+NAME
+     ntp - query an ntp clock
+
+SYNOPSIS
+     ntp [-v] [-s] [-f] _h_o_s_t_s...
+
+DESCRIPTION
+     _n_t_p sends an ntp packet to the ntp daemon running on each of
+     the given hosts.  A daemon fills in fields of the ntp packet
+     as per RFC-????  and sends the packet back.  _n_t_p then for-
+     mats and prints the result on the standard output.
+
+     The default output shows the delay, offset, and date in
+     _c_t_i_m_e() format.
+
+     Options can reset the time of the local system clock.
+
+OPTIONS
+     -v   Verbose output, showing the full contents of received
+	  ntp packets, plus caluclated offset, displacement, etc.
+
+     -s   Set system time-of-day clock.  Will only happen if time
+	  offset is less than compiled-in constant WAYTOBIG
+	  (currently 1000 seconds).  Will not happen if remote
+	  host is unsynchronized.
+
+     -f   Force setting system clock regardless of offset.  Must
+	  be used with -s option.  Still will not reset clock if
+	  remote system is unsynchronized.
+
+NTP RESULTS
+     The default output for each _h_o_s_t looks like this:
+	 128.8.10.1: delay:1.845207 offset:-0.358460  Mon Mar 20 08:05:44 1989
+
+     The verbose output for each _h_o_s_t looks like this:
+	 Packet from: [128.8.10.1]
+	 Leap 0, version 1, mode Server, poll 6, precision -10 stratum 1 (WWVB)
+	 Synch Distance is 0000.1999  0.099991
+	 Synch Dispersion is 0000.0000	0.000000
+	 Reference Timestamp is a7bea6c3.88b40000 Tue Mar  7 14:06:43 1989
+	 Originate Timestamp is a7bea6d7.d7e6e652 Tue Mar  7 14:07:03 1989
+	 Receive Timestamp is	a7bea6d7.cf1a0000 Tue Mar  7 14:07:03 1989
+	 Transmit Timestamp is	a7bea6d8.0ccc0000 Tue Mar  7 14:07:04 1989
+	 Input Timestamp is	a7bea6d8.1a77e5ea Tue Mar  7 14:07:04 1989
+	 umd1: delay:0.019028 offset:-0.043890	Tue Mar  7 14:07:04 1989
+	   The various fields are interpreted as follows:
+
+     Packet from: [_a_d_d_r_e_s_s]
+	  The address that this ntp packet was received from.
+
+     Leap indicator: _n
+	  The leap second indicator.  Non-zero if there is to be
+
+
+
+Printed 4/11/100	  30 July 1988				1
+
+
+
+
+
+
+NTP(8)		    UNIX Programmer's Manual		   NTP(8)
+
+
+
+	  a leap second added or subtracted at the new year.
+
+     Status: _n
+
+     Stratum: _n (_s_o_u_r_c_e)
+	  The stratum of the clock in the NTP hierarchy, along
+	  with the source of the clock, either the name of a
+	  reference standard (such as WWVB or GOES) or the Inter-
+	  net address of the clock that this clock is derived
+	  from.
+
+     Poll = _n
+	  The desired poll rate of the peer.
+
+     Precision = _e_x_p_o_n_e_n_t (dec)
+	  The claimed precision of the clock, in seconds.
+
+     Synchronizing Dist is ???
+
+     Synchronizing Dispersion is ???
+
+     The next five timestamps are given as NTP fixed-point
+     values, in both hexadecimal and _c_t_i_m_e(_3).	These are set
+     either by this ntp process, or by the server we are quering.
+
+     Reference Timestamp is _h_e_x-_t_i_m_e_s_t_a_m_p  _c_t_i_m_e _s_t_r_i_n_g
+	  The last time the server clock was adjusted. (remote
+	  time)
+
+     Originate Timestamp is _h_e_x-_t_i_m_e_s_t_a_m_p  _c_t_i_m_e _s_t_r_i_n_g
+	  When the ntp request was transmitted by us to the
+	  server.  (local time)
+
+     Receive Timestamp is   _h_e_x-_t_i_m_e_s_t_a_m_p  _c_t_i_m_e _s_t_r_i_n_g
+	  When the ntp request was received at the server.
+	  (remote time)
+
+     Transmit Timestamp is  _h_e_x-_t_i_m_e_s_t_a_m_p  _c_t_i_m_e _s_t_r_i_n_g
+	  When the ntp response was transmitted by the server.
+	  (remote time)
+
+     Input Timestamp is     _h_e_x-_t_i_m_e_s_t_a_m_p  _c_t_i_m_e _s_t_r_i_n_g
+	  When the ntp response was received by us.  (local time)
+
+     _h_o_s_t_n_a_m_e: delay:_t_i_m_e offset:_t_i_m_e
+	  The summary of the results of the query, giving the
+	  hostname of the responding clock (from the command
+	  line), the round-trip delay, and the offset between the
+	  two clocks (assuming symmetric round-trip times).
+
+
+
+
+
+
+Printed 4/11/100	  30 July 1988				2
+
+
+
+
+
+
+NTP(8)		    UNIX Programmer's Manual		   NTP(8)
+
+
+
+BUGS
+     Using _n_t_p with the current host will show inaccurate
+     results.
+
+     Probably a few others.  Report bugs to Louis A. Mamokos
+     (louie@trantor.umd.edu).
+
+
+SEE ALSO
+     RFC-???? _N_e_t_w_o_r_k _T_i_m_e _P_r_o_t_o_c_o_l(1), Dave Mills and ...
+     ntpd(8), ntpdc(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 4/11/100	  30 July 1988				3
+
+
+

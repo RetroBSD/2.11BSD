@@ -1,0 +1,330 @@
+
+
+
+STTY(1)             UNIX Programmer's Manual		  STTY(1)
+
+
+
+NAME
+     stty - set terminal options
+
+SYNOPSIS
+     stty [-a | -e] [-f _f_i_l_e] [operands]
+
+DESCRIPTION
+     _S_t_t_y sets certain I/O options on the current output termi-
+     nal, placing its output on the diagnostic output.	With no
+     argument, it reports the speed of the terminal and the set-
+     tings of the options which are different from their
+     defaults.
+
+     The following options are available:
+
+     -a        Display everything _s_t_t_y knows.  This has the same
+	       effect as using the operand all or everything.
+	       The distinction between all and everything has
+	       been removed.
+
+     -e        Same a -a above.
+
+     -f        Open and use the terminal named by _f_i_l_e rather
+	       than using standard output.  The file is opened
+	       using the O_NONBLOCK flag of open(), making it
+	       possible to set or display settings on a terminal
+	       that might otherwise block on the open.
+
+     The following operands are special:
+
+     all	 Everything _s_t_t_y knows about is printed.
+
+     everything  Same as all above.
+
+     flushout	 Flush the queues for the device.  This is most
+		 useful when an exiting process is stuck waiting
+		 for terminal output to drain.
+
+     speed	 The terminal speed alone is printed on the stan-
+		 dard output.
+
+     size	 The terminal (window) sizes are printed on the
+		 standard output, first rows and then columns.
+
+     _O_p_e_r_a_n_d_s are selected from the following:
+
+     even      allow even parity input
+     -even     disallow even parity input
+
+     odd       allow odd parity input
+     -odd      disallow odd parity input
+
+
+
+
+Printed 11/24/99	 March 27, 1997                         1
+
+
+
+
+
+
+STTY(1)             UNIX Programmer's Manual		  STTY(1)
+
+
+
+     raw       raw mode input (no input processing (erase, kill,
+	       interrupt, ...); parity bit passed back)
+     -raw      negate raw mode
+
+     cooked    same as `-raw'
+
+     cbreak    make each character available to _r_e_a_d(2) as
+	       received; no erase and kill processing, but all
+	       other processing (interrupt, suspend, ...) is per-
+	       formed
+     -cbreak   make characters available to _r_e_a_d only when new-
+	       line is received
+
+     -nl       allow carriage return for new-line, and output
+	       CR-LF for carriage return or new-line
+     nl        accept only new-line to end lines
+
+     echo      echo back every character typed
+     -echo     do not echo characters
+
+     tandem    enable inbound software (xon/xoff) flow control,
+	       so that the system sends out the stop character
+	       when its internal queue is in danger of overflow-
+	       ing on input, and sends the start character when
+	       it is ready to accept further input
+     -tandem   disable inbound software (xon/xoff) flow control
+
+     -tabs     replace tabs by spaces when printing
+     tabs      preserve tabs
+
+     For the following commands which take a character argument
+     _c, you may also specify _c as ``undef'', to set the value to
+     be undefined.  A value of ``^x'', a 2 character sequence, is
+     also interpreted as a control character, with ``^?''
+     representing delete.
+
+     erase _c   set erase character to _c (default `#', but often
+	       reset to ^H.)
+     kill _c    set kill character to _c (default `@', but often
+	       reset to ^U.)
+     intr _c    set interrupt character to _c (default DEL or ^?
+	       (delete), but often reset to ^C.)
+     quit _c    set quit character to _c (default control \.)
+     start _c   set start character to _c (default control Q.)
+     stop _c    set stop character to _c (default control S.)
+     eof _c     set end of file character to _c (default control
+	       D.)
+     brk _c     set break character to _c (default undefined.) This
+	       character is an additional character causing
+	       wakeup.
+     dec       set all modes suitable for Digital Equipment Corp.
+	       operating systems users; (erase, kill, and
+
+
+
+Printed 11/24/99	 March 27, 1997                         2
+
+
+
+
+
+
+STTY(1)             UNIX Programmer's Manual		  STTY(1)
+
+
+
+	       interrupt characters to ^?, ^U, and ^C, decctlq
+	       and ``newcrt''.)
+
+     0	       hang up phone line immediately
+     50 75 110 134 150 200 300 600 1200 1800 2400 4800 9600 exta extb
+	       Set terminal baud rate to the number given, if
+	       possible.  (These are the speeds supported by the
+	       DH-11 interface).
+
+     rows _n    The terminal size is recorded as having _n rows.
+
+     columns _n The terminal size is recorded as having _n columns.
+
+     cols _n    is an alias for _c_o_l_u_m_n_s.
+
+     A teletype driver which supports the job control processing
+     of _c_s_h(1) and more functionality than the basic driver is
+     fully described in _t_t_y(4).  The following options apply only
+     to it.
+
+     new       Use new driver (switching flushes typeahead).
+     crt       Set options for a CRT (crtbs, ctlecho and, if >=
+	       1200 baud, crterase and crtkill.)
+
+     crtbs     Echo backspaces on erase characters.
+
+     prterase  For printing terminal echo erased characters back-
+	       wards within ``\'' and ``/''.
+
+     crterase  Wipe out erased characters with ``backspace-
+	       space-backspace.''
+     -crterase Leave erased characters visible; just backspace.
+
+     crtkill   Wipe out input on like kill ala crterase.
+     -crtkill  Just echo line kill character and a newline on
+	       line kill.
+
+     ctlecho   Echo control characters as ``^_x'' (and delete as
+	       ``^?''.) Print two backspaces following the EOT
+	       character (control D).
+     -ctlecho  Control characters echo as themselves; in cooked
+	       mode EOT (control-D) is not echoed.
+
+     decctlq   After output is suspended (normally by ^S), only a
+	       start character (normally ^Q) will restart it.
+	       This is compatible with DEC's vendor supplied sys-
+	       tems.
+     -decctlq  After output is suspended, any character typed
+	       will restart it; the start character will restart
+	       output without providing any input.  (This is the
+	       default.)
+
+
+
+
+Printed 11/24/99	 March 27, 1997                         3
+
+
+
+
+
+
+STTY(1)             UNIX Programmer's Manual		  STTY(1)
+
+
+
+     tostop    Background jobs stop if they attempt terminal out-
+	       put.
+     -tostop   Output from background jobs to the terminal is
+	       allowed.
+
+     flusho    Output is being discarded usually because user hit
+	       control O (internal state bit).
+     -flusho   Output is not being discarded.
+
+     pendin    Input is pending after a switch from cbreak to
+	       cooked and will be re-input when a read becomes
+	       pending or more input arrives (internal state
+	       bit).
+     -pendin   Input is not pending.
+
+     pass8     Passes all 8 bits through on input, in any mode.
+     -pass8    Strips the 0200 bit on input except in raw mode.
+
+     mdmbuf    Start/stop output on carrier transitions (not
+	       implemented).
+     -mdmbuf   Return error if write attempted after carrier
+	       drops.
+
+     litout    Send output characters without any processing.
+     -litout   Do normal output processing, inserting delays,
+	       etc.
+
+     nohang    Don't send hangup signal if carrier drops.
+     -nohang   Send hangup signal to control process group when
+	       carrier drops.
+
+     The following special characters are applicable only to the
+     new teletype driver and are not normally changed.
+
+     susp _c    set suspend process character to _c (default con-
+	       trol Z).
+     dsusp _c   set delayed suspend process character to _c
+	       (default control Y).
+     rprnt _c   set reprint line character to _c (default control
+	       R).
+     flush _c   set flush output character to _c (default control
+	       O).
+     werase _c  set word erase character to _c (default control W).
+     lnext _c   set literal next character to _c (default control
+	       V).
+
+     Modem Control Status:
+
+     These display the current state of modem control.	They are
+     only displayed for actual tty lines and not for pseudo tty
+     lines (more precisely, it is only displayed for lines which
+     support the TIOCMGET ioctl.  See tty(4).
+
+
+
+Printed 11/24/99	 March 27, 1997                         4
+
+
+
+
+
+
+STTY(1)             UNIX Programmer's Manual		  STTY(1)
+
+
+
+     While it is possible to change the state of the modem con-
+     trol lines, the hardware or other software may prevent the
+     change from actually taking place, or may cause the state to
+     immediately revert to the original state.
+
+     dcd (-dcd)     State of Data Carrier Detect.
+
+     dsr (-dsr)     State of Data Set Ready.
+
+     dtr (-dtr)     State of Data Terminal Ready.
+
+     cts (-cts)     State of Clear To Send.
+
+     rts (-rts)     State of Request To Send.
+
+SEE ALSO
+     ioctl(2), tabs(1), tset(1), tty(4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 11/24/99	 March 27, 1997                         5
+
+
+

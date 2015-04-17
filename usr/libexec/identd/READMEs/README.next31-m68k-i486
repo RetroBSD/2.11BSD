@@ -1,0 +1,49 @@
+Machine Type:		NeXTstep 3.1 for Motorola (or Intel - untested)
+
+Make using:		make nextmab
+
+Make optimised:		make "CFLAGS=-O2 -pipe" "LDFLAGS=-object -s" nextmab
+			(is the default)
+
+Build-Architecture:	make "NEXTARCHS=-arch m68k -arch i386" 
+				for Multi-Architecture-Binary (default)
+			make "NEXTARCHS=-arch m68k" 
+				for Motorola M68000 Binary
+			make "NEXTARCHS=-arch i386" 
+				for Intel i486 Binary
+
+Person(s) porting:	Nigel Metheringham <nigelm@ohm.york.ac.uk>
+				(original NeXTSTEP 2.x / 3.0 version)
+			Michael Kuch (NeXTSTEP 3.1 version)
+				<mike@atlas.physchem.chemie.uni-tuebingen.de>
+			others (?)
+
+Port date:		5 April, 1993   - NeXTSTEP 2.x / 3.0 version
+			11 August, 1993 - NeXTSTEP 3.1 version
+
+Verified working:	OS version    Pident vers  Person
+			3.1-m68k      2.2alpha1	   <mike@atlas.physchem.chemie.
+							uni-tuebingen.de>
+
+Build comments:		Edit the destination part of the Makefile to suit
+			your system -
+			common values are:-
+				DESTROOT=
+				DESTDIR=/usr/etc
+				MANROOT=/usr/man
+				MANDIR=$(MANROOT)/man8
+			Edit the NEXTARCH part of the Makefile if you want 
+			build a Single-Architecture-Binary (smaller).
+
+			This has only been tested on black (ie NeXT) hardware,
+			however there is no reason why it should not run on
+			white (i486) hardware under NeXTstep 3.1 for Intel
+			Processors.
+
+
+Install comments:	Generally install into /usr/local/etc
+			Start from inetd (or as daemon if you prefer)
+
+Usage comments:		Make sure that the user this runs under from inetd
+			can read /dev/kmem.  Alternatively run it as root -
+			its quite safe!

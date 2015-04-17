@@ -1,0 +1,330 @@
+
+
+
+MP(1)                    USER COMMANDS                      MP(1)
+
+
+
+NAME
+     mp - POSTSCRIPT pretty printer
+
+SYNOPSIS
+     mp [-A4] [-C] [-F] [-PS] [-US] [-a] [-d]  [-e]  [-ff]  [-fp]
+     [-l]  [-m]  [-o] [-p prologue] [-s subject] [-tm] [-ts] [-v]
+     [-?] [filename...]
+
+DESCRIPTION
+     The mp program reads each filename in sequence and generates
+     a  prettified  version of the contents in POSTSCRIPT format,
+     sent to standard output.  If no filename  argument  is  pro-
+     vided,  mp  reads the standard input.  If the standard input
+     is a terminal, input is terminated by an EOF signal, usually
+     Ctrl-D.
+
+     Mail items, news articles, ordinary  ASCII  files,  complete
+     mail  folders,  and digests are all acceptable input formats
+     for mp.  The output format includes grayscale lozenges  con-
+     taining  banner  information  at the top and bottom of every
+     page.
+
+     The program is conveniently used  in  conjunction  with  the
+     print  button  of the SunView/xnews(1) mailtool(1) programs,
+     or the pipe command provided by mail(1).  Add the  following
+     two lines to your .mailrc file:
+               set printmail='mp | lpr'
+               set cmd="mp | lpr &"
+
+     Source the .mailrc file, and you are ready to use  mp.   For
+     printing  ordinary  ASCII  files, the following alias (to be
+     placed in your .cshrc file) may also prove useful:
+               alias print 'mp -o -s "\!*" <\!* | lpr'
+
+OPTIONS
+     -A4  Use A4 paper size (8.5 x 11.4 inches).
+
+     -C   Instead of using "\nFrom" to denote the  start  of  new
+          mail  messages, mp will look for (and use) the value of
+          the Content-Length: mail header. If the  Content-Length
+          doesn't take you to the next "\nFrom", then it's wrong,
+          and mp falls back to looking for the next  "\nFrom"  in
+          the mail folder.
+
+     -F   Instead of printing who the mail article  is  for,  the
+          top header will contain who the mail article is from. A
+          useful  option  for  people  with  their  own  personal
+          printer.
+
+     -PS  If the mail or digest message just  has  PostScript  as
+          the  text  of  the  message, then this is normally just
+          passed straight through. Specifying this option, causes
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 1
+
+
+
+
+
+
+MP(1)                    USER COMMANDS                      MP(1)
+
+
+
+          PostScript to be printed as text.
+
+     -US  Use US paper size (8.5 x 11 inches).
+
+     -a   Format the file as a news article.  The top banner con-
+          tains  the text: "Article from newsgroup ", where news-
+          group is the first news group found on the  Newsgroups:
+          line.
+
+     -d   Format the file as a digest.
+
+     -e   Assume the ELM mail frontend intermediate file  format.
+          Used  when printing messages from within ELM (using the
+          "p" command), especially for printing tagged  messages.
+          This option must be specified in your ELM option setup.
+
+     -ff  Format  the  file  for  use  with  a  Filofax  personal
+          organiser.
+
+     -fp  Format the file for use with a  Franklin  Planner  per-
+          sonal organiser.
+
+     -l   Format output in landscape mode.   Two  pages  of  text
+          will be printed per sheet of paper.
+
+     -m   Format the file as a  mail  folder,  printing  multiple
+          messages.
+
+     -o   Format the file as an ordinary ASCII file.
+
+     -p prologue
+          Employ the file prologue  as  the  POSTSCRIPT  prologue
+          file, overriding any previously defined file names.
+
+     -s subject
+          Use  subject as the new subject for  the  printout.  If
+          you  are  printing ordinary ASCII files which have been
+          specified on the command line,  the  the  subject  will
+          default to the name of each of these files.
+
+     -tm  Format the file for use with the Time Manager  personal
+          organiser.
+
+     -ts  format the file for use with the  Time/System  Interna-
+          tional personal organiser.
+
+     -v   Print the version number of this release of mp.
+
+     -?   Print the usage line for mp (note that the ?  character
+          must be escaped if using csh(1)).
+
+
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 2
+
+
+
+
+
+
+MP(1)                    USER COMMANDS                      MP(1)
+
+
+
+ENVIRONMENT VARIABLES
+     The mp prologue file is determined by first looking for  the
+     environment variable MP_PROLOGUE, which specifies the direc-
+     tory  where  mp  prologue  files  are  to  be   found.    If
+     MP_PROLOGUE  is  not  found,  then  the default directory is
+     assumed (LIBDIR/mp.pro.ps).
+
+SUPPLIED PROLOGUE FILES
+     The following prologue files are provided:
+
+          mp.pro.ps
+               Used by default
+
+          mp.pro.l.ps
+               Used by the -l landscape mode option
+
+          mp.pro.ff.ps
+               Used if the -ff option is in effect
+
+          mp.pro.fp.ps
+               Used if the -fp option is in effect
+
+          mp.pro.tm.ps
+               Used if the -tm option is in effect
+
+          mp.pro.ts.ps
+               Used if the -ts option is in effect
+
+          mp.pro.alt.ps
+               An alternative modification of the default  prolo-
+               gue  file  which  outputs  the  page number in the
+               right corner of the bottom banner.
+
+          mp.pro.altl.ps
+               An  alternative  landscape  option  mode  prologue
+               file.
+
+FILES
+     .cshrc
+          initialization file for csh(1)
+
+     .mailrc
+          initialization file for mail(1)
+
+     BINDIR/mp
+          executable
+
+     LIBDIR/mp.pro.ps
+          POSTSCRIPT prologue for mail printing
+
+     LIBDIR/mp.pro.l.ps
+          POSTSCRIPT prologue for landscape format
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 3
+
+
+
+
+
+
+MP(1)                    USER COMMANDS                      MP(1)
+
+
+
+     LIBDIR/mp.pro.alt.ps
+          alternative "default" POSTSCRIPT prologue, inserts page
+          numbers in the bottom right corner of each page
+
+     LIBDIR/mp.pro.altl.ps
+          alternative "landscape" POSTSCRIPT prologue.
+
+     LIBDIR/mp.pro.ff.ps
+          POSTSCRIPT prologue for Filofax format
+
+     LIBDIR/mp.pro.fp.ps
+          POSTSCRIPT prologue for Franklin Planner format.
+
+     LIBDIR/mp.pro.tm.ps
+          POSTSCRIPT prologue for Time Manager format
+
+     LIBDIR/mp.pro.ts.ps
+          POSTSCRIPT prologue for Time/System International  for-
+          mat.
+
+SEE ALSO
+     mail(1), mailtool(1), xnews(1)
+
+AUTHORS
+     Original version by Steve Holden.
+
+     Converted to C, modified and maintained  by  Rich  Burridge,
+     Sun Microsystems, Australia.
+
+     Original modified to handle net news articles and MH mail by
+     Bruno Pillard, Chorus Systemes, France.
+
+     Handling of mail digests added by Dave  Glowacki  of  Public
+     Works Computer Services, St Paul, MN.
+
+     Manual page revised by Rick Rodgers, UCSF  School  of  Phar-
+     macy, San Francicso.
+
+     Support for Personal Organiser printing style added by Doug-
+     las Buchanan, Sun Microsystems Europe.
+
+     Substantial  modifications  to  header  parsing  by   Jeremy
+     Webber, Computer Science Department, University of Adelaide,
+     Australia.
+
+     Support  for  printing  multiple  files  and  subject   line
+     filename  print  for  ordinary  ASCII  files  added  by  Sam
+     Manoharan, Edinburgh University.
+
+     Support for landscape mode written by Michael Tuchiarone.
+
+
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 4
+
+
+
+
+
+
+MP(1)                    USER COMMANDS                      MP(1)
+
+
+
+     Revision of the POSTSCRIPT structuring and the way that  the
+     prologue files are handled was included by Johan Vromans.
+
+     New style POSTSCRIPT prologue files by John Macdonald.
+
+     Support for the ISO8859 character set by Bertrand DeCouty.
+
+     Rich Burridge.  PHONE: +61 2 413 2666  MAIL: richb@Aus.Sun.COM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sun Release 4.1   Last change: 17 February 1992                 5
+
+
+

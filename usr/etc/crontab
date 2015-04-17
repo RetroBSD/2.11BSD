@@ -1,0 +1,4 @@
+0,15,30,45 * * * *	root /usr/libexec/atrun
+5 0 * * *	root	/bin/sh /usr/adm/daily 2>&1 | mail root
+15 0 * * 7	root	/bin/sh /usr/adm/weekly 2>&1 | mail root
+35 0 1 * *	root	/bin/sh /usr/adm/monthly 2>&1 | mail root

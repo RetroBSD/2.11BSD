@@ -1,0 +1,47 @@
+#! /bin/sh -
+PATH=/usr/sbin:/usr/local:/usr/ucb:/bin:/usr/bin
+echo "Subject: weekly run output"
+
+#echo ""
+#echo "Removing old .o files:"
+#find /usr/src -name '*.o' -atime +21 -print -a -exec rm -f {} \;
+
+echo ""
+echo "Cleaning up UUCP:"
+su uucp << EOF
+	sh /etc/uucp/clean.weekly
+EOF
+
+echo ""
+echo "Rotating messages:"
+cd /usr/adm
+mv messages.2 messages.3
+mv messages.1 messages.2
+mv messages.0 messages.1
+mv messages   messages.0
+cp /dev/null  messages
+chmod 644 messages
+
+echo ""
+echo "Rotating cron:"
+cd /usr/adm
+mv -f cron.2.Z cron.3.Z
+mv -f cron.1.Z cron.2.Z
+mv -f cron.0.Z cron.1.Z
+mv -f cron   cron.0
+compress -f cron.0
+cp /dev/null  cron
+chmod 644 cron
+
+kill -1 `cat /var/run/syslog.pid`
+cd /
+
+echo ""
+echo "Rebuilding catman:"
+catman
+
+echo ""
+echo "Rebuilding find database:"
+su nobody << EOF
+	/usr/libexec/find/updatedb
+EOF

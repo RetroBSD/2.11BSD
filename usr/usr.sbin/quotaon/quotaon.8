@@ -1,0 +1,103 @@
+.\" Copyright (c) 1983, 1990, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" This code is derived from software contributed to Berkeley by
+.\" Robert Elz at The University of Melbourne.
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)quotaon.8	8.2.1 (2.11BSD) 1996/1/21
+.\"
+.TH QUOTAON 8 "January 21, 1996"
+.UC 5
+.SH NAME
+.BR quotaon ,
+.B quotaoff
+\- turn filesystem quotas on and off
+.SH SYNOPSIS
+\fBquotaon\fP [\fB\-v\fP] \fIfilesystem ...\fP
+.br
+\fBquotaon\fP [\fB\-v\fP] \fB\-a\fP
+.br
+\fBquotaoff\fP [\fB\-v\fP] \fIfilesystem ...\fP
+.br
+\fBquotaoff\fP [\fB\-v\fP] \fB\-a\fP
+.SH DESCRIPTION
+.B Quotaon
+announces to the system that disk quotas should be enabled on one or more
+filesystems.
+.B Quotaoff
+announces to the system that the specified
+filesystems should have any disk quotas
+diskquotas turned off.
+The filesystems specified must have entries in
+.I /etc/fstab
+and be mounted.
+.B Quotaon
+expects each filesystem to have a quota file named
+.I quotas
+located at the root of the associated file system.
+These defaults may be overridden in
+.IR /etc/fstab .
+.PP
+Available options:
+.sp
+.TP 15
+.B \-a
+If the
+.B \-a
+flag is supplied in place of any filesystem names,
+\fBquotaon\fP/\fBquotaoff\fP
+will enable/disable all the filesystems indicated in
+.I /etc/fstab
+to be read-write with disk quotas.
+.TP 15
+.B \-v
+Causes
+.B quotaon
+and
+.B quotaoff
+to print a message for each filesystem where quotas are turned on or off.
+.SH FILES
+.TP 15
+.I quotas
+at the filesystem root with user quotas
+.TP 15
+.I /etc/fstab
+filesystem table
+.SH SEE ALSO
+quota(1),
+setquota(2),
+fstab(5),
+edquota(8),
+quotacheck(8),
+repquota(8)
+.SH HISTORY
+The
+.B quotaon
+command appeared in 4.2BSD.

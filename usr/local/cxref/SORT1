@@ -1,0 +1,12 @@
+# SORT1 -- do the first sorting job for cxref.
+#
+# the purpose of this file is to save typing during testing and development.
+#
+# Arnold Robbins, Information and Computer Science, Georgia Tech
+#	gatech!arnold
+# Copyright (c) 1984 by Arnold Robbins.
+# All rights reserved.
+# This program may not be sold, but may be distributed
+# provided this header is included.
+
+exec sort -u +0b -2 +2n

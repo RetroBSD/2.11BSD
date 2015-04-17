@@ -1,0 +1,63 @@
+.TH SAVECORE 8
+.UC
+.SH NAME
+savecore \- save a core dump of the operating system
+.SH SYNOPSIS
+.B savecore
+.I dirname
+[
+.I system
+]
+.SH DESCRIPTION
+.PP
+.I Savecore
+is meant to be called at the end of the /etc/rc file.  Its function
+is to save the core dump of the system (if one was made) and to
+write a reboot message in the shutdown log.
+.PP
+It saves the core image in the file
+.IR dirname /core.n
+and its corresponding namelist in
+.IR dirname /unix.n.
+The second argument is the namelist for the system
+which made the core image;
+the current system is always assumed to be /unix.
+The trailing ".n" in the pathnames is replaced by a number which grows
+every time
+.I savecore
+is run in that directory.
+.PP
+Before savecore writes out a core image, it reads a number from the file
+.IR dirname /minfree.
+If there are fewer free blocks on the file system
+which contains
+.I dirname
+than the number obtained from the minfree file, the core dump is not done.
+If the minfree file does not exist, savecore always writes out the core
+file (assuming that a core dump was taken).
+.PP
+.I Savecore
+also writes a reboot message in the shut down log.  If the system crashed
+as a result of a panic,
+.I savecore
+records the panic string in the shut down log too.
+.PP
+If
+.I savecore
+detects that the system time is wrong because of a crash
+(the time in the core image is after the current time),
+it will reset the system time to its best estimate of the time,
+which is the time in the core image plus the elapsed time since the reboot.
+It announces the time that it set when this occurs.
+.SH FILES
+.ta 2i
+/usr/adm/shutdownlog	shutdown log
+.br
+/unix	current UNIX
+.SH BUGS
+The method used to determine whether a dump is present, and to prevent
+the same core image from being saved multiple times,
+is not elegant.
+This information should be passed to \fIinit\fP by the system;
+however, this is difficult because the system may have to be rebooted
+a second time if the root filesystem is patched.

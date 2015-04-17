@@ -1,0 +1,206 @@
+Mchecknotes	checknotes.c	/^main (argc, argv)$/
+Mmain	main.c	/^main (argc, argv)$/
+Mmknf	mknf.c	/^main (argc, argv)$/
+Mnewsinput	newsinput.c	/^main (argc, argv)$/
+Mnewsoutput	newsoutput.c	/^main (argc, argv)$/
+Mnfaccess	nfaccess.c	/^main (argc, argv)$/
+Mnfadmin	nfadmin.c	/^main (argc, argv)$/
+Mnfarchive	nfarchive.c	/^main (argc, argv)$/
+Mnfdump	nfdump.c	/^main (argc, argv)$/
+Mnfload	nfload.c	/^main (argc, argv)$/
+Mnfmail	nfmail.c	/^main (argc, argv)$/
+Mnfpipe	nfpipe.c	/^main (argc, argv)$/
+Mnfprint	nfprint.c	/^main (argc, argv)$/
+Mnfrcv	nfrcv.c	/^main (argc, argv)$/
+Mnfstats	nfstats.c	/^main (argc, argv)$/
+Mnftimestamp	nftimestamp.c	/^main (argc, argv)$/
+Mnfxmit	nfxmit.c	/^main (argc, argv)$/
+Mrmnf	rmnf.c	/^main (argc, argv)$/
+YorN	dropt.c	/^#define YorN(c)		((c) != 0 ? YES : NO)$/
+accessedit	access.c	/^accessedit (io)$/
+acscmp	acssort.c	/^acscmp (a, b)$/
+acssort	acssort.c	/^acssort (alist, items)$/
+addgrp	expand.c	/^addgrp (string)$/
+addmodes	acssort.c	/^addmodes (io, nmodes, Newmodes, verbose)$/
+addnote	adnote.c	/^addnote (io, preface, pstr, tpstr, title, editflag/
+addresp	adresp.c	/^addresp (io, preface, notenum, editflag)$/
+allow	permit.c	/^allow (io, mode)$/
+archiver	archiver.c	/^archiver (nfname, daysold, worksetsize, deleteonly/
+archone	nfarchive.c	/^archone (nfname)$/
+asearch	asearch.c	/^asearch (io, notenum, respnum, grabname)$/
+askyn	miscio.c	/^askyn (p) char *p;					\/* returns y or n to the qu/
+at	cursor.c	/^at (row, col)$/
+bclear	bnewshead.c	/^bclear (cp, nc)$/
+bnewsgen	newsinput.c	/^bnewsgen (io, header, body)$/
+buildnf	buildnf.c	/^buildnf (nfname, basedir, Aflag, Oflag, Nflag)$/
+cansend	newsout.c	/^cansend (sysname, class)$/
+catchem	miscio.c	/^catchem ()$/
+catchint	miscio.c	/^catchint ()$/
+catchz	miscio.c	/^catchz ()						\/* handle ^Z gracefully *\/$/
+center	cursor.c	/^center (p, len, row, col) char *p;$/
+ceol	cursor.c	/^ceol ()$/
+charout	cursor.c	/^charout (c)$/
+checknf	checknotes.c	/^checknf (nfname)$/
+chknote	find.c	/^chknote (io, noteid, note)$/
+chkpath	check.c	/^chkpath (p)$/
+chkresp	find.c	/^chkresp (io, respid, note, notenum)$/
+closenf	recsio.c	/^closenf (io)$/
+cmstart	cursor.c	/^cmstart ()$/
+cmstop	cursor.c	/^cmstop ()$/
+compress	compress.c	/^compress (io, lockflag, verbosity, numnotes, numre/
+control	control.c	/^control (nfname, seqon)$/
+copy	nfmail.c	/^copy (From, To) FILE * From, *To;$/
+copyauth	misc.c	/^copyauth (from, to)$/
+copydate	misc.c	/^copydate (from, to)$/
+cursget	cursor.c	/^cursget ()$/
+delgroup	expand.c	/^delgroup (string)$/
+delnote	note.c	/^delnote (io, noteno, lockit)$/
+delresp	resp.c	/^delresp (io, noteno, resprec, resphys, lockit)$/
+direct	dropt.c	/^direct (io) struct io_f *io;$/
+dirplot	dropt.c	/^dirplot (io)$/
+dmpaccess	dump.c	/^dmpaccess (io, dfile)$/
+dmpdescr	dump.c	/^dmpdescr (io, dmpfile)$/
+dmpnote	dmpnote.c	/^dmpnote (io, note, num, dmpfile, extensive, protoc/
+dmprall	dmpresp.c	/^dmprall (io, note, notenum, dmpfile, extensive, pr/
+dmprsp	dmpresp.c	/^dmprsp (io, note, notenum, dmpfile, num, extensive/
+dopat	pattern.c	/^dopat (p, what)$/
+dopipe	nfmail.c	/^dopipe (command, File) char *command;$/
+dounix	misc.c	/^dounix (linebuf, hisuid, ttymode)$/
+dspnote	dsply.c	/^dspnote (io, note, notenum)$/
+dspresp	dsply.c	/^dspresp (io, note, resp, phys, logical, notenum)$/
+dumpnf	dump.c	/^dumpnf (nfname, dfile)$/
+erase	cursor.c	/^erase ()$/
+expand	expand.c	/^expand (argp)$/
+findtitle	tsearch.c	/^findtitle (io, fromnum, anchored)$/
+finish	recsio.c	/^finish (io)$/
+fixid	bnewshead.c	/^fixid (hp)$/
+fixlast	times.c	/^fixlast (atime, nf, seqon, name)$/
+fixtime	compress.c	/^static  fixtime (when)$/
+frmread	bnewshead.c	/^frmread (fp, hp)$/
+ftime	ftime.c	/^ftime (tp)$/
+gchar	miscio.c	/^gchar ()$/
+gdate	gdate.c	/^gdate (date) struct when_f *date;$/
+getdscr	recsio.c	/^getdscr (io, descr) struct descr_f *descr;$/
+getfield	bnewshead.c	/^getfield (hpfield)$/
+getfrsp	resp.c	/^getfrsp (io) struct io_f   *io;$/
+getgroups	perms.c	/^getgroups (ngroups, gidset)$/
+getignore	nfmail.c	/^getignore (name)$/
+getlast	times.c	/^getlast (atime, nf, seqon, name)$/
+getmode	access.c	/^getmode (zmode)$/
+getname	gname.c	/^getname (who_me, anon)					\/* anon=true for anonym/
+getnet	getnet.c	/^getnet (sys, nf, howp)$/
+getnrec	recsio.c	/^getnrec (io, n, note) struct note_f *note;		\/* n i/
+getnum	miscio.c	/^getnum (c)						\/* c is the initial character! *\/$/
+getpath	newspath.c	/^char   *getpath (dest)$/
+getperms	perms.c	/^getperms (io, sysflag, name)$/
+getrrec	recsio.c	/^getrrec (io, n, resp) struct resp_f *resp;		\/* n i/
+gettext	gtext.c	/^long    gettext (io, where, preface, editflag)$/
+gettime	gtime.c	/^gettime (whenvec) struct when_f *whenvec;$/
+gline	miscio.c	/^gline (p, max)$/
+glocknf	misc.c	/^glocknf (io, c)$/
+gshell	misc.c	/^gshell ()$/
+gunlocknf	misc.c	/^gunlocknf (io, c)$/
+help	help.c	/^help (file)$/
+hfgets	bnewshead.c	/^char   *hfgets (buf, len, fp)$/
+indx	index.c	/^indx (io, firstdis, lastdis, respnum)$/
+init	recsio.c	/^init (io, p) struct io_f   *io;$/
+initdescr	buildnf.c	/^initdescr (descr)$/
+initnote	ldmisc.c	/^initnote (note)$/
+inorder	next.c	/^inorder (d1, d2)$/
+intuitfrom	bnewshead.c	/^intuitfrom (hp)$/
+isinput	miscio.c	/^isinput ()$/
+its	bnewshead.c	/^#define	its(type) (!strncmp(ptr,type,strlen(type))/
+ldnote1	loadproto1.c	/^ldnote1 (io, whofrom, extensive, lockit, infile)$/
+ldresp1	loadproto1.c	/^ldresp1 (io, whofrom, extensive, lockit, infile)$/
+len	misc.c	/^len (p, n) char *p;$/
+limindx	limindx.c	/^limindx (io)$/
+listconv	misc.c	/^listconv (buf, ptr)$/
+listget	misc.c	/^listget (buf, ptr, start, finish)$/
+loadaccess	loadnf.c	/^loadaccess (io, infile)$/
+loaddescr	loadnf.c	/^loaddescr (descr, infile)$/
+loadem	loadem.c	/^loadem (io, infile, lockit, whofrom, extensive, ar/
+loadgate	newsoutput.c	/^loadgate (filename)$/
+loadnf	loadnf.c	/^loadnf (basedir, nfname, infile)$/
+loadnote	loadem.c	/^loadnote (io, firstline, whofrom, extensive, locki/
+loadresp	loadem.c	/^loadresp (io, firstline, whofrom, extensive, locki/
+locknf	misc.c	/^locknf (io, c)$/
+lprnote	lprnote.c	/^lprnote (io, lprfile, toc, notenum, note, justtitl/
+lprresp	lprnote.c	/^lprresp (io, lprfile, toc, notenum, respnum, rspre/
+lrsp	lrsp.c	/^lrsp (io, notenum, resp, rrec, poffset, recnum)$/
+mailit	mailit.c	/^mailit (io, where, author, date, title, toauth, wt/
+maketime	gtime.c	/^maketime (whenvec, tvec)$/
+mapch	miscio.c	/^mapch (c)$/
+mdelete	delete.c	/^mdelete (io, first, last, zapping)$/
+modaddress	mailit.c	/^modaddress (notesname, address)$/
+newsgroup	newsgroup.c	/^newsgroup (lookfor, mapped, direct)$/
+newsheader	bnewshead.c	/^newsheader (hp, fp, wholething)$/
+newsnote	newsdump.c	/^newsnote (io, note, notenum, ngroup, backwards)$/
+newsone	newsoutput.c	/^newsone (nfname)$/
+newsout	newsout.c	/^newsout (nfname, backwards, usetime, verbosity)$/
+newsresp	newsdump.c	/^newsresp (io, note, notenum, rsprec, roffset, resp/
+newval	nfadmin.c	/^int newval(c)$/
+nextgroup	expand.c	/^struct nflist_f *nextgroup ()$/
+nfabort	nfabort.c	/^nfabort (nf, message, title, cname, exitcode)$/
+nfalias	nfalias.c	/^nfalias (local, remote, remotesys)$/
+nfcomment	nfcomment.c	/^nfcomment (nfname, text, title, dirflag, anonflag)/
+nfgen	newsinput.c	/^nfgen (io, header, body, pathname)$/
+nfmatch	getnet.c	/^static int  nfmatch (nf, pattern)$/
+nfsend	nfsend.c	/^nfsend (tosite, nfname, dmpfile, usetime, sendhim,/
+nfsendone	nfsend.c	/^nfsendone (nfname, tosite, queuestat, sendstat)$/
+ngcat	bnewshead.c	/^ngcat (s)$/
+notesum	nfadmin.c	/^notesum(d)$/
+nstrip	bnewshead.c	/^nstrip (s)$/
+nxtnote	next.c	/^nxtnote (io, note, date)$/
+nxtresp	next.c	/^nxtresp (io, note, resp, date)$/
+opennf	recsio.c	/^opennf (io, p)$/
+pagebreak	lprnote.c	/^pagebreak (zfile)$/
+pagein	pagein.c	/^long    pagein (io, zfile, where)$/
+pagemove	pagemove.c	/^pagemove (io, where, io2, where2, lockflag)$/
+pageout	pageout.c	/^pageout (io, where, zfile)$/
+parsemode	acssort.c	/^parsemode (asciimode, pstuff, verbose)$/
+parsepath	parsepath.c	/^parsepath (newspath, fromline)$/
+parsetime	datein.c	/^parsetime (line, date)$/
+patcheck	check.c	/^patcheck (p)$/
+plotit	access.c	/^plotit (alist, base, items)				\/* plot the list *\//
+prdate	misc.c	/^prdate (zdate) struct when_f   *zdate;$/
+preptxt	preptxt.c	/^preptxt (io, zfile, author, date, where, title)$/
+prntind	prtind.c	/^prntind (io, firstdis, lastdis)$/
+putdscr	recsio.c	/^putdscr (io, descr) struct descr_f *descr;$/
+putnote	note.c	/^putnote (io, where, title, status, note, auth, pol/
+putnrec	recsio.c	/^putnrec (io, n, note) struct note_f *note;		\/* n i/
+putresp	resp.c	/^putresp (io, where, status, noteno, adate, auth, n/
+putrrec	recsio.c	/^putrrec (io, n, resp) struct resp_f *resp;		\/* n i/
+puttrec	recsio.c	/^long    puttrec (io, zfile, where, count)$/
+readem	readem.c	/^readem (io, readnum, firstdis, resp)$/
+readrc	expand.c	/^readrc (s)$/
+rfcparse	parse.c	/^rfcparse (line, varlist)$/
+savtxt	savtxt.c	/^savtxt (io, where, author, date, txtwhere, title)$/
+setseq	expand.c	/^setseq (i)$/
+shouldignore	nfmail.c	/^shouldignore (p)$/
+showit	dsply.c	/^showit (io, dbuf, Rotate)$/
+skipwhite	nfmail.c	/^char   *skipwhite (p)$/
+sprdate	misc.c	/^sprdate (w, str) struct when_f *w;$/
+startup	startup.c	/^startup (argc, argv)$/
+statone	nfstats.c	/^statone (nfname)$/
+strclean	misc.c	/^int     strclean (p)$/
+strmove	misc.c	/^strmove (p, q)$/
+strsave	misc.c	/^char   *strsave (s)$/
+substr	misc.c	/^substr (a, b)$/
+tailpath	bnewshead.c	/^        tailpath (hp)$/
+talkto	talkto.c	/^talkto (auth)$/
+timein	ldmisc.c	/^timein (line, atime)$/
+toggle	dropt.c	/^toggle(io, flag, row)$/
+tolcase	misc.c	/^tolcase (c)$/
+tsearch	tsearch.c	/^tsearch (io, fromnum, grabstring)$/
+ttystop	miscio.c	/^ttystop ()$/
+ttystrt	miscio.c	/^ttystrt ()$/
+type	bnewshead.c	/^type (ptr)$/
+tzone	newsdump.c	/^char   *tzone (when)$/
+uncatchem	miscio.c	/^uncatchem ()						\/* restore signal status *\/$/
+unlocknf	misc.c	/^unlocknf (io, c)$/
+usage	main.c	/^usage ()$/
+watchkid	misc.c	/^static int  watchkid (sig)$/
+widthch	miscio.c	/^int     widthch (c)$/
+x	misc.c	/^x (cond, p) char   *p;$/
+xmitone	nfxmit.c	/^xmitone (local)$/
+yes	nfadmin.c	/^char *yes(b)$/
